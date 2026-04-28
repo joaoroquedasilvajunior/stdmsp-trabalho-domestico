@@ -4,7 +4,7 @@ Bilingual (PT + EN) data dashboard on Brazilian domestic workers, built for the
 **Sindicato das Trabalhadoras Domésticas do Município de São Paulo (STDMSP)**
 in collaboration with **Jean-François Mayer** (Concordia University, RITHAL).
 
-**Live:** _to be filled in once Cloudflare Pages connects the repo — will be `https://<project>.pages.dev`._
+**Live:** <https://stdmsp-trabalho-domestico.joaoroquer.workers.dev/>
 
 ## Stack
 

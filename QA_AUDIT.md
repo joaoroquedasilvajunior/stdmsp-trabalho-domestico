@@ -100,6 +100,38 @@ who quotes its numbers:
 
 ---
 
+## Refresh log
+
+A running log of quarterly checks against the canonical sources. Each entry
+records what was checked, what changed, and when the next check should happen.
+Append new entries chronologically — do not rewrite history.
+
+### 2026-04-28 — April refresh window (no new data, no UPDATEs applied)
+
+- **DIEESE 2026 infografico** (`pct_women`, `pct_negras`):
+  Not yet published as of this date. The 2025 infografico
+  (<https://www.dieese.org.br/infografico/2025/trabalhadorasDomesticas.html>,
+  base 4T 2024) remains the most recent national source. Figures already in
+  `static_fact` (91.9 % women, 69 % Negras) are still authoritative.
+- **DIEESE 2025 Boletim Especial** for `wage_ratio_black_to_nonblack`:
+  Available at `https://www.dieese.org.br/boletimespecial/2025/trabalhoDomestico.pdf`
+  — value not yet cross-verified against this PDF; current source URL on the
+  row still points to the 2024 boletim. Worth re-pointing in a future commit
+  once we read the 2025 boletim.
+- **PNADC trimestre móvel** (`fact_workers`, `fact_wages`):
+  Re-ran `etl/fetch_sidra.py` cleanly. No new periods landed — latest in
+  Supabase is still `202602` (trimestre móvel ending Feb 2026). The next one,
+  `202603` (ending Mar 2026), is expected mid-May 2026 (~6-week IBGE lag).
+- **`fact_hours`**: still 0 rows. Known issue, not in scope for this refresh.
+- **Dashboard state**: shipped to Cloudflare Pages at
+  <https://stdmsp-trabalho-domestico.joaoroquer.workers.dev/>. No code changes
+  this round.
+
+**Next check: 2026-05-12.** By then both the new PNADC trimestre móvel and the
+DIEESE 2026 infografico should be available.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

@@ -1,0 +1,453 @@
+{
+  "6413": {
+    "id": 6413,
+    "nome": "Pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal, por sexo e tamanho do empreendimento",
+    "periodicidade": {
+      "frequencia": "anual",
+      "inicio": 2012,
+      "fim": 2024
+    },
+    "nivelTerritorial_Administrativo": [
+      "N1",
+      "N2",
+      "N6",
+      "N14",
+      "N7",
+      "N3"
+    ],
+    "_has_domestic_category": false,
+    "_has_sex_classification": true,
+    "_has_race_classification": false,
+    "_supports_uf_n3": true,
+    "variaveis": [
+      {
+        "id": 10441,
+        "nome": "Pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal",
+        "unidade": "Mil pessoas"
+      },
+      {
+        "id": 10442,
+        "nome": "Coeficiente de variação - Pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal",
+        "unidade": "%"
+      },
+      {
+        "id": 10443,
+        "nome": "Distribuição percentual das pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal",
+        "unidade": "%"
+      },
+      {
+        "id": 10444,
+        "nome": "Coeficiente de variação -Distribuição percentual das pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal",
+        "unidade": "%"
+      }
+    ],
+    "classificacoes": [
+      {
+        "id": 2,
+        "nome": "Sexo",
+        "categorias_total": 3,
+        "categorias_amostra": [
+          {
+            "id": 6794,
+            "nome": "Total"
+          },
+          {
+            "id": 4,
+            "nome": "Homens"
+          },
+          {
+            "id": 5,
+            "nome": "Mulheres"
+          }
+        ]
+      },
+      {
+        "id": 790,
+        "nome": "Tamanho do empreendimento",
+        "categorias_total": 5,
+        "categorias_amostra": [
+          {
+            "id": 40303,
+            "nome": "Total"
+          },
+          {
+            "id": 40304,
+            "nome": "1 a 5 pessoas"
+          },
+          {
+            "id": 40305,
+            "nome": "6 a 10 pessoas"
+          },
+          {
+            "id": 40306,
+            "nome": "11 a 50 pessoas"
+          },
+          {
+            "id": 40307,
+            "nome": "51 ou mais pessoas"
+          }
+        ]
+      }
+    ],
+    "_pesquisa_nome": "Pesquisa Nacional por Amostra de Domicílios Contínua anual",
+    "_table_nome_short": "Pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal, por sexo e tamanho do empreendimento"
+  },
+  "7236": {
+    "id": 7236,
+    "nome": "Pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal, por sexo e local do exercício do trabalho",
+    "periodicidade": {
+      "frequencia": "anual",
+      "inicio": 2012,
+      "fim": 2024
+    },
+    "nivelTerritorial_Administrativo": [
+      "N1",
+      "N2",
+      "N6",
+      "N14",
+      "N7",
+      "N3"
+    ],
+    "_has_domestic_category": false,
+    "_has_sex_classification": true,
+    "_has_race_classification": false,
+    "_supports_uf_n3": true,
+    "variaveis": [
+      {
+        "id": 10441,
+        "nome": "Pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal",
+        "unidade": "Mil pessoas"
+      },
+      {
+        "id": 10442,
+        "nome": "Coeficiente de variação - Pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal",
+        "unidade": "%"
+      },
+      {
+        "id": 10443,
+        "nome": "Distribuição percentual das pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal",
+        "unidade": "%"
+      },
+      {
+        "id": 10444,
+        "nome": "Coeficiente de variação -Distribuição percentual das pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal",
+        "unidade": "%"
+      }
+    ],
+    "classificacoes": [
+      {
+        "id": 2,
+        "nome": "Sexo",
+        "categorias_total": 3,
+        "categorias_amostra": [
+          {
+            "id": 6794,
+            "nome": "Total"
+          },
+          {
+            "id": 4,
+            "nome": "Homens"
+          },
+          {
+            "id": 5,
+            "nome": "Mulheres"
+          }
+        ]
+      },
+      {
+        "id": 903,
+        "nome": "Local do exercício do trabalho",
+        "categorias_total": 10,
+        "categorias_amostra": [
+          {
+            "id": 48053,
+            "nome": "Total"
+          },
+          {
+            "id": 48054,
+            "nome": "Em fazenda, sítio, granja, chácara etc"
+          },
+          {
+            "id": 48055,
+            "nome": "Em estabelecimento do próprio empreendimento"
+          },
+          {
+            "id": 48056,
+            "nome": "Em estabelecimento de outro empreendimento"
+          },
+          {
+            "id": 48057,
+            "nome": "Em local designado pelo empregador, patrão ou freguês"
+          },
+          {
+            "id": 48058,
+            "nome": "Em domicílio do empregador, patrão, sócio ou freguês"
+          },
+          {
+            "id": 48059,
+            "nome": "No domicílio de residência"
+          },
+          {
+            "id": 48060,
+            "nome": "Em veículo automotor"
+          },
+          {
+            "id": 48061,
+            "nome": "Em via ou área pública"
+          },
+          {
+            "id": 48062,
+            "nome": "Em outro local"
+          }
+        ]
+      }
+    ],
+    "_pesquisa_nome": "Pesquisa Nacional por Amostra de Domicílios Contínua anual",
+    "_table_nome_short": "Pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal, por sexo e local do exercício do trabalho"
+  },
+  "9356": {
+    "id": 9356,
+    "nome": "Pessoas de 14 anos ou mais de idade, ocupadas no setor privado (exclusive nos serviços domésticos) no trabalho principal na semana de referência, por grupamento de atividade no trabalho principal e existência de deficiência",
+    "periodicidade": {
+      "frequencia": "anual",
+      "inicio": 2022,
+      "fim": 2022
+    },
+    "nivelTerritorial_Administrativo": [
+      "N1",
+      "N2"
+    ],
+    "_has_domestic_category": true,
+    "_has_sex_classification": false,
+    "_has_race_classification": false,
+    "_supports_uf_n3": false,
+    "variaveis": [
+      {
+        "id": 10441,
+        "nome": "Pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal",
+        "unidade": "Mil pessoas"
+      },
+      {
+        "id": 10442,
+        "nome": "Coeficiente de variação - Pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal",
+        "unidade": "%"
+      },
+      {
+        "id": 10443,
+        "nome": "Distribuição percentual das pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal",
+        "unidade": "%"
+      },
+      {
+        "id": 10444,
+        "nome": "Coeficiente de variação -Distribuição percentual das pessoas de 14 anos ou mais de idade ocupadas na semana de referência, exclusive os empregados no setor público e trabalhadores domésticos no trabalho principal",
+        "unidade": "%"
+      }
+    ],
+    "classificacoes": [
+      {
+        "id": 888,
+        "nome": "Grupamento de atividade no trabalho principal",
+        "categorias_total": 11,
+        "categorias_amostra": [
+          {
+            "id": 47946,
+            "nome": "Total"
+          },
+          {
+            "id": 47947,
+            "nome": "Agricultura, pecuária, produção florestal, pesca e aquicultura"
+          },
+          {
+            "id": 47948,
+            "nome": "Indústria geral"
+          },
+          {
+            "id": 47949,
+            "nome": "Construção"
+          },
+          {
+            "id": 47950,
+            "nome": "Comércio, reparação de veículos automotores e motocicletas"
+          },
+          {
+            "id": 56622,
+            "nome": "Transporte, armazenagem e correio"
+          },
+          {
+            "id": 56623,
+            "nome": "Alojamento e alimentação"
+          },
+          {
+            "id": 56624,
+            "nome": "Informação, comunicação e atividades financeiras, imobiliárias, profissionais e administrativas"
+          },
+          {
+            "id": 60032,
+            "nome": "Administração pública, defesa, seguridade social, educação, saúde humana e serviços sociais"
+          },
+          {
+            "id": 56627,
+            "nome": "Outros serviços"
+          },
+          {
+            "id": 56628,
+            "nome": "Serviços domésticos"
+          }
+        ]
+      },
+      {
+        "id": 839,
+        "nome": "Existência de deficiência",
+        "categorias_total": 3,
+        "categorias_amostra": [
+          {
+            "id": 46583,
+            "nome": "Total"
+          },
+          {
+            "id": 58765,
+            "nome": "Pessoa com deficiência"
+          },
+          {
+            "id": 58766,
+            "nome": "Pessoa sem deficiência"
+          }
+        ]
+      }
+    ],
+    "_pesquisa_nome": "Pesquisa Nacional por Amostra de Domicílios Contínua anual",
+    "_table_nome_short": "Pessoas de 14 anos ou mais de idade, ocupadas no setor privado (exclusive nos serviços domésticos) no trabalho principal na semana de referência, por grupamento de atividade no trabalho principal e existência de deficiência"
+  },
+  "6383": {
+    "id": 6383,
+    "nome": "Pessoas de 14 anos ou mais de idade, ocupadas na semana de referência como trabalhadores domésticos no trabalho principal, por número de domicílios em que trabalhavam",
+    "periodicidade": {
+      "frequencia": "trimestral",
+      "inicio": 201201,
+      "fim": 202504
+    },
+    "nivelTerritorial_Administrativo": [
+      "N1",
+      "N2",
+      "N6",
+      "N14",
+      "N7",
+      "N3"
+    ],
+    "_has_domestic_category": false,
+    "_has_sex_classification": false,
+    "_has_race_classification": false,
+    "_supports_uf_n3": true,
+    "variaveis": [
+      {
+        "id": 8336,
+        "nome": "Pessoas de 14 anos ou mais de idade, ocupadas na semana de referência como trabalhadores domésticos no trabalho principal",
+        "unidade": "Mil pessoas"
+      },
+      {
+        "id": 8337,
+        "nome": "Coeficiente de variação - Pessoas de 14 anos ou mais de idade, ocupadas na semana de referência como trabalhadores domésticos no trabalho principal",
+        "unidade": "%"
+      },
+      {
+        "id": 8338,
+        "nome": "Distribuição percentual das pessoas de 14 anos ou mais de idade, ocupadas na semana de referência como trabalhadores domésticos no trabalho principal",
+        "unidade": "%"
+      },
+      {
+        "id": 8339,
+        "nome": "Coeficiente de variação - Distribuição percentual das pessoas de 14 anos ou mais de idade, ocupadas na semana de referência como trabalhadores domésticos no trabalho principal",
+        "unidade": "%"
+      }
+    ],
+    "classificacoes": [
+      {
+        "id": 785,
+        "nome": "Número de domicílios em que trabalhavam",
+        "categorias_total": 3,
+        "categorias_amostra": [
+          {
+            "id": 40276,
+            "nome": "Total"
+          },
+          {
+            "id": 40277,
+            "nome": "Em um único domicílio"
+          },
+          {
+            "id": 40278,
+            "nome": "Em mais de um domicílio"
+          }
+        ]
+      }
+    ],
+    "_pesquisa_nome": "Pesquisa Nacional por Amostra de Domicílios Contínua trimestral",
+    "_table_nome_short": "Pessoas de 14 anos ou mais de idade, ocupadas na semana de referência como trabalhadores domésticos no trabalho principal, por número de domicílios em que trabalhavam"
+  },
+  "6384": {
+    "id": 6384,
+    "nome": "Pessoas de 14 anos ou mais de idade, ocupadas na semana de referência como empregados (exclusive trabalhadores domésticos) no trabalho principal, por tipo de contratação",
+    "periodicidade": {
+      "frequencia": "trimestral",
+      "inicio": 201201,
+      "fim": 202504
+    },
+    "nivelTerritorial_Administrativo": [
+      "N1",
+      "N2",
+      "N6",
+      "N14",
+      "N7",
+      "N3"
+    ],
+    "_has_domestic_category": false,
+    "_has_sex_classification": false,
+    "_has_race_classification": false,
+    "_supports_uf_n3": true,
+    "variaveis": [
+      {
+        "id": 8340,
+        "nome": "Pessoas de 14 anos ou mais de idade, ocupadas na semana de referência como empregados (exclusive trabalhadores domésticos) no trabalho principal",
+        "unidade": "Mil pessoas"
+      },
+      {
+        "id": 8341,
+        "nome": "Coeficiente de variação - Pessoas de 14 anos ou mais de idade, ocupadas na semana de referência como empregados (exclusive trabalhadores domésticos) no trabalho principal",
+        "unidade": "%"
+      },
+      {
+        "id": 8342,
+        "nome": "Distribuição percentual das pessoas de 14 anos ou mais de idade, ocupadas na semana de referência como empregados (exclusive trabalhadores domésticos) no trabalho principal",
+        "unidade": "%"
+      },
+      {
+        "id": 8343,
+        "nome": "Coeficiente de variação - Distribuição percentual das pessoas de 14 anos ou mais de idade, ocupadas na semana de referência como empregados (exclusive trabalhadores domésticos) no trabalho principal",
+        "unidade": "%"
+      }
+    ],
+    "classificacoes": [
+      {
+        "id": 786,
+        "nome": "Tipo de contratação",
+        "categorias_total": 3,
+        "categorias_amostra": [
+          {
+            "id": 40279,
+            "nome": "Total"
+          },
+          {
+            "id": 40280,
+            "nome": "Contrato temporário"
+          },
+          {
+            "id": 40281,
+            "nome": "Contrato por tempo indeterminado"
+          }
+        ]
+      }
+    ],
+    "_pesquisa_nome": "Pesquisa Nacional por Amostra de Domicílios Contínua trimestral",
+    "_table_nome_short": "Pessoas de 14 anos ou mais de idade, ocupadas na semana de referência como empregados (exclusive trabalhadores domésticos) no trabalho principal, por tipo de contratação"
+  }
+}

@@ -1,0 +1,33 @@
+# --- Secrets ---
+# etl/.env contains the Supabase service-role key — NEVER commit
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# --- Python ---
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Node (in case Cloudflare/Wrangler tooling shows up) ---
+node_modules/
+.wrangler/
+
+# --- OS / editor cruft ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Logs / scratch ---
+*.log
+.scratch/

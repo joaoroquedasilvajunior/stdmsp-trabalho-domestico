@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trabalho Doméstico no Brasil — STDMSP</title>
+  <meta name="description" content="Painel de dados sobre trabalhadoras e trabalhadores domésticos no Brasil. Sindicato das Trabalhadoras Domésticas do Município de São Paulo + pesquisa de Jean-François Mayer (Concordia).">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --paper: #fafaf7;
+      --accent: #b91c1c;       /* deep red — labor / advocacy */
+      --accent-soft: #fee2e2;
+      --rule: #e5e5e0;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", system-ui, sans-serif; color: var(--ink); background: var(--paper); }
+    .rule { border-color: var(--rule); }
+    .accent { color: var(--accent); }
+    .bg-accent-soft { background: var(--accent-soft); }
+    .num { font-variant-numeric: tabular-nums; }
+    .chart-box { position: relative; height: 280px; }
+    @media (min-width: 768px) { .chart-box { height: 320px; } }
+    [data-empty="true"] .chart-overlay { display: flex; }
+    .chart-overlay { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; background: rgba(250,250,247,0.85); border-radius: 8px; font-size: 14px; color: #666; text-align: center; padding: 16px; }
+    .pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; background: var(--accent-soft); color: var(--accent); }
+    .kpi-muted { opacity: 0.4; transition: opacity 200ms ease; }
+    .kpi-muted .num { font-weight: 400; }
+    select, button { font-family: inherit; }
+    .filter-select { background: white; border: 1px solid var(--rule); border-radius: 6px; padding: 6px 28px 6px 10px; font-size: 14px; color: var(--ink); cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23666' d='M0 0l5 6 5-6z'/></svg>"); background-repeat: no-repeat; background-position: right 10px center; }
+    .lang-btn { padding: 4px 10px; font-size: 12px; font-weight: 500; border: 1px solid var(--rule); background: white; cursor: pointer; }
+    .lang-btn[aria-pressed="true"] { background: var(--ink); color: white; border-color: var(--ink); }
+    .lang-btn:first-child { border-radius: 6px 0 0 6px; }
+    .lang-btn:last-child { border-radius: 0 6px 6px 0; border-left: 0; }
+  </style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="border-b rule">
+  <div class="max-w-6xl mx-auto px-5 py-4 flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="pill" data-i18n="badge">Painel da categoria</span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-medium mt-2" data-i18n="title">Trabalho doméstico no Brasil</h1>
+      <p class="text-sm text-gray-600 mt-1" data-i18n="subtitle">Dados da PNAD Contínua, Censo 2022 e ILOSTAT — em colaboração com o STDMSP e a pesquisa de Jean-François Mayer (Concordia).</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <div role="group" aria-label="Language">
+        <button class="lang-btn" data-lang="pt" aria-pressed="true">PT</button><button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ BANNER (shown only when DB is empty) ============ -->
+<section id="loading-banner" class="hidden bg-amber-50 border-b border-amber-200">
+  <div class="max-w-6xl mx-auto px-5 py-3 text-sm text-amber-900">
+    <strong data-i18n="banner-title">Aguardando o primeiro carregamento de dados.</strong>
+    <span data-i18n="banner-body">O ETL ainda não rodou — os números abaixo são exemplos. Assim que <code>fetch_sidra.py</code> for executado, este painel passará a refletir os dados oficiais do IBGE.</span>
+  </div>
+</section>
+
+<!-- ============ FILTERS ============ -->
+<section class="border-b rule bg-white">
+  <div class="max-w-6xl mx-auto px-5 py-3 flex flex-wrap items-center gap-3 text-sm">
+    <span class="text-gray-500" data-i18n="filter-label">Filtros:</span>
+    <select id="f-year" class="filter-select" aria-label="Year"></select>
+    <select id="f-geo"  class="filter-select" aria-label="Geography"></select>
+    <span class="text-xs text-gray-400" data-i18n="filter-scope">afetam os indicadores e o gráfico por UF</span>
+    <button id="f-reset" class="text-xs underline text-gray-500 ml-auto" data-i18n="reset">Limpar filtros</button>
+  </div>
+</section>
+
+<!-- ============ KPI ROW ============ -->
+<section class="max-w-6xl mx-auto px-5 pt-6">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="border rule rounded-lg p-4 bg-white">
+      <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="kpi-total">Trabalhadoras(es) domésticas(os)</div>
+      <div class="text-3xl font-medium num mt-1" id="kpi-total-value">—</div>
+      <div class="text-xs text-gray-500 mt-1" id="kpi-total-meta" data-i18n="kpi-total-meta">milhares de pessoas, total Brasil</div>
+    </div>
+    <div class="border rule rounded-lg p-4 bg-white" id="kpi-women-card">
+      <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="kpi-women">Mulheres</div>
+      <div class="text-3xl font-medium num mt-1" id="kpi-women-value">—</div>
+      <div class="text-xs text-gray-500 mt-1" id="kpi-women-meta" data-i18n="kpi-women-meta">% do total</div>
+    </div>
+    <div class="border rule rounded-lg p-4 bg-white" id="kpi-black-card">
+      <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="kpi-black">Negras (pretas + pardas)</div>
+      <div class="text-3xl font-medium num mt-1" id="kpi-black-value">—</div>
+      <div class="text-xs text-gray-500 mt-1" id="kpi-black-meta" data-i18n="kpi-black-meta">% do total</div>
+    </div>
+    <div class="border rule rounded-lg p-4 bg-white">
+      <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="kpi-formal">Com carteira assinada</div>
+      <div class="text-3xl font-medium num mt-1" id="kpi-formal-value">—</div>
+      <div class="text-xs text-gray-500 mt-1" data-i18n="kpi-formal-meta">% do total</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CHARTS ============ -->
+<section class="max-w-6xl mx-auto px-5 py-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+
+  <article class="border rule rounded-lg p-4 bg-white">
+    <h2 class="text-base font-medium" data-i18n="chart-trend">Total de trabalhadoras(es) domésticas(os) ao longo do tempo</h2>
+    <p class="text-xs text-gray-500 mb-3" data-i18n="chart-trend-meta">PNAD Contínua trimestral · em milhares de pessoas</p>
+    <div class="chart-box" id="box-trend"><canvas id="chart-trend"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda. Rode o ETL para preencher.</div></div>
+  </article>
+
+  <article class="border rule rounded-lg p-4 bg-white">
+    <h2 class="text-base font-medium" data-i18n="chart-formality">Taxa de formalização (carteira assinada)</h2>
+    <p class="text-xs text-gray-500 mb-3" data-i18n="chart-formality-meta">% com carteira assinada · referência: EC 72/2013, LC 150/2015</p>
+    <div class="chart-box" id="box-formality"><canvas id="chart-formality"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+  </article>
+
+  <article class="border rule rounded-lg p-4 bg-white">
+    <h2 class="text-base font-medium" data-i18n="chart-wages">Rendimento médio mensal real</h2>
+    <p class="text-xs text-gray-500 mb-3" data-i18n="chart-wages-meta">PNAD Contínua trimestral · setor "Serviços domésticos" · em reais constantes</p>
+    <div class="chart-box" id="box-wages"><canvas id="chart-wages"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+  </article>
+
+  <article class="border rule rounded-lg p-4 bg-white">
+    <h2 class="text-base font-medium" data-i18n="chart-mensalista">Mensalistas vs. diaristas</h2>
+    <p class="text-xs text-gray-500 mb-3" data-i18n="chart-mensalista-meta">% diaristas (mais de 1 domicílio) · proteção mais fraca sob LC 150/2015</p>
+    <div class="chart-box" id="box-mensalista"><canvas id="chart-mensalista"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+  </article>
+
+  <article class="border rule rounded-lg p-4 bg-white">
+    <h2 class="text-base font-medium" data-i18n="chart-race">Composição por cor/raça</h2>
+    <p class="text-xs text-gray-500 mb-3" data-i18n="chart-race-meta">% do total de trabalhadoras(es) domésticas(os)</p>
+    <div class="chart-box" id="box-race"><canvas id="chart-race"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+  </article>
+
+  <article class="border rule rounded-lg p-4 bg-white">
+    <h2 class="text-base font-medium" data-i18n="chart-wage-gap">Hiato salarial racial</h2>
+    <p class="text-xs text-gray-500 mb-3" data-i18n="chart-wage-gap-meta">trabalhadoras domésticas negras vs. não-negras · fonte: DIEESE</p>
+    <div class="chart-box" id="box-wage-gap"><canvas id="chart-wage-gap"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+    <p class="text-xs text-gray-700 mt-2 leading-snug" id="wage-gap-narrative" data-i18n="wage-gap-narrative">Para cada R$ 100 recebidos por uma trabalhadora doméstica não-negra, uma trabalhadora doméstica negra recebe R$ 76.</p>
+  </article>
+
+  <article class="border rule rounded-lg p-4 bg-white md:col-span-2">
+    <h2 class="text-base font-medium" data-i18n="chart-region">Distribuição por UF</h2>
+    <p class="text-xs text-gray-500 mb-3" data-i18n="chart-region-meta">milhares de pessoas · top 10 UFs · trimestre mais recente disponível</p>
+    <div class="chart-box" id="box-region"><canvas id="chart-region"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+  </article>
+
+  <article class="border rule rounded-lg p-4 bg-white md:col-span-2">
+    <h2 class="text-base font-medium" data-i18n="chart-intl">Comparativo internacional — América Latina</h2>
+    <p class="text-xs text-gray-500 mb-3" data-i18n="chart-intl-meta">ILOSTAT · trabalhadoras(es) domésticas(os) por país, milhares</p>
+    <div class="chart-box" id="box-intl"><canvas id="chart-intl"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+  </article>
+
+</section>
+
+<!-- ============ ABOUT THE DATA ============ -->
+<section class="border-t rule bg-white">
+  <div class="max-w-6xl mx-auto px-5 py-6 text-sm text-gray-700">
+    <h2 class="text-base font-medium mb-2 text-gray-900" data-i18n="about-title">Sobre os dados</h2>
+    <p class="mb-3" data-i18n="about-body">Os números deste painel vêm da PNAD Contínua (IBGE), do Censo Demográfico 2022 e do ILOSTAT. A categoria "trabalhador(a) doméstico(a)" segue a definição do IBGE, que inclui empregadas(os) mensalistas e diaristas, com ou sem carteira de trabalho assinada.</p>
+    <ul id="sources-list" class="list-disc pl-5 space-y-1"></ul>
+  </div>
+</section>
+
+<footer class="border-t rule">
+  <div class="max-w-6xl mx-auto px-5 py-4 text-xs text-gray-500 flex flex-wrap items-center justify-between gap-2">
+    <span>STDMSP × <a href="https://www.facebook.com/TrabalhadorasDomesticasSP" class="underline">Sindicato das Trabalhadoras Domésticas SP</a> × Jean-François Mayer (Concordia)</span>
+    <span><span data-i18n="updated">Atualizado em: </span><span id="updated-at">—</span></span>
+  </div>
+</footer>
+
+<!-- ============ I18N ============ -->
+<script>
+const I18N = {
+  pt: {
+    badge: "Painel da categoria",
+    title: "Trabalho doméstico no Brasil",
+    subtitle: "Dados da PNAD Contínua, Censo 2022 e ILOSTAT — em colaboração com o STDMSP e a pesquisa de Jean-François Mayer (Concordia).",
+    "filter-label": "Filtros:",
+    "filter-scope": "afetam os indicadores acima e a distribuição por UF",
+    reset: "Limpar filtros",
+    "banner-title": "Aguardando o primeiro carregamento de dados.",
+    "banner-body": " O ETL ainda não rodou — os números abaixo são exemplos. Assim que fetch_sidra.py for executado, este painel passará a refletir os dados oficiais do IBGE.",
+    "kpi-total": "Trabalhadoras(es) domésticas(os)",
+    "kpi-total-meta": "milhares de pessoas, total Brasil",
+    "kpi-women": "Mulheres",
+    "kpi-women-meta": "% do total",
+    "kpi-black": "Negras (pretas + pardas)",
+    "kpi-black-meta": "% do total",
+    "kpi-formal": "Com carteira assinada",
+    "kpi-formal-meta": "% do total",
+    "chart-trend": "Total de trabalhadoras(es) domésticas(os) ao longo do tempo",
+    "chart-trend-meta": "PNAD Contínua trimestral · em milhares de pessoas",
+    "chart-formality": "Taxa de formalização (carteira assinada)",
+    "chart-formality-meta": "% com carteira assinada · referência: EC 72/2013, LC 150/2015",
+    "chart-wages": "Rendimento médio mensal real",
+    "chart-wages-meta": "PNAD Contínua trimestral · setor \"Serviços domésticos\" · em reais constantes",
+    "chart-mensalista": "Mensalistas vs. diaristas",
+    "chart-mensalista-meta": "% diaristas (mais de 1 domicílio) · proteção mais fraca sob LC 150/2015",
+    "chart-race": "Composição por cor/raça",
+    "chart-race-meta": "% do total de trabalhadoras(es) domésticas(os)",
+    "chart-wage-gap": "Hiato salarial racial",
+    "chart-wage-gap-meta": "trabalhadoras domésticas negras vs. não-negras · fonte: DIEESE",
+    "wage-gap-narrative": "Para cada R$ 100 recebidos por uma trabalhadora doméstica não-negra, uma trabalhadora doméstica negra recebe R$ 76.",
+    "chart-region": "Distribuição por UF",
+    "chart-region-meta": "milhares de pessoas · top 10 UFs · trimestre mais recente disponível",
+    "chart-intl": "Comparativo internacional — América Latina",
+    "chart-intl-meta": "ILOSTAT · trabalhadoras(es) domésticas(os) por país, milhares",
+    "about-title": "Sobre os dados",
+    "about-body": "Os números deste painel vêm da PNAD Contínua (IBGE), do Censo Demográfico 2022 e do ILOSTAT. A categoria \"trabalhador(a) doméstico(a)\" segue a definição do IBGE, que inclui empregadas(os) mensalistas e diaristas, com ou sem carteira de trabalho assinada. Os dados de salário se referem ao setor \"Serviços domésticos\" da PNADC, em reais constantes (real). O comparativo internacional usa a categoria mais ampla ISCO-08 91 do ILOSTAT (\"trabalhadores de limpeza e auxiliares\"), o que explica por que os totais nacionais nesse gráfico são maiores do que os totais de \"trabalhador doméstico\" do IBGE.",
+    empty: "Sem dados ainda. Rode o ETL para preencher.",
+    updated: "Atualizado em: ",
+  },
+  en: {
+    badge: "Sector dashboard",
+    title: "Domestic work in Brazil",
+    subtitle: "Data from PNAD Contínua, the 2022 Census and ILOSTAT — in collaboration with STDMSP and the research of Jean-François Mayer (Concordia).",
+    "filter-label": "Filters:",
+    "filter-scope": "affect the KPI tiles above and the state distribution chart",
+    reset: "Reset filters",
+    "banner-title": "Waiting for the first data load.",
+    "banner-body": " The ETL hasn't run yet — the numbers below are placeholders. Once fetch_sidra.py runs, this dashboard will reflect official IBGE figures.",
+    "kpi-total": "Domestic workers",
+    "kpi-total-meta": "thousands of people, Brazil total",
+    "kpi-women": "Women",
+    "kpi-women-meta": "% of total",
+    "kpi-black": "Black (pretas + pardas)",
+    "kpi-black-meta": "% of total",
+    "kpi-formal": "With signed work card",
+    "kpi-formal-meta": "% of total",
+    "chart-trend": "Total domestic workers over time",
+    "chart-trend-meta": "PNADC quarterly · in thousands of people",
+    "chart-formality": "Formalization rate (signed work card)",
+    "chart-formality-meta": "% with signed work card · reference: EC 72/2013, LC 150/2015",
+    "chart-wages": "Average real monthly income",
+    "chart-wages-meta": "PNADC quarterly · \"Domestic services\" sector · constant reais",
+    "chart-mensalista": "Monthly workers vs. day-rate workers",
+    "chart-mensalista-meta": "% day-rate (multiple households) · weaker protection under LC 150/2015",
+    "chart-race": "Race composition",
+    "chart-race-meta": "% of total domestic workers",
+    "chart-wage-gap": "Racial wage gap",
+    "chart-wage-gap-meta": "Black vs. non-Black domestic workers · source: DIEESE",
+    "wage-gap-narrative": "For every R$ 100 earned by a non-Black domestic worker, a Black domestic worker earns R$ 76.",
+    "chart-region": "Distribution by state",
+    "chart-region-meta": "thousands of people · top 10 states · latest available quarter",
+    "chart-intl": "International comparison — Latin America",
+    "chart-intl-meta": "ILOSTAT · domestic workers by country, thousands",
+    "about-title": "About the data",
+    "about-body": "The numbers in this dashboard come from the PNAD Contínua (IBGE), the 2022 Demographic Census, and ILOSTAT. The category \"domestic worker\" follows IBGE's definition, which includes monthly employees and daily-rate workers, with or without a signed work card. Wage figures are for the PNADC \"Domestic services\" sector, in constant (real) reais. The international comparator uses ILOSTAT's broader ISCO-08 group 91 (\"cleaners and helpers\"), which is why national totals there are higher than IBGE's \"domestic worker\" totals.",
+    empty: "No data yet. Run the ETL to populate.",
+    updated: "Updated: ",
+  }
+};
+
+let LANG = "pt";
+function applyI18n() {
+  document.documentElement.lang = LANG === "pt" ? "pt-BR" : "en";
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const k = el.getAttribute("data-i18n");
+    if (I18N[LANG][k]) el.textContent = I18N[LANG][k];
+  });
+  document.querySelectorAll(".lang-btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === LANG));
+}
+document.querySelectorAll(".lang-btn").forEach(b => b.addEventListener("click", () => { LANG = b.dataset.lang; applyI18n(); render(); }));
+
+// ============ DATA LAYER ============
+const SUPABASE_URL = "https://vqwhzzaqddqeurrspcdz.supabase.co";
+// Legacy anon JWT — universally compatible with supabase-js v2 from CDN.
+// Read-only via the dw_* views; safe to ship in HTML.
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxd2h6emFxZGRxZXVycnNwY2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MDgxMTEsImV4cCI6MjA5MjI4NDExMX0.GrALuDawy6qH9O3qAAylHltE4SE8vrMk_cNLW9n3EVI";
+
+// IMPORTANT: the supabase-js UMD bundle creates a window-level global named
+// `supabase`, so we MUST NOT shadow it with a local `supabase` declaration —
+// doing so produces 'Identifier already declared' at parse time and kills the
+// whole script. Use `sbClient` for our client instance.
+let sbClient = null;
+try {
+  if (!window.supabase || !window.supabase.createClient) {
+    throw new Error("supabase-js failed to load from CDN");
+  }
+  sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch (e) {
+  showError("Could not initialize Supabase client: " + e.message);
+  console.error(e);
+}
+
+// Safe textContent setter — logs and continues if the target id is missing,
+// instead of throwing and killing the whole render. Use this for any
+// element-by-id write so a typo or missing id surfaces as a console warning
+// rather than blanking the whole dashboard.
+function setText(id, text) {
+  const el = document.getElementById(id);
+  if (!el) { console.warn("setText: missing element #" + id); return; }
+  el.textContent = text;
+}
+
+function showError(msg) {
+  const banner = document.getElementById("loading-banner");
+  if (!banner) return;
+  banner.classList.remove("hidden");
+  banner.classList.remove("bg-amber-50", "border-amber-200");
+  banner.classList.add("bg-red-50", "border-red-200");
+  banner.innerHTML = `<div class="max-w-6xl mx-auto px-5 py-3 text-sm text-red-900"><strong>Erro:</strong> ${msg}</div>`;
+}
+
+const STATE = { workers: [], wages: [], hours: [], intl: [], sources: [], staticFacts: {}, filters: { year: null, geo: "BR" } };
+
+async function loadAll() {
+  if (!sbClient) throw new Error("Supabase client not initialized");
+
+  const queries = await Promise.allSettled([
+    sbClient.from("dw_workers").select("*").limit(5000),
+    sbClient.from("dw_wages").select("*").limit(5000),
+    sbClient.from("dw_hours").select("*").limit(5000),
+    sbClient.from("dw_intl").select("*").limit(2000),
+    sbClient.from("dw_sources").select("*"),
+    sbClient.from("dw_static_facts").select("*"),
+  ]);
+  const labels = ["dw_workers","dw_wages","dw_hours","dw_intl","dw_sources","dw_static_facts"];
+  const results = queries.map((q, i) => {
+    if (q.status === "rejected") {
+      console.error(`${labels[i]} request rejected:`, q.reason);
+      return { data: [], error: q.reason };
+    }
+    if (q.value.error) {
+      console.error(`${labels[i]} returned error:`, q.value.error);
+      return { data: [], error: q.value.error };
+    }
+    console.log(`${labels[i]}: ${q.value.data?.length ?? 0} rows`);
+    return q.value;
+  });
+  const [w, wg, h, i, s, sf] = results;
+
+  STATE.workers = w.data || [];
+  STATE.wages   = wg.data || [];
+  STATE.hours   = h.data  || [];
+  STATE.intl    = i.data  || [];
+  STATE.sources = s.data  || [];
+  STATE.staticFacts = Object.fromEntries((sf.data || []).map(r => [r.fact_code, r]));
+
+  // If every read errored, show a clear banner with the underlying message.
+  const allFailed = results.every(r => r.error);
+  if (allFailed) {
+    const firstErr = results.find(r => r.error)?.error;
+    showError("All Supabase reads failed. " + (firstErr?.message || JSON.stringify(firstErr)));
+  }
+
+  const empty = STATE.workers.length === 0;
+  if (!allFailed) {
+    document.getElementById("loading-banner").classList.toggle("hidden", !empty);
+  }
+  if (empty) seedSampleData();
+
+  populateFilters();
+  render();
+}
+
+// Sample data so the UI tells a credible story before the ETL runs.
+// These are illustrative, not authoritative — clearly flagged via the banner.
+// IMPORTANT: idempotent — only seeds if STATE is genuinely empty, so a render
+// failure doesn't clobber real data on the .catch path.
+function seedSampleData() {
+  if (STATE.workers.length > 0) return;
+  const years = [2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024];
+  const trend = [6360,6420,6485,6300,6260,6240,6300,6300,4900,5840,5800,5750,5700];
+  STATE.workers = years.flatMap((y, idx) => ([
+    { period_code: String(y), year: y, geo_level:"country", geo_code:"BR", geo_name_pt:"Brasil", geo_name_en:"Brazil", sex_code:"T", race_code:"total", formality_code:"total", workers_thousands: trend[idx] },
+    { period_code: String(y), year: y, geo_level:"country", geo_code:"BR", geo_name_pt:"Brasil", geo_name_en:"Brazil", sex_code:"T", race_code:"total", formality_code:"com_carteira", workers_thousands: trend[idx] * (0.27 + idx*0.005) },
+    { period_code: String(y), year: y, geo_level:"country", geo_code:"BR", geo_name_pt:"Brasil", geo_name_en:"Brazil", sex_code:"T", race_code:"total", formality_code:"sem_carteira", workers_thousands: trend[idx] * (0.73 - idx*0.005) },
+    { period_code: String(y), year: y, geo_level:"country", geo_code:"BR", geo_name_pt:"Brasil", geo_name_en:"Brazil", sex_code:"F", race_code:"total", formality_code:"total", workers_thousands: trend[idx] * 0.92 },
+    { period_code: String(y), year: y, geo_level:"country", geo_code:"BR", geo_name_pt:"Brasil", geo_name_en:"Brazil", sex_code:"T", race_code:"preta_parda", formality_code:"total", workers_thousands: trend[idx] * 0.66 },
+  ]));
+  // regional snapshot (thousands)
+  const regions = [["35","São Paulo","São Paulo",1380],["33","Rio de Janeiro","Rio de Janeiro",460],["31","Minas Gerais","Minas Gerais",520],["29","Bahia","Bahia",380],["41","Paraná","Paraná",260],["43","Rio Grande do Sul","Rio Grande do Sul",240],["26","Pernambuco","Pernambuco",230]];
+  regions.forEach(([code,pt,en,v]) => STATE.workers.push({ period_code:"2024", year:2024, geo_level:"uf", geo_code:code, geo_name_pt:pt, geo_name_en:en, sex_code:"T", race_code:"total", formality_code:"total", workers_thousands:v }));
+  // intl
+  STATE.intl = [["BRA","Brasil","Brazil",5700],["MEX","México","Mexico",2300],["ARG","Argentina","Argentina",780],["COL","Colômbia","Colombia",640],["CHL","Chile","Chile",290],["PER","Peru","Peru",420]]
+    .map(([iso,pt,en,v]) => ({ year:2023, country_iso3:iso, country_pt:pt, country_en:en, domestic_workers_thousands:v }));
+  STATE.sources = [
+    { short_code:"PNADC-6320", long_name_pt:"PNAD Contínua trimestral — Tabela 6320", long_name_en:"PNADC quarterly — Table 6320", url:"https://sidra.ibge.gov.br/tabela/6320" },
+    { short_code:"ILOSTAT-DOM", long_name_pt:"ILOSTAT — Empregados domésticos", long_name_en:"ILOSTAT — Domestic workers", url:"https://ilostat.ilo.org" },
+  ];
+}
+
+// ============ FILTERS ============
+// Two filters wired through to KPIs and the state-distribution chart:
+//   - Year: picks which year's snapshot to display (default = latest available)
+//   - Geo:  'BR' (all) or a specific UF code → filters KPIs to that geography
+function populateFilters() {
+  const years = [...new Set(STATE.workers.map(r => r.year))].filter(y => y).sort((a, b) => b - a);
+  const f = (id, opts, current) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = opts.map(o => `<option value="${o.value}" ${o.value === String(current ?? "") ? "selected" : ""}>${o.label}</option>`).join("");
+  };
+
+  f("f-year",
+    [{ value: "", label: LANG === "pt" ? "Mais recente" : "Latest" }, ...years.map(y => ({ value: String(y), label: String(y) }))],
+    STATE.filters.year || "");
+
+  // UF list comes from rows that actually have UF-level data (PNADC-6383).
+  const ufs = [...new Map(
+    STATE.workers
+      .filter(r => r.geo_level === "uf")
+      .map(r => [r.geo_code, { code: r.geo_code, pt: r.geo_name_pt, en: r.geo_name_en }])
+  ).values()].sort((a, b) => (LANG === "pt" ? a.pt : a.en).localeCompare(LANG === "pt" ? b.pt : b.en));
+
+  f("f-geo",
+    [{ value: "BR", label: LANG === "pt" ? "Brasil (todos)" : "Brazil (all)" }, ...ufs.map(u => ({ value: u.code, label: LANG === "pt" ? u.pt : u.en }))],
+    STATE.filters.geo);
+
+  // Re-bind the change handlers (idempotent because we replace the option HTML each call,
+  // which preserves the element identity).
+  const yEl = document.getElementById("f-year");
+  const gEl = document.getElementById("f-geo");
+  if (yEl && !yEl.dataset.wired) { yEl.dataset.wired = "1"; yEl.addEventListener("change", e => { STATE.filters.year = e.target.value || null; render(); }); }
+  if (gEl && !gEl.dataset.wired) { gEl.dataset.wired = "1"; gEl.addEventListener("change", e => { STATE.filters.geo  = e.target.value || "BR"; render(); }); }
+
+  const reset = document.getElementById("f-reset");
+  if (reset && !reset.dataset.wired) {
+    reset.dataset.wired = "1";
+    reset.addEventListener("click", () => { STATE.filters = { year: null, geo: "BR" }; populateFilters(); render(); });
+  }
+}
+
+// ============ RENDER ============
+const charts = {};
+function destroyChart(key) { if (charts[key]) { charts[key].destroy(); delete charts[key]; } }
+function setEmpty(boxId, isEmpty) { document.getElementById(boxId).setAttribute("data-empty", String(isEmpty)); }
+
+// Inline Chart.js plugin: when the year filter is set, lightly shade the band of
+// data points that fall within that year. Lets the time-series charts respond to
+// the year filter without collapsing to a single point.
+const yearBandPlugin = {
+  id: "yearBand",
+  afterDatasetsDraw(chart, _args, opts) {
+    if (!opts || !opts.year || !Array.isArray(opts.periodCodes) || !opts.periodCodes.length) return;
+    const yearStr = String(opts.year);
+    const indices = opts.periodCodes
+      .map((code, i) => ({ code: String(code), i }))
+      .filter(({ code }) => code.startsWith(yearStr))
+      .map(({ i }) => i);
+    if (indices.length === 0) return;
+    const xScale = chart.scales.x, yScale = chart.scales.y;
+    if (!xScale || !yScale) return;
+    const startIdx = indices[0];
+    const endIdx = indices[indices.length - 1];
+    // For a single-period match, give the band a small visible width.
+    const padPx = indices.length === 1 ? 8 : 0;
+    const startX = xScale.getPixelForValue(startIdx) - padPx;
+    const endX   = xScale.getPixelForValue(endIdx)   + padPx;
+    const ctx = chart.ctx;
+    ctx.save();
+    ctx.fillStyle = "rgba(31,41,55,0.07)";
+    ctx.fillRect(startX, yScale.top, Math.max(2, endX - startX), yScale.bottom - yScale.top);
+    ctx.strokeStyle = "rgba(31,41,55,0.35)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(startX + 0.5, yScale.top);    ctx.lineTo(startX + 0.5, yScale.bottom);
+    ctx.moveTo(endX   - 0.5, yScale.top);    ctx.lineTo(endX   - 0.5, yScale.bottom);
+    ctx.stroke();
+    // Label
+    ctx.fillStyle = "rgba(31,41,55,0.75)";
+    ctx.font = "500 11px system-ui";
+    ctx.textAlign = "center";
+    const labelX = (startX + endX) / 2;
+    const labelY = yScale.top + 14;
+    ctx.fillText(yearStr, labelX, labelY);
+    ctx.restore();
+  },
+};
+
+// Helper that builds the plugins-options block for a time-series chart, given an
+// ordered array of period_codes that match the dataset's data points.
+function yearBandOpts(periodCodes) {
+  return STATE.filters.year ? { yearBand: { year: STATE.filters.year, periodCodes } } : {};
+}
+
+function render() {
+  renderKpis();
+  renderTrend();
+  renderFormality();
+  renderWages();
+  renderMensalistas();
+  renderRace();
+  renderWageGap();
+  renderRegion();
+  renderIntl();
+  renderSources();
+  setText("updated-at", new Date().toLocaleDateString(LANG === "pt" ? "pt-BR" : "en-CA"));
+}
+
+function fmt(n, digits=0) {
+  if (n == null || isNaN(n)) return "—";
+  return n.toLocaleString(LANG === "pt" ? "pt-BR" : "en-CA", { maximumFractionDigits: digits, minimumFractionDigits: digits });
+}
+
+// PNADC trimestres móveis come as 6-digit YYYYMM codes (end-month of the rolling
+// window). Display them as "Mar/12" / "Mar 12" so the trend axis is readable.
+const MONTHS_PT = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const MONTHS_EN = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function fmtPeriod(code) {
+  const s = String(code);
+  if (s.length === 6 && /^\d+$/.test(s)) {
+    const months = LANG === "pt" ? MONTHS_PT : MONTHS_EN;
+    return months[parseInt(s.slice(4)) - 1] + "/" + s.slice(2, 4);
+  }
+  return s;
+}
+
+function renderKpis() {
+  // The KPI tile reflects (geo, year) filters. Geo='BR' uses PNADC-6320 (BR-only, trimestral móvel).
+  // A specific UF uses PNADC-6383 (UF-level, trimestral fixo).
+  const isBR = STATE.filters.geo === "BR";
+  const sourceTable = isBR ? "PNADC-6320" : "PNADC-6383";
+  const geoCode = STATE.filters.geo;
+
+  // Candidate rows for the chosen geo + source.
+  const pool = STATE.workers.filter(r =>
+    r.source_table === sourceTable
+    && r.geo_code === geoCode
+    && r.sex_code === "T" && r.race_code === "total");
+
+  // Pick the period: filter by chosen year if any; otherwise the latest period_code in pool.
+  let pickedCode = null;
+  if (STATE.filters.year) {
+    // For a specific year, pick the latest period_code within that year.
+    const inYear = pool.filter(r => String(r.period_code).startsWith(String(STATE.filters.year)));
+    if (inYear.length) pickedCode = inYear.map(r => String(r.period_code)).sort().slice(-1)[0];
+  }
+  if (!pickedCode) {
+    const codes = pool.map(r => String(r.period_code)).sort();
+    pickedCode = codes[codes.length - 1];
+  }
+
+  const at = (formalityCode) => pool.find(r => String(r.period_code) === pickedCode && r.formality_code === formalityCode);
+  const total  = at("total");
+  const formal = at("com_carteira");
+
+  setText("kpi-total-value", total ? fmt(total.workers_thousands) : "—");
+  setText("kpi-formal-value", (total && formal)
+    ? fmt(100 * formal.workers_thousands / total.workers_thousands, 1) + "%"
+    : (isBR ? "—" : (LANG === "pt" ? "n/d" : "n/a"))   // 6383 doesn't carry the formality split
+  );
+
+  // Sex / race come from static facts (DIEESE-attributed) — these are national-level only.
+  // When a specific UF is selected, dim the tiles to signal they aren't localised data.
+  const sfWomen  = STATE.staticFacts["pct_women"];
+  const sfNegras = STATE.staticFacts["pct_negras"];
+  setText("kpi-women-value", sfWomen ? fmt(sfWomen.value_num, 1) + "%" : "—");
+  setText("kpi-black-value", sfNegras ? fmt(sfNegras.value_num, 1) + "%" : "—");
+
+  const womenCard = document.getElementById("kpi-women-card");
+  const blackCard = document.getElementById("kpi-black-card");
+  if (womenCard) womenCard.classList.toggle("kpi-muted", !isBR);
+  if (blackCard) blackCard.classList.toggle("kpi-muted", !isBR);
+
+  // Meta lines reflect the actual period that landed.
+  const geoLabel = isBR ? (LANG === "pt" ? "Brasil" : "Brazil") :
+    (() => { const r = pool[0]; return r ? (LANG === "pt" ? r.geo_name_pt : r.geo_name_en) : geoCode; })();
+  const periodLabel = pickedCode ? fmtPeriod(pickedCode) : (LANG === "pt" ? "sem dados" : "no data");
+  setText("kpi-total-meta",
+    (LANG === "pt" ? "milhares de pessoas · " : "thousands of people · ") + geoLabel + " · " + periodLabel);
+  // When dimmed, swap the meta line to explain the tile is national-only.
+  const meta = isBR
+    ? (LANG === "pt" ? "fonte: DIEESE · BR" : "source: DIEESE · BR")
+    : (LANG === "pt" ? "disponível só para Brasil" : "available for Brazil only");
+  if (sfWomen)  setText("kpi-women-meta", meta);
+  if (sfNegras) setText("kpi-black-meta", meta);
+}
+
+function renderTrend() {
+  const rows = STATE.workers
+    .filter(r => r.geo_code==="BR" && r.sex_code==="T" && r.race_code==="total" && r.formality_code==="total")
+    .sort((a,b) => String(a.period_code).localeCompare(String(b.period_code)));
+  setEmpty("box-trend", rows.length === 0);
+  destroyChart("trend");
+  if (!rows.length) return;
+  charts.trend = new Chart(document.getElementById("chart-trend"), {
+    type: "line",
+    plugins: [yearBandPlugin],
+    data: {
+      labels: rows.map(r => fmtPeriod(r.period_code)),
+      datasets: [{ data: rows.map(r => r.workers_thousands), borderColor: "#b91c1c", backgroundColor: "rgba(185,28,28,0.08)", fill: true, tension: 0.25, pointRadius: 0, borderWidth: 2 }],
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => fmt(c.parsed.y) + " mil" } },
+        ...yearBandOpts(rows.map(r => r.period_code)),
+      },
+      scales: {
+        x: { ticks: { autoSkip: true, maxTicksLimit: 14, maxRotation: 0 } },
+        y: { ticks: { callback: v => fmt(v) } },
+      },
+      maintainAspectRatio: false,
+    },
+  });
+}
+
+function renderFormality() {
+  // % com carteira over time. Match by period_code so monthly trimestres line up.
+  const total = STATE.workers.filter(r => r.geo_code==="BR" && r.sex_code==="T" && r.race_code==="total" && r.formality_code==="total");
+  const formal = STATE.workers.filter(r => r.geo_code==="BR" && r.sex_code==="T" && r.race_code==="total" && r.formality_code==="com_carteira");
+  const formalByCode = Object.fromEntries(formal.map(f => [f.period_code, f.workers_thousands]));
+  const series = total
+    .map(t => formalByCode[t.period_code] != null ? { period_code: t.period_code, pct: 100 * formalByCode[t.period_code] / t.workers_thousands } : null)
+    .filter(Boolean)
+    .sort((a,b) => String(a.period_code).localeCompare(String(b.period_code)));
+  setEmpty("box-formality", series.length === 0);
+  destroyChart("formality");
+  if (!series.length) return;
+  charts.formality = new Chart(document.getElementById("chart-formality"), {
+    type: "line",
+    plugins: [yearBandPlugin],
+    data: {
+      labels: series.map(s => fmtPeriod(s.period_code)),
+      datasets: [{ data: series.map(s => s.pct), borderColor: "#1f2937", backgroundColor: "rgba(31,41,55,0.08)", fill: true, tension: 0.25, pointRadius: 0, borderWidth: 2 }],
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => fmt(c.parsed.y, 1) + "%" } },
+        ...yearBandOpts(series.map(s => s.period_code)),
+      },
+      scales: {
+        x: { ticks: { autoSkip: true, maxTicksLimit: 14, maxRotation: 0 } },
+        y: { ticks: { callback: v => v + "%" }, suggestedMin: 0, suggestedMax: 50 },
+      },
+      maintainAspectRatio: false,
+    },
+  });
+}
+
+function renderWages() {
+  const rows = STATE.wages
+    .filter(r => r.geo_code==="BR" && r.sex_code==="T" && r.race_code==="total" && r.formality_code==="total")
+    .sort((a,b) => String(a.period_code).localeCompare(String(b.period_code)));
+  setEmpty("box-wages", rows.length === 0);
+  destroyChart("wages");
+  if (!rows.length) return;
+  charts.wages = new Chart(document.getElementById("chart-wages"), {
+    type: "line",
+    plugins: [yearBandPlugin],
+    data: {
+      labels: rows.map(r => fmtPeriod(r.period_code)),
+      datasets: [{
+        data: rows.map(r => r.mean_wage_brl_real),
+        borderColor: "#7c2d12",     // darker red, distinguishable from the trend chart
+        backgroundColor: "rgba(124,45,18,0.08)",
+        fill: true, tension: 0.25, pointRadius: 0, borderWidth: 2,
+      }],
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => "R$ " + fmt(c.parsed.y, 0) } },
+        ...yearBandOpts(rows.map(r => r.period_code)),
+      },
+      scales: {
+        x: { ticks: { autoSkip: true, maxTicksLimit: 14, maxRotation: 0 } },
+        y: { ticks: { callback: v => "R$ " + fmt(v, 0) } },
+      },
+      maintainAspectRatio: false,
+    },
+  });
+}
+
+function renderRace() {
+  // SIDRA doesn't carry race × posição cross-tabs for trabalhador doméstico.
+  // Use the DIEESE-attributed static fact instead.
+  const sf = STATE.staticFacts["pct_negras"];
+  setEmpty("box-race", !sf);
+  destroyChart("race");
+  if (!sf) return;
+  const blackPct = sf.value_num;
+  const otherPct = 100 - blackPct;
+  charts.race = new Chart(document.getElementById("chart-race"), {
+    type: "doughnut",
+    data: {
+      labels: LANG === "pt"
+        ? ["Negras (pretas + pardas)", "Demais"]
+        : ["Black (pretas + pardas)", "Other"],
+      datasets: [{ data: [blackPct, otherPct], backgroundColor: ["#b91c1c", "#d4d4d8"] }],
+    },
+    options: {
+      plugins: {
+        legend: { position: "bottom" },
+        tooltip: { callbacks: { label: c => c.label + ": " + fmt(c.parsed, 1) + "%" } },
+      },
+      cutout: "60%",
+      maintainAspectRatio: false,
+    },
+  });
+}
+
+function renderWageGap() {
+  const sf = STATE.staticFacts["wage_ratio_black_to_nonblack"];
+  setEmpty("box-wage-gap", !sf);
+  destroyChart("wageGap");
+  if (!sf) return;
+  const blackPct = Number(sf.value_num);            // 76
+  const nonBlackPct = 100;                          // reference
+
+  // Update the narrative sentence so the R$76 number tracks the static_fact value.
+  const narrative = LANG === "pt"
+    ? `Para cada R$ 100 recebidos por uma trabalhadora doméstica não-negra, uma trabalhadora doméstica negra recebe R$ ${fmt(blackPct, 0)}.`
+    : `For every R$ 100 earned by a non-Black domestic worker, a Black domestic worker earns R$ ${fmt(blackPct, 0)}.`;
+  setText("wage-gap-narrative", narrative);
+
+  charts.wageGap = new Chart(document.getElementById("chart-wage-gap"), {
+    type: "bar",
+    data: {
+      labels: LANG === "pt"
+        ? ["Não-negras", "Negras (pretas + pardas)"]
+        : ["Non-Black", "Black (pretas + pardas)"],
+      datasets: [{
+        data: [nonBlackPct, blackPct],
+        backgroundColor: ["#9ca3af", "#b91c1c"],
+        borderWidth: 0,
+        barPercentage: 0.7,
+      }],
+    },
+    options: {
+      indexAxis: "y",
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => fmt(c.parsed.x, 0) + "%" } },
+      },
+      scales: {
+        x: {
+          ticks: { callback: v => v + "%" },
+          suggestedMin: 0, suggestedMax: 100,
+        },
+      },
+      maintainAspectRatio: false,
+    },
+  });
+}
+
+function renderRegion() {
+  const ufRows = STATE.workers.filter(r =>
+    r.geo_level === "uf" && r.formality_code === "total" && r.sex_code === "T" && r.race_code === "total");
+  if (!ufRows.length) { setEmpty("box-region", true); destroyChart("region"); return; }
+
+  // Year filter: pick the most recent period that falls inside the chosen year. Default = latest.
+  let pickedPeriod;
+  if (STATE.filters.year) {
+    const inYear = ufRows.filter(r => String(r.period_code).startsWith(String(STATE.filters.year)));
+    pickedPeriod = inYear.length ? inYear.map(r => String(r.period_code)).sort().slice(-1)[0] : null;
+  }
+  if (!pickedPeriod) pickedPeriod = ufRows.map(r => String(r.period_code)).sort().slice(-1)[0];
+
+  // Geo filter: if a specific UF is selected, highlight it but still show the top 10 for context.
+  const selectedUf = STATE.filters.geo !== "BR" ? STATE.filters.geo : null;
+
+  const rows = ufRows
+    .filter(r => String(r.period_code) === pickedPeriod)
+    .sort((a, b) => b.workers_thousands - a.workers_thousands);
+
+  // If a specific UF is selected, ensure it's in the displayed set (top 10 OR force-include).
+  let display = rows.slice(0, 10);
+  if (selectedUf && !display.some(r => r.geo_code === selectedUf)) {
+    const sel = rows.find(r => r.geo_code === selectedUf);
+    if (sel) display = [...display.slice(0, 9), sel];
+  }
+
+  setEmpty("box-region", display.length === 0);
+  destroyChart("region");
+  if (!display.length) return;
+  charts.region = new Chart(document.getElementById("chart-region"), {
+    type: "bar",
+    data: {
+      labels: display.map(r => LANG === "pt" ? r.geo_name_pt : r.geo_name_en),
+      datasets: [{
+        data: display.map(r => r.workers_thousands),
+        backgroundColor: display.map(r => r.geo_code === selectedUf ? "#7c2d12" : "#b91c1c"),
+      }],
+    },
+    options: {
+      indexAxis: "y",
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: fmtPeriod(pickedPeriod), align: "end", color: "#9ca3af", font: { weight: 400, size: 11 } },
+        tooltip: { callbacks: { label: c => fmt(c.parsed.x) + " mil" } },
+      },
+      scales: { x: { ticks: { callback: v => fmt(v) } } },
+      maintainAspectRatio: false,
+    },
+  });
+}
+
+function renderMensalistas() {
+  // % diaristas over time at BR level. Source: Tabela 6383 (formality codes mensalista/diarista).
+  const rows = STATE.workers.filter(r => r.geo_code === "BR" && r.source_table === "PNADC-6383");
+  const totalsByPeriod = {};
+  const diaristasByPeriod = {};
+  for (const r of rows) {
+    if (r.formality_code === "total")    totalsByPeriod[r.period_code] = r.workers_thousands;
+    if (r.formality_code === "diarista") diaristasByPeriod[r.period_code] = r.workers_thousands;
+  }
+  const series = Object.keys(totalsByPeriod)
+    .filter(p => diaristasByPeriod[p] != null)
+    .map(p => ({ period_code: p, pct: 100 * diaristasByPeriod[p] / totalsByPeriod[p] }))
+    .sort((a, b) => String(a.period_code).localeCompare(String(b.period_code)));
+  setEmpty("box-mensalista", series.length === 0);
+  destroyChart("mensalista");
+  if (!series.length) return;
+  charts.mensalista = new Chart(document.getElementById("chart-mensalista"), {
+    type: "line",
+    plugins: [yearBandPlugin],
+    data: {
+      labels: series.map(s => fmtPeriod(s.period_code)),
+      datasets: [{
+        data: series.map(s => s.pct),
+        borderColor: "#92400e",
+        backgroundColor: "rgba(146,64,14,0.08)",
+        fill: true, tension: 0.25, pointRadius: 0, borderWidth: 2,
+      }],
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => fmt(c.parsed.y, 1) + "% " + (LANG === "pt" ? "diaristas" : "day-rate workers") } },
+        ...yearBandOpts(series.map(s => s.period_code)),
+      },
+      scales: {
+        x: { ticks: { autoSkip: true, maxTicksLimit: 14, maxRotation: 0 } },
+        y: { ticks: { callback: v => v + "%" }, suggestedMin: 0, suggestedMax: 50 },
+      },
+      maintainAspectRatio: false,
+    },
+  });
+}
+
+function renderIntl() {
+  // Keep one row per country — the most recent year available — then sort descending.
+  const latestByCountry = {};
+  for (const r of STATE.intl) {
+    const cur = latestByCountry[r.country_iso3];
+    if (!cur || r.year > cur.year) latestByCountry[r.country_iso3] = r;
+  }
+  const rows = Object.values(latestByCountry).sort((a, b) => b.domestic_workers_thousands - a.domestic_workers_thousands);
+  setEmpty("box-intl", rows.length === 0);
+  destroyChart("intl");
+  if (!rows.length) return;
+  charts.intl = new Chart(document.getElementById("chart-intl"), {
+    type: "bar",
+    data: {
+      labels: rows.map(r => `${LANG === "pt" ? r.country_pt : r.country_en} (${r.year})`),
+      datasets: [{
+        data: rows.map(r => r.domestic_workers_thousands),
+        backgroundColor: rows.map(r => r.country_iso3 === "BRA" ? "#b91c1c" : (r.country_iso3 === "MEX" ? "#1f2937" : "#9ca3af")),
+      }],
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => fmt(c.parsed.y) + " mil" } },
+      },
+      scales: { y: { ticks: { callback: v => fmt(v) } } },
+      maintainAspectRatio: false,
+    },
+  });
+}
+
+function renderSources() {
+  const ul = document.getElementById("sources-list");
+  const items = STATE.sources.map(s =>
+    `<li><a href="${s.url}" class="underline" target="_blank" rel="noopener">${LANG === "pt" ? s.long_name_pt : s.long_name_en}</a> <span class="text-gray-400">(${s.short_code})</span></li>`
+  );
+  // Surface the static-fact provenance explicitly: each unique source_short
+  // referenced by a static_fact gets its own line so users see which numbers
+  // are SIDRA-derived vs. attributed to DIEESE / IBGE bulletins.
+  const seen = new Set();
+  for (const code of Object.keys(STATE.staticFacts)) {
+    const sf = STATE.staticFacts[code];
+    const key = sf.source_short + "|" + sf.source_url;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const dateLabel = sf.source_date ? ` <span class="text-gray-400">— ${LANG === "pt" ? "consultado em" : "accessed"} ${sf.source_date}</span>` : "";
+    items.push(
+      `<li><a href="${sf.source_url}" class="underline" target="_blank" rel="noopener">${sf.source_short}</a>${dateLabel}</li>`
+    );
+  }
+  ul.innerHTML = items.join("");
+}
+
+// ============ INIT ============
+applyI18n();
+loadAll().catch(err => {
+  console.error("loadAll threw:", err);
+  showError("Loading data failed: " + (err?.message || String(err)));
+  try { seedSampleData(); populateFilters(); render(); }
+  catch (e) { console.error("Sample-data fallback also failed:", e); showError("Render failed: " + e.message); }
+});
+</script>
+
+</body>
+</html>

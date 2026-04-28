@@ -1,0 +1,98 @@
+# SIDRA fetch manifest. Each block produces rows in a fact table.
+# URL convention follows apisidra.ibge.gov.br:
+#   /values/h/n/t/{table}/{level}/all/v/{vars}/p/{periods}/c{class}/{cat_ids}
+# See https://apidoc.sidra.ibge.gov.br/
+
+defaults:
+  base_url: "https://apisidra.ibge.gov.br/values"
+  # SIDRA default format includes a header row (dict mapping short keys → PT labels).
+  # We don't pass /h/y or /h/n — the default is what we want.
+  request_format: ""
+
+datasets:
+
+  # ---------- WORKER COUNTS, BR total (PNADC trimestral móvel) ----------
+  # Variable 4090 = "Pessoas de 14 anos ou mais de idade ocupadas" (mil pessoas)
+  # Classification c11913 = "Posição na ocupação e categoria do emprego no trabalho principal"
+  # Categories:
+  #   31724 = Trabalhador doméstico (total)
+  #   31725 = Trabalhador doméstico - com carteira de trabalho assinada
+  #   31726 = Trabalhador doméstico - sem carteira de trabalho assinada
+  pnadc_workers_brazil:
+    target_table: fact_workers
+    source_code: PNADC-6320
+    sidra_table: 6320
+    levels: [n1]                              # Brasil
+    variables: [4090]
+    classifications:
+      "11913": [31724, 31725, 31726]
+    period: "all"
+    notes: |
+      Series begins 2012Q1 and updates trimestralmente móvel (3-month rolling).
+      31724 should equal 31725 + 31726 within rounding — used as a sanity check.
+
+  # ---------- WAGES — Serviços domésticos sector (PNADC trimestral móvel, Tabela 6391) ----------
+  # Variable 5932 = "Rendimento médio mensal real, habitualmente recebido no trabalho principal" (BRL real)
+  # Classification c888 = "Grupamento de atividade no trabalho principal", category 56628 = "Serviços domésticos"
+  # Note: SIDRA tabela 6391 is BR-only (N1). Sector overlaps ~100% with trabalhadoras(es) domésticas(os).
+  pnadc_wages_servicos_domesticos:
+    target_table: fact_wages
+    source_code: PNADC-6391
+    sidra_table: 6391
+    levels: [n1]
+    variables: [5932]
+    classifications:
+      "888": [56628]                     # Serviços domésticos
+    period: "all"
+    notes: |
+      Mean real monthly wage, principal job, in Serviços domésticos sector. BR-only.
+      The PNADC sector ('Serviços domésticos') overlaps with the c11913
+      'Trabalhador doméstico' category at the worker-headcount level closely enough
+      that we treat this as the wage proxy for trabalhadoras domésticas.
+
+  # ---------- WORKER COUNTS, by UF (PNADC trimestral, Tabela 6383) ----------
+  # Table 6383 is "Pessoas... ocupadas como trabalhadores domésticos no trabalho principal,
+  # por número de domicílios em que trabalhavam" — IBGE's dedicated domestic-worker
+  # aggregate. Supports N3 (UF). Trimestral 2012Q1 → 2025Q4.
+  # Variable 8336 = headcount in thousands.
+  # Classification c785 "Número de domicílios": 40276 Total / 40277 Em um único / 40278 Em mais de um
+  # → 40277 ≈ mensalista, 40278 ≈ diarista (proxy).
+  pnadc_workers_uf_latest:
+    target_table: fact_workers_simple    # uses normalize_workers_simple, not the c11913-aware path
+    source_code: PNADC-6383
+    sidra_table: 6383
+    levels: [n3]                          # UF level
+    variables: [8336]
+    classifications:
+      "785": [40276]                     # Total only — single/multi domicile split is a separate dataset
+    classification_code_map:
+      "40276": total
+    period: "latest"
+    notes: |
+      For the regional bar chart at the latest available trimestre. Variable 8336 is the
+      total headcount of trabalhadores domésticos. We could later add 40277/40278 to drive
+      a "mensalistas vs diaristas" chart.
+
+  # ---------- WORKER SPLIT mensalistas vs diaristas (PNADC trimestral, Tabela 6383, BR) ----------
+  pnadc_workers_brazil_by_domicile_count:
+    target_table: fact_workers_simple
+    source_code: PNADC-6383
+    sidra_table: 6383
+    levels: [n1]
+    variables: [8336]
+    classifications:
+      "785": [40276, 40277, 40278]      # Total / single / multiple
+    classification_code_map:
+      "40276": total
+      "40277": mensalista
+      "40278": diarista
+    period: "all"
+    notes: |
+      For the mensalistas-vs-diaristas split chart at BR level over time.
+      40277 (single domicile) ≈ mensalistas; 40278 (multiple domiciles) ≈ diaristas.
+      LC 150/2015 gives weaker protections to those working ≤2 days/week per home.
+
+# Tables to probe in a follow-up round (wage-by-domestic-worker tables).
+# Once Joao runs ETL successfully on the above, run probe_metadata.py with
+# these IDs and we'll pick the right wage source.
+candidate_wage_tables: [5436, 6390, 6391, 6395, 7484]

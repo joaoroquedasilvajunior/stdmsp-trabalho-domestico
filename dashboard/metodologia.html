@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Metodologia · Painel Trabalho Doméstico no Brasil</title>
+  <meta name="description" content="Documentação metodológica do Painel Trabalho Doméstico: fontes, variáveis, transformações, limitações e como citar.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --ink: #1a1a1a; --paper: #fafaf7; --accent: #b91c1c; --rule: #e5e5e0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", system-ui, sans-serif; color: var(--ink); background: var(--paper); }
+    .rule { border-color: var(--rule); }
+    article.prose { max-width: 70ch; line-height: 1.65; font-size: 16px; color: var(--ink); }
+    article.prose h2 { font-size: 22px; font-weight: 500; margin-top: 2.4rem; margin-bottom: 0.6rem; padding-top: 1rem; border-top: 1px solid var(--rule); }
+    article.prose h2:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+    article.prose h3 { font-size: 17px; font-weight: 500; margin-top: 1.6rem; margin-bottom: 0.4rem; }
+    article.prose p, article.prose li { margin: 0.6rem 0; }
+    article.prose ul { padding-left: 1.4rem; list-style: disc; }
+    article.prose ol { padding-left: 1.4rem; list-style: decimal; }
+    article.prose table { font-size: 14px; margin: 1rem 0; border-collapse: collapse; width: 100%; }
+    article.prose th, article.prose td { border: 1px solid var(--rule); padding: 8px 10px; text-align: left; vertical-align: top; }
+    article.prose th { background: #f5f5f0; font-weight: 500; }
+    article.prose code { background: #f5f5f0; padding: 1px 5px; border-radius: 3px; font-size: 13px; }
+    article.prose blockquote { border-left: 3px solid var(--accent); padding: 4px 14px; margin: 1rem 0; color: #525252; background: #fef2f2; }
+    article.prose a { color: var(--accent); text-decoration: underline; }
+
+    .chita-band {
+      width: 100%; height: 44px;
+      background-image: url('./assets/chita-band.svg');
+      background-repeat: repeat-x;
+      background-size: auto 100%;
+      background-position: center;
+    }
+    @media (max-width: 640px) { .chita-band { height: 32px; } }
+
+    .lang-btn { padding: 4px 10px; font-size: 12px; font-weight: 500; border: 1px solid var(--rule); background: white; cursor: pointer; }
+    .lang-btn[aria-pressed="true"] { background: var(--ink); color: white; border-color: var(--ink); }
+    .lang-btn:first-child { border-radius: 6px 0 0 6px; }
+    .lang-btn:last-child  { border-radius: 0 6px 6px 0; border-left: 0; }
+
+    [data-lang-block].hidden { display: none; }
+
+    @media print {
+      .chita-band, .no-print { display: none !important; }
+      article.prose { max-width: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Chita ribbon — top -->
+<div class="chita-band no-print" aria-hidden="true"></div>
+
+<header class="border-b rule bg-white no-print">
+  <div class="max-w-3xl mx-auto px-5 py-4 flex items-center justify-between gap-3 flex-wrap">
+    <div>
+      <a href="./" class="text-sm text-gray-500 hover:underline">← <span data-tr="back">Voltar ao painel</span></a>
+      <h1 class="text-2xl md:text-3xl font-medium mt-2" data-tr="title">Metodologia</h1>
+      <p class="text-sm text-gray-600 mt-1 max-w-xl" data-tr="subtitle">Fontes, variáveis, transformações, limitações conhecidas e como citar.</p>
+    </div>
+    <div role="group" aria-label="Language">
+      <button class="lang-btn" data-lang="pt" aria-pressed="true">PT</button><button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-5 py-8">
+
+<!-- ============ PORTUGUESE ============ -->
+<article class="prose" data-lang-block="pt">
+
+<h2>1. Sobre este painel</h2>
+
+<p>O <strong>Painel Trabalho Doméstico no Brasil</strong> é uma ferramenta pública de visualização e consulta de dados sobre as trabalhadoras e os trabalhadores domésticos brasileiros. É construído pelo pesquisador <strong>Jean-François Mayer</strong> (Concordia University, comparative politics, RITHAL) em colaboração com o <strong>Sindicato das Trabalhadoras Domésticas do Município de São Paulo (STDMSP)</strong> e desenvolvimento técnico de <strong>Joao Roque</strong>.</p>
+
+<p>O painel reúne três tipos de evidência: (i) agregados oficiais da PNAD Contínua (IBGE) computados pelo nosso ETL diretamente da API do SIDRA; (ii) dados internacionais do ILOSTAT para comparativos da América Latina; (iii) cifras complementares atribuídas ao DIEESE quando o SIDRA não expõe a desagregação necessária (caso da composição por cor/raça e da razão salarial entre negras e não-negras).</p>
+
+<p>O painel é destinado simultaneamente a quatro audiências: as próprias trabalhadoras (calculadora pessoal de comparação), os sindicatos (gráficos incorporáveis), pesquisadoras(es) (dados abertos, esta página, citação estável) e o público interessado em política trabalhista brasileira.</p>
+
+<h2>2. Fontes</h2>
+
+<table>
+  <thead>
+    <tr><th>Código</th><th>Fonte</th><th>URL</th><th>Cobertura temporal</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>PNADC-6320</code></td><td>IBGE — PNAD Contínua trimestral móvel, Tabela 6320 (Pessoas ocupadas por posição na ocupação)</td><td><a href="https://sidra.ibge.gov.br/tabela/6320" target="_blank" rel="noopener">sidra.ibge.gov.br/tabela/6320</a></td><td>2012Q1 → presente</td></tr>
+    <tr><td><code>PNADC-6383</code></td><td>IBGE — PNAD Contínua trimestral fixo, Tabela 6383 (Trabalhadores domésticos por número de domicílios)</td><td><a href="https://sidra.ibge.gov.br/tabela/6383" target="_blank" rel="noopener">sidra.ibge.gov.br/tabela/6383</a></td><td>2012Q1 → presente</td></tr>
+    <tr><td><code>PNADC-6391</code></td><td>IBGE — PNAD Contínua trimestral móvel, Tabela 6391 (Rendimento médio por grupamento de atividade)</td><td><a href="https://sidra.ibge.gov.br/tabela/6391" target="_blank" rel="noopener">sidra.ibge.gov.br/tabela/6391</a></td><td>2012Q1 → presente</td></tr>
+    <tr><td><code>ILOSTAT</code></td><td>Organização Internacional do Trabalho — Domestic workers by sex and status in employment (ISCO-08 91)</td><td><a href="https://ilostat.ilo.org/topics/employment/domestic-workers/" target="_blank" rel="noopener">ilostat.ilo.org</a></td><td>2008 → presente</td></tr>
+    <tr><td><code>DIEESE-2025</code></td><td>DIEESE — Boletim Especial: <em>Trabalho doméstico remunerado no Brasil: um trabalho de cuidados</em> (abril 2025)</td><td><a href="https://www.dieese.org.br/boletimespecial/2025/trabalhoDomestico.pdf" target="_blank" rel="noopener">PDF do boletim</a></td><td>Base PNADC 4º trimestre 2024</td></tr>
+    <tr><td><code>DIEESE-INFO-2025</code></td><td>DIEESE — Infográfico Trabalho doméstico no Brasil (abril 2025)</td><td><a href="https://www.dieese.org.br/infografico/2025/trabalhadorasDomesticas.html" target="_blank" rel="noopener">infográfico</a></td><td>Base PNADC 4º trimestre 2024</td></tr>
+  </tbody>
+</table>
+
+<h2>3. Variáveis e definições</h2>
+
+<p>Cada gráfico do painel mapeia para uma combinação específica de tabela, variável SIDRA e categoria de classificação. Esta seção documenta cada um.</p>
+
+<h3>3.1 Total de trabalhadoras(es) domésticas(os) — gráfico de tendência</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-6320</code></li>
+  <li><strong>Variável SIDRA</strong>: <code>4090</code> — Pessoas de 14 anos ou mais de idade ocupadas na semana de referência (mil pessoas)</li>
+  <li><strong>Classificação</strong>: <code>c11913</code> (Posição na ocupação e categoria do emprego no trabalho principal), categoria <code>31724</code> ("Trabalhador doméstico" — total)</li>
+  <li><strong>Granularidade temporal</strong>: trimestre móvel (janela de 3 meses, atualizada mensalmente)</li>
+  <li><strong>Granularidade geográfica</strong>: Brasil apenas (a Tabela 6320 não suporta nível UF para esta classificação)</li>
+</ul>
+
+<h3>3.2 Taxa de formalização (% com carteira)</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-6320</code> (mesma)</li>
+  <li><strong>Cálculo</strong>: razão entre categoria <code>31725</code> ("Trabalhador doméstico — com carteira de trabalho assinada") e categoria <code>31724</code> (total), por período</li>
+  <li><strong>Marcos regulatórios relevantes</strong>: EC 72/2013, LC 150/2015, decisão do STF de 2020</li>
+</ul>
+
+<h3>3.3 Rendimento médio mensal real — setor "Serviços domésticos"</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-6391</code></li>
+  <li><strong>Variável SIDRA</strong>: <code>5932</code> — Rendimento médio mensal real, habitualmente recebido no trabalho principal (em reais constantes)</li>
+  <li><strong>Classificação</strong>: <code>c888</code> (Grupamento de atividade), categoria <code>56628</code> ("Serviços domésticos")</li>
+  <li><strong>Nota</strong>: o <em>setor</em> Serviços domésticos da PNADC e a <em>categoria</em> Trabalhador doméstico do c11913 não são idênticos, mas sobrepõem-se em mais de 95% no nível de contagem; usamos o setor como <em>proxy</em> para o salário desta população quando a desagregação direta não está disponível</li>
+</ul>
+
+<h3>3.4 Mensalistas vs. diaristas</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-6383</code></li>
+  <li><strong>Variável SIDRA</strong>: <code>8336</code></li>
+  <li><strong>Classificação</strong>: <code>c785</code> (Número de domicílios em que trabalhavam), categorias <code>40277</code> ("em um único domicílio" — proxy de mensalistas) e <code>40278</code> ("em mais de um domicílio" — proxy de diaristas)</li>
+  <li><strong>Nota</strong>: a Tabela 6383 oferece apenas a classificação por número de domicílios, não por contrato em si. A LC 150/2015 estabelece a fronteira jurídica em <em>2 dias por semana por empregador</em>; o SIDRA não publica esse corte exato, mas o número de domicílios é uma aproximação amplamente aceita</li>
+</ul>
+
+<h3>3.5 Composição por cor/raça</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>DIEESE-INFO-2025</code> (cifra estática atribuída, não computada por nosso ETL)</li>
+  <li><strong>Valor</strong>: 69% pretas + pardas (DIEESE, 4T 2024)</li>
+  <li><strong>Por que estática</strong>: o SIDRA não publica nenhum agregado que cruze a categoria <code>31724</code> ("Trabalhador doméstico") com a classificação de cor/raça. Para obter este corte de forma reprodutível precisaríamos processar os microdados da PNADC — fora do escopo desta versão</li>
+</ul>
+
+<h3>3.6 Hiato salarial racial</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>DIEESE-2025</code> (Boletim Especial, Tabela 5)</li>
+  <li><strong>Valor</strong>: 84% — razão do rendimento médio mensal de mulheres negras (R$ 1.156) sobre o de mulheres não-negras (R$ 1.376), no trabalho doméstico remunerado total, base PNADC 4T 2024</li>
+  <li><strong>Histórico</strong>: este valor foi corrigido em 2026-05-04 de 76% para 84% após cruzamento direto com a Tabela 5 do Boletim 2025; o registro de auditoria está em <code>QA_AUDIT.md</code> no repositório</li>
+</ul>
+
+<h3>3.7 Distribuição por UF</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-6383</code> (mesma da 3.4), nível territorial <code>n3</code> (Unidades da Federação)</li>
+  <li><strong>Granularidade</strong>: 27 UFs, último trimestre disponível</li>
+</ul>
+
+<h3>3.8 Comparativo internacional</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>ILOSTAT</code></li>
+  <li><strong>Indicador</strong>: <code>EMP_TEMP_SEX_OC2_NB_A</code> com filtro ISCO-08 grupo 91 ("Cleaners and helpers")</li>
+  <li><strong>Países comparadores</strong>: Brasil, México, Argentina, Colômbia, Chile, Peru, Uruguai, Equador</li>
+  <li><strong>Aviso importante</strong>: ISCO-08 91 é mais amplo que a categoria "Trabalhador doméstico" do IBGE; inclui faxineiras de escritório, auxiliares de limpeza em hotelaria, etc. Os totais nacionais neste gráfico são <em>maiores</em> que os totais da PNADC para a mesma população. A comparação só é válida <em>entre países</em> dentro do ILOSTAT, não entre ILOSTAT e PNADC</li>
+</ul>
+
+<h2>4. Notas metodológicas</h2>
+
+<h3>4.1 Trimestre móvel × trimestre fixo</h3>
+<p>A PNADC é divulgada em duas frequências distintas: <strong>trimestre móvel</strong> (janela de 3 meses atualizada mensalmente, ex.: dezembro 2025–janeiro–fevereiro 2026 → código <code>202602</code>) e <strong>trimestre fixo</strong> (calendar quarter, ex.: 1º trimestre 2026 → código <code>202601</code>). As duas séries não são idênticas na granularidade temporal: a trimestre móvel cobre 12 pontos por ano, a fixa cobre 4. O painel usa a trimestre móvel para a série histórica de contagem e formalização, e a trimestre fixa para os cortes UF e mensalistas/diaristas. Os códigos de período preservam a forma original (6 dígitos <code>YYYYMM</code>) para permitir distinção.</p>
+
+<h3>4.2 Real vs. nominal</h3>
+<p>Os valores de rendimento usados no painel são em <strong>reais constantes</strong> (real, deflacionado pelo INPC) e não em reais correntes (nominal). Isto é o padrão do IBGE para séries históricas e permite comparar 2012 com 2026 sem que a inflação distorça a leitura.</p>
+
+<h3>4.3 "Trabalhador doméstico" × "Serviços domésticos"</h3>
+<p>O IBGE usa duas definições próximas mas não idênticas:</p>
+<ul>
+  <li>"Trabalhador doméstico" (classificação <code>c11913</code>) — uma <em>posição na ocupação</em>: a pessoa é contratada pessoa-física por um(a) ou mais empregadores domésticos.</li>
+  <li>"Serviços domésticos" (classificação <code>c888</code>) — um <em>setor de atividade</em>: a pessoa trabalha em atividades classificadas como serviços domésticos pelo CNAE.</li>
+</ul>
+<p>A sobreposição é alta mas não total: a categoria de posição inclui empregadas(os) que trabalham em atividades não-domésticas dentro do domicílio, e o setor inclui pessoas com outras posições (ex.: autônomos prestando serviços ocasionais). Onde fazemos uso do setor para inferir cifras sobre trabalhadoras domésticas (caso do salário, gráfico 3.3), explicitamos a substituição.</p>
+
+<h3>4.4 ILOSTAT ISCO-08 91 × PNADC "Trabalhador doméstico"</h3>
+<p>Para o comparativo internacional, usamos a classificação ocupacional ISCO-08 do ILOSTAT, sub-grupo 91 ("Cleaners and helpers"). Esta classificação <em>inclui</em> trabalhadoras domésticas mas <em>também</em> faxineiras de escritórios, auxiliares de limpeza em hospitais e hotéis, etc. O total brasileiro pelo ILOSTAT (~7,2 milhões em 2025) é, portanto, maior que o total brasileiro pela PNADC para "Trabalhador doméstico" (~5,5 milhões no mesmo período). A comparação entre países dentro do ILOSTAT é válida (todos os países usam a mesma classificação); a comparação entre ILOSTAT e PNADC é uma comparação <em>entre populações distintas</em> e não deve ser feita.</p>
+
+<h2>5. Limitações conhecidas</h2>
+
+<ol>
+  <li><strong>Cortes raça × posição × UF não estão nos agregados SIDRA.</strong> O IBGE publica agregados que cruzam, separadamente: posição × período (Tabela 6320), posição × UF (Tabela 6383), rendimento × cor/raça × ocupação (Tabela 5 do Boletim DIEESE). Mas não publica o cruzamento triplo. Para obtê-lo precisaríamos processar os microdados PNADC, o que requer download dos arquivos de largura fixa do FTP do IBGE e cálculo de pesos amostrais — fora do escopo desta versão.</li>
+  <li><strong>Cifras DIEESE têm cadência semestral, PNADC tem cadência mensal.</strong> A composição por cor/raça e a razão salarial racial são revisadas em abril e novembro pelo DIEESE; entre essas datas, mostramos o último valor publicado, podendo estar até seis meses defasado. As séries de contagem e formalização da PNADC, em contraste, são atualizadas mensalmente.</li>
+  <li><strong>Censo 2022 ainda em divulgação progressiva.</strong> Cortes municipais finos (necessários, p.ex., para um painel STDMSP focado em São Paulo capital) dependem dos microdados do Censo 2022, cuja divulgação está em andamento até 2026. Quando estiverem disponíveis, vamos integrar.</li>
+  <li><strong>Marca histórica de 2020.</strong> A pandemia de COVID-19 interrompeu o trabalho de campo da PNADC; alguns trimestres de 2020-2021 têm cobertura amostral reduzida. Tratamos os valores como publicados pelo IBGE sem ajuste; a queda visível no gráfico de tendência é real (perda massiva de postos) <em>e</em> em parte um artefato da metodologia de coleta naquele período.</li>
+</ol>
+
+<h2>6. Atualização e versionamento</h2>
+
+<p>O painel é atualizado em três cadências distintas:</p>
+<ul>
+  <li><strong>Mensal</strong>: o ETL <code>fetch_sidra.py</code> é executado para puxar a nova trimestre móvel da PNADC quando o IBGE divulga (geralmente entre 6 e 8 semanas após o fim do período). Os gráficos de tendência, formalização e salário recebem o novo ponto.</li>
+  <li><strong>Semestral</strong>: as cifras DIEESE em <code>static_fact</code> são revisadas após a divulgação dos boletins de abril e novembro. Cada revisão recebe uma entrada no log de auditoria.</li>
+  <li><strong>Anual</strong>: o comparativo internacional do ILOSTAT é puxado pelo <code>fetch_ilostat.py</code> uma vez por ano, geralmente em maio (após a publicação do <em>ILO World Employment and Social Outlook</em>).</li>
+</ul>
+
+<p>Toda atualização é registrada em <code>QA_AUDIT.md</code> no repositório, com o que foi conferido, o que mudou, e a próxima data de checagem. Quando uma cifra é corrigida, o registro mantém o valor antigo riscado para que qualquer leitor possa rastrear o histórico — vide a correção 76% → 84% do hiato salarial racial em maio de 2026.</p>
+
+<h2>7. Como citar</h2>
+
+<p>Sugestão (ABNT):</p>
+<blockquote>
+MAYER, Jean-François; ROQUE, João; SINDICATO DAS TRABALHADORAS DOMÉSTICAS DO MUNICÍPIO DE SÃO PAULO (STDMSP). <strong>Painel Trabalho Doméstico no Brasil</strong>. Concordia University / RITHAL, 2026. Disponível em: &lt;https://stdmsp-trabalho-domestico.joaoroquer.workers.dev/&gt;. Acesso em: [data].
+</blockquote>
+
+<p>Sugestão (APA 7):</p>
+<blockquote>
+Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Município de São Paulo (STDMSP). (2026). <em>Painel Trabalho Doméstico no Brasil</em> [Painel de dados]. Concordia University / RITHAL. https://stdmsp-trabalho-domestico.joaoroquer.workers.dev/
+</blockquote>
+
+<p>Para citar uma cifra específica, recomendamos incluir o período (trimestre móvel ou trimestre fixo) e a fonte do gráfico, pois o painel é vivo:</p>
+<blockquote>
+"5,49 milhões de trabalhadoras(es) domésticas(os) no Brasil no trimestre móvel encerrado em fevereiro de 2026 (PNADC Tabela 6320, conforme Painel STDMSP, acesso em XX/XX/2026)"
+</blockquote>
+
+<h2>8. Erros, correções e auditoria</h2>
+
+<p>Toda correção realizada após a publicação inicial fica documentada no <a href="https://github.com/joaoroquedasilvajunior/stdmsp-trabalho-domestico/blob/main/QA_AUDIT.md" target="_blank" rel="noopener">log de auditoria do repositório</a>. As mais relevantes até agora:</p>
+<ul>
+  <li><strong>2026-04-28</strong>: cifras DIEESE (% mulheres, % negras) atualizadas de valores aproximados (92,5% e 67,4%) para os valores exatos do Infográfico DIEESE de abril de 2025 (91,9% e 69,0%).</li>
+  <li><strong>2026-05-04</strong>: hiato salarial racial corrigido de 76% para 84% após cruzamento direto com a Tabela 5 do Boletim Especial DIEESE 2025; o valor 76% inicial era um <em>seed</em> não verificado.</li>
+</ul>
+
+<p>Se você encontrar um erro, abra uma issue no <a href="https://github.com/joaoroquedasilvajunior/stdmsp-trabalho-domestico" target="_blank" rel="noopener">repositório GitHub</a> ou contate diretamente o STDMSP (<a href="https://www.facebook.com/TrabalhadorasDomesticasSP" target="_blank" rel="noopener">facebook.com/TrabalhadorasDomesticasSP</a>).</p>
+
+</article>
+
+
+<!-- ============ ENGLISH ============ -->
+<article class="prose hidden" data-lang-block="en">
+
+<h2>1. About this dashboard</h2>
+
+<p>The <strong>Trabalho Doméstico no Brasil dashboard</strong> is a public visualization and data tool about Brazilian domestic workers. It is built by researcher <strong>Jean-François Mayer</strong> (Concordia University, comparative politics, RITHAL) in collaboration with the <strong>São Paulo Domestic Workers' Union (STDMSP)</strong>, with technical development by <strong>Joao Roque</strong>.</p>
+
+<p>The dashboard combines three kinds of evidence: (i) official PNAD Contínua aggregates (IBGE) computed by our ETL directly from the SIDRA API; (ii) international ILOSTAT data for Latin American comparators; (iii) supplementary figures attributed to DIEESE when SIDRA does not expose the disaggregation we need (race composition and the Black/non-Black wage ratio).</p>
+
+<p>The dashboard serves four audiences simultaneously: domestic workers themselves (a personal comparison calculator), unions (embeddable charts), researchers (open data, this page, stable citation), and the broader public interested in Brazilian labor policy.</p>
+
+<h2>2. Sources</h2>
+
+<table>
+  <thead>
+    <tr><th>Code</th><th>Source</th><th>URL</th><th>Time coverage</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>PNADC-6320</code></td><td>IBGE — PNAD Contínua quarterly rolling, Table 6320 (Employed persons by occupational position)</td><td><a href="https://sidra.ibge.gov.br/tabela/6320" target="_blank" rel="noopener">sidra.ibge.gov.br/tabela/6320</a></td><td>2012Q1 → present</td></tr>
+    <tr><td><code>PNADC-6383</code></td><td>IBGE — PNAD Contínua quarterly fixed, Table 6383 (Domestic workers by number of households)</td><td><a href="https://sidra.ibge.gov.br/tabela/6383" target="_blank" rel="noopener">sidra.ibge.gov.br/tabela/6383</a></td><td>2012Q1 → present</td></tr>
+    <tr><td><code>PNADC-6391</code></td><td>IBGE — PNAD Contínua quarterly rolling, Table 6391 (Mean income by activity sector)</td><td><a href="https://sidra.ibge.gov.br/tabela/6391" target="_blank" rel="noopener">sidra.ibge.gov.br/tabela/6391</a></td><td>2012Q1 → present</td></tr>
+    <tr><td><code>ILOSTAT</code></td><td>International Labour Organization — Domestic workers by sex and status in employment (ISCO-08 91)</td><td><a href="https://ilostat.ilo.org/topics/employment/domestic-workers/" target="_blank" rel="noopener">ilostat.ilo.org</a></td><td>2008 → present</td></tr>
+    <tr><td><code>DIEESE-2025</code></td><td>DIEESE — Special Bulletin: <em>Paid domestic work in Brazil: a care work</em> (April 2025)</td><td><a href="https://www.dieese.org.br/boletimespecial/2025/trabalhoDomestico.pdf" target="_blank" rel="noopener">PDF</a></td><td>PNADC base Q4 2024</td></tr>
+    <tr><td><code>DIEESE-INFO-2025</code></td><td>DIEESE — Domestic Work in Brazil infographic (April 2025)</td><td><a href="https://www.dieese.org.br/infografico/2025/trabalhadorasDomesticas.html" target="_blank" rel="noopener">infographic</a></td><td>PNADC base Q4 2024</td></tr>
+  </tbody>
+</table>
+
+<h2>3. Variables and definitions</h2>
+
+<p>Each chart maps to a specific table, SIDRA variable, and classification. This section documents each one.</p>
+
+<h3>3.1 Total domestic workers — trend chart</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-6320</code></li>
+  <li><strong>SIDRA variable</strong>: <code>4090</code> — Persons aged 14+ employed in the reference week (thousands of people)</li>
+  <li><strong>Classification</strong>: <code>c11913</code> (Position in occupation), category <code>31724</code> ("Domestic worker" — total)</li>
+  <li><strong>Time granularity</strong>: rolling quarter (3-month window updated monthly)</li>
+  <li><strong>Geographic granularity</strong>: Brazil only (Table 6320 does not support state-level for this classification)</li>
+</ul>
+
+<h3>3.2 Formalization rate (% with signed work card)</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-6320</code></li>
+  <li><strong>Computation</strong>: ratio between category <code>31725</code> ("Domestic worker — with signed work card") and category <code>31724</code> (total) per period</li>
+  <li><strong>Relevant regulatory milestones</strong>: Constitutional Amendment 72/2013, Complementary Law 150/2015, 2020 STF ruling</li>
+</ul>
+
+<h3>3.3 Mean real monthly income — "Domestic services" sector</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-6391</code></li>
+  <li><strong>SIDRA variable</strong>: <code>5932</code> — Mean real monthly income, habitually received, in main job (in constant reais)</li>
+  <li><strong>Classification</strong>: <code>c888</code> (Activity sector), category <code>56628</code> ("Domestic services")</li>
+  <li><strong>Note</strong>: the PNADC <em>sector</em> Domestic services and the c11913 <em>category</em> Domestic worker are not identical, but overlap by more than 95% in headcount terms; we use the sector as a <em>proxy</em> for this population's wage when direct disaggregation is unavailable</li>
+</ul>
+
+<h3>3.4 Monthly workers vs. day-rate workers</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-6383</code></li>
+  <li><strong>SIDRA variable</strong>: <code>8336</code></li>
+  <li><strong>Classification</strong>: <code>c785</code> (Number of households worked in), categories <code>40277</code> ("single household" — proxy for monthly worker / mensalista) and <code>40278</code> ("more than one household" — proxy for day-rate / diarista)</li>
+  <li><strong>Note</strong>: Table 6383 only offers the household-count classification, not contract type per se. LC 150/2015 sets the legal threshold at <em>2 days/week per employer</em>; SIDRA does not publish that exact cut, but household count is a widely accepted approximation</li>
+</ul>
+
+<h3>3.5 Race composition</h3>
+<ul>
+  <li><strong>Source</strong>: <code>DIEESE-INFO-2025</code> (attributed static figure, not computed by our ETL)</li>
+  <li><strong>Value</strong>: 69% pretas + pardas (DIEESE, Q4 2024)</li>
+  <li><strong>Why static</strong>: SIDRA does not publish any aggregate that crosses category <code>31724</code> ("Domestic worker") with the race classification. To get this cut reproducibly we'd need to process PNADC microdata — out of scope for this version</li>
+</ul>
+
+<h3>3.6 Racial wage gap</h3>
+<ul>
+  <li><strong>Source</strong>: <code>DIEESE-2025</code> (Special Bulletin, Table 5)</li>
+  <li><strong>Value</strong>: 84% — ratio of mean monthly income of Black women (R$ 1,156) to non-Black women (R$ 1,376), in total paid domestic work, PNADC base Q4 2024</li>
+  <li><strong>History</strong>: this value was corrected on 2026-05-04 from 76% to 84% after direct cross-check against Table 5 of the 2025 Bulletin; audit record in <code>QA_AUDIT.md</code> in the repository</li>
+</ul>
+
+<h3>3.7 Distribution by state</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-6383</code> (same as 3.4), territorial level <code>n3</code> (states)</li>
+  <li><strong>Granularity</strong>: 27 states, latest available quarter</li>
+</ul>
+
+<h3>3.8 International comparison</h3>
+<ul>
+  <li><strong>Source</strong>: <code>ILOSTAT</code></li>
+  <li><strong>Indicator</strong>: <code>EMP_TEMP_SEX_OC2_NB_A</code> filtered to ISCO-08 group 91 ("Cleaners and helpers")</li>
+  <li><strong>Comparator countries</strong>: Brazil, Mexico, Argentina, Colombia, Chile, Peru, Uruguay, Ecuador</li>
+  <li><strong>Important caveat</strong>: ISCO-08 91 is broader than IBGE's "Domestic worker" category; it includes office cleaners, hotel housekeeping, hospital cleaning auxiliaries, etc. National totals on this chart are <em>larger</em> than PNADC totals for the same population. The comparison is valid <em>between countries</em> within ILOSTAT, but never between ILOSTAT and PNADC</li>
+</ul>
+
+<h2>4. Methodological notes</h2>
+
+<h3>4.1 Rolling quarter × fixed quarter</h3>
+<p>PNADC is published at two distinct frequencies: <strong>rolling quarter</strong> (3-month window updated monthly, e.g., December 2025–January–February 2026 → code <code>202602</code>) and <strong>fixed quarter</strong> (calendar quarter, e.g., Q1 2026 → code <code>202601</code>). The two series differ in temporal granularity: the rolling series gives 12 points per year, the fixed gives 4. The dashboard uses the rolling quarter for the historical trend and formalization series, and the fixed quarter for state-level and mensalistas/diaristas cuts. Period codes preserve the original 6-digit <code>YYYYMM</code> form to allow distinction.</p>
+
+<h3>4.2 Real vs. nominal</h3>
+<p>Income values used in the dashboard are in <strong>constant (real) reais</strong>, deflated by the INPC index, not in current (nominal) reais. This is the IBGE standard for historical series and lets us compare 2012 to 2026 without inflation distorting the read.</p>
+
+<h3>4.3 "Domestic worker" × "Domestic services"</h3>
+<p>IBGE uses two related but non-identical definitions:</p>
+<ul>
+  <li>"Domestic worker" (classification <code>c11913</code>) — an <em>occupational position</em>: hired as an individual person by one or more domestic employers.</li>
+  <li>"Domestic services" (classification <code>c888</code>) — an <em>activity sector</em>: the person works in activities classified as domestic services under CNAE.</li>
+</ul>
+<p>Overlap is high but not total: the position category includes employees working in non-domestic activities inside a household, and the sector includes other positions (e.g., self-employed providing occasional services). Where we use the sector to infer figures about domestic workers (case of wages, chart 3.3), we make the substitution explicit.</p>
+
+<h3>4.4 ILOSTAT ISCO-08 91 × PNADC "Domestic worker"</h3>
+<p>For international comparison, we use the ILOSTAT occupational classification ISCO-08, sub-group 91 ("Cleaners and helpers"). This classification <em>includes</em> domestic workers but <em>also</em> office cleaners, hotel housekeeping auxiliaries, etc. The Brazilian total per ILOSTAT (~7.2 million in 2025) is therefore higher than the Brazilian total per PNADC for "Domestic worker" (~5.5 million in the same period). Country-to-country comparison within ILOSTAT is valid (all countries use the same classification); comparing ILOSTAT against PNADC is comparing <em>different populations</em> and should not be done.</p>
+
+<h2>5. Known limitations</h2>
+
+<ol>
+  <li><strong>Race × position × state cross-tabs are not in SIDRA aggregates.</strong> IBGE publishes aggregates that cross, separately: position × period (Table 6320), position × state (Table 6383), income × race × occupation (DIEESE Bulletin Table 5). It does not publish the triple cross. To get it we'd need to process PNADC microdata, which requires downloading fixed-width files from IBGE's FTP and computing sample weights — out of scope for this version.</li>
+  <li><strong>DIEESE figures are semi-annual; PNADC is monthly.</strong> Race composition and the racial wage ratio are revised in April and November by DIEESE; between those dates we show the last published value, possibly up to six months stale. PNADC count and formalization series are updated monthly.</li>
+  <li><strong>2022 Census still in progressive release.</strong> Fine municipal cuts (needed e.g. for an STDMSP-focused view of São Paulo city specifically) depend on 2022 Census microdata, whose release is ongoing through 2026. We will integrate when available.</li>
+  <li><strong>2020 historical mark.</strong> The COVID-19 pandemic interrupted PNADC field work; some 2020-2021 quarters have reduced sample coverage. We treat the values as published by IBGE without adjustment; the visible drop in the trend chart is <em>real</em> (massive job loss) <em>and</em> partly an artifact of the data-collection methodology in that period.</li>
+</ol>
+
+<h2>6. Update cadence and versioning</h2>
+
+<p>The dashboard is updated on three distinct cadences:</p>
+<ul>
+  <li><strong>Monthly</strong>: the <code>fetch_sidra.py</code> ETL pulls the new PNADC rolling quarter when IBGE releases it (typically 6-8 weeks after the period ends). Trend, formalization, and wage charts get a new point.</li>
+  <li><strong>Semi-annual</strong>: DIEESE figures in <code>static_fact</code> are revised after the April and November bulletin releases. Each revision gets an audit log entry.</li>
+  <li><strong>Annual</strong>: the ILOSTAT international comparator is pulled by <code>fetch_ilostat.py</code> once per year, typically in May (after the <em>ILO World Employment and Social Outlook</em>).</li>
+</ul>
+
+<p>Every update is recorded in <code>QA_AUDIT.md</code> in the repository, with what was checked, what changed, and the next check date. When a figure is corrected, the record keeps the old value struck through so any reader can trace history — see the 76% → 84% correction of the racial wage gap in May 2026.</p>
+
+<h2>7. How to cite</h2>
+
+<p>Suggested (APA 7):</p>
+<blockquote>
+Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Município de São Paulo (STDMSP). (2026). <em>Trabalho Doméstico no Brasil dashboard</em> [Data dashboard]. Concordia University / RITHAL. https://stdmsp-trabalho-domestico.joaoroquer.workers.dev/
+</blockquote>
+
+<p>Suggested (ABNT):</p>
+<blockquote>
+MAYER, Jean-François; ROQUE, João; SINDICATO DAS TRABALHADORAS DOMÉSTICAS DO MUNICÍPIO DE SÃO PAULO (STDMSP). <strong>Painel Trabalho Doméstico no Brasil</strong>. Concordia University / RITHAL, 2026. Available at: &lt;https://stdmsp-trabalho-domestico.joaoroquer.workers.dev/&gt;. Accessed: [date].
+</blockquote>
+
+<p>To cite a specific figure, we recommend including the period (rolling or fixed quarter) and the chart's source, since the dashboard is a living document:</p>
+<blockquote>
+"5.49 million domestic workers in Brazil in the rolling quarter ending February 2026 (PNADC Table 6320, per the STDMSP dashboard, accessed XX/XX/2026)"
+</blockquote>
+
+<h2>8. Errors, corrections, audit</h2>
+
+<p>All corrections made after initial publication are documented in the <a href="https://github.com/joaoroquedasilvajunior/stdmsp-trabalho-domestico/blob/main/QA_AUDIT.md" target="_blank" rel="noopener">repository's audit log</a>. Most relevant so far:</p>
+<ul>
+  <li><strong>2026-04-28</strong>: DIEESE figures (% women, % Black) updated from approximate seeds (92.5% and 67.4%) to the exact values from the April 2025 DIEESE infographic (91.9% and 69.0%).</li>
+  <li><strong>2026-05-04</strong>: racial wage gap corrected from 76% to 84% after direct cross-check with Table 5 of the DIEESE 2025 Special Bulletin; the initial 76% was an unverified seed.</li>
+</ul>
+
+<p>If you spot an error, please open an issue in the <a href="https://github.com/joaoroquedasilvajunior/stdmsp-trabalho-domestico" target="_blank" rel="noopener">GitHub repository</a> or contact STDMSP directly (<a href="https://www.facebook.com/TrabalhadorasDomesticasSP" target="_blank" rel="noopener">facebook.com/TrabalhadorasDomesticasSP</a>).</p>
+
+</article>
+
+</main>
+
+<!-- Chita ribbon — bottom -->
+<div class="chita-band no-print mt-12" aria-hidden="true"></div>
+
+<footer class="border-t rule no-print">
+  <div class="max-w-3xl mx-auto px-5 py-4 text-xs text-gray-500 flex flex-wrap items-center justify-between gap-2">
+    <span>STDMSP × Jean-François Mayer (Concordia)</span>
+    <a href="./" class="underline" data-tr="footer-back">Painel completo →</a>
+  </div>
+</footer>
+
+<script>
+const TR = {
+  pt: { back: "Voltar ao painel", title: "Metodologia", subtitle: "Fontes, variáveis, transformações, limitações conhecidas e como citar.", "footer-back": "Painel completo →" },
+  en: { back: "Back to dashboard", title: "Methodology", subtitle: "Sources, variables, transformations, known limitations, and how to cite.", "footer-back": "Full dashboard →" },
+};
+let LANG = "pt";
+function applyLang() {
+  document.documentElement.lang = LANG === "pt" ? "pt-BR" : "en";
+  document.querySelectorAll("[data-tr]").forEach(el => {
+    const k = el.getAttribute("data-tr");
+    if (TR[LANG][k]) el.textContent = TR[LANG][k];
+  });
+  document.querySelectorAll(".lang-btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === LANG));
+  document.querySelectorAll("[data-lang-block]").forEach(el => {
+    el.classList.toggle("hidden", el.dataset.langBlock !== LANG);
+  });
+}
+document.querySelectorAll(".lang-btn").forEach(b =>
+  b.addEventListener("click", () => { LANG = b.dataset.lang; applyLang(); })
+);
+applyLang();
+</script>
+
+</body>
+</html>

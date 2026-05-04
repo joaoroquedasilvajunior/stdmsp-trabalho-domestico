@@ -37,6 +37,15 @@
       background-position: center;
     }
     @media (max-width: 640px) { .chita-band { height: 32px; } }
+    /* "Baixar CSV" button per chart — overlay top-right of each article */
+    .csv-btn {
+      position: absolute; top: 10px; right: 10px;
+      font-size: 11px; color: #9ca3af;
+      background: transparent; border: 1px solid var(--rule);
+      padding: 2px 8px; border-radius: 4px; cursor: pointer;
+      font-family: inherit; line-height: 1.4;
+    }
+    .csv-btn:hover { color: var(--ink); background: white; border-color: var(--ink); }
     .filter-select { background: white; border: 1px solid var(--rule); border-radius: 6px; padding: 6px 28px 6px 10px; font-size: 14px; color: var(--ink); cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23666' d='M0 0l5 6 5-6z'/></svg>"); background-repeat: no-repeat; background-position: right 10px center; }
     .lang-btn { padding: 4px 10px; font-size: 12px; font-weight: 500; border: 1px solid var(--rule); background: white; cursor: pointer; }
     .lang-btn[aria-pressed="true"] { background: var(--ink); color: white; border-color: var(--ink); }
@@ -184,7 +193,8 @@
 <footer class="border-t rule">
   <div class="max-w-6xl mx-auto px-5 py-4 text-xs text-gray-500 flex flex-wrap items-center justify-between gap-3">
     <span>STDMSP × <a href="https://www.facebook.com/TrabalhadorasDomesticasSP" class="underline">Sindicato das Trabalhadoras Domésticas SP</a> × Jean-François Mayer (Concordia)</span>
-    <span class="flex items-center gap-3">
+    <span class="flex items-center gap-3 flex-wrap">
+      <a href="./metodologia.html" class="underline" data-i18n="footer-metodologia">Metodologia →</a>
       <a href="./embeds.html" class="underline" data-i18n="footer-embeds">Incorporar gráficos →</a>
       <span><span data-i18n="updated">Atualizado em: </span><span id="updated-at">—</span></span>
     </span>
@@ -234,6 +244,7 @@ const I18N = {
     empty: "Sem dados ainda. Rode o ETL para preencher.",
     updated: "Atualizado em: ",
     "footer-embeds": "Incorporar gráficos →",
+    "footer-metodologia": "Metodologia →",
   },
   en: {
     badge: "Sector dashboard",
@@ -275,6 +286,7 @@ const I18N = {
     empty: "No data yet. Run the ETL to populate.",
     updated: "Updated: ",
     "footer-embeds": "Embed charts →",
+    "footer-metodologia": "Methodology →",
   }
 };
 
@@ -912,8 +924,96 @@ function renderSources() {
   ul.innerHTML = items.join("");
 }
 
+// ============ CSV EXPORT ============
+// Each chart maps to a function that returns the underlying rows in tidy format.
+// When the user clicks "↓ CSV" on a chart, we serialize those rows as CSV and
+// trigger a Blob download. Researchers get clean, citation-ready raw data
+// straight from the same views the dashboard reads.
+const CSV_EXPORTERS = {
+  trend: () => STATE.workers
+    .filter(r => r.source_table === "PNADC-6320" && r.geo_code === "BR" && r.sex_code === "T" && r.race_code === "total" && r.formality_code === "total")
+    .map(r => ({ period_code: r.period_code, year: r.year, quarter: r.quarter, geo_code: r.geo_code, geo_name_pt: r.geo_name_pt, sex_code: r.sex_code, race_code: r.race_code, formality_code: r.formality_code, workers_thousands: r.workers_thousands, source_table: r.source_table })),
+  formality: () => STATE.workers
+    .filter(r => r.source_table === "PNADC-6320" && r.geo_code === "BR" && r.sex_code === "T" && r.race_code === "total")
+    .map(r => ({ period_code: r.period_code, year: r.year, quarter: r.quarter, geo_code: r.geo_code, formality_code: r.formality_code, workers_thousands: r.workers_thousands, source_table: r.source_table })),
+  wages: () => STATE.wages.map(r => ({ period_code: r.period_code, year: r.year, quarter: r.quarter, geo_code: r.geo_code, sex_code: r.sex_code, race_code: r.race_code, formality_code: r.formality_code, mean_wage_brl_real: r.mean_wage_brl_real, source_table: r.source_table })),
+  mensalista: () => STATE.workers
+    .filter(r => r.source_table === "PNADC-6383" && r.geo_code === "BR")
+    .map(r => ({ period_code: r.period_code, year: r.year, geo_code: r.geo_code, formality_code: r.formality_code, workers_thousands: r.workers_thousands, source_table: r.source_table })),
+  race: () => {
+    const sf = STATE.staticFacts["pct_negras"]; if (!sf) return [];
+    return [{ fact_code: sf.fact_code, value_num: sf.value_num, value_unit: sf.value_unit, label_pt: sf.label_pt, label_en: sf.label_en, source_short: sf.source_short, source_url: sf.source_url, source_date: sf.source_date }];
+  },
+  "wage-gap": () => {
+    const sf = STATE.staticFacts["wage_ratio_black_to_nonblack"]; if (!sf) return [];
+    return [{ fact_code: sf.fact_code, value_num: sf.value_num, value_unit: sf.value_unit, label_pt: sf.label_pt, label_en: sf.label_en, source_short: sf.source_short, source_url: sf.source_url, source_date: sf.source_date }];
+  },
+  region: () => STATE.workers
+    .filter(r => r.source_table === "PNADC-6383" && r.geo_level === "uf")
+    .map(r => ({ period_code: r.period_code, geo_level: r.geo_level, geo_code: r.geo_code, geo_name_pt: r.geo_name_pt, geo_name_en: r.geo_name_en, formality_code: r.formality_code, workers_thousands: r.workers_thousands, source_table: r.source_table })),
+  intl: () => STATE.intl.map(r => ({ year: r.year, country_iso3: r.country_iso3, country_pt: r.country_pt, country_en: r.country_en, domestic_workers_thousands: r.domestic_workers_thousands, pct_of_employed_women: r.pct_of_employed_women, pct_informal: r.pct_informal, source: r.source })),
+};
+
+function rowsToCSV(rows) {
+  if (!rows || !rows.length) return "";
+  const headers = Object.keys(rows[0]);
+  const escape = v => {
+    if (v == null) return "";
+    const s = String(v);
+    return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const lines = [headers.join(",")];
+  for (const r of rows) lines.push(headers.map(h => escape(r[h])).join(","));
+  // Tiny BOM so Excel auto-detects UTF-8 (otherwise PT accents break in Excel)
+  return "﻿" + lines.join("\n");
+}
+
+function downloadCSV(chartKey) {
+  const exporter = CSV_EXPORTERS[chartKey];
+  if (!exporter) return;
+  const rows = exporter();
+  if (!rows.length) {
+    alert(LANG === "pt" ? "Sem dados para exportar — recarregue a página." : "No data to export — try reloading.");
+    return;
+  }
+  const csv = rowsToCSV(rows);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const date = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `painel-trabalho-domestico-${chartKey}-${date}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 200);
+}
+
+// Programmatically attach CSV buttons to each chart article — keeps the HTML clean.
+function attachCsvButtons() {
+  const map = {
+    "box-trend": "trend", "box-formality": "formality", "box-wages": "wages",
+    "box-mensalista": "mensalista", "box-race": "race", "box-wage-gap": "wage-gap",
+    "box-region": "region", "box-intl": "intl",
+  };
+  for (const [boxId, key] of Object.entries(map)) {
+    const box = document.getElementById(boxId);
+    if (!box) continue;
+    const article = box.closest("article");
+    if (!article || article.querySelector(".csv-btn")) continue;
+    article.style.position = "relative";
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "csv-btn"; btn.dataset.csv = key;
+    btn.title = LANG === "pt" ? "Baixar dados (CSV)" : "Download data (CSV)";
+    btn.textContent = "↓ CSV";
+    btn.addEventListener("click", () => downloadCSV(key));
+    article.appendChild(btn);
+  }
+}
+
 // ============ INIT ============
 applyI18n();
+attachCsvButtons();
 loadAll().catch(err => {
   console.error("loadAll threw:", err);
   showError("Loading data failed: " + (err?.message || String(err)));

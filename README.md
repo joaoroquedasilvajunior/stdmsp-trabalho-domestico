@@ -92,22 +92,39 @@ they go live.
 
 ## Quarterly refresh — DIEESE bulletins
 
-DIEESE publishes its domestic-work bulletins twice a year, in **April** and
-**November**. The refresh ritual:
+DIEESE publishes its domestic-work bulletins twice a year: an
+**Infográfico** around **April 28** (Dia Nacional das Trabalhadoras
+Domésticas) and a **Boletim Especial** around **November 20** (Dia da
+Consciência Negra). The refresh ritual:
 
-1. **Pull the new bulletin** from <https://www.dieese.org.br>. Note the new
-   national average wage and the % of workers with carteira assinada.
-2. **Update the two `static_fact` rows** in Supabase
-   (schema `domestic_work`, table `static_fact`):
+1. **Pull the new bulletin** from <https://www.dieese.org.br>. Note the
+   updated headline figures we mirror in `static_fact`:
+   - `pct_women` — % de mulheres entre trabalhadoras(es) domésticas(os)
+   - `pct_negras` — % negras (pretas + pardas) entre trabalhadoras domésticas
+   - `wage_ratio_black_to_nonblack` — razão salarial negras ÷ não-negras (em %)
+2. **Update the matching rows** in Supabase
+   (schema `domestic_work`, table `static_fact`). The actual columns are
+   `value_num` (numeric), `source_short`, `source_url`, `source_date` (date),
+   `note_pt`, `note_en` — keyed by `fact_code`:
 
    ```sql
-   UPDATE domestic_work.static_fact
-   SET value = <new_value>, source_period = '<YYYY-MM>'
-   WHERE metric_code = 'dieese_avg_wage';
+   update domestic_work.static_fact
+      set value_num    = <new_value>,
+          source_short = '<DIEESE — Boletim/Infográfico ...>',
+          source_url   = '<https://www.dieese.org.br/...>',
+          source_date  = '<YYYY-MM-DD>',
+          note_pt      = '<atualização da nota se necessário>',
+          note_en      = '<update the EN note if needed>'
+    where fact_code = 'pct_women';        -- repeat for pct_negras, wage_ratio_black_to_nonblack
+   ```
 
-   UPDATE domestic_work.static_fact
-   SET value = <new_value>, source_period = '<YYYY-MM>'
-   WHERE metric_code = 'dieese_pct_formal';
+   You can run this from the Supabase SQL Editor or via `psql`. Verify
+   afterwards:
+
+   ```sql
+   select fact_code, value_num, source_short, source_date
+     from domestic_work.static_fact
+    order by fact_code;
    ```
 3. **Re-run the PNADC ETL** if a new trimestre móvel has dropped since the
    last run:
@@ -116,9 +133,12 @@ DIEESE publishes its domestic-work bulletins twice a year, in **April** and
    cd etl && source .venv/bin/activate
    python fetch_sidra.py
    ```
-4. **Commit and push** — Cloudflare Pages auto-deploys. The DIEESE values
+4. **Append a new entry to `QA_AUDIT.md` → Refresh log** documenting what
+   you checked, what changed, and the next check date. Don't rewrite past
+   entries.
+5. **Commit and push** — Cloudflare Pages auto-deploys. The DIEESE values
    are read live from Supabase, so no dashboard code change is needed unless
-   the schema changed.
+   the schema itself changed.
 
 ## Local development
 

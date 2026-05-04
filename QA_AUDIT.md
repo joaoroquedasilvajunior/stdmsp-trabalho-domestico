@@ -130,6 +130,84 @@ Append new entries chronologically — do not rewrite history.
 **Next check: 2026-05-12.** By then both the new PNADC trimestre móvel and the
 DIEESE 2026 infografico should be available.
 
+### 2026-05-04 — interim follow-up (README fixed; wage_ratio source repointed)
+
+Triggered by two issues spotted while re-reading the docs ahead of the May
+refresh window:
+
+- **README quarterly-refresh SQL was wrong.** The example `UPDATE` block in
+  `README.md` cited columns (`value`, `source_period`, `metric_code`) and
+  fact codes (`dieese_avg_wage`, `dieese_pct_formal`) that don't exist in the
+  schema. Anyone following the documented ritual would have hit `column does
+  not exist`. Replaced with the real schema (`value_num`, `source_date`,
+  `fact_code`) and the real fact codes (`pct_women`, `pct_negras`,
+  `wage_ratio_black_to_nonblack`). Added a verification `SELECT` and an
+  audit-log step before commit.
+- **`wage_ratio_black_to_nonblack` source URL repointed.** Was the bare
+  DIEESE homepage; now points at the 2024 *Boletim Especial* PDF
+  (<https://www.dieese.org.br/boletimespecial/2024/trabalhoDomestico.pdf>),
+  which is the document where the 76% figure was originally verified. The
+  `note_pt` / `note_en` on this row now explicitly flag that the **2025
+  Boletim Especial** (<https://www.dieese.org.br/boletimespecial/2025/trabalhoDomestico.pdf>)
+  has not yet been cross-checked against this specific ratio. Value stays
+  at 76 until that cross-check happens.
+- **Cross-check of `pct_women` and `pct_negras` against 2025 boletim coverage:**
+  - `pct_women` 91.9 — confirmed by April 2025 boletim ✅
+  - `pct_negras` 69.0 — secondary citation in 2025 boletim coverage gives
+    **68.5%** (a 0.5pp rounding divergence). Within the 1% audit threshold,
+    no UPDATE applied. Worth confirming against the actual 2025 PDF when we
+    have access.
+- **Wage-ratio cross-check status — partially blocked.** The Cowork sandbox
+  can't reach `dieese.org.br`. Web-search excerpts surface tangentially-related
+  ratios (negras vs. brancas ≈ 86%; mulheres negras vs. homens brancos = 47%),
+  but not the negras-vs-não-negras ratio for the trabalhador-doméstico subgroup
+  in the 2025 boletim. Two ways to close this:
+  1. Joao manually opens the 2025 Boletim Especial PDF and confirms or
+     corrects the figure, then runs a one-line UPDATE.
+  2. Allowlist `dieese.org.br` in **Settings → Capabilities** so Claude can
+     fetch the PDF directly next refresh.
+
+**Next check unchanged: 2026-05-12** for the new PNADC trimestre móvel + DIEESE 2026
+infografico window.
+
+### 2026-05-04 (later same day) — `wage_ratio_black_to_nonblack` corrected to 84%
+
+Joao manually opened the 2025 Boletim Especial PDF and shared its **Tabela 5**
+(4º trimestre 2024). Direct cross-check against the canonical DIEESE figures:
+
+| Cut | Negras | Não Negras | Ratio | Source |
+|---|---:|---:|---:|---|
+| Mulheres total (todas as ocupações domésticas) | R$ 1.156 | R$ 1.376 | **84.0 %** | Tabela 5, linha "Total", colunas Mulheres |
+| Mulheres em "Serviços domésticos em geral" | R$ 1.129 | R$ 1.329 | 85.0 % | Tabela 5, linha "Serviços domésticos em geral" |
+
+The previous static_fact value of **76%** was never sourced from a verifiable
+DIEESE table — it was a seed I introduced when the dashboard was first scaffolded
+and then carried forward unaudited. It is corrected now.
+
+**Action taken:**
+- `static_fact` row `wage_ratio_black_to_nonblack`: `value_num` `76 → 84`,
+  `source_short` and `source_url` repointed to the **2025 Boletim Especial PDF**
+  (<https://www.dieese.org.br/boletimespecial/2025/trabalhoDomestico.pdf>),
+  `source_date = 2025-04-27`. The `note_pt` / `note_en` now cite the absolute
+  reais figures (R$ 1.156 vs R$ 1.376) and the exact source table.
+- Dashboard re-renders automatically on next page load (the wage-gap chart and
+  its narrative sentence both read live from `value_num`). No code change.
+- Cloudflare Pages deploy: not required for this fix — only the database
+  changed.
+
+**Direction of the correction:** the dashboard now under-states the gap less.
+Going from 76% (24-point gap) to 84% (16-point gap) is a less alarming
+headline, but it's the verified one. Worth STDMSP / Mayer noting if either
+already cited the previous figure publicly; the audit trail makes the
+correction easy to defend.
+
+**Other figures cross-checked in passing against the same boletim:**
+- "Total — % com carteira assinada" 24.4% (DIEESE, 4T 2024) vs our 23.75 %
+  (PNADC trimestre móvel ending fev/2026): consistent, the slight downward
+  drift reflects the more recent period in our data.
+- "Serviços domésticos em geral — % sem carteira assinada" 76.1 % (DIEESE,
+  4T 2024): consistent with our derived value 100 − 23.75 = 76.25 %.
+
 ---
 
 ## Sources

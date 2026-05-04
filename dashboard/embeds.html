@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Incorporar gráficos · Painel Trabalho Doméstico</title>
+  <meta name="description" content="Galeria de iframes prontos para incorporar os gráficos do Painel Trabalho Doméstico em sites de sindicatos, blogs e veículos de comunicação.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --ink: #1a1a1a; --paper: #fafaf7; --accent: #b91c1c; --rule: #e5e5e0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", system-ui, sans-serif; color: var(--ink); background: var(--paper); }
+    .rule { border-color: var(--rule); }
+    .embed-card { border: 1px solid var(--rule); border-radius: 12px; background: white; overflow: hidden; }
+    .embed-iframe { width: 100%; height: 360px; border: 0; display: block; background: #fafaf7; }
+    pre.code { background: #1f2937; color: #f9fafb; padding: 12px 14px; font-size: 12px; line-height: 1.5; overflow-x: auto; border-radius: 6px; }
+    .copy-btn { background: var(--ink); color: white; padding: 6px 14px; font-size: 12px; border-radius: 6px; cursor: pointer; border: none; font-weight: 500; }
+    .copy-btn.copied { background: #166534; }
+    .lang-btn { padding: 4px 10px; font-size: 12px; font-weight: 500; border: 1px solid var(--rule); background: white; cursor: pointer; }
+    .lang-btn[aria-pressed="true"] { background: var(--ink); color: white; border-color: var(--ink); }
+    .lang-btn:first-child { border-radius: 6px 0 0 6px; }
+    .lang-btn:last-child { border-radius: 0 6px 6px 0; border-left: 0; }
+  </style>
+</head>
+<body>
+
+<header class="border-b rule bg-white">
+  <div class="max-w-5xl mx-auto px-5 py-4 flex items-center justify-between gap-3 flex-wrap">
+    <div>
+      <a href="./" class="text-sm text-gray-500 hover:underline">← <span data-i18n="back">Voltar ao painel</span></a>
+      <h1 class="text-2xl md:text-3xl font-medium mt-2" data-i18n="title">Incorporar gráficos no seu site</h1>
+      <p class="text-sm text-gray-600 mt-1 max-w-2xl" data-i18n="subtitle">Cada gráfico abaixo pode ser incorporado em qualquer site através de um iframe. Os dados são atualizados automaticamente — você cola o código uma vez e ele acompanha as mudanças no painel.</p>
+    </div>
+    <div role="group" aria-label="Language">
+      <button class="lang-btn" data-lang="pt" aria-pressed="true">PT</button><button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-5 py-8">
+
+  <section class="mb-8 bg-white border rule rounded-xl p-5">
+    <h2 class="text-base font-medium mb-2" data-i18n="how-title">Como funciona</h2>
+    <ol class="list-decimal pl-6 text-sm text-gray-700 space-y-1">
+      <li data-i18n="how-1">Escolha o gráfico que você quer incorporar.</li>
+      <li data-i18n="how-2">Clique em "Copiar código" — o iframe é copiado para a área de transferência.</li>
+      <li data-i18n="how-3">Cole o código no editor HTML do seu site (Wix, WordPress, página HTML, etc.). A maioria dos editores tem um bloco "HTML personalizado".</li>
+      <li data-i18n="how-4">O gráfico se atualiza sozinho: cada vez que o painel ganha dados novos, seu iframe mostra as novidades automaticamente.</li>
+    </ol>
+    <p class="text-xs text-gray-500 mt-3" data-i18n="how-attribution">Os iframes incluem uma pequena atribuição "fonte: Painel Trabalho Doméstico" no canto inferior. Atribuição é importante para credibilidade — pedimos que você não a remova.</p>
+  </section>
+
+  <div id="gallery" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+
+</main>
+
+<footer class="border-t rule mt-12">
+  <div class="max-w-5xl mx-auto px-5 py-4 text-xs text-gray-500 flex flex-wrap items-center justify-between gap-2">
+    <span>STDMSP × Jean-François Mayer (Concordia)</span>
+    <a href="./" class="underline" data-i18n="footer-back">Painel completo →</a>
+  </div>
+</footer>
+
+<script>
+const I18N = {
+  pt: {
+    back: "Voltar ao painel",
+    title: "Incorporar gráficos no seu site",
+    subtitle: "Cada gráfico abaixo pode ser incorporado em qualquer site através de um iframe. Os dados são atualizados automaticamente — você cola o código uma vez e ele acompanha as mudanças no painel.",
+    "how-title": "Como funciona",
+    "how-1": "Escolha o gráfico que você quer incorporar.",
+    "how-2": 'Clique em "Copiar código" — o iframe é copiado para a área de transferência.',
+    "how-3": 'Cole o código no editor HTML do seu site (Wix, WordPress, página HTML, etc.). A maioria dos editores tem um bloco "HTML personalizado".',
+    "how-4": "O gráfico se atualiza sozinho: cada vez que o painel ganha dados novos, seu iframe mostra as novidades automaticamente.",
+    "how-attribution": 'Os iframes incluem uma pequena atribuição "fonte: Painel Trabalho Doméstico" no canto inferior. Atribuição é importante para credibilidade — pedimos que você não a remova.',
+    copy: "Copiar código",
+    copied: "Copiado!",
+    "footer-back": "Painel completo →",
+  },
+  en: {
+    back: "Back to dashboard",
+    title: "Embed charts on your site",
+    subtitle: "Each chart below can be embedded on any website via an iframe. The data updates automatically — paste the code once and it follows the dashboard's updates.",
+    "how-title": "How it works",
+    "how-1": "Pick the chart you want to embed.",
+    "how-2": 'Click "Copy code" — the iframe is copied to your clipboard.',
+    "how-3": 'Paste it into your site\'s HTML editor (Wix, WordPress, raw HTML page, etc.). Most editors have a "Custom HTML" block.',
+    "how-4": "The chart self-updates: each time the dashboard gains new data, your iframe shows the latest automatically.",
+    "how-attribution": 'The iframes include a small "source: Painel Trabalho Doméstico" attribution at the bottom corner. We ask you not to remove it — credibility matters.',
+    copy: "Copy code",
+    copied: "Copied!",
+    "footer-back": "Full dashboard →",
+  },
+};
+
+let LANG = "pt";
+
+const CHARTS = [
+  { key: "trend",      title_pt: "Total de trabalhadoras(es) ao longo do tempo", title_en: "Total domestic workers over time" },
+  { key: "formality",  title_pt: "Taxa de formalização (carteira assinada)",     title_en: "Formalization rate (signed work card)" },
+  { key: "wages",      title_pt: "Rendimento médio mensal real",                 title_en: "Average real monthly income" },
+  { key: "mensalista", title_pt: "Mensalistas vs. diaristas",                    title_en: "Monthly vs. day-rate workers" },
+  { key: "race",       title_pt: "Composição por cor/raça",                      title_en: "Race composition" },
+  { key: "wage-gap",   title_pt: "Hiato salarial racial",                        title_en: "Racial wage gap" },
+  { key: "region",     title_pt: "Distribuição por UF",                          title_en: "Distribution by state" },
+  { key: "intl",       title_pt: "Comparativo internacional",                    title_en: "International comparison" },
+];
+
+const BASE_URL = location.origin + location.pathname.replace(/[^/]*$/, "") + "embed.html";
+
+function iframeSnippet(chartKey) {
+  const url = `${BASE_URL}?chart=${chartKey}&lang=${LANG}`;
+  return `<iframe src="${url}" width="100%" height="360" frameborder="0" loading="lazy" title="${chartKey}"></iframe>`;
+}
+
+function applyI18n() {
+  document.documentElement.lang = LANG === "pt" ? "pt-BR" : "en";
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const k = el.getAttribute("data-i18n");
+    if (I18N[LANG][k]) el.textContent = I18N[LANG][k];
+  });
+  document.querySelectorAll(".lang-btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === LANG));
+  renderGallery();
+}
+document.querySelectorAll(".lang-btn").forEach(b =>
+  b.addEventListener("click", () => { LANG = b.dataset.lang; applyI18n(); })
+);
+
+function renderGallery() {
+  const container = document.getElementById("gallery");
+  container.innerHTML = "";
+  for (const c of CHARTS) {
+    const url = `${BASE_URL}?chart=${c.key}&lang=${LANG}`;
+    const snippet = iframeSnippet(c.key);
+    const card = document.createElement("article");
+    card.className = "embed-card";
+    card.innerHTML = `
+      <div class="px-4 pt-4 pb-2 border-b rule flex items-center justify-between gap-3">
+        <h3 class="text-sm font-medium">${LANG === "pt" ? c.title_pt : c.title_en}</h3>
+        <button class="copy-btn" data-snippet="${escapeAttr(snippet)}">${I18N[LANG].copy}</button>
+      </div>
+      <iframe class="embed-iframe" src="${url}" loading="lazy" title="${c.key}"></iframe>
+      <pre class="code mx-4 my-3">${escapeHtml(snippet)}</pre>
+    `;
+    container.appendChild(card);
+  }
+  // Wire copy buttons
+  container.querySelectorAll(".copy-btn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const txt = btn.getAttribute("data-snippet");
+      try {
+        await navigator.clipboard.writeText(txt);
+        btn.textContent = I18N[LANG].copied;
+        btn.classList.add("copied");
+        setTimeout(() => { btn.textContent = I18N[LANG].copy; btn.classList.remove("copied"); }, 1500);
+      } catch (e) {
+        // Fallback: select the snippet's <pre> for manual copy
+        const pre = btn.closest(".embed-card").querySelector("pre.code");
+        const range = document.createRange(); range.selectNode(pre);
+        getSelection().removeAllRanges(); getSelection().addRange(range);
+      }
+    });
+  });
+}
+
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function escapeAttr(s) { return escapeHtml(s); }
+
+applyI18n();
+</script>
+
+</body>
+</html>

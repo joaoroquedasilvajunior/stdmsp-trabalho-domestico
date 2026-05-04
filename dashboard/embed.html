@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel Trabalho Doméstico — embed</title>
+  <meta name="description" content="Single-chart embed view of the STDMSP domestic-work dashboard. Use ?chart=&lt;name&gt; to pick which chart.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* Transparent body so the host page's background shows through.
+       Hosts can override sizing via the iframe's width/height attrs. */
+    html, body { background: transparent; margin: 0; padding: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+      color: #1a1a1a;
+      display: flex; flex-direction: column;
+    }
+    .embed-wrap { padding: 12px 14px 6px 14px; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+    .embed-title { font-size: 14px; font-weight: 500; margin: 0 0 2px 0; line-height: 1.3; }
+    .embed-meta  { font-size: 11px; color: #6b7280; margin: 0 0 8px 0; line-height: 1.3; }
+    .embed-canvas-wrap { flex: 1; position: relative; min-height: 0; }
+    .embed-attrib {
+      font-size: 11px; color: #9ca3af; padding: 0 14px 8px 14px;
+      display: flex; justify-content: flex-end; gap: 8px;
+    }
+    .embed-attrib a { color: #6b7280; text-decoration: none; }
+    .embed-attrib a:hover { text-decoration: underline; }
+    .empty {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      color: #6b7280; font-size: 13px; text-align: center; padding: 16px;
+    }
+    .narrative { font-size: 11px; color: #4b5563; margin-top: 8px; line-height: 1.4; }
+  </style>
+</head>
+<body>
+
+<div class="embed-wrap">
+  <h2 id="title" class="embed-title">—</h2>
+  <p   id="meta"  class="embed-meta">—</p>
+  <div id="canvas-wrap" class="embed-canvas-wrap">
+    <canvas id="chart"></canvas>
+  </div>
+  <p id="narrative" class="narrative" style="display:none"></p>
+</div>
+
+<div class="embed-attrib">
+  <span>fonte:</span>
+  <a id="attrib-link" href="https://stdmsp-trabalho-domestico.joaoroquer.workers.dev/" target="_blank" rel="noopener">Painel Trabalho Doméstico</a>
+</div>
+
+<script>
+// ============ params ============
+const params = new URLSearchParams(location.search);
+const CHART  = (params.get("chart") || "trend").toLowerCase();
+const LANG   = (params.get("lang")  || "pt").toLowerCase() === "en" ? "en" : "pt";
+document.documentElement.lang = LANG === "pt" ? "pt-BR" : "en";
+
+// ============ supabase ============
+const SUPABASE_URL = "https://vqwhzzaqddqeurrspcdz.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxd2h6emFxZGRxZXVycnNwY2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MDgxMTEsImV4cCI6MjA5MjI4NDExMX0.GrALuDawy6qH9O3qAAylHltE4SE8vrMk_cNLW9n3EVI";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ============ helpers ============
+const fmt = (n, d = 0) => n == null || isNaN(n) ? "—" :
+  Number(n).toLocaleString(LANG === "pt" ? "pt-BR" : "en-CA", { maximumFractionDigits: d, minimumFractionDigits: d });
+const reais = n => "R$ " + fmt(n, 0);
+const MONTHS_PT = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const MONTHS_EN = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function fmtPeriod(code) {
+  const s = String(code);
+  if (s.length === 6 && /^\d+$/.test(s)) {
+    return (LANG === "pt" ? MONTHS_PT : MONTHS_EN)[+s.slice(4) - 1] + "/" + s.slice(2, 4);
+  }
+  return s;
+}
+function setHeader(t, m) { document.getElementById("title").textContent = t; document.getElementById("meta").textContent = m; }
+function showError(msg) {
+  document.getElementById("canvas-wrap").innerHTML = `<div class="empty">${msg}</div>`;
+}
+function setNarrative(text) {
+  if (!text) return;
+  const el = document.getElementById("narrative");
+  el.textContent = text; el.style.display = "block";
+}
+
+// Common chart options for time-series line charts.
+const lineOpts = (yFmt = v => fmt(v)) => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false } },
+  scales: {
+    x: { ticks: { autoSkip: true, maxTicksLimit: 10, maxRotation: 0, font: { size: 10 } } },
+    y: { ticks: { font: { size: 10 }, callback: yFmt } },
+  },
+  elements: { line: { tension: 0.25, borderWidth: 2 }, point: { radius: 0 } },
+});
+
+// ============ chart renderers ============
+const RENDERERS = {
+
+  trend: async () => {
+    const { data, error } = await sb.from("dw_workers")
+      .select("period_code,workers_thousands")
+      .eq("source_table", "PNADC-6320")
+      .eq("geo_code", "BR")
+      .eq("sex_code", "T").eq("race_code", "total").eq("formality_code", "total")
+      .order("period_code", { ascending: true })
+      .limit(2000);
+    if (error) throw error;
+    setHeader(
+      LANG === "pt" ? "Total de trabalhadoras(es) domésticas(os)" : "Total domestic workers",
+      LANG === "pt" ? "PNAD Contínua trimestral · em milhares de pessoas" : "PNADC quarterly · thousands of people",
+    );
+    new Chart(document.getElementById("chart"), {
+      type: "line",
+      data: {
+        labels: data.map(r => fmtPeriod(r.period_code)),
+        datasets: [{ data: data.map(r => Number(r.workers_thousands)),
+          borderColor: "#b91c1c", backgroundColor: "rgba(185,28,28,0.08)", fill: true }],
+      },
+      options: lineOpts(v => fmt(v)),
+    });
+  },
+
+  formality: async () => {
+    const { data, error } = await sb.from("dw_workers")
+      .select("period_code,formality_code,workers_thousands")
+      .eq("source_table", "PNADC-6320")
+      .eq("geo_code", "BR")
+      .eq("sex_code", "T").eq("race_code", "total")
+      .in("formality_code", ["total", "com_carteira"])
+      .order("period_code", { ascending: true })
+      .limit(2000);
+    if (error) throw error;
+    const totals = Object.fromEntries(data.filter(r => r.formality_code === "total").map(r => [r.period_code, Number(r.workers_thousands)]));
+    const series = data
+      .filter(r => r.formality_code === "com_carteira" && totals[r.period_code])
+      .map(r => ({ p: r.period_code, pct: 100 * Number(r.workers_thousands) / totals[r.period_code] }))
+      .sort((a, b) => String(a.p).localeCompare(String(b.p)));
+    setHeader(
+      LANG === "pt" ? "Taxa de formalização (% com carteira)" : "Formalization rate (% with signed work card)",
+      LANG === "pt" ? "PNAD Contínua trimestral · referência: EC 72/2013, LC 150/2015" : "PNADC quarterly · reference: EC 72/2013, LC 150/2015",
+    );
+    new Chart(document.getElementById("chart"), {
+      type: "line",
+      data: {
+        labels: series.map(s => fmtPeriod(s.p)),
+        datasets: [{ data: series.map(s => s.pct),
+          borderColor: "#1f2937", backgroundColor: "rgba(31,41,55,0.08)", fill: true }],
+      },
+      options: { ...lineOpts(v => v + "%"), scales: { ...lineOpts().scales, y: { ...lineOpts().scales.y, suggestedMin: 0, suggestedMax: 50 } } },
+    });
+  },
+
+  wages: async () => {
+    const { data, error } = await sb.from("dw_wages")
+      .select("period_code,mean_wage_brl_real")
+      .eq("source_table", "PNADC-6391")
+      .eq("geo_code", "BR")
+      .order("period_code", { ascending: true })
+      .limit(2000);
+    if (error) throw error;
+    setHeader(
+      LANG === "pt" ? "Rendimento médio mensal real" : "Average real monthly income",
+      LANG === "pt" ? 'PNAD Contínua trimestral · setor "Serviços domésticos" · em reais constantes' : 'PNADC quarterly · "Domestic services" sector · constant reais',
+    );
+    new Chart(document.getElementById("chart"), {
+      type: "line",
+      data: {
+        labels: data.map(r => fmtPeriod(r.period_code)),
+        datasets: [{ data: data.map(r => Number(r.mean_wage_brl_real)),
+          borderColor: "#7c2d12", backgroundColor: "rgba(124,45,18,0.08)", fill: true }],
+      },
+      options: lineOpts(v => "R$ " + fmt(v)),
+    });
+  },
+
+  mensalista: async () => {
+    const { data, error } = await sb.from("dw_workers")
+      .select("period_code,formality_code,workers_thousands")
+      .eq("source_table", "PNADC-6383")
+      .eq("geo_code", "BR")
+      .in("formality_code", ["total", "diarista"])
+      .order("period_code", { ascending: true })
+      .limit(2000);
+    if (error) throw error;
+    const totals = Object.fromEntries(data.filter(r => r.formality_code === "total").map(r => [r.period_code, Number(r.workers_thousands)]));
+    const series = data
+      .filter(r => r.formality_code === "diarista" && totals[r.period_code])
+      .map(r => ({ p: r.period_code, pct: 100 * Number(r.workers_thousands) / totals[r.period_code] }))
+      .sort((a, b) => String(a.p).localeCompare(String(b.p)));
+    setHeader(
+      LANG === "pt" ? "Mensalistas vs. diaristas" : "Monthly vs. day-rate workers",
+      LANG === "pt" ? "% diaristas (mais de 1 domicílio) · proteção mais fraca sob LC 150/2015" : "% day-rate workers · weaker protection under LC 150/2015",
+    );
+    new Chart(document.getElementById("chart"), {
+      type: "line",
+      data: {
+        labels: series.map(s => fmtPeriod(s.p)),
+        datasets: [{ data: series.map(s => s.pct),
+          borderColor: "#92400e", backgroundColor: "rgba(146,64,14,0.08)", fill: true }],
+      },
+      options: { ...lineOpts(v => v + "%"), scales: { ...lineOpts().scales, y: { ...lineOpts().scales.y, suggestedMin: 0, suggestedMax: 50 } } },
+    });
+  },
+
+  race: async () => {
+    const { data, error } = await sb.from("dw_static_facts").select("*").eq("fact_code", "pct_negras").limit(1);
+    if (error) throw error;
+    const sf = data?.[0];
+    if (!sf) { showError(LANG === "pt" ? "Sem dados disponíveis." : "No data available."); return; }
+    const black = Number(sf.value_num), other = 100 - black;
+    setHeader(
+      LANG === "pt" ? "Composição por cor/raça" : "Race composition",
+      LANG === "pt" ? "% do total de trabalhadoras(es) domésticas(os) · DIEESE 4T 2024" : "% of total domestic workers · DIEESE Q4 2024",
+    );
+    new Chart(document.getElementById("chart"), {
+      type: "doughnut",
+      data: {
+        labels: LANG === "pt" ? ["Negras (pretas + pardas)", "Demais"] : ["Black (pretas + pardas)", "Other"],
+        datasets: [{ data: [black, other], backgroundColor: ["#b91c1c", "#d4d4d8"] }],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: "60%",
+        plugins: { legend: { position: "bottom", labels: { font: { size: 11 } } },
+                   tooltip: { callbacks: { label: c => c.label + ": " + fmt(c.parsed, 1) + "%" } } },
+      },
+    });
+  },
+
+  "wage-gap": async () => {
+    const { data, error } = await sb.from("dw_static_facts").select("*").eq("fact_code", "wage_ratio_black_to_nonblack").limit(1);
+    if (error) throw error;
+    const sf = data?.[0];
+    if (!sf) { showError(LANG === "pt" ? "Sem dados disponíveis." : "No data available."); return; }
+    const blackPct = Number(sf.value_num);
+    setHeader(
+      LANG === "pt" ? "Hiato salarial racial" : "Racial wage gap",
+      LANG === "pt" ? "trabalhadoras domésticas negras vs. não-negras · DIEESE 4T 2024" : "Black vs. non-Black domestic workers · DIEESE Q4 2024",
+    );
+    setNarrative(LANG === "pt"
+      ? `Para cada R$ 100 recebidos por uma trabalhadora doméstica não-negra, uma trabalhadora doméstica negra recebe R$ ${fmt(blackPct, 0)}.`
+      : `For every R$ 100 earned by a non-Black domestic worker, a Black domestic worker earns R$ ${fmt(blackPct, 0)}.`);
+    new Chart(document.getElementById("chart"), {
+      type: "bar",
+      data: {
+        labels: LANG === "pt" ? ["Não-negras", "Negras (pretas + pardas)"] : ["Non-Black", "Black (pretas + pardas)"],
+        datasets: [{ data: [100, blackPct], backgroundColor: ["#9ca3af", "#b91c1c"], barPercentage: 0.7 }],
+      },
+      options: {
+        indexAxis: "y", responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fmt(c.parsed.x, 0) + "%" } } },
+        scales: { x: { suggestedMin: 0, suggestedMax: 100, ticks: { callback: v => v + "%", font: { size: 10 } } },
+                  y: { ticks: { font: { size: 11 } } } },
+      },
+    });
+  },
+
+  region: async () => {
+    const { data, error } = await sb.from("dw_workers")
+      .select("period_code,geo_code,geo_name_pt,geo_name_en,workers_thousands")
+      .eq("source_table", "PNADC-6383")
+      .eq("geo_level", "uf")
+      .eq("sex_code", "T").eq("race_code", "total").eq("formality_code", "total")
+      .limit(5000);
+    if (error) throw error;
+    if (!data?.length) { showError(LANG === "pt" ? "Sem dados disponíveis." : "No data available."); return; }
+    const latest = data.map(r => String(r.period_code)).sort().slice(-1)[0];
+    const rows = data.filter(r => String(r.period_code) === latest)
+      .sort((a, b) => Number(b.workers_thousands) - Number(a.workers_thousands)).slice(0, 10);
+    setHeader(
+      LANG === "pt" ? "Distribuição por UF (top 10)" : "Distribution by state (top 10)",
+      LANG === "pt" ? `milhares de pessoas · ${fmtPeriod(latest)}` : `thousands of people · ${fmtPeriod(latest)}`,
+    );
+    new Chart(document.getElementById("chart"), {
+      type: "bar",
+      data: {
+        labels: rows.map(r => LANG === "pt" ? r.geo_name_pt : r.geo_name_en),
+        datasets: [{ data: rows.map(r => Number(r.workers_thousands)), backgroundColor: "#b91c1c" }],
+      },
+      options: {
+        indexAxis: "y", responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fmt(c.parsed.x) + " mil" } } },
+        scales: { x: { ticks: { font: { size: 10 }, callback: v => fmt(v) } }, y: { ticks: { font: { size: 11 } } } },
+      },
+    });
+  },
+
+  intl: async () => {
+    const { data, error } = await sb.from("dw_intl").select("*").limit(2000);
+    if (error) throw error;
+    if (!data?.length) { showError(LANG === "pt" ? "Sem dados disponíveis." : "No data available."); return; }
+    const latest = {};
+    for (const r of data) { if (!latest[r.country_iso3] || r.year > latest[r.country_iso3].year) latest[r.country_iso3] = r; }
+    const rows = Object.values(latest).sort((a, b) => Number(b.domestic_workers_thousands) - Number(a.domestic_workers_thousands));
+    setHeader(
+      LANG === "pt" ? "Comparativo internacional — América Latina" : "International comparison — Latin America",
+      LANG === "pt" ? "ILOSTAT · trabalhadoras(es) domésticas(os) por país (milhares)" : "ILOSTAT · domestic workers by country (thousands)",
+    );
+    new Chart(document.getElementById("chart"), {
+      type: "bar",
+      data: {
+        labels: rows.map(r => `${LANG === "pt" ? r.country_pt : r.country_en} (${r.year})`),
+        datasets: [{ data: rows.map(r => Number(r.domestic_workers_thousands)),
+          backgroundColor: rows.map(r => r.country_iso3 === "BRA" ? "#b91c1c" : (r.country_iso3 === "MEX" ? "#1f2937" : "#9ca3af")) }],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fmt(c.parsed.y) + " mil" } } },
+        scales: { x: { ticks: { font: { size: 10 }, maxRotation: 45 } }, y: { ticks: { font: { size: 10 }, callback: v => fmt(v) } } },
+      },
+    });
+  },
+};
+
+// ============ kick off ============
+const renderer = RENDERERS[CHART];
+if (!renderer) {
+  showError(
+    (LANG === "pt"
+      ? `Gráfico desconhecido: "${CHART}". Use ?chart= com um destes valores: `
+      : `Unknown chart: "${CHART}". Use ?chart= with one of these: `)
+    + Object.keys(RENDERERS).join(", ")
+  );
+} else {
+  renderer().catch(err => {
+    console.error(err);
+    showError(LANG === "pt" ? "Erro ao carregar dados." : "Error loading data.");
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Como você se compara? · Trabalho Doméstico no Brasil</title>
+  <meta name="description" content="Calculadora pessoal para trabalhadoras e trabalhadores domésticos: compare seu salário com a média nacional e veja quais direitos a LC 150/2015 garante.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --paper: #fafaf7;
+      --accent: #b91c1c;
+      --accent-soft: #fee2e2;
+      --rule: #e5e5e0;
+      --good: #166534;
+      --good-soft: #dcfce7;
+      --warn: #78350f;
+      --warn-soft: #fef3c7;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", system-ui, sans-serif; color: var(--ink); background: var(--paper); }
+    .rule { border-color: var(--rule); }
+    .num { font-variant-numeric: tabular-nums; }
+
+    label.field-label { font-size: 14px; font-weight: 500; color: var(--ink); display: block; margin-bottom: 6px; }
+    input[type="number"], input[type="text"], select {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--rule);
+      border-radius: 6px; font-size: 16px; background: white; color: var(--ink);
+    }
+    input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill-opt {
+      flex: 1; min-width: 100px; padding: 10px 14px;
+      border: 1px solid var(--rule); border-radius: 999px;
+      text-align: center; font-size: 14px; cursor: pointer; background: white;
+      user-select: none; transition: background 80ms ease;
+    }
+    .pill-opt:hover { background: #f5f5f0; }
+    .pill-opt input { position: absolute; opacity: 0; pointer-events: none; }
+    .pill-opt.checked { background: var(--ink); color: white; border-color: var(--ink); }
+
+    .lang-btn { padding: 4px 10px; font-size: 12px; font-weight: 500; border: 1px solid var(--rule); background: white; cursor: pointer; }
+    .lang-btn[aria-pressed="true"] { background: var(--ink); color: white; border-color: var(--ink); }
+    .lang-btn:first-child { border-radius: 6px 0 0 6px; }
+    .lang-btn:last-child { border-radius: 0 6px 6px 0; border-left: 0; }
+
+    .stat-card { border: 1px solid var(--rule); border-radius: 12px; padding: 16px; background: white; }
+    .stat-card.good   { border-color: #86efac; background: var(--good-soft); }
+    .stat-card.warn   { border-color: #fde68a; background: var(--warn-soft); }
+    .stat-card.danger { border-color: #fca5a5; background: var(--accent-soft); }
+
+    .right-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--rule); }
+    .right-row:last-child { border-bottom: 0; }
+    .right-icon {
+      flex: 0 0 22px; width: 22px; height: 22px; border-radius: 999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600;
+    }
+    .right-icon.ok    { background: var(--good-soft); color: var(--good); }
+    .right-icon.miss  { background: var(--accent-soft); color: var(--accent); }
+    .right-icon.na    { background: #e5e5e5; color: #525252; }
+
+    .bar-track { background: #e5e5e5; height: 12px; border-radius: 999px; overflow: hidden; }
+    .bar-fill  { height: 100%; background: var(--accent); border-radius: 999px; transition: width 400ms ease; }
+    .bar-fill.muted { background: #6b7280; }
+
+    @media print {
+      body { background: white; }
+      .no-print { display: none !important; }
+      header, main { padding-top: 0 !important; padding-bottom: 0 !important; }
+      .stat-card { box-shadow: none; }
+      a { color: var(--ink); text-decoration: underline; }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+<header class="border-b rule bg-white no-print">
+  <div class="max-w-3xl mx-auto px-5 py-4 flex items-center justify-between gap-3 flex-wrap">
+    <div>
+      <a href="./" class="text-sm text-gray-500 hover:underline">← <span data-i18n="back">Voltar ao painel</span></a>
+      <h1 class="text-2xl md:text-3xl font-medium mt-2" data-i18n="title">Como você se compara?</h1>
+      <p class="text-sm text-gray-600 mt-1 max-w-xl" data-i18n="subtitle">Calculadora para trabalhadoras e trabalhadores domésticos. Suas respostas ficam apenas no seu navegador — nada é enviado.</p>
+    </div>
+    <div role="group" aria-label="Language">
+      <button class="lang-btn" data-lang="pt" aria-pressed="true">PT</button><button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-5 py-6">
+
+  <!-- FORM -->
+  <form id="calc-form" class="space-y-5 bg-white border rule rounded-xl p-5 md:p-6">
+    <div>
+      <label class="field-label" for="f-name" data-i18n="q-name">Seu nome (opcional, para o resumo)</label>
+      <input type="text" id="f-name" placeholder="Maria">
+    </div>
+
+    <div>
+      <label class="field-label" for="f-wage" data-i18n="q-wage">Quanto você recebe por mês? (em reais)</label>
+      <input type="number" id="f-wage" min="0" step="50" placeholder="1500" required>
+      <p class="text-xs text-gray-500 mt-1" data-i18n="q-wage-hint">Some o que recebe de todas as casas, antes de descontos.</p>
+    </div>
+
+    <div>
+      <label class="field-label" data-i18n="q-carteira">Você tem carteira de trabalho assinada?</label>
+      <div class="pills" data-pills="carteira">
+        <label class="pill-opt"><input type="radio" name="carteira" value="sim"><span data-i18n="yes">Sim</span></label>
+        <label class="pill-opt"><input type="radio" name="carteira" value="nao"><span data-i18n="no">Não</span></label>
+      </div>
+    </div>
+
+    <div>
+      <label class="field-label" data-i18n="q-domicilios">Em quantas casas você trabalha?</label>
+      <div class="pills" data-pills="domicilios">
+        <label class="pill-opt"><input type="radio" name="domicilios" value="um"><span data-i18n="dom-1">Em uma só</span></label>
+        <label class="pill-opt"><input type="radio" name="domicilios" value="varias"><span data-i18n="dom-many">Em mais de uma</span></label>
+      </div>
+    </div>
+
+    <div>
+      <label class="field-label" for="f-uf" data-i18n="q-uf">Em qual estado você trabalha?</label>
+      <select id="f-uf" required></select>
+    </div>
+
+    <div>
+      <label class="field-label" for="f-hours" data-i18n="q-hours">Quantas horas você trabalha por semana?</label>
+      <input type="number" id="f-hours" min="0" max="80" step="1" placeholder="40">
+      <p class="text-xs text-gray-500 mt-1" data-i18n="q-hours-hint">A jornada legal máxima é de 44h por semana.</p>
+    </div>
+
+    <div>
+      <label class="field-label" data-i18n="q-race">Você se identifica como (opcional):</label>
+      <div class="pills" data-pills="race">
+        <label class="pill-opt"><input type="radio" name="race" value="branca"><span data-i18n="race-branca">Branca</span></label>
+        <label class="pill-opt"><input type="radio" name="race" value="preta"><span data-i18n="race-preta">Preta</span></label>
+        <label class="pill-opt"><input type="radio" name="race" value="parda"><span data-i18n="race-parda">Parda</span></label>
+        <label class="pill-opt"><input type="radio" name="race" value="amarela"><span data-i18n="race-amarela">Amarela</span></label>
+        <label class="pill-opt"><input type="radio" name="race" value="indigena"><span data-i18n="race-indigena">Indígena</span></label>
+        <label class="pill-opt"><input type="radio" name="race" value="skip"><span data-i18n="prefer-not">Prefiro não dizer</span></label>
+      </div>
+    </div>
+
+    <button type="submit" class="w-full py-3 bg-red-700 text-white font-medium rounded-lg hover:bg-red-800 active:bg-red-900" data-i18n="submit">Ver resultado</button>
+  </form>
+
+  <!-- RESULTS -->
+  <section id="results" class="mt-8 space-y-5 hidden">
+    <div id="result-name" class="text-sm text-gray-500"></div>
+
+    <!-- Big headline card: where you stand on wages -->
+    <article id="card-wage" class="stat-card">
+      <h2 class="text-base font-medium mb-1" data-i18n="card-wage-title">Seu salário comparado</h2>
+      <p class="text-xs text-gray-500 mb-3" data-i18n="card-wage-meta">PNAD Contínua · setor "Serviços domésticos" · em reais constantes</p>
+      <div id="card-wage-body" class="space-y-4"></div>
+    </article>
+
+    <!-- Formality status -->
+    <article id="card-formality" class="stat-card">
+      <h2 class="text-base font-medium mb-1" data-i18n="card-formality-title">Sua situação de formalização</h2>
+      <p id="card-formality-body" class="text-sm text-gray-700"></p>
+    </article>
+
+    <!-- Rights checklist (LC 150/2015) -->
+    <article id="card-rights" class="stat-card">
+      <h2 class="text-base font-medium mb-1" data-i18n="card-rights-title">Direitos previstos pela LC 150/2015</h2>
+      <p id="card-rights-intro" class="text-sm text-gray-700 mb-3"></p>
+      <div id="card-rights-list"></div>
+      <p class="text-xs text-gray-500 mt-3" data-i18n="card-rights-disclaimer">Esta lista é informativa, não substitui orientação jurídica. Em dúvida, fale com o seu sindicato.</p>
+    </article>
+
+    <!-- Hours flag (only if > 44h) -->
+    <article id="card-hours" class="stat-card warn hidden">
+      <h2 class="text-base font-medium mb-1" data-i18n="card-hours-title">Atenção: jornada acima do limite legal</h2>
+      <p id="card-hours-body" class="text-sm text-gray-700"></p>
+    </article>
+
+    <!-- What to do next -->
+    <article class="stat-card no-print">
+      <h2 class="text-base font-medium mb-2" data-i18n="card-next-title">O que fazer agora</h2>
+      <ul class="text-sm text-gray-700 space-y-2 list-disc pl-5">
+        <li data-i18n="next-stdmsp">Fale com o STDMSP — Sindicato das Trabalhadoras Domésticas do Município de São Paulo: <a href="https://www.facebook.com/TrabalhadorasDomesticasSP" class="underline" target="_blank" rel="noopener">facebook.com/TrabalhadorasDomesticasSP</a></li>
+        <li data-i18n="next-fenatrad">Se você não está em São Paulo, procure o sindicato da sua cidade através da FENATRAD.</li>
+        <li data-i18n="next-print">Imprima este resumo (botão abaixo) ou envie pelo WhatsApp para uma pessoa de confiança.</li>
+      </ul>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button id="btn-share-wa" type="button" class="px-4 py-2 text-sm rounded-lg bg-green-700 text-white hover:bg-green-800">
+          <span data-i18n="btn-whatsapp">Compartilhar no WhatsApp</span>
+        </button>
+        <button id="btn-print" type="button" class="px-4 py-2 text-sm rounded-lg bg-gray-800 text-white hover:bg-gray-900">
+          <span data-i18n="btn-print">Imprimir resumo</span>
+        </button>
+        <button id="btn-restart" type="button" class="px-4 py-2 text-sm rounded-lg border rule hover:bg-gray-100">
+          <span data-i18n="btn-restart">Recomeçar</span>
+        </button>
+      </div>
+    </article>
+
+    <p class="text-xs text-gray-500 mt-4" data-i18n="result-sources">
+      Fontes: PNAD Contínua (IBGE) · DIEESE · Lei Complementar 150/2015 · salário mínimo nacional vigente.
+    </p>
+  </section>
+
+  <!-- Loading / error banner -->
+  <div id="status" class="mt-6 text-sm text-gray-500"></div>
+
+</main>
+
+<footer class="border-t rule mt-12 no-print">
+  <div class="max-w-3xl mx-auto px-5 py-4 text-xs text-gray-500 flex flex-wrap items-center justify-between gap-2">
+    <span>STDMSP × Jean-François Mayer (Concordia)</span>
+    <a href="./" class="underline" data-i18n="footer-back">Painel completo →</a>
+  </div>
+</footer>
+
+<script>
+// ============ I18N ============
+const I18N = {
+  pt: {
+    back: "Voltar ao painel",
+    title: "Como você se compara?",
+    subtitle: 'Calculadora para trabalhadoras e trabalhadores domésticos. Suas respostas ficam apenas no seu navegador — nada é enviado.',
+    "q-name": "Seu nome (opcional, para o resumo)",
+    "q-wage": "Quanto você recebe por mês? (em reais)",
+    "q-wage-hint": "Some o que recebe de todas as casas, antes de descontos.",
+    "q-carteira": "Você tem carteira de trabalho assinada?",
+    yes: "Sim", no: "Não",
+    "q-domicilios": "Em quantas casas você trabalha?",
+    "dom-1": "Em uma só", "dom-many": "Em mais de uma",
+    "q-uf": "Em qual estado você trabalha?",
+    "q-hours": "Quantas horas você trabalha por semana?",
+    "q-hours-hint": "A jornada legal máxima é de 44h por semana.",
+    "q-race": "Você se identifica como (opcional):",
+    "race-branca": "Branca", "race-preta": "Preta", "race-parda": "Parda",
+    "race-amarela": "Amarela", "race-indigena": "Indígena", "prefer-not": "Prefiro não dizer",
+    submit: "Ver resultado",
+    "card-wage-title": "Seu salário comparado",
+    "card-wage-meta": 'PNAD Contínua · setor "Serviços domésticos" · em reais constantes',
+    "card-formality-title": "Sua situação de formalização",
+    "card-rights-title": "Direitos previstos pela LC 150/2015",
+    "card-rights-disclaimer": "Esta lista é informativa, não substitui orientação jurídica. Em dúvida, fale com o seu sindicato.",
+    "card-hours-title": "Atenção: jornada acima do limite legal",
+    "card-next-title": "O que fazer agora",
+    "next-stdmsp": 'Fale com o STDMSP — Sindicato das Trabalhadoras Domésticas do Município de São Paulo: <a href="https://www.facebook.com/TrabalhadorasDomesticasSP" class="underline" target="_blank" rel="noopener">facebook.com/TrabalhadorasDomesticasSP</a>',
+    "next-fenatrad": "Se você não está em São Paulo, procure o sindicato da sua cidade através da FENATRAD.",
+    "next-print": "Imprima este resumo (botão abaixo) ou envie pelo WhatsApp para uma pessoa de confiança.",
+    "btn-whatsapp": "Compartilhar no WhatsApp",
+    "btn-print": "Imprimir resumo",
+    "btn-restart": "Recomeçar",
+    "result-sources": "Fontes: PNAD Contínua (IBGE) · DIEESE · Lei Complementar 150/2015 · salário mínimo nacional vigente.",
+    "footer-back": "Painel completo →",
+  },
+  en: {
+    back: "Back to dashboard",
+    title: "How do you compare?",
+    subtitle: "A calculator for domestic workers. Your answers stay in your browser — nothing is sent anywhere.",
+    "q-name": "Your name (optional, for the summary)",
+    "q-wage": "How much do you earn per month? (in BRL)",
+    "q-wage-hint": "Add up what you receive from all households, before deductions.",
+    "q-carteira": "Do you have a signed work card?",
+    yes: "Yes", no: "No",
+    "q-domicilios": "How many households do you work in?",
+    "dom-1": "Just one", "dom-many": "More than one",
+    "q-uf": "Which state do you work in?",
+    "q-hours": "How many hours do you work per week?",
+    "q-hours-hint": "The legal weekly maximum is 44 hours.",
+    "q-race": "You identify as (optional):",
+    "race-branca": "White", "race-preta": "Black", "race-parda": "Brown (parda)",
+    "race-amarela": "Yellow (East Asian)", "race-indigena": "Indigenous", "prefer-not": "Prefer not to say",
+    submit: "See result",
+    "card-wage-title": "Your wage compared",
+    "card-wage-meta": 'PNADC quarterly · "Domestic services" sector · constant reais',
+    "card-formality-title": "Your formality status",
+    "card-rights-title": "Rights guaranteed by LC 150/2015",
+    "card-rights-disclaimer": "This list is informational and does not replace legal advice. When in doubt, talk to your union.",
+    "card-hours-title": "Heads up: hours above the legal weekly maximum",
+    "card-next-title": "What to do next",
+    "next-stdmsp": 'Contact STDMSP — São Paulo Domestic Workers\' Union: <a href="https://www.facebook.com/TrabalhadorasDomesticasSP" class="underline" target="_blank" rel="noopener">facebook.com/TrabalhadorasDomesticasSP</a>',
+    "next-fenatrad": "If you're not in São Paulo, find the union for your city through FENATRAD.",
+    "next-print": "Print this summary (button below) or send it via WhatsApp to someone you trust.",
+    "btn-whatsapp": "Share via WhatsApp",
+    "btn-print": "Print summary",
+    "btn-restart": "Start over",
+    "result-sources": "Sources: PNAD Contínua (IBGE) · DIEESE · Brazilian Complementary Law 150/2015 · current national minimum wage.",
+    "footer-back": "Full dashboard →",
+  },
+};
+let LANG = "pt";
+function applyI18n() {
+  document.documentElement.lang = LANG === "pt" ? "pt-BR" : "en";
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const k = el.getAttribute("data-i18n");
+    if (I18N[LANG][k]) el.innerHTML = I18N[LANG][k];
+  });
+  document.querySelectorAll(".lang-btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === LANG));
+}
+document.querySelectorAll(".lang-btn").forEach(b =>
+  b.addEventListener("click", () => { LANG = b.dataset.lang; applyI18n(); if (LAST_SUBMIT) renderResults(LAST_SUBMIT); })
+);
+
+// ============ DATA LAYER ============
+const SUPABASE_URL = "https://vqwhzzaqddqeurrspcdz.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxd2h6emFxZGRxZXVycnNwY2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MDgxMTEsImV4cCI6MjA5MjI4NDExMX0.GrALuDawy6qH9O3qAAylHltE4SE8vrMk_cNLW9n3EVI";
+let sbClient = null;
+try {
+  sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch (e) { console.error("supabase init failed:", e); }
+
+// Constants (jurisdiction-specific, stable)
+const MIN_WAGE_BRL_2026 = 1518;             // R$ — Brazilian national minimum wage, 2026
+const LEGAL_WEEKLY_HOURS_MAX = 44;          // CLT + LC 150/2015
+
+// Reference data populated from Supabase on load
+const REF = {
+  national_mean_wage: null,                  // R$ from PNADC-6391 latest period
+  national_mean_wage_period: null,
+  national_total_workers_thousands: null,    // PNADC-6320 latest BR total
+  national_pct_formal: null,                 // % com carteira
+  uf_list: [],                               // [{code, name_pt, name_en, latest_workers_k}]
+  static: {},                                // {fact_code: row}
+};
+
+let LAST_SUBMIT = null;                     // remembered so language toggle re-renders
+
+async function loadReference() {
+  if (!sbClient) return;
+  const status = document.getElementById("status");
+  status.textContent = LANG === "pt" ? "Carregando dados de referência…" : "Loading reference data…";
+
+  const [wagesRes, workersRes, ufRes, sfRes] = await Promise.allSettled([
+    sbClient.from("dw_wages").select("*").eq("geo_code", "BR").order("period_code", { ascending: false }).limit(1),
+    sbClient.from("dw_workers").select("*").eq("source_table", "PNADC-6320").eq("geo_code", "BR").order("period_code", { ascending: false }).limit(50),
+    sbClient.from("dw_workers").select("*").eq("source_table", "PNADC-6383").eq("geo_level", "uf"),
+    sbClient.from("dw_static_facts").select("*"),
+  ]);
+
+  if (wagesRes.value?.data?.[0]) {
+    REF.national_mean_wage = Number(wagesRes.value.data[0].mean_wage_brl_real);
+    REF.national_mean_wage_period = String(wagesRes.value.data[0].period_code);
+  }
+  if (workersRes.value?.data?.length) {
+    const rows = workersRes.value.data;
+    const latest = rows[0].period_code;
+    const total = rows.find(r => r.period_code === latest && r.formality_code === "total");
+    const formal = rows.find(r => r.period_code === latest && r.formality_code === "com_carteira");
+    if (total) REF.national_total_workers_thousands = Number(total.workers_thousands);
+    if (total && formal) REF.national_pct_formal = 100 * Number(formal.workers_thousands) / Number(total.workers_thousands);
+  }
+  if (ufRes.value?.data?.length) {
+    // For each UF, keep the row with the latest period_code
+    const byUf = {};
+    for (const r of ufRes.value.data) {
+      if (!byUf[r.geo_code] || String(r.period_code) > String(byUf[r.geo_code].period_code)) byUf[r.geo_code] = r;
+    }
+    REF.uf_list = Object.values(byUf).sort((a, b) => a.geo_name_pt.localeCompare(b.geo_name_pt));
+  }
+  if (sfRes.value?.data?.length) {
+    for (const r of sfRes.value.data) REF.static[r.fact_code] = r;
+  }
+
+  populateUfDropdown();
+  status.textContent = "";
+}
+
+function populateUfDropdown() {
+  const sel = document.getElementById("f-uf");
+  const list = REF.uf_list.length
+    ? REF.uf_list.map(u => ({ code: u.geo_code, label: LANG === "pt" ? u.geo_name_pt : u.geo_name_en }))
+    : [{ code: "35", label: "São Paulo" }];   // fallback
+  sel.innerHTML = `<option value="">${LANG === "pt" ? "Selecione…" : "Select…"}</option>` +
+    list.map(u => `<option value="${u.code}" ${u.code === "35" ? "selected" : ""}>${u.label}</option>`).join("");
+}
+
+// ============ FORM HANDLING ============
+// Pill toggles — keep .checked class in sync with the underlying radio input.
+document.querySelectorAll("[data-pills]").forEach(group => {
+  group.addEventListener("click", e => {
+    const label = e.target.closest("label.pill-opt");
+    if (!label) return;
+    group.querySelectorAll(".pill-opt").forEach(l => l.classList.remove("checked"));
+    label.classList.add("checked");
+    const radio = label.querySelector("input[type=radio]");
+    if (radio) radio.checked = true;
+  });
+});
+
+document.getElementById("calc-form").addEventListener("submit", e => {
+  e.preventDefault();
+  const data = {
+    name:        document.getElementById("f-name").value.trim(),
+    wage:        Number(document.getElementById("f-wage").value),
+    carteira:    document.querySelector('input[name=carteira]:checked')?.value,
+    domicilios:  document.querySelector('input[name=domicilios]:checked')?.value,
+    uf:          document.getElementById("f-uf").value,
+    hours:       Number(document.getElementById("f-hours").value) || null,
+    race:        document.querySelector('input[name=race]:checked')?.value || null,
+  };
+  if (!data.wage || !data.carteira || !data.domicilios || !data.uf) {
+    alert(LANG === "pt"
+      ? "Por favor preencha salário, carteira, número de casas e estado."
+      : "Please fill in wage, work card, households and state.");
+    return;
+  }
+  LAST_SUBMIT = data;
+  renderResults(data);
+  document.getElementById("results").classList.remove("hidden");
+  document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+document.getElementById("btn-restart").addEventListener("click", () => {
+  document.getElementById("calc-form").reset();
+  document.querySelectorAll(".pill-opt.checked").forEach(p => p.classList.remove("checked"));
+  document.getElementById("results").classList.add("hidden");
+  LAST_SUBMIT = null;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+document.getElementById("btn-print").addEventListener("click", () => window.print());
+
+document.getElementById("btn-share-wa").addEventListener("click", () => {
+  const summary = buildShareText(LAST_SUBMIT);
+  const url = "https://wa.me/?text=" + encodeURIComponent(summary);
+  window.open(url, "_blank", "noopener");
+});
+
+// ============ RESULT RENDERING ============
+const fmt = (n, digits = 0) => {
+  if (n == null || isNaN(n)) return "—";
+  return n.toLocaleString(LANG === "pt" ? "pt-BR" : "en-CA", { maximumFractionDigits: digits, minimumFractionDigits: digits });
+};
+const reais = n => "R$ " + fmt(n, 0);
+
+function periodLabelPT(code) {
+  const s = String(code || "");
+  const months = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+  if (s.length === 6 && /^\d+$/.test(s)) return months[+s.slice(4) - 1] + "/" + s.slice(2, 4);
+  return s;
+}
+
+function renderResults(d) {
+  // Name line
+  const nameEl = document.getElementById("result-name");
+  if (d.name) {
+    nameEl.innerHTML = `<strong>${escapeHtml(d.name)}</strong> · ` +
+      (LANG === "pt" ? "resumo gerado em " : "summary generated on ") +
+      new Date().toLocaleDateString(LANG === "pt" ? "pt-BR" : "en-CA");
+  } else {
+    nameEl.textContent = LANG === "pt"
+      ? "Resumo gerado em " + new Date().toLocaleDateString("pt-BR")
+      : "Summary generated on " + new Date().toLocaleDateString("en-CA");
+  }
+
+  renderWageCard(d);
+  renderFormalityCard(d);
+  renderRightsCard(d);
+  renderHoursCard(d);
+}
+
+function renderWageCard(d) {
+  const wage = d.wage;
+  const mean = REF.national_mean_wage;
+  const min  = MIN_WAGE_BRL_2026;
+  const ratio = REF.static["wage_ratio_black_to_nonblack"];
+
+  // Determine status colour for the headline
+  const card = document.getElementById("card-wage");
+  card.classList.remove("good","warn","danger");
+  if (mean && wage >= mean)        card.classList.add("good");
+  else if (wage >= min)            card.classList.add("warn");
+  else                              card.classList.add("danger");
+
+  const meanLine = mean
+    ? `<div class="flex items-center justify-between text-sm">
+         <span>${LANG === "pt" ? "Média nacional do setor" : "National sector mean"} <span class="text-gray-500 text-xs">(${periodLabelPT(REF.national_mean_wage_period)})</span></span>
+         <span class="num font-medium">${reais(mean)}</span>
+       </div>
+       ${barRow(wage, mean, true)}
+       <p class="text-xs text-gray-600">${
+         wage >= mean
+           ? (LANG === "pt"
+               ? `Você recebe <strong>${reais(wage - mean)} a mais</strong> que a média nacional do setor.`
+               : `You earn <strong>${reais(wage - mean)} more</strong> than the national sector mean.`)
+           : (LANG === "pt"
+               ? `Você recebe <strong>${reais(mean - wage)} a menos</strong> que a média nacional do setor.`
+               : `You earn <strong>${reais(mean - wage)} less</strong> than the national sector mean.`)
+       }</p>`
+    : "";
+
+  const minLine = `
+    <div class="flex items-center justify-between text-sm mt-3">
+      <span>${LANG === "pt" ? "Salário mínimo nacional (2026)" : "National minimum wage (2026)"}</span>
+      <span class="num font-medium">${reais(min)}</span>
+    </div>
+    ${barRow(wage, min, false)}
+    <p class="text-xs text-gray-600">${
+      wage >= min
+        ? (LANG === "pt"
+            ? `Seu salário <strong>está acima</strong> do mínimo nacional.`
+            : `Your wage <strong>is above</strong> the national minimum.`)
+        : (LANG === "pt"
+            ? `Seu salário <strong>está ${reais(min - wage)} abaixo</strong> do mínimo nacional. Mensalistas com carteira têm direito a ganhar pelo menos o mínimo.`
+            : `Your wage <strong>is ${reais(min - wage)} below</strong> the national minimum. Monthly workers with a signed card have the right to at least the minimum wage.`)
+    }</p>`;
+
+  // Race-aware wage line if the worker self-identified
+  let raceLine = "";
+  if (ratio && d.race && d.race !== "skip") {
+    const isBlack = d.race === "preta" || d.race === "parda";
+    if (isBlack && mean) {
+      const negras_mean = 1156;          // DIEESE 2025 boletim Tabela 5
+      const nao_negras_mean = 1376;
+      raceLine = `
+        <div class="mt-4 pt-3 border-t rule">
+          <p class="text-sm font-medium mb-1">${LANG === "pt" ? "Comparação por cor/raça" : "Race comparison"}</p>
+          <p class="text-xs text-gray-600 mb-2">${LANG === "pt"
+            ? `Em média, mulheres negras no trabalho doméstico recebem <strong>${reais(negras_mean)}</strong> contra <strong>${reais(nao_negras_mean)}</strong> de não-negras (DIEESE, 4T 2024). É uma diferença de ${ratio.value_num}% — você está incluída nessa estatística.`
+            : `On average, Black women in domestic work earn <strong>${reais(negras_mean)}</strong> versus <strong>${reais(nao_negras_mean)}</strong> for non-Black women (DIEESE, Q4 2024). That's a ${ratio.value_num}% gap — you're part of this statistic.`}</p>
+          ${barRow(wage, negras_mean, false, "muted")}
+        </div>`;
+    }
+  }
+
+  document.getElementById("card-wage-body").innerHTML = `
+    <div class="flex items-baseline justify-between">
+      <span class="text-xs uppercase tracking-wide text-gray-600">${LANG === "pt" ? "Seu salário" : "Your wage"}</span>
+      <span class="num text-2xl font-medium">${reais(wage)}</span>
+    </div>
+    ${meanLine}
+    ${minLine}
+    ${raceLine}
+  `;
+}
+
+function barRow(value, reference, label = false, extraClass = "") {
+  const pct = Math.max(2, Math.min(100, (value / Math.max(reference, value)) * 100));
+  return `
+    <div class="bar-track my-1.5">
+      <div class="bar-fill ${extraClass}" style="width: ${pct}%"></div>
+    </div>
+  `;
+}
+
+function renderFormalityCard(d) {
+  const card = document.getElementById("card-formality");
+  card.classList.remove("good", "warn", "danger");
+  const body = document.getElementById("card-formality-body");
+
+  const isMensalista = d.domicilios === "um";
+  const hasCarteira  = d.carteira === "sim";
+
+  if (hasCarteira) {
+    card.classList.add("good");
+    const pctFormal = REF.national_pct_formal;
+    body.innerHTML = LANG === "pt"
+      ? `Você é parte da minoria — apenas <strong>${pctFormal ? fmt(pctFormal, 1) : "≈24"}%</strong> das trabalhadoras(es) domésticas(os) no Brasil têm carteira de trabalho assinada.`
+      : `You're part of the minority — only <strong>${pctFormal ? fmt(pctFormal, 1) : "~24"}%</strong> of Brazilian domestic workers have a signed work card.`;
+  } else if (isMensalista) {
+    card.classList.add("danger");
+    body.innerHTML = LANG === "pt"
+      ? `Você trabalha em uma só casa, então é <strong>mensalista</strong>. A LC 150/2015 obriga seu empregador a assinar sua carteira de trabalho. Você está entre os <strong>~76%</strong> de trabalhadoras(es) domésticas(os) sem carteira no Brasil — mas, ao contrário das diaristas, no seu caso isso é uma irregularidade trabalhista.`
+      : `You work in a single household, so you are a <strong>mensalista</strong>. LC 150/2015 requires your employer to sign your work card. You're among the <strong>~76%</strong> of Brazilian domestic workers without a signed card — but unlike day-rate workers, in your case that's a labour-law violation.`;
+  } else {
+    card.classList.add("warn");
+    body.innerHTML = LANG === "pt"
+      ? `Você trabalha em mais de uma casa, então é considerada <strong>diarista</strong>. A LC 150/2015 só obriga carteira para quem trabalha mais de 2 dias por semana na mesma casa. Importante: o número de diaristas no Brasil cresceu de 24% (2012) para cerca de 32% (2025) — e a categoria tem proteção mais fraca que a dos mensalistas.`
+      : `You work in more than one household, so you are considered a <strong>diarista</strong> (day-rate worker). LC 150/2015 only requires a work card if you work more than 2 days/week in the same household. Important context: the share of diaristas in Brazil rose from 24% (2012) to about 32% (2025) — and the category has weaker protection than mensalistas.`;
+  }
+}
+
+// LC 150/2015 entitlements. Keys = stable codes; rendering is bilingual.
+const RIGHTS = [
+  { code: "carteira",       pt: "Carteira de trabalho assinada",                en: "Signed work card" },
+  { code: "fgts",           pt: "FGTS (8% sobre seu salário, depositado todo mês)", en: "FGTS — 8% of your wage deposited monthly" },
+  { code: "inss",           pt: "INSS (contribuição para a previdência)",       en: "INSS — social security contribution" },
+  { code: "13o",            pt: "13º salário (pago em parcelas no final do ano)", en: "13th salary (year-end bonus)" },
+  { code: "ferias",         pt: "Férias remuneradas de 30 dias + 1/3 de adicional", en: "30 days paid vacation + 1/3 bonus" },
+  { code: "vt",             pt: "Vale-transporte (ou pagamento do transporte)", en: "Transport voucher (or paid commuting)" },
+  { code: "rsr",            pt: "Repouso semanal remunerado (folga paga)",      en: "Paid weekly rest day" },
+  { code: "hora_extra",     pt: "Hora extra com adicional de 50%",              en: "Overtime at +50%" },
+  { code: "adic_noturno",   pt: "Adicional noturno (20% após 22h)",             en: "Night-work bonus (+20% after 10pm)" },
+  { code: "salario_fam",    pt: "Salário-família (se você tem filhos)",         en: "Family allowance (if you have children)" },
+  { code: "lic_maternidade",pt: "Licença-maternidade de 120 dias",              en: "120-day maternity leave" },
+  { code: "estabilidade",   pt: "Estabilidade da gestante (até 5 meses após o parto)", en: "Pregnancy job stability (until 5 months after birth)" },
+  { code: "aviso",          pt: "Aviso prévio em caso de demissão",             en: "Notice period in case of dismissal" },
+  { code: "multa_fgts",     pt: "Multa de 40% do FGTS na demissão sem justa causa", en: "40% FGTS fine on dismissal without cause" },
+  { code: "seguro_des",     pt: "Seguro-desemprego ao ser demitida sem justa causa", en: "Unemployment insurance" },
+];
+
+function renderRightsCard(d) {
+  const isMensalista = d.domicilios === "um";
+  const hasCarteira  = d.carteira === "sim";
+  const intro = document.getElementById("card-rights-intro");
+  const list  = document.getElementById("card-rights-list");
+
+  let status;            // function (right) → 'ok' | 'miss' | 'na'
+  if (isMensalista && hasCarteira) {
+    intro.innerHTML = LANG === "pt"
+      ? "Como mensalista com carteira assinada, todos esses direitos devem estar sendo cumpridos. Confira:"
+      : "As a mensalista with a signed work card, all of these rights should be honored. Check them:";
+    status = () => "ok";
+  } else if (isMensalista && !hasCarteira) {
+    intro.innerHTML = LANG === "pt"
+      ? "Como mensalista, você tem direito a tudo isso pela LC 150/2015 — mas a falta da carteira assinada faz com que esses direitos não estejam sendo cumpridos:"
+      : "As a mensalista, you are entitled to all of this under LC 150/2015 — but without a signed work card these rights are not being honored:";
+    status = () => "miss";
+  } else {
+    intro.innerHTML = LANG === "pt"
+      ? "Como diarista (mais de uma casa, normalmente até 2 dias por semana cada), a LC 150/2015 não obriga seu empregador a fornecer estes direitos. Você pode contribuir como autônoma para o INSS:"
+      : "As a diarista (more than one household, typically up to 2 days/week each), LC 150/2015 does not require your employer to provide these rights. You can contribute to INSS as a self-employed worker:";
+    status = (right) => right.code === "inss" ? "ok" : "na";
+  }
+
+  list.innerHTML = RIGHTS.map(r => {
+    const s = status(r);
+    const icon = s === "ok" ? "✓" : (s === "miss" ? "!" : "—");
+    const text = LANG === "pt" ? r.pt : r.en;
+    return `<div class="right-row">
+      <span class="right-icon ${s}">${icon}</span>
+      <span class="text-sm leading-snug ${s === "miss" ? "" : "text-gray-700"}">${text}</span>
+    </div>`;
+  }).join("");
+}
+
+function renderHoursCard(d) {
+  const card = document.getElementById("card-hours");
+  if (!d.hours || d.hours <= LEGAL_WEEKLY_HOURS_MAX) { card.classList.add("hidden"); return; }
+  card.classList.remove("hidden");
+  const overflow = d.hours - LEGAL_WEEKLY_HOURS_MAX;
+  document.getElementById("card-hours-body").innerHTML = LANG === "pt"
+    ? `Você declarou trabalhar <strong>${d.hours}h por semana</strong>. A jornada legal máxima é de <strong>44h</strong>. As <strong>${overflow}h extras</strong> precisam ser pagas com adicional mínimo de 50% (artigo 2º da LC 150/2015).`
+    : `You reported working <strong>${d.hours}h per week</strong>. The legal weekly maximum is <strong>44h</strong>. The <strong>${overflow} extra hours</strong> must be paid at a minimum 50% premium (LC 150/2015, art. 2).`;
+}
+
+function buildShareText(d) {
+  if (!d) return "";
+  const lines = [];
+  if (LANG === "pt") {
+    lines.push("📊 Como me comparo (trabalho doméstico no Brasil):");
+    if (d.name) lines.push(d.name);
+    lines.push(`Salário: ${reais(d.wage)} · ${d.carteira === "sim" ? "com carteira" : "sem carteira"} · ${d.domicilios === "um" ? "mensalista" : "diarista"}`);
+    if (REF.national_mean_wage) lines.push(`Média nacional: ${reais(REF.national_mean_wage)}`);
+    lines.push(`Salário mínimo (2026): ${reais(MIN_WAGE_BRL_2026)}`);
+    lines.push(`Veja a calculadora completa: ${location.href}`);
+  } else {
+    lines.push("📊 How I compare (domestic work in Brazil):");
+    if (d.name) lines.push(d.name);
+    lines.push(`Wage: ${reais(d.wage)} · ${d.carteira === "sim" ? "with work card" : "without work card"} · ${d.domicilios === "um" ? "mensalista" : "diarista"}`);
+    if (REF.national_mean_wage) lines.push(`National mean: ${reais(REF.national_mean_wage)}`);
+    lines.push(`Minimum wage (2026): ${reais(MIN_WAGE_BRL_2026)}`);
+    lines.push(`See the full calculator: ${location.href}`);
+  }
+  return lines.join("\n");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+// ============ INIT ============
+applyI18n();
+loadReference().catch(err => {
+  console.error(err);
+  document.getElementById("status").textContent = LANG === "pt"
+    ? "Não foi possível carregar dados de referência. Você ainda pode usar a calculadora — alguns números de comparação podem aparecer como —."
+    : "Could not load reference data. The calculator still works — some comparison numbers may show as —.";
+  populateUfDropdown();
+});
+</script>
+
+</body>
+</html>

@@ -49,6 +49,9 @@
       <p class="text-sm text-gray-600 mt-1" data-i18n="subtitle">Dados da PNAD Contínua, Censo 2022 e ILOSTAT — em colaboração com o STDMSP e a pesquisa de Jean-François Mayer (Concordia).</p>
     </div>
     <div class="flex items-center gap-3">
+      <a href="./calculadora.html" class="px-3 py-2 text-sm font-medium rounded-lg bg-red-700 text-white hover:bg-red-800 active:bg-red-900" data-i18n="cta-calculator">
+        Como você se compara? →
+      </a>
       <div role="group" aria-label="Language">
         <button class="lang-btn" data-lang="pt" aria-pressed="true">PT</button><button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
       </div>
@@ -165,9 +168,12 @@
 </section>
 
 <footer class="border-t rule">
-  <div class="max-w-6xl mx-auto px-5 py-4 text-xs text-gray-500 flex flex-wrap items-center justify-between gap-2">
+  <div class="max-w-6xl mx-auto px-5 py-4 text-xs text-gray-500 flex flex-wrap items-center justify-between gap-3">
     <span>STDMSP × <a href="https://www.facebook.com/TrabalhadorasDomesticasSP" class="underline">Sindicato das Trabalhadoras Domésticas SP</a> × Jean-François Mayer (Concordia)</span>
-    <span><span data-i18n="updated">Atualizado em: </span><span id="updated-at">—</span></span>
+    <span class="flex items-center gap-3">
+      <a href="./embeds.html" class="underline" data-i18n="footer-embeds">Incorporar gráficos →</a>
+      <span><span data-i18n="updated">Atualizado em: </span><span id="updated-at">—</span></span>
+    </span>
   </div>
 </footer>
 
@@ -176,6 +182,7 @@
 const I18N = {
   pt: {
     badge: "Painel da categoria",
+    "cta-calculator": "Como você se compara? →",
     title: "Trabalho doméstico no Brasil",
     subtitle: "Dados da PNAD Contínua, Censo 2022 e ILOSTAT — em colaboração com o STDMSP e a pesquisa de Jean-François Mayer (Concordia).",
     "filter-label": "Filtros:",
@@ -212,9 +219,11 @@ const I18N = {
     "about-body": "Os números deste painel vêm da PNAD Contínua (IBGE), do Censo Demográfico 2022 e do ILOSTAT. A categoria \"trabalhador(a) doméstico(a)\" segue a definição do IBGE, que inclui empregadas(os) mensalistas e diaristas, com ou sem carteira de trabalho assinada. Os dados de salário se referem ao setor \"Serviços domésticos\" da PNADC, em reais constantes (real). O comparativo internacional usa a categoria mais ampla ISCO-08 91 do ILOSTAT (\"trabalhadores de limpeza e auxiliares\"), o que explica por que os totais nacionais nesse gráfico são maiores do que os totais de \"trabalhador doméstico\" do IBGE.",
     empty: "Sem dados ainda. Rode o ETL para preencher.",
     updated: "Atualizado em: ",
+    "footer-embeds": "Incorporar gráficos →",
   },
   en: {
     badge: "Sector dashboard",
+    "cta-calculator": "How do you compare? →",
     title: "Domestic work in Brazil",
     subtitle: "Data from PNAD Contínua, the 2022 Census and ILOSTAT — in collaboration with STDMSP and the research of Jean-François Mayer (Concordia).",
     "filter-label": "Filters:",
@@ -251,6 +260,7 @@ const I18N = {
     "about-body": "The numbers in this dashboard come from the PNAD Contínua (IBGE), the 2022 Demographic Census, and ILOSTAT. The category \"domestic worker\" follows IBGE's definition, which includes monthly employees and daily-rate workers, with or without a signed work card. Wage figures are for the PNADC \"Domestic services\" sector, in constant (real) reais. The international comparator uses ILOSTAT's broader ISCO-08 group 91 (\"cleaners and helpers\"), which is why national totals there are higher than IBGE's \"domestic worker\" totals.",
     empty: "No data yet. Run the ETL to populate.",
     updated: "Updated: ",
+    "footer-embeds": "Embed charts →",
   }
 };
 

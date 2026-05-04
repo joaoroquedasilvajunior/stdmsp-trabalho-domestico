@@ -66,8 +66,18 @@
     .bar-fill  { height: 100%; background: var(--accent); border-radius: 999px; transition: width 400ms ease; }
     .bar-fill.muted { background: #6b7280; }
 
+    .chita-band {
+      width: 100%; height: 44px;
+      background-image: url('./assets/chita-band.svg');
+      background-repeat: repeat-x;
+      background-size: auto 100%;
+      background-position: center;
+    }
+    @media (max-width: 640px) { .chita-band { height: 32px; } }
+
     @media print {
       body { background: white; }
+      .chita-band { display: none; }
       .no-print { display: none !important; }
       header, main { padding-top: 0 !important; padding-bottom: 0 !important; }
       .stat-card { box-shadow: none; }
@@ -76,6 +86,9 @@
   </style>
 </head>
 <body class="min-h-screen">
+
+<!-- Chita ribbon — top -->
+<div class="chita-band no-print" aria-hidden="true"></div>
 
 <header class="border-b rule bg-white no-print">
   <div class="max-w-3xl mx-auto px-5 py-4 flex items-center justify-between gap-3 flex-wrap">
@@ -209,7 +222,10 @@
 
 </main>
 
-<footer class="border-t rule mt-12 no-print">
+<!-- Chita ribbon — bottom -->
+<div class="chita-band no-print mt-12" aria-hidden="true"></div>
+
+<footer class="border-t rule no-print">
   <div class="max-w-3xl mx-auto px-5 py-4 text-xs text-gray-500 flex flex-wrap items-center justify-between gap-2">
     <span>STDMSP × Jean-François Mayer (Concordia)</span>
     <a href="./" class="underline" data-i18n="footer-back">Painel completo →</a>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Chita-inspired pattern — original SVG, no licensing.
+  Designed to tile horizontally as a thin band at the top + bottom of the page.
+  Repeat unit: 240×48. Motifs sit inside x∈[20, 220] so the seam at the tile
+  boundary is pure yellow background — invisible.
+  Palette intentionally pulls the dashboard's red accent (#b91c1c) into the
+  big rose so the band reads as continuous with the rest of the design.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Padrão floral inspirado em chita">
+
+  <!-- Yellow chita background -->
+  <rect width="240" height="48" fill="#fcd34d"/>
+
+  <!-- Leaves (background layer) -->
+  <g fill="#16a34a">
+    <ellipse cx="38"  cy="40" rx="13" ry="4" transform="rotate(-18 38 40)"/>
+    <ellipse cx="80"  cy="36" rx="12" ry="4" transform="rotate(22 80 36)"/>
+    <ellipse cx="32"  cy="9"  rx="11" ry="3.5" transform="rotate(15 32 9)"/>
+    <ellipse cx="100" cy="10" rx="10" ry="3.5" transform="rotate(-25 100 10)"/>
+    <ellipse cx="158" cy="9"  rx="12" ry="4" transform="rotate(-12 158 9)"/>
+    <ellipse cx="200" cy="40" rx="12" ry="4" transform="rotate(18 200 40)"/>
+    <ellipse cx="135" cy="40" rx="11" ry="3.5" transform="rotate(35 135 40)"/>
+  </g>
+  <g fill="#15803d" opacity="0.85">
+    <ellipse cx="55"  cy="6"  rx="9"  ry="2.5" transform="rotate(-25 55 6)"/>
+    <ellipse cx="172" cy="42" rx="10" ry="3"   transform="rotate(15 172 42)"/>
+  </g>
+
+  <!-- Big rose (left) — uses the dashboard's red accent palette -->
+  <g transform="translate(60, 24)">
+    <circle r="17" fill="#7f1d1d"/>
+    <circle r="14" fill="#991b1b"/>
+    <circle r="11" fill="#b91c1c"/>
+    <circle r="8"  fill="#dc2626"/>
+    <circle r="5.5" fill="#f87171"/>
+    <circle r="3"   fill="#fed7aa"/>
+    <circle r="1"   fill="#15803d"/>
+  </g>
+
+  <!-- Daisy (center) -->
+  <g transform="translate(124, 24)">
+    <g fill="#ffffff" stroke="#facc15" stroke-width="0.5">
+      <ellipse rx="2.8" ry="6"   cy="-5.5" transform="rotate(0)"/>
+      <ellipse rx="2.8" ry="6"   cy="-5.5" transform="rotate(45)"/>
+      <ellipse rx="2.8" ry="6"   cy="-5.5" transform="rotate(90)"/>
+      <ellipse rx="2.8" ry="6"   cy="-5.5" transform="rotate(135)"/>
+      <ellipse rx="2.8" ry="6"   cy="-5.5" transform="rotate(180)"/>
+      <ellipse rx="2.8" ry="6"   cy="-5.5" transform="rotate(225)"/>
+      <ellipse rx="2.8" ry="6"   cy="-5.5" transform="rotate(270)"/>
+      <ellipse rx="2.8" ry="6"   cy="-5.5" transform="rotate(315)"/>
+    </g>
+    <circle r="3.2" fill="#facc15"/>
+    <circle r="1.4" fill="#b45309"/>
+  </g>
+
+  <!-- Small pink rose (right) -->
+  <g transform="translate(184, 24)">
+    <circle r="12" fill="#9d174d"/>
+    <circle r="9"  fill="#be185d"/>
+    <circle r="6.5" fill="#ec4899"/>
+    <circle r="4"   fill="#f9a8d4"/>
+    <circle r="2"   fill="#fef3c7"/>
+    <circle r="0.8" fill="#15803d"/>
+  </g>
+
+  <!-- Tiny accent buds in the negative space -->
+  <g>
+    <circle cx="100" cy="36" r="2.2" fill="#dc2626"/>
+    <circle cx="100" cy="36" r="0.8" fill="#fef3c7"/>
+    <circle cx="160" cy="36" r="2"   fill="#ec4899"/>
+    <circle cx="160" cy="36" r="0.7" fill="#fef3c7"/>
+    <circle cx="40"  cy="22" r="1.8" fill="#ffffff"/>
+    <circle cx="220" cy="14" r="1.8" fill="#ffffff"/>
+  </g>
+
+</svg>

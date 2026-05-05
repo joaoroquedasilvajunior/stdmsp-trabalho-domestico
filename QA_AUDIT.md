@@ -388,6 +388,80 @@ re-computed end-to-end.
 
 ---
 
+### 2026-05-06 (correction continued) — `% Mulheres` trajectory verified across all 56 quarters
+
+**What was done.** Console verification on the live dashboard re-computed
+`F / (F+M)` for every period in `fact_workers` where
+`source_table = 'PNADC-MICRODATA'` and `race_code = formality_code = 'total'`.
+Full series (56 quarters, 201201 → 202504) returned and analyzed.
+
+**Headline corrections to the trajectory narrative.**
+
+| Claim (prior, unverified) | Verified value | Status |
+|---|---:|---|
+| Long-run shift 2012Q1 → 2025Q4 | **−0,66 pp** (92,59 % → 91,93 %) | ❌ prior claim of **−1,3 pp** was approximately 2× the true value |
+| 2012Q1 starting share | **92,59 %** | ❌ prior claim of **93,0 %** off by ~0,4 pp |
+| 2025Q4 latest share | **91,93 %** | ❌ prior claim of **91,7 %** off by ~0,2 pp |
+| Series minimum | **90,51 %** at `202003` (Q3 2020 — peak COVID disruption) | new |
+| Series maximum | **93,57 %** at `201502` (Q2 2015) | new |
+| Range across the 14-year window | **3,06 pp** | new |
+
+**Verified trajectory shape.** Three regimes are visible in the series:
+
+1. **2012–2015 (high plateau)** — quarterly share oscillates around
+   **92,5–93,5 %**, with the series maximum (93,57 %) hit in Q2 2015. No
+   structural decline in this window.
+2. **2015–2019 (gradual erosion)** — share drifts down to a
+   pre-pandemic baseline of **~92,2 %** by 2019Q4. Total drift in this
+   regime: ~0,5 pp.
+3. **2020 onward (COVID shock + partial recovery)** — share collapses
+   to **90,51 %** in 2020Q3 (the only sub-91 % reading in the entire
+   series), recovers to ~91,9 % by 2024Q4 but does not return to the
+   2012–2014 highs. Latest verified reading (2025Q4): **91,93 %**.
+
+**What this means substantively.** The "trabalhadoras domésticas are
+becoming less female" narrative I had drafted on top of the wrong −1,3 pp
+figure is not supported by the verified data. The true picture is closer
+to **stable around 92 %**, with two distinct features worth reporting:
+(a) a modest post-2014 erosion of ~0,5 pp, and (b) a real but largely
+recovered COVID dip. The series-wide range (3 pp) is small relative to
+the racialization shift documented separately (+5,2 pp for *negras*),
+which remains the substantively dominant headline finding for this
+project.
+
+**Revised cross-dimensional summary.** Trabalhadoras domésticas in 2025
+compared to 2012 are **substantially more Black** (+5,2 pp), **roughly
+as female** (−0,7 pp, within historical noise), and **paid the same
+ratio relative to non-Black peers** (~84 % both periods). The
+racialization story is the load-bearing finding; the gender-share story
+should be reported as *stable*, not *declining*.
+
+**Verified series (selected reference points).**
+
+| Period | F (mil) | M (mil) | Total (mil) | % F |
+|---|---:|---:|---:|---:|
+| 2012Q1 | 5 507,42 | 440,92 | 5 948,34 | **92,59 %** |
+| 2014Q4 | 5 396,27 | 388,28 | 5 784,55 | 93,29 % |
+| 2015Q2 (max) | 5 427,87 | 373,30 | 5 801,17 | **93,57 %** |
+| 2019Q4 (pre-COVID) | 5 638,86 | 478,47 | 6 117,33 | 92,18 % |
+| 2020Q3 (min) | 3 960,80 | 415,23 | 4 376,03 | **90,51 %** |
+| 2020Q4 (recovery) | 4 261,11 | 365,41 | 4 626,52 | 92,10 % |
+| 2024Q4 | 5 407,02 | 468,42 | 5 875,44 | 92,03 % |
+| 2025Q4 (latest) | 5 120,51 | 449,31 | 5 569,82 | **91,93 %** |
+
+Full 56-quarter series stashed at `window._mulheresSeries` on the live
+page during this verification run; available for re-export at any time
+via the same DevTools console snippet.
+
+**Status.** The KPI tile and methodology page can be cited with
+confidence. The dashboard does not currently surface the female-share
+trajectory as a chart; that is a deliberate scope decision (the
+substantive story is now "stable", which doesn't merit a dedicated
+visual). If a future story-mode pass wants to show this stability
+explicitly, the data is in `fact_workers` ready to plot.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

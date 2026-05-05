@@ -139,6 +139,27 @@
     }
     .map-legend .swatch { width: 16px; height: 12px; border: 1px solid rgba(0,0,0,0.04); border-radius: 2px; display: inline-block; }
     .map-legend .lbl { margin-right: 4px; }
+    /* --- C189 ratification panel --- */
+    .c189-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .c189-card {
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 10px 12px;
+      background: white;
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 8px;
+    }
+    .c189-card.featured-br { border-color: var(--accent); border-width: 2px; }
+    .c189-card.featured-mx { border-color: var(--ink); border-width: 2px; }
+    .c189-card .country { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .c189-card .year { font-size: 18px; font-variant-numeric: tabular-nums; color: var(--accent); font-weight: 600; }
+    .c189-card.featured-mx .year { color: var(--ink); }
+    .c189-note { font-size: 11px; color: #666; margin-top: 12px; line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -323,6 +344,13 @@
     <div class="chart-box" id="box-intl"><canvas id="chart-intl"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
   </article>
 
+  <article class="border rule rounded-lg p-4 bg-white md:col-span-2">
+    <h2 class="text-base font-medium" data-i18n="c189-title">Status legal — Convenção 189 da OIT</h2>
+    <p class="text-xs text-gray-500 mb-1" data-i18n="c189-meta">Ano de ratificação por país. A C189 (Convenção sobre Trabalhadoras e Trabalhadores Domésticos, 2011) estabelece direitos iguais aos de outras categorias.</p>
+    <div class="c189-grid" id="c189-grid" aria-label="Ratificações da C189"></div>
+    <p class="c189-note" data-i18n="c189-footnote">Brasil ratificou em janeiro de 2018, três anos após a entrada em vigor da LC 150/2015 — ou seja, a legislação interna precedeu o compromisso internacional. México ratificou apenas em julho de 2020. Uruguai foi o primeiro país do mundo a ratificar, em junho de 2012. Fonte: NORMLEX (OIT).</p>
+  </article>
+
 </section>
 
 <!-- ============ ABOUT THE DATA ============ -->
@@ -407,6 +435,9 @@ const I18N = {
     "chart-region-meta": "milhares de pessoas · top 10 UFs · trimestre mais recente disponível",
     "chart-intl": "Comparativo internacional — Brasil ↔ México",
     "chart-intl-meta": "Trajetória ILOSTAT · trabalhadoras(es) domésticas(os) (ISCO 91) por ano · BR e MX em destaque, demais países da América Latina como contexto",
+    "c189-title": "Status legal — Convenção 189 da OIT",
+    "c189-meta": "Ano de ratificação por país. A C189 (Convenção sobre Trabalhadoras e Trabalhadores Domésticos, 2011) estabelece direitos iguais aos de outras categorias.",
+    "c189-footnote": "Brasil ratificou em janeiro de 2018, três anos após a entrada em vigor da LC 150/2015 — ou seja, a legislação interna precedeu o compromisso internacional. México ratificou apenas em julho de 2020. Uruguai foi o primeiro país do mundo a ratificar, em junho de 2012. Fonte: NORMLEX (OIT).",
     "about-title": "Sobre os dados",
     "about-body": "Os números deste painel vêm da PNAD Contínua (IBGE), do Censo Demográfico 2022 e do ILOSTAT. A categoria \"trabalhador(a) doméstico(a)\" segue a definição do IBGE, que inclui empregadas(os) mensalistas e diaristas, com ou sem carteira de trabalho assinada. Os dados de salário se referem ao setor \"Serviços domésticos\" da PNADC, em reais constantes (real). O comparativo internacional usa a categoria mais ampla ISCO-08 91 do ILOSTAT (\"trabalhadores de limpeza e auxiliares\"), o que explica por que os totais nacionais nesse gráfico são maiores do que os totais de \"trabalhador doméstico\" do IBGE.",
     empty: "Sem dados ainda. Rode o ETL para preencher.",
@@ -460,6 +491,9 @@ const I18N = {
     "chart-region-meta": "thousands of people · top 10 states · latest available quarter",
     "chart-intl": "International comparison — Brazil ↔ Mexico",
     "chart-intl-meta": "ILOSTAT trajectory · domestic workers (ISCO 91) by year · Brazil and Mexico featured, other Latin American countries shown as context",
+    "c189-title": "Legal status — ILO Convention 189",
+    "c189-meta": "Year of ratification per country. C189 (Domestic Workers Convention, 2011) establishes rights equal to those of other categories of workers.",
+    "c189-footnote": "Brazil ratified in January 2018, three years after LC 150/2015 came into force — meaning domestic legislation preceded the international commitment. Mexico only ratified in July 2020. Uruguay was the first country in the world to ratify, in June 2012. Source: NORMLEX (ILO).",
     "about-title": "About the data",
     "about-body": "The numbers in this dashboard come from the PNAD Contínua (IBGE), the 2022 Demographic Census, and ILOSTAT. The category \"domestic worker\" follows IBGE's definition, which includes monthly employees and daily-rate workers, with or without a signed work card. Wage figures are for the PNADC \"Domestic services\" sector, in constant (real) reais. The international comparator uses ILOSTAT's broader ISCO-08 group 91 (\"cleaners and helpers\"), which is why national totals there are higher than IBGE's \"domestic worker\" totals.",
     empty: "No data yet. Run the ETL to populate.",
@@ -759,6 +793,7 @@ function render() {
   renderMapUF();
   renderRegion();
   renderIntl();
+  renderC189();
   renderSources();
   setText("updated-at", new Date().toLocaleDateString(LANG === "pt" ? "pt-BR" : "en-CA"));
 }
@@ -1553,6 +1588,35 @@ function renderIntl() {
       interaction: { mode: "index", intersect: false },
     },
   });
+}
+
+// ============ C189 RATIFICATION PANEL ============
+// Static data — ILO Convention 189 (Domestic Workers, 2011) ratification dates
+// per country in our comparator. Verified against NORMLEX (ilo.org/normlex).
+// Listed chronologically so the timeline of legal commitment reads at a glance.
+const C189_RATIFICATIONS = [
+  { iso3: "URY", year: 2012, month: "junho",    name_pt: "Uruguai",   name_en: "Uruguay" },
+  { iso3: "ECU", year: 2013, month: "dezembro", name_pt: "Equador",   name_en: "Ecuador" },
+  { iso3: "ARG", year: 2014, month: "março",    name_pt: "Argentina", name_en: "Argentina" },
+  { iso3: "COL", year: 2014, month: "maio",     name_pt: "Colômbia",  name_en: "Colombia" },
+  { iso3: "CHL", year: 2015, month: "junho",    name_pt: "Chile",     name_en: "Chile" },
+  { iso3: "BRA", year: 2018, month: "janeiro",  name_pt: "Brasil",    name_en: "Brazil" },
+  { iso3: "PER", year: 2018, month: "novembro", name_pt: "Peru",      name_en: "Peru" },
+  { iso3: "MEX", year: 2020, month: "julho",    name_pt: "México",    name_en: "Mexico" },
+];
+
+function renderC189() {
+  const host = document.getElementById("c189-grid");
+  if (!host) return;
+  host.innerHTML = C189_RATIFICATIONS.map(r => {
+    const featured = r.iso3 === "BRA" ? "featured-br"
+                   : r.iso3 === "MEX" ? "featured-mx" : "";
+    const name = LANG === "pt" ? r.name_pt : r.name_en;
+    return `<div class="c189-card ${featured}" title="${r.month} ${r.year}">
+      <span class="country">${name}</span>
+      <span class="year">${r.year}</span>
+    </div>`;
+  }).join("");
 }
 
 function renderSources() {

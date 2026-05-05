@@ -4,3 +4,8 @@ pyyaml>=6.0
 python-dotenv>=1.0
 supabase>=2.5
 tenacity>=8.2
+# Microdata pipeline (PNADC fixed-width parsing + local SQL aggregations)
+pyarrow>=16.0
+duckdb>=1.0
+openpyxl>=3.1
+tqdm>=4.66

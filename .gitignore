@@ -31,3 +31,9 @@ Thumbs.db
 # --- Logs / scratch ---
 *.log
 .scratch/
+
+# --- ETL caches ---
+# PNADC microdata zips and extracted text are huge (~200 MB per quarter,
+# ~10 GB across full backfill). Always re-fetchable from IBGE FTP; never commit.
+etl/raw/
+metadata_probe.json

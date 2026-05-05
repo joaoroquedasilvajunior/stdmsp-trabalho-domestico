@@ -230,8 +230,8 @@ const I18N = {
     "chart-wages-meta": "PNAD Contínua trimestral · setor \"Serviços domésticos\" · em reais constantes",
     "chart-mensalista": "Mensalistas vs. diaristas",
     "chart-mensalista-meta": "% diaristas (mais de 1 domicílio) · proteção mais fraca sob LC 150/2015",
-    "chart-race": "Composição por cor/raça",
-    "chart-race-meta": "% do total de trabalhadoras(es) domésticas(os)",
+    "chart-race": "Composição por cor/raça ao longo do tempo",
+    "chart-race-meta": "% do total · PNAD Contínua microdados · computado, não atribuído",
     "chart-wage-gap": "Hiato salarial racial",
     "chart-wage-gap-meta": "trabalhadoras domésticas negras vs. não-negras · fonte: DIEESE",
     "wage-gap-narrative": "Para cada R$ 100 recebidos por uma trabalhadora doméstica não-negra, uma trabalhadora doméstica negra recebe R$ 76.",
@@ -272,8 +272,8 @@ const I18N = {
     "chart-wages-meta": "PNADC quarterly · \"Domestic services\" sector · constant reais",
     "chart-mensalista": "Monthly workers vs. day-rate workers",
     "chart-mensalista-meta": "% day-rate (multiple households) · weaker protection under LC 150/2015",
-    "chart-race": "Race composition",
-    "chart-race-meta": "% of total domestic workers",
+    "chart-race": "Race composition over time",
+    "chart-race-meta": "% of total · PNADC microdata · computed, not attributed",
     "chart-wage-gap": "Racial wage gap",
     "chart-wage-gap-meta": "Black vs. non-Black domestic workers · source: DIEESE",
     "wage-gap-narrative": "For every R$ 100 earned by a non-Black domestic worker, a Black domestic worker earns R$ 76.",
@@ -581,12 +581,16 @@ function renderKpis() {
     : (isBR ? "—" : (LANG === "pt" ? "n/d" : "n/a"))   // 6383 doesn't carry the formality split
   );
 
-  // Sex / race come from static facts (DIEESE-attributed) — these are national-level only.
-  // When a specific UF is selected, dim the tiles to signal they aren't localised data.
+  // Sex / race come from two layers:
+  //   - pct_women still from DIEESE static fact (no microdata cross-tab yet)
+  //   - pct_negras: prefer the computed value from PNADC microdata when available;
+  //     fall back to the DIEESE static fact otherwise.
   const sfWomen  = STATE.staticFacts["pct_women"];
   const sfNegras = STATE.staticFacts["pct_negras"];
+  const computedNegras = getComputedPctNegras();
   setText("kpi-women-value", sfWomen ? fmt(sfWomen.value_num, 1) + "%" : "—");
-  setText("kpi-black-value", sfNegras ? fmt(sfNegras.value_num, 1) + "%" : "—");
+  const negrasPct = computedNegras != null ? computedNegras : (sfNegras ? sfNegras.value_num : null);
+  setText("kpi-black-value", negrasPct != null ? fmt(negrasPct, 1) + "%" : "—");
 
   const womenCard = document.getElementById("kpi-women-card");
   const blackCard = document.getElementById("kpi-black-card");
@@ -600,11 +604,17 @@ function renderKpis() {
   setText("kpi-total-meta",
     (LANG === "pt" ? "milhares de pessoas · " : "thousands of people · ") + geoLabel + " · " + periodLabel);
   // When dimmed, swap the meta line to explain the tile is national-only.
-  const meta = isBR
+  const womenMeta = isBR
     ? (LANG === "pt" ? "fonte: DIEESE · BR" : "source: DIEESE · BR")
     : (LANG === "pt" ? "disponível só para Brasil" : "available for Brazil only");
-  if (sfWomen)  setText("kpi-women-meta", meta);
-  if (sfNegras) setText("kpi-black-meta", meta);
+  // The Negras tile now reads from microdata (computed) when available — flag it.
+  const negrasMeta = !isBR
+    ? (LANG === "pt" ? "disponível só para Brasil" : "available for Brazil only")
+    : (computedNegras != null
+        ? (LANG === "pt" ? "fonte: PNADC microdados (computado)" : "source: PNADC microdata (computed)")
+        : (LANG === "pt" ? "fonte: DIEESE · BR" : "source: DIEESE · BR"));
+  if (sfWomen)  setText("kpi-women-meta", womenMeta);
+  setText("kpi-black-meta", negrasMeta);
 }
 
 function renderTrend() {
@@ -704,32 +714,108 @@ function renderWages() {
   });
 }
 
+// Helper: latest computed % pretas+pardas from PNADC microdata, or null if
+// the microdata backfill hasn't been pushed to Supabase yet.
+function getComputedPctNegras() {
+  const rows = STATE.workers.filter(r => r.source_table === "PNADC-MICRODATA" && r.formality_code === "total");
+  if (!rows.length) return null;
+  const latestPeriod = rows.map(r => String(r.period_code)).sort().slice(-1)[0];
+  const RACES = ["branca", "preta", "parda", "amarela", "indigena"];
+  let totalK = 0;
+  for (const race of RACES) {
+    const r = rows.find(x => String(x.period_code) === latestPeriod && x.race_code === race);
+    if (r) totalK += Number(r.workers_thousands);
+  }
+  const negras = rows.find(r => String(r.period_code) === latestPeriod && r.race_code === "preta_parda");
+  if (!negras || !totalK) return null;
+  return 100 * Number(negras.workers_thousands) / totalK;
+}
+
 function renderRace() {
-  // SIDRA doesn't carry race × posição cross-tabs for trabalhador doméstico.
-  // Use the DIEESE-attributed static fact instead.
-  const sf = STATE.staticFacts["pct_negras"];
-  setEmpty("box-race", !sf);
+  // Race composition over time, computed from PNADC microdata.
+  // One line per race: branca, preta, parda, amarela, indigena.
+  const rows = STATE.workers.filter(r =>
+    r.source_table === "PNADC-MICRODATA"
+    && r.formality_code === "total"
+    && ["branca", "preta", "parda", "amarela", "indigena"].includes(r.race_code)
+  );
+
+  if (!rows.length) {
+    setEmpty("box-race", true); destroyChart("race"); return;
+  }
+
+  // Periods sorted chronologically (period_code is 'YYYYTT' for trimestre fixo)
+  const periods = [...new Set(rows.map(r => String(r.period_code)))].sort();
+
+  // Per-period total (sum across the 5 races, all in formality='total')
+  const periodTotals = {};
+  for (const p of periods) periodTotals[p] = 0;
+  for (const r of rows) periodTotals[String(r.period_code)] += Number(r.workers_thousands);
+
+  // Index by race
+  const byRace = { branca: {}, preta: {}, parda: {}, amarela: {}, indigena: {} };
+  for (const r of rows) byRace[r.race_code][String(r.period_code)] = Number(r.workers_thousands);
+
+  const RACE_COLORS = {
+    parda:    "#b91c1c",   // dashboard accent
+    branca:   "#9ca3af",   // gray
+    preta:    "#1f2937",   // charcoal
+    amarela:  "#f59e0b",   // amber
+    indigena: "#0d9488",   // teal
+  };
+  const RACE_LABELS = LANG === "pt"
+    ? { parda: "Parda", branca: "Branca", preta: "Preta", amarela: "Amarela", indigena: "Indígena" }
+    : { parda: "Brown (parda)", branca: "White", preta: "Black", amarela: "East Asian", indigena: "Indigenous" };
+
+  // Order largest-to-smallest at the latest period so the legend reads naturally
+  const racesOrdered = ["parda", "branca", "preta", "amarela", "indigena"];
+
+  const datasets = racesOrdered.map(race => ({
+    label: RACE_LABELS[race],
+    data: periods.map(p => {
+      const tot = periodTotals[p];
+      return tot ? 100 * (byRace[race][p] || 0) / tot : 0;
+    }),
+    borderColor: RACE_COLORS[race],
+    backgroundColor: RACE_COLORS[race] + "20",
+    fill: false,
+    tension: 0.25,
+    pointRadius: 0,
+    borderWidth: 2,
+  }));
+
+  setEmpty("box-race", false);
   destroyChart("race");
-  if (!sf) return;
-  const blackPct = sf.value_num;
-  const otherPct = 100 - blackPct;
   charts.race = new Chart(document.getElementById("chart-race"), {
-    type: "doughnut",
-    data: {
-      labels: LANG === "pt"
-        ? ["Negras (pretas + pardas)", "Demais"]
-        : ["Black (pretas + pardas)", "Other"],
-      datasets: [{ data: [blackPct, otherPct], backgroundColor: ["#b91c1c", "#d4d4d8"] }],
-    },
+    type: "line",
+    plugins: [yearBandPlugin],
+    data: { labels: periods.map(p => fmtPeriodTrim(p)), datasets },
     options: {
       plugins: {
-        legend: { position: "bottom" },
-        tooltip: { callbacks: { label: c => c.label + ": " + fmt(c.parsed, 1) + "%" } },
+        legend: { position: "bottom", labels: { font: { size: 11 }, boxWidth: 12 } },
+        tooltip: { callbacks: { label: c => c.dataset.label + ": " + fmt(c.parsed.y, 1) + "%" } },
+        ...yearBandOpts(periods),
       },
-      cutout: "60%",
+      scales: {
+        x: { ticks: { autoSkip: true, maxTicksLimit: 14, maxRotation: 0 } },
+        y: { ticks: { callback: v => v + "%" }, suggestedMin: 0, suggestedMax: 60 },
+      },
       maintainAspectRatio: false,
     },
   });
+}
+
+// PNADC trimestre fixo period codes are YYYYTT (e.g. "202404" = Q4 2024).
+// fmtPeriod (for trimestre móvel) reads them as months — wrong here. Format
+// as "Q4/24" instead.
+function fmtPeriodTrim(code) {
+  const s = String(code);
+  if (s.length === 6 && /^\d+$/.test(s)) {
+    const yy = s.slice(2, 4);
+    const tt = parseInt(s.slice(4));
+    return (LANG === "pt" ? "T" : "Q") + tt + "/" + yy;
+  }
+  return fmtPeriod(s);
 }
 
 function renderWageGap() {
@@ -940,10 +1026,17 @@ const CSV_EXPORTERS = {
   mensalista: () => STATE.workers
     .filter(r => r.source_table === "PNADC-6383" && r.geo_code === "BR")
     .map(r => ({ period_code: r.period_code, year: r.year, geo_code: r.geo_code, formality_code: r.formality_code, workers_thousands: r.workers_thousands, source_table: r.source_table })),
-  race: () => {
-    const sf = STATE.staticFacts["pct_negras"]; if (!sf) return [];
-    return [{ fact_code: sf.fact_code, value_num: sf.value_num, value_unit: sf.value_unit, label_pt: sf.label_pt, label_en: sf.label_en, source_short: sf.source_short, source_url: sf.source_url, source_date: sf.source_date }];
-  },
+  race: () => STATE.workers
+    .filter(r => r.source_table === "PNADC-MICRODATA")
+    .map(r => ({
+      period_code: r.period_code,
+      year: r.year, quarter: r.quarter,
+      geo_code: r.geo_code,
+      race_code: r.race_code,
+      formality_code: r.formality_code,
+      workers_thousands: r.workers_thousands,
+      source_table: r.source_table,
+    })),
   "wage-gap": () => {
     const sf = STATE.staticFacts["wage_ratio_black_to_nonblack"]; if (!sf) return [];
     return [{ fact_code: sf.fact_code, value_num: sf.value_num, value_unit: sf.value_unit, label_pt: sf.label_pt, label_en: sf.label_en, source_short: sf.source_short, source_url: sf.source_url, source_date: sf.source_date }];

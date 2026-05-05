@@ -208,6 +208,45 @@ correction easy to defend.
 - "Serviços domésticos em geral — % sem carteira assinada" 76.1 % (DIEESE,
   4T 2024): consistent with our derived value 100 − 23.75 = 76.25 %.
 
+### 2026-05-05 — PNADC microdata pipeline shipped, race composition now computed
+
+Major upgrade to provenance: the race composition figure on the dashboard
+moved from "attributed to DIEESE as a single static value" to "computed
+quarter-by-quarter from PNADC microdata, replicated independently against
+DIEESE published figures."
+
+**Pipeline.** `etl/pnadc_microdata.py` downloads PNADC quarterly microdata zips
+from IBGE's FTP, parses the fixed-width records using column positions
+auto-discovered from IBGE's official `Dicionario_e_input` file, applies the
+`V1028` survey weights, and aggregates by `cor/raça × formality × period`.
+1,007 fact rows from the full 2012Q1–2025Q4 backfill (56 quarters × 18 rows)
+landed in `domestic_work.fact_workers` tagged `source_table = 'PNADC-MICRODATA'`.
+
+**Validation.** Our 4T 2024 result of 68.3 % pretas + pardas matched DIEESE's
+April 2025 Boletim Especial figure (~68.5 %) within 0.2 pp — well inside PNADC
+sampling error.
+
+**Headline finding.** % pretas + pardas among trabalhadoras domésticas rose
+**62.5 % (2012Q1) → 67.7 % (2025Q4), +5.2 pp over 13 years**. The
+racialization of domestic work intensified across EC 72/2013, LC 150/2015,
+and the COVID-19 shock — it did not abate. During the COVID dip (6.0M → 4.5M
+workers in 2020) the race share actually *rose* slightly, suggesting white
+workers exited disproportionately.
+
+**Dashboard impact.**
+- "Composição por cor/raça" doughnut (snapshot, attributed) replaced by
+  multi-line "Composição por cor/raça ao longo do tempo" (computed).
+- The "Negras (pretas+pardas)" KPI tile now reads **67.7 %** computed (latest
+  period 2025Q4) instead of 69.0 % attributed. Meta line: *"fonte: PNADC
+  microdados (computado)"*.
+- CSV export for the race chart now returns the full 1,007-row underlying
+  series, not a single static fact.
+- `metodologia.html` Section 3.5 rewritten to reflect computed provenance.
+
+**Direction of change.** Previous static value (69 %) was approximately right;
+new value (67.7 %) within 1.3 pp. The substantive gain is *reproducibility*
+and the *trajectory*, not a correction to the headline number.
+
 ---
 
 ## Sources

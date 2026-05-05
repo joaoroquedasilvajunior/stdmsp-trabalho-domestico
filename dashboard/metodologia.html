@@ -129,11 +129,14 @@
   <li><strong>Nota</strong>: a Tabela 6383 oferece apenas a classificação por número de domicílios, não por contrato em si. A LC 150/2015 estabelece a fronteira jurídica em <em>2 dias por semana por empregador</em>; o SIDRA não publica esse corte exato, mas o número de domicílios é uma aproximação amplamente aceita</li>
 </ul>
 
-<h3>3.5 Composição por cor/raça</h3>
+<h3>3.5 Composição por cor/raça (série temporal)</h3>
 <ul>
-  <li><strong>Fonte</strong>: <code>DIEESE-INFO-2025</code> (cifra estática atribuída, não computada por nosso ETL)</li>
-  <li><strong>Valor</strong>: 69% pretas + pardas (DIEESE, 4T 2024)</li>
-  <li><strong>Por que estática</strong>: o SIDRA não publica nenhum agregado que cruze a categoria <code>31724</code> ("Trabalhador doméstico") com a classificação de cor/raça. Para obter este corte de forma reprodutível precisaríamos processar os microdados da PNADC — fora do escopo desta versão</li>
+  <li><strong>Fonte</strong>: <code>PNADC-MICRODATA</code> — microdados oficiais da PNAD Contínua trimestral, processados pelo nosso ETL (<code>etl/pnadc_microdata.py</code>) com aplicação dos pesos amostrais V1028.</li>
+  <li><strong>Cobertura</strong>: 56 trimestres fixos, 2012Q1 → 2025Q4. Atualizado a cada nova divulgação trimestral do IBGE (~6-8 semanas após o fim do trimestre).</li>
+  <li><strong>Variáveis usadas</strong>: <code>VD4009</code> (posição na ocupação, filtros "03" trabalhador doméstico com carteira + "04" sem carteira), <code>V2010</code> (cor/raça), <code>V1028</code> (peso amostral pré-calibrado).</li>
+  <li><strong>Validação</strong>: nosso valor para 4T 2024 (68,3% pretas+pardas) coincide com o valor publicado pelo DIEESE no Boletim Especial abr/2025 (~68,5%) dentro de 0,2 pp — bem dentro da margem de erro amostral da PNADC.</li>
+  <li><strong>O que isto desbloqueia</strong>: trajetória ao longo de 13 anos. Achado central: a participação de pretas + pardas no trabalho doméstico subiu de <strong>62,5% (2012Q1)</strong> para <strong>67,7% (2025Q4)</strong>, +5,2 pp ao longo de 13 anos — a racialização do trabalho doméstico se intensificou, não diminuiu, ao longo dos marcos regulatórios EC 72/2013 e LC 150/2015 e do choque da COVID-19.</li>
+  <li><strong>Histórico</strong>: até 05/2026 esta cifra era atribuída ao DIEESE como valor estático único (69%); foi substituída pela série temporal computada após implementação do <em>pipeline</em> de microdados.</li>
 </ul>
 
 <h3>3.6 Hiato salarial racial</h3>
@@ -289,11 +292,14 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>Note</strong>: Table 6383 only offers the household-count classification, not contract type per se. LC 150/2015 sets the legal threshold at <em>2 days/week per employer</em>; SIDRA does not publish that exact cut, but household count is a widely accepted approximation</li>
 </ul>
 
-<h3>3.5 Race composition</h3>
+<h3>3.5 Race composition (time series)</h3>
 <ul>
-  <li><strong>Source</strong>: <code>DIEESE-INFO-2025</code> (attributed static figure, not computed by our ETL)</li>
-  <li><strong>Value</strong>: 69% pretas + pardas (DIEESE, Q4 2024)</li>
-  <li><strong>Why static</strong>: SIDRA does not publish any aggregate that crosses category <code>31724</code> ("Domestic worker") with the race classification. To get this cut reproducibly we'd need to process PNADC microdata — out of scope for this version</li>
+  <li><strong>Source</strong>: <code>PNADC-MICRODATA</code> — official PNADC quarterly microdata, processed by our ETL (<code>etl/pnadc_microdata.py</code>) with sampling weights V1028 applied.</li>
+  <li><strong>Coverage</strong>: 56 fixed quarters, 2012Q1 → 2025Q4. Updated with each IBGE quarterly release (~6-8 weeks after the period ends).</li>
+  <li><strong>Variables used</strong>: <code>VD4009</code> (position in occupation; we filter to "03" + "04" — domestic workers with and without a signed work card), <code>V2010</code> (race), <code>V1028</code> (pre-calibrated sampling weight).</li>
+  <li><strong>Validation</strong>: our Q4 2024 value (68.3% pretas+pardas) matches DIEESE's April 2025 Special Bulletin figure (~68.5%) within 0.2 pp — well inside PNADC sampling error.</li>
+  <li><strong>What this unlocks</strong>: a 13-year trajectory. Headline finding: the share of pretas + pardas in domestic work rose from <strong>62.5% (2012Q1)</strong> to <strong>67.7% (2025Q4)</strong>, +5.2 pp — the racialization of domestic work has intensified, not abated, across the EC 72/2013 and LC 150/2015 regulatory milestones and the COVID-19 shock.</li>
+  <li><strong>History</strong>: until 05/2026 this figure was attributed to DIEESE as a single static value (69%); it was replaced by the computed time series after the microdata pipeline shipped.</li>
 </ul>
 
 <h3>3.6 Racial wage gap</h3>

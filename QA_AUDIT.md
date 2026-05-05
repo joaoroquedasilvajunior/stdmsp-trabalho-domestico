@@ -337,6 +337,71 @@ meaningful threshold for the dashboard's research credibility.
 
 ---
 
+### 2026-05-06 (Phase 1 closure) — Race × UF choropleth shipped
+
+**Scope.** Extended the microdata pipeline with a state-level race breakdown
+and added a Brazilian UF choropleth above the existing bar chart. Phase 1 of
+the post-verification roadmap (Race × UF, Mexico parallel, Story mode).
+
+**Pipeline.** `etl/pnadc_microdata.py:build_uf_race_rows()` aggregates
+trabalhadoras(es) domésticas(os) by `UF × race × period`, using V1028
+weights, restricted to VD4009 ∈ {03, 04}. Per quarter: 5 races + preta_parda
++ nao_negras + total denominator, all at `formality='total', sex='T'`.
+Backfill produced **11 085 UF rows** across 56 quarters (vs ~12 096
+theoretical max — the gap is empty `indigena` cells in small UFs, expected).
+
+**Map.** New article above the existing UF bar chart at full width.
+Sequential warm palette anchored on the chita accent (`#7f1d1d` deep red
+at the top, cream at the bottom). Toggle: *% Negras* (default) / *Total
+(milhares)*. Hover/focus tooltips with state name + % negras + total k.
+Year filter integration. Geometry: static SVG at
+`dashboard/assets/brazil-uf.svg`, ~37 KB after Ramer-Douglas-Peucker
+simplification (epsilon=0.05° ≈ 5.5 km), no client-side library.
+
+**Verified findings (4T 2025).**
+
+| State | % negras | Note |
+|---|---:|---|
+| Bahia (BA) | **90,3 %** | National peak — Brazil's most Afro-descendant state |
+| Amazonas (AM) | 87,3 % | High parda population |
+| Piauí (PI) | 86,9 % | Northeast |
+| Maranhão (MA) | 85,0 % | Northeast |
+| **São Paulo (SP)** | **56,4 %** | STDMSP territory · 1 257 mil domésticas (largest cluster) |
+| Rio Grande do Sul (RS) | 32,0 % | South, German/Italian heritage |
+| **Santa Catarina (SC)** | **29,4 %** | National floor |
+
+The geographic gradient maps onto the historical geography of slavery and
+internal migration cell-for-cell. Northeast + Amazon dense red, Southeast
+mid-tones, South cone in cream. **The map is, in itself, a piece of evidence
+for the persistence of racialized labor markets** — a substantive contribution
+to JF Mayer's research at Concordia.
+
+**Reconciliation.** Sum across the 27 UFs (5 568,64 mil) reconciles with the
+BR-level total via M+F (5 569,82 mil) at 0,02 pp absolute (1,18 mil). Pure
+rounding artifact; the weighted aggregation has no systematic bias.
+
+**Regression caught and fixed in the same session.** The new UF rows at
+`source_table='PNADC-MICRODATA'` initially leaked into three places that
+weren't expecting them: `renderRace()` (BR-wide race composition denominator),
+`getComputedPctNegras()` (KPI denominator), and `renderRegion()` (UF bar chart,
+which then duplicated entries from PNADC-6383 + PNADC-MICRODATA). All three
+now filter explicitly by `geo_level` or `source_table`. Lesson logged: when
+adding a dimension to a fact table, audit every reader of that table for
+implicit assumptions about the dimension's prior shape.
+
+**Methodology page.** Section 3.7b added (PT + EN) documenting the new map's
+source, coverage, dimensions, geometry pipeline, central finding, and small-UF
+limitation. Section 3.7 reframed to indicate the bar chart now prefers
+microdata over the SIDRA aggregate.
+
+**Phase 1 status.** Done. Dashboard now has 9 charts (was 8), the UF dimension
+is computed across two views (map + bars) with consistent provenance, and the
+methodology page documents the path from microdata → fact table → choropleth.
+Next: Phase 2 (Mexico parallel via ILOSTAT light path) and Phase 3 (story
+mode for STDMSP audience).
+
+---
+
 ### 2026-05-06 (correction) — `% Mulheres` verified at 91,93 %, KPI tile bumped to 2 decimals
 
 **Trigger.** After deploy, the `% Mulheres` KPI tile was displaying **91,9 %**

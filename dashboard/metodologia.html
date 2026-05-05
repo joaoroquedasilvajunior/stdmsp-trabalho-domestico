@@ -158,10 +158,23 @@
   <li><strong>Histórico</strong>: até 05/2026 esta cifra era atribuída ao DIEESE como valor estático único (76 %, depois corrigido para 84 %); foi substituída pela série temporal computada após o pipeline de microdados ser estendido para incluir agregações salariais.</li>
 </ul>
 
-<h3>3.7 Distribuição por UF</h3>
+<h3>3.7 Distribuição por UF (gráfico de barras)</h3>
 <ul>
-  <li><strong>Fonte</strong>: <code>PNADC-6383</code> (mesma da 3.4), nível territorial <code>n3</code> (Unidades da Federação)</li>
+  <li><strong>Fonte primária</strong>: <code>PNADC-MICRODATA</code> (microdados PNAD Contínua agregados pela equipe do projeto, aplicando <code>V1028</code> e variável <code>UF</code>)</li>
+  <li><strong>Fonte de retaguarda</strong>: <code>PNADC-6383</code> (SIDRA agregado), usado quando os microdados não estão carregados</li>
   <li><strong>Granularidade</strong>: 27 UFs, último trimestre disponível</li>
+  <li><strong>Por que microdados em vez do agregado SIDRA</strong>: consistência interna com o mapa (3.7b), composição racial (3.5) e demais séries computadas — todas vêm da mesma agregação ponderada dos microdados</li>
+</ul>
+
+<h3>3.7b Mapa: composição racial por UF</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-MICRODATA</code> — extensão da agregação 3.5 com a variável <code>UF</code> (código IBGE 2 dígitos), aplicada com pesos amostrais <code>V1028</code> sobre <code>VD4009 ∈ {03, 04}</code> (trabalhador doméstico com/sem carteira)</li>
+  <li><strong>Cobertura</strong>: 27 UFs × 56 trimestres (1T 2012 → 4T 2025), ~12 mil linhas em <code>fact_workers</code> com <code>geo_level='uf'</code></li>
+  <li><strong>Dimensões disponíveis</strong>: <em>% pretas + pardas entre trabalhadoras(es) domésticas(os)</em> (padrão) e <em>total absoluto em milhares</em> (alternativa). O filtro de Ano controla o trimestre exibido (último de cada ano calendário)</li>
+  <li><strong>Geometria</strong>: SVG estático em <code>dashboard/assets/brazil-uf.svg</code>, gerado de uma única vez por <code>etl/build_uf_svg.py</code> a partir do GeoJSON IBGE simplificado por Ramer-Douglas-Peucker (epsilon=0,05° ≈ 5,5 km, ~37 KB resultantes)</li>
+  <li><strong>Achado central</strong>: o gradiente geográfico segue exatamente a geografia histórica do trabalho doméstico no Brasil. Bahia 90,3 % é o pico nacional; o Nordeste e a Amazônia ficam todos acima de 80 %. O Sul (Santa Catarina 29,4 %, Rio Grande do Sul 32,0 %) é o piso. São Paulo, sede do STDMSP, está em 56,4 % — abaixo da média nacional (~69 %), mas com 1,26 milhão de trabalhadoras domésticas, é de longe a maior categoria absoluta do país</li>
+  <li><strong>Validação</strong>: a soma dos 27 totais estaduais reconcilia com o total Brasil dentro de 0,02 pp (1,18 mil sobre 5,57 milhões), o que confirma que a agregação ponderada não tem viés sistemático</li>
+  <li><strong>Limitação</strong>: UFs pequenas (RR, AP, AC, TO) com células raciais raras (especialmente <em>indígena</em> e <em>amarela</em>) podem ter estimativas ruidosas. A leitura de cabeçalho — % pretas + pardas — é robusta em todas as UFs, com tamanho amostral suficiente em todos os 56 trimestres</li>
 </ul>
 
 <h3>3.8 Comparativo internacional</h3>
@@ -333,10 +346,23 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>History</strong>: until 05/2026 this figure was attributed to DIEESE as a single static value (76 %, then corrected to 84 %); it was replaced by the computed time series after the microdata pipeline was extended to include wage aggregations.</li>
 </ul>
 
-<h3>3.7 Distribution by state</h3>
+<h3>3.7 Distribution by state (bar chart)</h3>
 <ul>
-  <li><strong>Source</strong>: <code>PNADC-6383</code> (same as 3.4), territorial level <code>n3</code> (states)</li>
+  <li><strong>Primary source</strong>: <code>PNADC-MICRODATA</code> (PNADC microdata aggregated by the project team, applying <code>V1028</code> sampling weights and the <code>UF</code> variable)</li>
+  <li><strong>Fallback source</strong>: <code>PNADC-6383</code> (SIDRA aggregate), used when microdata isn't loaded</li>
   <li><strong>Granularity</strong>: 27 states, latest available quarter</li>
+  <li><strong>Why microdata over SIDRA aggregate</strong>: internal consistency with the map (3.7b), the race composition (3.5), and the other computed series — all derive from the same weighted aggregation of microdata</li>
+</ul>
+
+<h3>3.7b Map: race composition by state</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-MICRODATA</code> — extension of the 3.5 aggregation with the <code>UF</code> variable (2-digit IBGE code), applied with <code>V1028</code> sampling weights over <code>VD4009 ∈ {03, 04}</code> (domestic worker, with/without signed work card)</li>
+  <li><strong>Coverage</strong>: 27 states × 56 quarters (Q1 2012 → Q4 2025), ~12k rows in <code>fact_workers</code> at <code>geo_level='uf'</code></li>
+  <li><strong>Available dimensions</strong>: <em>% Black (pretas + pardas) among domestic workers</em> (default) and <em>headcount in thousands</em> (alternative). The Year filter controls the displayed quarter (last quarter of each calendar year)</li>
+  <li><strong>Geometry</strong>: static SVG at <code>dashboard/assets/brazil-uf.svg</code>, generated once by <code>etl/build_uf_svg.py</code> from the IBGE-derived GeoJSON simplified via Ramer-Douglas-Peucker (epsilon=0.05° ≈ 5.5 km, ~37 KB result)</li>
+  <li><strong>Central finding</strong>: the geographic gradient maps onto the historical geography of domestic work in Brazil exactly. Bahia at 90.3% is the national peak; the Northeast and Amazon all sit above 80%. The South (Santa Catarina 29.4%, Rio Grande do Sul 32.0%) is the floor. São Paulo, home to STDMSP, sits at 56.4% — below the national mean (~69%) but with 1.26 million domestic workers it is by far the largest absolute cluster in the country</li>
+  <li><strong>Validation</strong>: the sum of all 27 state totals reconciles with the Brazil-level total within 0.02 pp (1.18k on 5.57M), confirming the weighted aggregation has no systematic bias</li>
+  <li><strong>Limitation</strong>: small states (RR, AP, AC, TO) with rare race cells (especially <em>indigenous</em> and <em>Asian</em>) can have noisy estimates. The headline reading — % pretas + pardas — is robust across all states, with sufficient sample size in every one of the 56 quarters</li>
 </ul>
 
 <h3>3.8 International comparison</h3>

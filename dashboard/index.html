@@ -369,11 +369,11 @@ async function fetchAllPages(viewName) {
 async function loadAll() {
   if (!sbClient) throw new Error("Supabase client not initialized");
 
-  // dw_workers can exceed the Supabase default page cap (1,007 microdata rows
-  // alone), so we paginate it. Other views are small enough for a single fetch.
+  // dw_workers and dw_wages both exceed the Supabase default page cap (1,000)
+  // after the microdata backfills, so we paginate them. Smaller views fit in one fetch.
   const queries = await Promise.allSettled([
     fetchAllPages("dw_workers").then(data => ({ data })),
-    sbClient.from("dw_wages").select("*").range(0, 4999),
+    fetchAllPages("dw_wages").then(data => ({ data })),
     sbClient.from("dw_hours").select("*").range(0, 4999),
     sbClient.from("dw_intl").select("*").range(0, 1999),
     sbClient.from("dw_sources").select("*"),

@@ -51,6 +51,52 @@
     .lang-btn[aria-pressed="true"] { background: var(--ink); color: white; border-color: var(--ink); }
     .lang-btn:first-child { border-radius: 6px 0 0 6px; }
     .lang-btn:last-child { border-radius: 0 6px 6px 0; border-left: 0; }
+    /* --- Story-mode toggle and annotation cards --- */
+    .story-toggle {
+      padding: 4px 12px; font-size: 12px; font-weight: 500;
+      border: 1px solid var(--rule); border-radius: 6px;
+      background: white; cursor: pointer; color: var(--ink);
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .story-toggle[aria-pressed="true"] { background: var(--accent); color: white; border-color: var(--accent); }
+    .story-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rule); }
+    .story-toggle[aria-pressed="true"] .dot { background: white; }
+    .story-card {
+      display: none;
+      background: var(--accent-soft);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+    body[data-mode="story"] .story-card { display: block; }
+    .story-card .headline {
+      font-size: 18px; font-weight: 500; line-height: 1.3;
+      color: var(--ink); margin-bottom: 6px;
+      font-variant-numeric: tabular-nums;
+    }
+    .story-card .body {
+      font-size: 14px; line-height: 1.55; color: var(--ink);
+    }
+    .story-card .body strong { color: var(--accent); font-weight: 600; }
+    /* Top-of-page hero, only in story mode */
+    .story-hero {
+      display: none;
+      max-width: 1024px; margin: 0 auto;
+      padding: 24px 20px 0;
+    }
+    body[data-mode="story"] .story-hero { display: block; }
+    .story-hero p {
+      font-size: 18px; line-height: 1.5; color: var(--ink);
+      border-left: 3px solid var(--accent); padding-left: 14px;
+    }
+    /* In story mode, methodology link gets de-emphasized */
+    body[data-mode="story"] .nav-methodology { opacity: 0.6; }
+    /* In researcher mode (default), the EN-only fallback note is hidden */
+    .story-en-note { display: none; }
+    body[data-mode="story"][data-lang="en"] .story-en-note { display: block; }
+    body[data-mode="story"][data-lang="en"] .story-card { display: none; }
+    body[data-mode="story"][data-lang="en"] .story-hero { display: none; }
     /* --- UF choropleth map --- */
     .map-box { position: relative; width: 100%; max-width: 720px; margin: 0 auto; }
     .map-box svg { width: 100%; height: auto; display: block; }
@@ -114,6 +160,10 @@
       <a href="./calculadora.html" class="px-3 py-2 text-sm font-medium rounded-lg bg-red-700 text-white hover:bg-red-800 active:bg-red-900" data-i18n="cta-calculator">
         Como você se compara? →
       </a>
+      <button id="story-toggle" class="story-toggle" type="button" aria-pressed="false"
+              aria-label="Modo história">
+        <span class="dot" aria-hidden="true"></span><span data-i18n="story-toggle">Modo história</span>
+      </button>
       <div role="group" aria-label="Language">
         <button class="lang-btn" data-lang="pt" aria-pressed="true">PT</button><button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
       </div>
@@ -126,6 +176,18 @@
   <div class="max-w-6xl mx-auto px-5 py-3 text-sm text-amber-900">
     <strong data-i18n="banner-title">Aguardando o primeiro carregamento de dados.</strong>
     <span data-i18n="banner-body">O ETL ainda não rodou — os números abaixo são exemplos. Assim que <code>fetch_sidra.py</code> for executado, este painel passará a refletir os dados oficiais do IBGE.</span>
+  </div>
+</section>
+
+<!-- Story-mode hero — visible only when modo=história, in PT -->
+<section class="story-hero" aria-label="Apresentação">
+  <p data-i18n="story-hero">Somos 5,5 milhões de trabalhadoras domésticas no Brasil. Uma em cada dez mulheres no mercado de trabalho do país é trabalhadora doméstica. Esta página conta quem nós somos, onde estamos e o que mudou — em números, com fontes.</p>
+</section>
+
+<!-- Story-mode EN fallback note -->
+<section class="story-en-note" aria-label="Note">
+  <div class="max-w-6xl mx-auto px-5 py-3 text-sm text-gray-600">
+    Story mode is currently available in Portuguese only. Switch to PT to see the guided narrative, or stay in English for the researcher view.
   </div>
 </section>
 
@@ -142,6 +204,10 @@
 
 <!-- ============ KPI ROW ============ -->
 <section class="max-w-6xl mx-auto px-5 pt-6">
+  <div class="story-card" data-beat="1">
+    <div class="headline" data-i18n="story-1-headline">5,5 milhões · 92% mulheres · 7 em cada 10 negras</div>
+    <div class="body" data-i18n="story-1-body">Quem somos. Somos <strong>5,5 milhões de trabalhadoras domésticas</strong> no Brasil. <strong>92 em cada 100 somos mulheres</strong>, e <strong>7 em cada 10 somos negras</strong> (pretas + pardas). Sustentamos uma em cada dez mulheres trabalhadoras do país.</div>
+  </div>
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
     <div class="border rule rounded-lg p-4 bg-white">
       <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="kpi-total">Trabalhadoras(es) domésticas(os)</div>
@@ -178,12 +244,20 @@
   <article class="border rule rounded-lg p-4 bg-white">
     <h2 class="text-base font-medium" data-i18n="chart-formality">Taxa de formalização (carteira assinada)</h2>
     <p class="text-xs text-gray-500 mb-3" data-i18n="chart-formality-meta">% com carteira assinada · referência: EC 72/2013, LC 150/2015</p>
+    <div class="story-card" data-beat="4">
+      <div class="headline" data-i18n="story-4-headline">Apenas 24% com carteira · 76% na informalidade, 11 anos depois da LC 150/2015</div>
+      <div class="body" data-i18n="story-4-body">Quem tem direitos. Apenas <strong>24% de nós</strong> temos carteira assinada. A LC 150 — a Lei das Domésticas — completou 11 anos prometendo direitos iguais aos de qualquer trabalhadora, mas <strong>três em cada quatro de nós continuam na informalidade</strong>: sem FGTS, sem férias garantidas, sem contribuição previdenciária regular.</div>
+    </div>
     <div class="chart-box" id="box-formality"><canvas id="chart-formality"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
   </article>
 
   <article class="border rule rounded-lg p-4 bg-white">
     <h2 class="text-base font-medium" data-i18n="chart-wages">Rendimento médio mensal real</h2>
     <p class="text-xs text-gray-500 mb-3" data-i18n="chart-wages-meta">PNAD Contínua trimestral · setor "Serviços domésticos" · em reais constantes</p>
+    <div class="story-card" data-beat="3">
+      <div class="headline" data-i18n="story-3-headline">R$ 1 394/mês · negras recebem R$ 84 para cada R$ 100 das não-negras</div>
+      <div class="body" data-i18n="story-3-body">Quanto ganhamos. O salário médio mensal é de <strong>R$ 1 394</strong> — apenas 24% acima do mínimo. Quem é negra recebe <strong>R$ 84 para cada R$ 100</strong> que recebe quem não é negra. Esse hiato racial não diminuiu em 13 anos.</div>
+    </div>
     <div class="chart-box" id="box-wages"><canvas id="chart-wages"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
   </article>
 
@@ -196,6 +270,10 @@
   <article class="border rule rounded-lg p-4 bg-white">
     <h2 class="text-base font-medium" data-i18n="chart-race">Composição por cor/raça</h2>
     <p class="text-xs text-gray-500 mb-3" data-i18n="chart-race-meta">% do total de trabalhadoras(es) domésticas(os)</p>
+    <div class="story-card" data-beat="5">
+      <div class="headline" data-i18n="story-5-headline">Em 13 anos: +5,2 pp negras · ~92% mulheres (estável) · hiato estável a ~84%</div>
+      <div class="body" data-i18n="story-5-body">O que mudou. A categoria <strong>ficou mais negra</strong> — a participação de pretas + pardas subiu cerca de 5 pontos percentuais entre 2012 e 2025. A proporção de mulheres permaneceu praticamente a mesma (~92%). E o salário relativo das negras frente às não-negras continuou em torno de 84% — <strong>não melhorou</strong>. Mais negras, igualmente desvalorizadas.</div>
+    </div>
     <div class="chart-box" id="box-race"><canvas id="chart-race"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
   </article>
 
@@ -209,6 +287,11 @@
   <article class="border rule rounded-lg p-4 bg-white md:col-span-2">
     <h2 class="text-base font-medium" data-i18n="chart-map">Mapa: composição racial por UF</h2>
     <p class="text-xs text-gray-500 mb-3" data-i18n="chart-map-meta">% pretas + pardas entre trabalhadoras(es) domésticas(os), por estado · PNADC microdados · computado</p>
+
+    <div class="story-card" data-beat="2">
+      <div class="headline" data-i18n="story-2-headline">SP: 1,26 milhão (a maior categoria do país) · BA: 90% negras (pico nacional)</div>
+      <div class="body" data-i18n="story-2-body">Onde estamos. Estamos em todos os 27 estados, mas a categoria não é homogênea. Em <strong>São Paulo</strong> somos <strong>1,26 milhão</strong> — a maior categoria do país. Na <strong>Bahia</strong>, <strong>9 em cada 10</strong> trabalhadoras domésticas são negras; em Santa Catarina, apenas 3 em cada 10. A geografia do trabalho doméstico segue a geografia histórica do Brasil.</div>
+    </div>
 
     <div class="map-controls">
       <div class="map-toggle" role="group" aria-label="Map dimension">
@@ -273,6 +356,18 @@ const I18N = {
     "cta-calculator": "Como você se compara? →",
     title: "Trabalho doméstico no Brasil",
     subtitle: "Dados da PNAD Contínua, Censo 2022 e ILOSTAT — em colaboração com o STDMSP e a pesquisa de Jean-François Mayer (Concordia).",
+    "story-toggle": "Modo história",
+    "story-hero": "Somos 5,5 milhões de trabalhadoras domésticas no Brasil. Uma em cada dez mulheres no mercado de trabalho do país é trabalhadora doméstica. Esta página conta quem nós somos, onde estamos e o que mudou — em números, com fontes.",
+    "story-1-headline": "5,5 milhões · 92% mulheres · 7 em cada 10 negras",
+    "story-1-body": "Quem somos. Somos <strong>5,5 milhões de trabalhadoras domésticas</strong> no Brasil. <strong>92 em cada 100 somos mulheres</strong>, e <strong>7 em cada 10 somos negras</strong> (pretas + pardas). Sustentamos uma em cada dez mulheres trabalhadoras do país.",
+    "story-2-headline": "SP: 1,26 milhão (a maior categoria do país) · BA: 90% negras (pico nacional)",
+    "story-2-body": "Onde estamos. Estamos em todos os 27 estados, mas a categoria não é homogênea. Em <strong>São Paulo</strong> somos <strong>1,26 milhão</strong> — a maior categoria do país. Na <strong>Bahia</strong>, <strong>9 em cada 10</strong> trabalhadoras domésticas são negras; em Santa Catarina, apenas 3 em cada 10. A geografia do trabalho doméstico segue a geografia histórica do Brasil.",
+    "story-3-headline": "R$ 1 394/mês · negras recebem R$ 84 para cada R$ 100 das não-negras",
+    "story-3-body": "Quanto ganhamos. O salário médio mensal é de <strong>R$ 1 394</strong> — apenas 24% acima do mínimo. Quem é negra recebe <strong>R$ 84 para cada R$ 100</strong> que recebe quem não é negra. Esse hiato racial não diminuiu em 13 anos.",
+    "story-4-headline": "Apenas 24% com carteira · 76% na informalidade, 11 anos depois da LC 150/2015",
+    "story-4-body": "Quem tem direitos. Apenas <strong>24% de nós</strong> temos carteira assinada. A LC 150 — a Lei das Domésticas — completou 11 anos prometendo direitos iguais aos de qualquer trabalhadora, mas <strong>três em cada quatro de nós continuam na informalidade</strong>: sem FGTS, sem férias garantidas, sem contribuição previdenciária regular.",
+    "story-5-headline": "Em 13 anos: +5,2 pp negras · ~92% mulheres (estável) · hiato estável a ~84%",
+    "story-5-body": "O que mudou. A categoria <strong>ficou mais negra</strong> — a participação de pretas + pardas subiu cerca de 5 pontos percentuais entre 2012 e 2025. A proporção de mulheres permaneceu praticamente a mesma (~92%). E o salário relativo das negras frente às não-negras continuou em torno de 84% — <strong>não melhorou</strong>. Mais negras, igualmente desvalorizadas.",
     "filter-label": "Filtros:",
     "filter-scope": "afetam os indicadores acima e a distribuição por UF",
     reset: "Limpar filtros",
@@ -324,6 +419,8 @@ const I18N = {
     "cta-calculator": "How do you compare? →",
     title: "Domestic work in Brazil",
     subtitle: "Data from PNAD Contínua, the 2022 Census and ILOSTAT — in collaboration with STDMSP and the research of Jean-François Mayer (Concordia).",
+    "story-toggle": "Story mode (PT)",
+    "story-hero": "Story mode is currently available in Portuguese only. Switch to PT to see the guided narrative.",
     "filter-label": "Filters:",
     "filter-scope": "affect the KPI tiles above and the state distribution chart",
     reset: "Reset filters",
@@ -375,13 +472,43 @@ const I18N = {
 let LANG = "pt";
 function applyI18n() {
   document.documentElement.lang = LANG === "pt" ? "pt-BR" : "en";
+  document.body.setAttribute("data-lang", LANG);
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const k = el.getAttribute("data-i18n");
-    if (I18N[LANG][k]) el.textContent = I18N[LANG][k];
+    // innerHTML (not textContent) so story-card values can carry <strong>.
+    // All I18N values are hardcoded in this file — no XSS surface.
+    if (I18N[LANG][k] != null) el.innerHTML = I18N[LANG][k];
   });
   document.querySelectorAll(".lang-btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === LANG));
 }
 document.querySelectorAll(".lang-btn").forEach(b => b.addEventListener("click", () => { LANG = b.dataset.lang; applyI18n(); render(); }));
+
+// ============ STORY MODE ============
+// PT-only narrative layer. Toggle persists in localStorage; URL param
+// `?modo=historia` (or `?modo=pesquisa`) wins on first load, so STDMSP
+// can share story-mode links directly.
+let STORY_MODE = false;
+function applyStoryMode() {
+  document.body.setAttribute("data-mode", STORY_MODE ? "story" : "researcher");
+  const btn = document.getElementById("story-toggle");
+  if (btn) btn.setAttribute("aria-pressed", STORY_MODE ? "true" : "false");
+}
+(function initStoryMode() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("modo")) {
+      STORY_MODE = params.get("modo") === "historia";
+    } else {
+      STORY_MODE = localStorage.getItem("dw_story_mode") === "1";
+    }
+  } catch (e) { /* localStorage may be blocked; fail silent */ }
+  applyStoryMode();
+})();
+document.getElementById("story-toggle")?.addEventListener("click", () => {
+  STORY_MODE = !STORY_MODE;
+  try { localStorage.setItem("dw_story_mode", STORY_MODE ? "1" : "0"); } catch (e) {}
+  applyStoryMode();
+});
 
 // ============ DATA LAYER ============
 const SUPABASE_URL = "https://vqwhzzaqddqeurrspcdz.supabase.co";

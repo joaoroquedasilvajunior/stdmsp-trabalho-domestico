@@ -139,11 +139,15 @@
   <li><strong>Histórico</strong>: até 05/2026 esta cifra era atribuída ao DIEESE como valor estático único (69%); foi substituída pela série temporal computada após implementação do <em>pipeline</em> de microdados.</li>
 </ul>
 
-<h3>3.6 Hiato salarial racial</h3>
+<h3>3.6 Hiato salarial racial (série temporal)</h3>
 <ul>
-  <li><strong>Fonte</strong>: <code>DIEESE-2025</code> (Boletim Especial, Tabela 5)</li>
-  <li><strong>Valor</strong>: 84% — razão do rendimento médio mensal de mulheres negras (R$ 1.156) sobre o de mulheres não-negras (R$ 1.376), no trabalho doméstico remunerado total, base PNADC 4T 2024</li>
-  <li><strong>Histórico</strong>: este valor foi corrigido em 2026-05-04 de 76% para 84% após cruzamento direto com a Tabela 5 do Boletim 2025; o registro de auditoria está em <code>QA_AUDIT.md</code> no repositório</li>
+  <li><strong>Fonte</strong>: <code>PNADC-MICRODATA</code> — mesma origem da composição racial (3.5), aplicando a variável <code>VD4019</code> (rendimento mensal habitual do trabalho principal) com pesos amostrais <code>V1028</code>.</li>
+  <li><strong>Cálculo</strong>: para cada trimestre, computamos a média ponderada do rendimento de trabalhadoras(es) domésticas(os) <em>negras</em> (pretas + pardas) e <em>não-negras</em> (brancas + amarelas + indígenas) separadamente, e tomamos a razão (negras ÷ não-negras × 100).</li>
+  <li><strong>Cobertura</strong>: 56 trimestres, 2012Q1 → 2025Q4.</li>
+  <li><strong>Validação</strong>: nosso valor para 4T 2024 (84,3 %) coincide com o publicado pelo DIEESE no Boletim Especial abr/2025 (84,0 %, base feminina) dentro de 0,3 pp — pequena diferença porque incluímos homens (~5 % da categoria, com salário ligeiramente maior em média).</li>
+  <li><strong>Achado central</strong>: o hiato ficou <strong>estável entre 84 % e 87 % ao longo de 13 anos</strong>. Combinando com o achado de 3.5 (a participação de pretas + pardas na categoria subiu de 62,5 % para 67,7 %), o quadro é nítido: mulheres negras são uma parcela <em>crescente</em> de uma ocupação cuja desvantagem salarial racial <em>não diminuiu</em>.</li>
+  <li><strong>Sobre nominal × real</strong>: os salários computados aqui estão em <strong>reais nominais</strong> (correntes), não deflacionados. Para a razão isso é irrelevante (numerador e denominador estão na mesma moeda do mesmo período); para a série de salário absoluto continuamos usando a Tabela PNADC-6391 (deflacionada pelo IBGE).</li>
+  <li><strong>Histórico</strong>: até 05/2026 esta cifra era atribuída ao DIEESE como valor estático único (76 %, depois corrigido para 84 %); foi substituída pela série temporal computada após o pipeline de microdados ser estendido para incluir agregações salariais.</li>
 </ul>
 
 <h3>3.7 Distribuição por UF</h3>
@@ -302,11 +306,15 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>History</strong>: until 05/2026 this figure was attributed to DIEESE as a single static value (69%); it was replaced by the computed time series after the microdata pipeline shipped.</li>
 </ul>
 
-<h3>3.6 Racial wage gap</h3>
+<h3>3.6 Racial wage gap (time series)</h3>
 <ul>
-  <li><strong>Source</strong>: <code>DIEESE-2025</code> (Special Bulletin, Table 5)</li>
-  <li><strong>Value</strong>: 84% — ratio of mean monthly income of Black women (R$ 1,156) to non-Black women (R$ 1,376), in total paid domestic work, PNADC base Q4 2024</li>
-  <li><strong>History</strong>: this value was corrected on 2026-05-04 from 76% to 84% after direct cross-check against Table 5 of the 2025 Bulletin; audit record in <code>QA_AUDIT.md</code> in the repository</li>
+  <li><strong>Source</strong>: <code>PNADC-MICRODATA</code> — same source as race composition (3.5), applying variable <code>VD4019</code> (monthly habitual income from main job) with the V1028 sampling weights.</li>
+  <li><strong>Computation</strong>: for each quarter we compute the weighted-mean wage of Black (pretas + pardas) and non-Black (white + East Asian + Indigenous) domestic workers separately, then take the ratio (Black ÷ non-Black × 100).</li>
+  <li><strong>Coverage</strong>: 56 quarters, 2012Q1 → 2025Q4.</li>
+  <li><strong>Validation</strong>: our Q4 2024 value (84.3 %) matches DIEESE's April 2025 Bulletin figure (84.0 %, women-only basis) within 0.3 pp — small discrepancy because we include men (~5 % of the category, with slightly higher mean wages).</li>
+  <li><strong>Central finding</strong>: the gap has stayed <strong>between 84 % and 87 % across 13 years</strong>. Combined with finding 3.5 (Black share of the category rose from 62.5 % to 67.7 %), the picture is sharp: Black women are a <em>growing</em> share of an occupation whose racial wage disadvantage <em>has not narrowed</em>.</li>
+  <li><strong>Nominal vs real</strong>: wages computed here are in <strong>nominal (current) reais</strong>, not deflated. For the ratio this doesn't matter (numerator and denominator are in the same currency at the same period); for the absolute-wage trend chart we still use PNADC Table 6391 (IBGE-deflated to constant reais).</li>
+  <li><strong>History</strong>: until 05/2026 this figure was attributed to DIEESE as a single static value (76 %, then corrected to 84 %); it was replaced by the computed time series after the microdata pipeline was extended to include wage aggregations.</li>
 </ul>
 
 <h3>3.7 Distribution by state</h3>

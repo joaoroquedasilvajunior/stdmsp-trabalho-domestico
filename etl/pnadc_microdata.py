@@ -546,6 +546,130 @@ def build_fact_rows(df: pd.DataFrame, period: str) -> list[dict]:
 SOURCE_TABLE_TAG = "PNADC-MICRODATA"
 
 
+def build_wage_rows(df: pd.DataFrame, period: str) -> list[dict]:
+    """Produce fact_wages payload rows: weighted-mean nominal wages of
+    trabalhadoras(es) domésticas(os) by race × formality.
+
+    Wages are NOMINAL (current reais), not deflated. The dashboard's existing
+    "Rendimento médio" chart uses real (deflated) wages from PNADC-6391; this
+    new microdata-derived series serves the racial wage GAP, which is a ratio
+    and so is invariant to nominal/real choice.
+
+    Output: 5 races + 1 nao_negras + 1 preta_parda, each × 3 formalities
+    (com_carteira, sem_carteira, total). ~21 wage rows per quarter.
+    """
+    df = df.copy()
+    df["weight"] = pd.to_numeric(df["V1028"], errors="coerce")
+    if df["weight"].max() > 1e9:
+        df["weight"] = df["weight"] / 1e9
+    df["wage"] = pd.to_numeric(df["VD4019"], errors="coerce")
+
+    DOMESTIC_CODES = ["03", "04"]
+    dom = df[df["VD4009"].isin(DOMESTIC_CODES)
+             & df["wage"].notna()
+             & (df["wage"] > 0)].copy()
+    dom["race_code"] = dom["V2010"].map(RACE_MAP)
+    dom["formality_code"] = dom["VD4009"].map(FORMALITY_MAP)
+    dom = dom[dom["race_code"].notna() & dom["formality_code"].notna()]
+
+    db_period = microdata_period_to_db_code(period)
+    rows: list[dict] = []
+
+    def _wmean(g):
+        if g["weight"].sum() == 0: return None
+        return float((g["wage"] * g["weight"]).sum() / g["weight"].sum())
+
+    def _row(race, form, mean):
+        if mean is None or pd.isna(mean): return None
+        return {
+            "_period_code": db_period,
+            "_geo_code": "BR", "_geo_level": "country",
+            "_sex": "T", "_race": race, "_formality": form,
+            "mean_wage_brl_real": round(mean, 2),
+            "median_wage_brl_real": None,
+        }
+
+    # Race × formality (5 races × 2 formalities)
+    for (race, form), group in dom.groupby(["race_code", "formality_code"]):
+        r = _row(race, form, _wmean(group))
+        if r: rows.append(r)
+
+    # Race × total (sum across com+sem)
+    for race, group in dom.groupby("race_code"):
+        r = _row(race, "total", _wmean(group))
+        if r: rows.append(r)
+
+    # preta_parda × each formality
+    is_negra = dom["race_code"].isin(["preta", "parda"])
+    for form_code in ["com_carteira", "sem_carteira", "total"]:
+        if form_code == "total":
+            mask = is_negra
+        else:
+            mask = is_negra & (dom["formality_code"] == form_code)
+        group = dom[mask]
+        r = _row("preta_parda", form_code, _wmean(group)) if len(group) else None
+        if r: rows.append(r)
+
+    # nao_negras × each formality (white + Asian + Indigenous; complement set)
+    is_nao_negra = dom["race_code"].isin(["branca", "amarela", "indigena"])
+    for form_code in ["com_carteira", "sem_carteira", "total"]:
+        if form_code == "total":
+            mask = is_nao_negra
+        else:
+            mask = is_nao_negra & (dom["formality_code"] == form_code)
+        group = dom[mask]
+        r = _row("nao_negras", form_code, _wmean(group)) if len(group) else None
+        if r: rows.append(r)
+
+    return rows
+
+
+def upsert_wages_to_supabase(rows: list[dict]) -> int:
+    """Push wage rows into domestic_work.fact_wages."""
+    sb = get_supabase_client()
+    if sb is None or not rows:
+        return 0
+    schema = sb.schema("domestic_work")
+
+    # dim_time entries are already created by upsert_to_supabase; just look them up.
+    time_lookup = {r["period_code"]: r["time_id"]
+                   for r in schema.table("dim_time").select("period_code,time_id").execute().data}
+    geo_lookup = {(r["level"], r["code"]): r["geo_id"]
+                  for r in schema.table("dim_geo").select("level,code,geo_id").execute().data}
+    race_lookup = {r["code"]: r["race_id"]
+                   for r in schema.table("dim_race").select("code,race_id").execute().data}
+    formality_lookup = {r["code"]: r["formality_id"]
+                        for r in schema.table("dim_formality").select("code,formality_id").execute().data}
+    sex_lookup = {r["code"]: r["sex_id"]
+                  for r in schema.table("dim_sex").select("code,sex_id").execute().data}
+
+    payload = []
+    for r in rows:
+        try:
+            payload.append({
+                "time_id":      time_lookup[r["_period_code"]],
+                "geo_id":       geo_lookup[(r["_geo_level"], r["_geo_code"])],
+                "sex_id":       sex_lookup[r["_sex"]],
+                "race_id":      race_lookup[r["_race"]],
+                "formality_id": formality_lookup[r["_formality"]],
+                "mean_wage_brl_real":   r["mean_wage_brl_real"],
+                "median_wage_brl_real": r["median_wage_brl_real"],
+                "source_table": SOURCE_TABLE_TAG,
+            })
+        except KeyError as e:
+            log.warning("missing dim lookup for wage row %s: %s", r, e)
+
+    inserted = 0
+    for i in range(0, len(payload), 250):
+        chunk = payload[i:i + 250]
+        res = schema.table("fact_wages").upsert(
+            chunk,
+            on_conflict="time_id,geo_id,sex_id,race_id,formality_id,source_table",
+        ).execute()
+        inserted += len(res.data or [])
+    return inserted
+
+
 def get_supabase_client():
     """Lazily import + construct the supabase client. Returns None if creds
     aren't available — callers should treat that as "skip upsert"."""
@@ -633,6 +757,7 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
             df = pd.read_fwf(fh, colspecs=colspecs, names=list(specs.keys()),
                              dtype=str, keep_default_na=False)
 
+    # ---- counts (fact_workers) ----
     rows = build_fact_rows(df, period)
     n_dom = sum(r["workers_thousands"] for r in rows
                 if r["_race"] != "preta_parda" and r["_formality"] == "total")
@@ -640,15 +765,27 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
                    if r["_race"] == "preta_parda" and r["_formality"] == "total")
     pct_negras = round(100 * n_negras / n_dom, 1) if n_dom else None
 
-    if upsert:
-        inserted = upsert_to_supabase(rows)
-        log.info("[%s] upserted %d rows · total %.0fk · pretas+pardas %s%%",
-                 period, inserted, n_dom, pct_negras)
-    else:
-        log.info("[%s] (dry run) %d rows ready · total %.0fk · pretas+pardas %s%%",
-                 period, len(rows), n_dom, pct_negras)
+    # ---- wages (fact_wages) ----
+    wage_rows = build_wage_rows(df, period)
+    wage_negras = next((r for r in wage_rows
+                        if r["_race"] == "preta_parda" and r["_formality"] == "total"), None)
+    wage_nao_negras = next((r for r in wage_rows
+                            if r["_race"] == "nao_negras" and r["_formality"] == "total"), None)
+    wage_gap_pct = None
+    if wage_negras and wage_nao_negras and wage_nao_negras["mean_wage_brl_real"]:
+        wage_gap_pct = round(100 * wage_negras["mean_wage_brl_real"] / wage_nao_negras["mean_wage_brl_real"], 1)
 
-    return {"period": period, "total_workers_k": n_dom, "pct_negras": pct_negras}
+    if upsert:
+        inserted_workers = upsert_to_supabase(rows)
+        inserted_wages = upsert_wages_to_supabase(wage_rows)
+        log.info("[%s] upserted %d worker rows + %d wage rows · total %.0fk · pretas+pardas %s%% · wage gap %s%% (negras/nao-negras)",
+                 period, inserted_workers, inserted_wages, n_dom, pct_negras, wage_gap_pct)
+    else:
+        log.info("[%s] (dry run) %d worker rows + %d wage rows · total %.0fk · pretas+pardas %s%% · wage gap %s%%",
+                 period, len(rows), len(wage_rows), n_dom, pct_negras, wage_gap_pct)
+
+    return {"period": period, "total_workers_k": n_dom, "pct_negras": pct_negras,
+            "wage_gap_pct": wage_gap_pct}
 
 
 # ----- main --------------------------------------------------------------------
@@ -697,7 +834,9 @@ def main():
         if "error" in r:
             print(f"  {r['period']}  ❌ {r['error'][:80]}")
         else:
-            print(f"  {r['period']}  total {r['total_workers_k']:>5.0f}k  · pretas+pardas {r['pct_negras']}%")
+            gap = r.get("wage_gap_pct")
+            gap_s = f"{gap:.1f}%" if gap is not None else "—"
+            print(f"  {r['period']}  total {r['total_workers_k']:>5.0f}k  · pretas+pardas {r['pct_negras']}%  · wage gap negras/nao-negras {gap_s}")
     print("======================================\n")
     n_ok = sum(1 for r in summary if "error" not in r)
     n_fail = len(summary) - n_ok

@@ -247,6 +247,62 @@ workers exited disproportionately.
 new value (67.7 %) within 1.3 pp. The substantive gain is *reproducibility*
 and the *trajectory*, not a correction to the headline number.
 
+### 2026-05-06 — paged Supabase fetch fixes spike artifact in race chart
+
+The first deployed version of the race-over-time chart showed a spurious
+**100 % Preta spike** around 2019. Database verified clean via direct SQL
+(every period had all 6 race rows with sensible values). Root cause was
+client-side: Supabase REST default page cap of 1,000 rows was being hit by
+the dashboard's `dw_workers` fetch, which now totals 1,682 rows after the
+microdata backfill (504 PNADC-6320 + 171 PNADC-6383 + 1,007 PNADC-MICRODATA).
+Earlier rows in PK order were returned in full; later microdata periods
+landed only partially, producing periods where one race's row was the only
+one present and rendered as 100 %.
+
+**Fix:** dashboard's `loadAll` now paginates `dw_workers` explicitly via
+`range(from, to)` in 1,000-row chunks (`fetchAllPages` helper). Per-page
+diagnostic logs added so future row-count growth is visible in DevTools
+console.
+
+**No data correction needed** — the underlying numbers were always correct,
+the dashboard simply wasn't reading them all. Verified post-fix: race
+trajectory shows the smooth 62.5 % → 67.7 % rise across 56 quarters with no
+artifacts.
+
+### 2026-05-06 (continued) — wage-by-race time series shipped
+
+The microdata pipeline was extended to also aggregate **weighted-mean nominal
+wages** by race × formality × period, using `VD4019` and `V1028`. Backfill
+across all 56 quarters added 1,175 wage rows to `fact_wages` tagged
+`source_table = 'PNADC-MICRODATA'`. New `nao_negras` aggregate added to
+`dim_race` so the racial pay gap can be computed cleanly as
+`negras_wage / nao_negras_wage`.
+
+**Validation.** Our 4T 2024 ratio (84.3 %) matches DIEESE's published 84.0 %
+within 0.3 pp. Small expected difference: DIEESE reports women-only; we
+include men (~5 % of the category, slightly higher mean wage).
+
+**Central finding.** The racial wage ratio has stayed between **84 % and
+87 % across all 13 years** — it has not narrowed. Combined with the
+racialization finding (62.5 % → 67.7 % Black share), the two together tell
+a sharper story than either alone: Black women are a *growing* share of an
+occupation whose *racial pay disadvantage is unchanged*.
+
+**Dashboard impact.**
+- "Hiato salarial racial" 2-bar static chart replaced by a trajectory line
+  spanning 56 quarters; narrative sentence under it auto-updates from latest
+  quarter (currently 84 %).
+- CSV export for that chart now returns the full underlying race × period
+  series.
+- `metodologia.html` Section 3.6 rewritten to reflect computed provenance
+  and the central finding.
+
+**Nominal vs real disclosure.** Microdata wages are in current (nominal)
+reais; we use them only for the ratio (where deflation cancels out). The
+"Rendimento médio mensal real" trend chart still reads from PNADC Table
+6391, which is IBGE-deflated to constant reais. This distinction is now
+documented in Section 3.6 of the methodology page.
+
 ---
 
 ## Sources

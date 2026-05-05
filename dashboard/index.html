@@ -232,8 +232,8 @@ const I18N = {
     "chart-mensalista-meta": "% diaristas (mais de 1 domicílio) · proteção mais fraca sob LC 150/2015",
     "chart-race": "Composição por cor/raça ao longo do tempo",
     "chart-race-meta": "% do total · PNAD Contínua microdados · computado, não atribuído",
-    "chart-wage-gap": "Hiato salarial racial",
-    "chart-wage-gap-meta": "trabalhadoras domésticas negras vs. não-negras · fonte: DIEESE",
+    "chart-wage-gap": "Hiato salarial racial ao longo do tempo",
+    "chart-wage-gap-meta": "% que negras recebem em relação a não-negras · PNAD Contínua microdados · computado",
     "wage-gap-narrative": "Para cada R$ 100 recebidos por uma trabalhadora doméstica não-negra, uma trabalhadora doméstica negra recebe R$ 76.",
     "chart-region": "Distribuição por UF",
     "chart-region-meta": "milhares de pessoas · top 10 UFs · trimestre mais recente disponível",
@@ -274,8 +274,8 @@ const I18N = {
     "chart-mensalista-meta": "% day-rate (multiple households) · weaker protection under LC 150/2015",
     "chart-race": "Race composition over time",
     "chart-race-meta": "% of total · PNADC microdata · computed, not attributed",
-    "chart-wage-gap": "Racial wage gap",
-    "chart-wage-gap-meta": "Black vs. non-Black domestic workers · source: DIEESE",
+    "chart-wage-gap": "Racial wage gap over time",
+    "chart-wage-gap-meta": "% Black workers earn vs. non-Black · PNADC microdata · computed",
     "wage-gap-narrative": "For every R$ 100 earned by a non-Black domestic worker, a Black domestic worker earns R$ 76.",
     "chart-region": "Distribution by state",
     "chart-region-meta": "thousands of people · top 10 states · latest available quarter",
@@ -844,42 +844,78 @@ function fmtPeriodTrim(code) {
 }
 
 function renderWageGap() {
-  const sf = STATE.staticFacts["wage_ratio_black_to_nonblack"];
-  setEmpty("box-wage-gap", !sf);
+  // Race-wage ratio over time, computed from PNADC microdata.
+  // For each period, build the ratio: (negras_wage / nao_negras_wage) × 100.
+  const microWages = STATE.wages.filter(r => r.source_table === "PNADC-MICRODATA" && r.formality_code === "total");
+  const negrasByPeriod    = Object.fromEntries(microWages.filter(r => r.race_code === "preta_parda")
+                                                          .map(r => [r.period_code, Number(r.mean_wage_brl_real)]));
+  const naoNegrasByPeriod = Object.fromEntries(microWages.filter(r => r.race_code === "nao_negras")
+                                                          .map(r => [r.period_code, Number(r.mean_wage_brl_real)]));
+  const periods = Object.keys(negrasByPeriod)
+    .filter(p => naoNegrasByPeriod[p] != null && naoNegrasByPeriod[p] > 0)
+    .sort();
+
+  // Fallback to the static fact (and the old 2-bar layout) if microdata isn't loaded yet.
+  if (!periods.length) {
+    const sf = STATE.staticFacts["wage_ratio_black_to_nonblack"];
+    setEmpty("box-wage-gap", !sf);
+    destroyChart("wageGap");
+    if (!sf) return;
+    const blackPct = Number(sf.value_num);
+    setText("wage-gap-narrative", LANG === "pt"
+      ? `Para cada R$ 100 recebidos por uma trabalhadora doméstica não-negra, uma trabalhadora doméstica negra recebe R$ ${fmt(blackPct, 0)}.`
+      : `For every R$ 100 earned by a non-Black domestic worker, a Black domestic worker earns R$ ${fmt(blackPct, 0)}.`);
+    charts.wageGap = new Chart(document.getElementById("chart-wage-gap"), {
+      type: "bar",
+      data: {
+        labels: LANG === "pt" ? ["Não-negras", "Negras (pretas + pardas)"] : ["Non-Black", "Black (pretas + pardas)"],
+        datasets: [{ data: [100, blackPct], backgroundColor: ["#9ca3af", "#b91c1c"], borderWidth: 0, barPercentage: 0.7 }],
+      },
+      options: {
+        indexAxis: "y", responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fmt(c.parsed.x, 0) + "%" } } },
+        scales: { x: { suggestedMin: 0, suggestedMax: 100, ticks: { callback: v => v + "%" } } },
+      },
+    });
+    return;
+  }
+
+  // Time-series mode: line chart of the ratio across all available quarters
+  const ratios = periods.map(p => 100 * negrasByPeriod[p] / naoNegrasByPeriod[p]);
+  const latest = ratios[ratios.length - 1];
+
+  setText("wage-gap-narrative", LANG === "pt"
+    ? `Para cada R$ 100 recebidos por uma trabalhadora doméstica não-negra, uma trabalhadora doméstica negra recebe R$ ${fmt(latest, 0)} (último trimestre disponível). A diferença ficou estável entre 84 % e 87 % desde 2012.`
+    : `For every R$ 100 earned by a non-Black domestic worker, a Black domestic worker earns R$ ${fmt(latest, 0)} (latest quarter available). The gap has stayed between 84 % and 87 % since 2012.`);
+
+  setEmpty("box-wage-gap", false);
   destroyChart("wageGap");
-  if (!sf) return;
-  const blackPct = Number(sf.value_num);            // 76
-  const nonBlackPct = 100;                          // reference
-
-  // Update the narrative sentence so the R$76 number tracks the static_fact value.
-  const narrative = LANG === "pt"
-    ? `Para cada R$ 100 recebidos por uma trabalhadora doméstica não-negra, uma trabalhadora doméstica negra recebe R$ ${fmt(blackPct, 0)}.`
-    : `For every R$ 100 earned by a non-Black domestic worker, a Black domestic worker earns R$ ${fmt(blackPct, 0)}.`;
-  setText("wage-gap-narrative", narrative);
-
   charts.wageGap = new Chart(document.getElementById("chart-wage-gap"), {
-    type: "bar",
+    type: "line",
+    plugins: [yearBandPlugin],
     data: {
-      labels: LANG === "pt"
-        ? ["Não-negras", "Negras (pretas + pardas)"]
-        : ["Non-Black", "Black (pretas + pardas)"],
+      labels: periods.map(p => fmtPeriodTrim(p)),
       datasets: [{
-        data: [nonBlackPct, blackPct],
-        backgroundColor: ["#9ca3af", "#b91c1c"],
-        borderWidth: 0,
-        barPercentage: 0.7,
+        data: ratios,
+        borderColor: "#b91c1c",
+        backgroundColor: "rgba(185,28,28,0.08)",
+        fill: false,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2,
       }],
     },
     options: {
-      indexAxis: "y",
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: c => fmt(c.parsed.x, 0) + "%" } },
+        tooltip: { callbacks: { label: c => "Negras = " + fmt(c.parsed.y, 1) + "% das não-negras" } },
+        ...yearBandOpts(periods),
       },
       scales: {
-        x: {
+        x: { ticks: { autoSkip: true, maxTicksLimit: 14, maxRotation: 0 } },
+        y: {
           ticks: { callback: v => v + "%" },
-          suggestedMin: 0, suggestedMax: 100,
+          suggestedMin: 75, suggestedMax: 100,
         },
       },
       maintainAspectRatio: false,
@@ -1062,10 +1098,17 @@ const CSV_EXPORTERS = {
       workers_thousands: r.workers_thousands,
       source_table: r.source_table,
     })),
-  "wage-gap": () => {
-    const sf = STATE.staticFacts["wage_ratio_black_to_nonblack"]; if (!sf) return [];
-    return [{ fact_code: sf.fact_code, value_num: sf.value_num, value_unit: sf.value_unit, label_pt: sf.label_pt, label_en: sf.label_en, source_short: sf.source_short, source_url: sf.source_url, source_date: sf.source_date }];
-  },
+  "wage-gap": () => STATE.wages
+    .filter(r => r.source_table === "PNADC-MICRODATA")
+    .map(r => ({
+      period_code: r.period_code,
+      year: r.year, quarter: r.quarter,
+      geo_code: r.geo_code,
+      race_code: r.race_code,
+      formality_code: r.formality_code,
+      mean_wage_brl_nominal: r.mean_wage_brl_real,   // microdata is nominal; column name is "real" historically
+      source_table: r.source_table,
+    })),
   region: () => STATE.workers
     .filter(r => r.source_table === "PNADC-6383" && r.geo_level === "uf")
     .map(r => ({ period_code: r.period_code, geo_level: r.geo_level, geo_code: r.geo_code, geo_name_pt: r.geo_name_pt, geo_name_en: r.geo_name_en, formality_code: r.formality_code, workers_thousands: r.workers_thousands, source_table: r.source_table })),

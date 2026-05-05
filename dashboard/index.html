@@ -51,6 +51,48 @@
     .lang-btn[aria-pressed="true"] { background: var(--ink); color: white; border-color: var(--ink); }
     .lang-btn:first-child { border-radius: 6px 0 0 6px; }
     .lang-btn:last-child { border-radius: 0 6px 6px 0; border-left: 0; }
+    /* --- UF choropleth map --- */
+    .map-box { position: relative; width: 100%; max-width: 720px; margin: 0 auto; }
+    .map-box svg { width: 100%; height: auto; display: block; }
+    .map-box svg path {
+      fill: #f3f4f6;          /* default fill — overridden by JS once data loads */
+      stroke: #ffffff;
+      stroke-width: 0.6;
+      vector-effect: non-scaling-stroke;
+      transition: opacity 120ms ease;
+      cursor: pointer;
+    }
+    .map-box svg:hover path { opacity: 0.55; }
+    .map-box svg path:hover { opacity: 1; stroke: var(--ink); stroke-width: 1.2; }
+    .map-box svg path:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .map-tooltip {
+      position: absolute; pointer-events: none; z-index: 10;
+      background: white; border: 1px solid var(--rule); border-radius: 6px;
+      padding: 8px 10px; font-size: 12px; line-height: 1.45;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      opacity: 0; transition: opacity 120ms ease;
+      max-width: 220px;
+    }
+    .map-tooltip.visible { opacity: 1; }
+    .map-tooltip .ttl { font-weight: 500; margin-bottom: 2px; }
+    .map-tooltip .num { font-variant-numeric: tabular-nums; }
+    .map-tooltip .sub { color: #666; font-size: 11px; }
+    .map-controls {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .map-toggle { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+    .map-toggle button {
+      padding: 4px 10px; font-size: 12px; font-weight: 500;
+      background: white; border: 0; cursor: pointer; color: var(--ink);
+    }
+    .map-toggle button[aria-pressed="true"] { background: var(--ink); color: white; }
+    .map-legend {
+      display: flex; align-items: center; gap: 6px; margin-top: 8px;
+      font-size: 11px; color: #666; flex-wrap: wrap;
+    }
+    .map-legend .swatch { width: 16px; height: 12px; border: 1px solid rgba(0,0,0,0.04); border-radius: 2px; display: inline-block; }
+    .map-legend .lbl { margin-right: 4px; }
   </style>
 </head>
 <body>
@@ -165,6 +207,28 @@
   </article>
 
   <article class="border rule rounded-lg p-4 bg-white md:col-span-2">
+    <h2 class="text-base font-medium" data-i18n="chart-map">Mapa: composição racial por UF</h2>
+    <p class="text-xs text-gray-500 mb-3" data-i18n="chart-map-meta">% pretas + pardas entre trabalhadoras(es) domésticas(os), por estado · PNADC microdados · computado</p>
+
+    <div class="map-controls">
+      <div class="map-toggle" role="group" aria-label="Map dimension">
+        <button data-map-dim="pct_negras" aria-pressed="true" data-i18n="map-dim-negras">% Negras</button>
+        <button data-map-dim="total" aria-pressed="false" data-i18n="map-dim-total">Total (milhares)</button>
+      </div>
+      <span class="text-xs text-gray-500" data-i18n="map-period-hint">Período: <span id="map-period-label">—</span> · use o filtro de Ano acima para mudar</span>
+    </div>
+
+    <div class="map-box" id="box-map">
+      <div id="map-svg-host" aria-live="polite"></div>
+      <div class="chart-overlay" data-i18n="empty" style="background: rgba(250,250,247,0.95);">Carregando mapa…</div>
+      <div class="map-tooltip" id="map-tooltip" role="tooltip"></div>
+    </div>
+    <div class="map-legend" id="map-legend" aria-hidden="true"></div>
+
+    <p class="text-xs text-gray-500 mt-3" data-i18n="chart-map-source">Fonte: PNAD Contínua microdados (IBGE), agregado pela equipe do projeto. UFs com população amostral pequena (e.g., RR, AP) podem ter estimativas mais ruidosas.</p>
+  </article>
+
+  <article class="border rule rounded-lg p-4 bg-white md:col-span-2">
     <h2 class="text-base font-medium" data-i18n="chart-region">Distribuição por UF</h2>
     <p class="text-xs text-gray-500 mb-3" data-i18n="chart-region-meta">milhares de pessoas · top 10 UFs · trimestre mais recente disponível</p>
     <div class="chart-box" id="box-region"><canvas id="chart-region"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
@@ -235,6 +299,15 @@ const I18N = {
     "chart-wage-gap": "Hiato salarial racial ao longo do tempo",
     "chart-wage-gap-meta": "% que negras recebem em relação a não-negras · PNAD Contínua microdados · computado",
     "wage-gap-narrative": "Para cada R$ 100 recebidos por uma trabalhadora doméstica não-negra, uma trabalhadora doméstica negra recebe R$ 76.",
+    "chart-map": "Mapa: composição racial por UF",
+    "chart-map-meta": "% pretas + pardas entre trabalhadoras(es) domésticas(os), por estado · PNADC microdados · computado",
+    "chart-map-source": "Fonte: PNAD Contínua microdados (IBGE), agregado pela equipe do projeto. UFs com população amostral pequena (e.g., RR, AP) podem ter estimativas mais ruidosas.",
+    "map-dim-negras": "% Negras",
+    "map-dim-total": "Total (milhares)",
+    "map-period-hint-pre": "Período:",
+    "map-period-hint-post": "· use o filtro de Ano acima para mudar",
+    "map-empty": "Sem dados ainda. Rode o ETL para preencher.",
+    "map-loading": "Carregando mapa…",
     "chart-region": "Distribuição por UF",
     "chart-region-meta": "milhares de pessoas · top 10 UFs · trimestre mais recente disponível",
     "chart-intl": "Comparativo internacional — América Latina",
@@ -277,6 +350,15 @@ const I18N = {
     "chart-wage-gap": "Racial wage gap over time",
     "chart-wage-gap-meta": "% Black workers earn vs. non-Black · PNADC microdata · computed",
     "wage-gap-narrative": "For every R$ 100 earned by a non-Black domestic worker, a Black domestic worker earns R$ 76.",
+    "chart-map": "Map: race composition by state",
+    "chart-map-meta": "% pretas + pardas (Black) among domestic workers, by state · PNADC microdata · computed",
+    "chart-map-source": "Source: PNAD Contínua microdata (IBGE), aggregated by the project team. States with small sample sizes (e.g., RR, AP) may have noisier estimates.",
+    "map-dim-negras": "% Black",
+    "map-dim-total": "Headcount (thousands)",
+    "map-period-hint-pre": "Period:",
+    "map-period-hint-post": "· use the Year filter above to change",
+    "map-empty": "No data yet. Run the ETL to populate.",
+    "map-loading": "Loading map…",
     "chart-region": "Distribution by state",
     "chart-region-meta": "thousands of people · top 10 states · latest available quarter",
     "chart-intl": "International comparison — Latin America",
@@ -547,6 +629,7 @@ function render() {
   renderMensalistas();
   renderRace();
   renderWageGap();
+  renderMapUF();
   renderRegion();
   renderIntl();
   renderSources();
@@ -757,8 +840,13 @@ function getComputedPctMulheres() {
 
 // Helper: latest computed % pretas+pardas from PNADC microdata, or null if
 // the microdata backfill hasn't been pushed to Supabase yet.
+// Restrict to geo_level='country' so the UF-level rows (added 2026-05)
+// don't leak into the BR-wide KPI tile denominator.
 function getComputedPctNegras() {
-  const rows = STATE.workers.filter(r => r.source_table === "PNADC-MICRODATA" && r.formality_code === "total");
+  const rows = STATE.workers.filter(r =>
+    r.source_table === "PNADC-MICRODATA"
+    && r.geo_level === "country"
+    && r.formality_code === "total");
   if (!rows.length) return null;
   const latestPeriod = rows.map(r => String(r.period_code)).sort().slice(-1)[0];
   const RACES = ["branca", "preta", "parda", "amarela", "indigena"];
@@ -775,8 +863,11 @@ function getComputedPctNegras() {
 function renderRace() {
   // Race composition over time, computed from PNADC microdata.
   // One line per race: branca, preta, parda, amarela, indigena.
+  // IMPORTANT: must restrict to geo_level='country', otherwise the new
+  // race × UF rows (added 2026-05) get summed in too and break the chart.
   const rows = STATE.workers.filter(r =>
     r.source_table === "PNADC-MICRODATA"
+    && r.geo_level === "country"
     && r.formality_code === "total"
     && ["branca", "preta", "parda", "amarela", "indigena"].includes(r.race_code)
   );
@@ -939,9 +1030,234 @@ function renderWageGap() {
   });
 }
 
+// ============ UF CHOROPLETH MAP ============
+// Renders the Brazilian UF SVG (loaded once) and colors each <path> by the
+// selected dimension (% negras among trabalhadoras domésticas, or total
+// headcount), drawing from the PNADC-MICRODATA UF aggregations.
+//
+// Year filter: piggybacks on the existing #f-year select. The map shows
+// a snapshot for the latest quarter that falls in the selected year, or
+// the latest available period if no year is selected.
+
+const MAP_STATE = { svgLoaded: false, dimension: "pct_negras" };
+
+// Sequential warm palette anchored on the dashboard's chita accent. Each
+// bucket is [upper_bound_inclusive, color]; values >= max go to the last bucket.
+const MAP_BUCKETS_PCT_NEGRAS = [
+  { upper: 35, color: "#fef3c7", label: "<35%" },
+  { upper: 50, color: "#fde68a", label: "35–50" },
+  { upper: 65, color: "#fbbf24", label: "50–65" },
+  { upper: 75, color: "#f97316", label: "65–75" },
+  { upper: 85, color: "#dc2626", label: "75–85" },
+  { upper: 999, color: "#7f1d1d", label: "≥85%" },
+];
+const MAP_BUCKETS_TOTAL = [
+  { upper: 50,   color: "#fef3c7", label: "<50k" },
+  { upper: 100,  color: "#fde68a", label: "50–100" },
+  { upper: 200,  color: "#fbbf24", label: "100–200" },
+  { upper: 400,  color: "#f97316", label: "200–400" },
+  { upper: 800,  color: "#dc2626", label: "400–800" },
+  { upper: 9e9,  color: "#7f1d1d", label: "≥800k" },
+];
+
+function colorForValue(v, buckets) {
+  if (v == null || isNaN(v)) return "#e5e7eb";   // muted grey for missing
+  for (const b of buckets) {
+    if (v < b.upper) return b.color;
+  }
+  return buckets[buckets.length - 1].color;
+}
+
+async function loadMapSvg() {
+  if (MAP_STATE.svgLoaded) return true;
+  const host = document.getElementById("map-svg-host");
+  if (!host) return false;
+  try {
+    const resp = await fetch("./assets/brazil-uf.svg", { cache: "force-cache" });
+    if (!resp.ok) throw new Error(`SVG fetch ${resp.status}`);
+    host.innerHTML = await resp.text();
+    MAP_STATE.svgLoaded = true;
+    setEmpty("box-map", false);
+    // Wire one-time tooltip listeners on the SVG (event delegation).
+    const svg = host.querySelector("svg");
+    if (svg) {
+      svg.addEventListener("mousemove", onMapHover);
+      svg.addEventListener("mouseleave", () => hideMapTooltip());
+      svg.addEventListener("focusin", onMapHover);
+      svg.addEventListener("focusout", () => hideMapTooltip());
+    }
+    return true;
+  } catch (e) {
+    console.warn("map svg load failed:", e);
+    setEmpty("box-map", true);
+    const overlay = document.querySelector("#box-map .chart-overlay");
+    if (overlay) overlay.textContent = LANG === "pt"
+      ? "Mapa indisponível. Rode etl/build_uf_svg.py para gerar o ativo."
+      : "Map asset missing. Run etl/build_uf_svg.py to generate it.";
+    return false;
+  }
+}
+
+// Build the per-UF aggregate for the map's selected period.
+// Returns { uf_code: { pct_negras, total_k, negras_k } }.
+function computeMapData(periodCode) {
+  const rows = STATE.workers.filter(r =>
+    r.source_table === "PNADC-MICRODATA"
+    && r.geo_level === "uf"
+    && r.formality_code === "total"
+    && r.sex_code === "T"
+    && String(r.period_code) === periodCode
+  );
+  const byUf = {};
+  for (const r of rows) {
+    const code = String(r.geo_code).padStart(2, "0");
+    if (!byUf[code]) byUf[code] = {};
+    if (r.race_code === "total")       byUf[code].total_k  = Number(r.workers_thousands);
+    if (r.race_code === "preta_parda") byUf[code].negras_k = Number(r.workers_thousands);
+    if (r.race_code === "branca")      byUf[code].brancas_k  = Number(r.workers_thousands);
+    if (r.race_code === "parda")       byUf[code].pardas_k   = Number(r.workers_thousands);
+    if (r.race_code === "preta")       byUf[code].pretas_k   = Number(r.workers_thousands);
+    byUf[code].name_pt = r.geo_name_pt;
+    byUf[code].name_en = r.geo_name_en;
+  }
+  for (const code of Object.keys(byUf)) {
+    const d = byUf[code];
+    d.pct_negras = (d.total_k && d.negras_k != null)
+      ? 100 * d.negras_k / d.total_k
+      : null;
+  }
+  return byUf;
+}
+
+// Pick the period to show on the map: the latest quarter in the selected
+// year, or the latest overall period if no year is selected.
+function pickMapPeriod() {
+  const allPeriods = [...new Set(
+    STATE.workers
+      .filter(r => r.source_table === "PNADC-MICRODATA" && r.geo_level === "uf")
+      .map(r => String(r.period_code))
+  )].sort();
+  if (!allPeriods.length) return null;
+  const yearFilter = STATE.filters.year;
+  if (yearFilter) {
+    const inYear = allPeriods.filter(p => p.startsWith(String(yearFilter)));
+    if (inYear.length) return inYear[inYear.length - 1];
+  }
+  return allPeriods[allPeriods.length - 1];
+}
+
+function renderMapLegend(buckets, dimension) {
+  const host = document.getElementById("map-legend");
+  if (!host) return;
+  const lblPre = LANG === "pt"
+    ? (dimension === "pct_negras" ? "% Negras:" : "Total (mil):")
+    : (dimension === "pct_negras" ? "% Black:"  : "Headcount (k):");
+  let html = `<span class="lbl">${lblPre}</span>`;
+  for (const b of buckets) {
+    html += `<span class="swatch" style="background:${b.color}"></span><span class="lbl">${b.label}</span>`;
+  }
+  // Missing-data swatch
+  const missLbl = LANG === "pt" ? "sem dado" : "no data";
+  html += `<span class="swatch" style="background:#e5e7eb"></span><span class="lbl">${missLbl}</span>`;
+  host.innerHTML = html;
+}
+
+let _mapTooltipDataCache = {};
+
+function onMapHover(ev) {
+  const path = ev.target.closest && ev.target.closest("path[id^='uf-']");
+  const tooltip = document.getElementById("map-tooltip");
+  if (!path || !tooltip) { hideMapTooltip(); return; }
+  const ufCode = path.id.replace(/^uf-/, "");
+  const data = _mapTooltipDataCache[ufCode];
+  if (!data) { hideMapTooltip(); return; }
+
+  const sigla = path.getAttribute("data-sigla") || "";
+  const namePt = path.getAttribute("data-name") || "";
+  const name = LANG === "pt" ? namePt : (data.name_en || namePt);
+  const pct = data.pct_negras != null ? data.pct_negras.toFixed(1) + "%" : "—";
+  const total = data.total_k != null ? fmt(data.total_k, 1) : "—";
+
+  const totalLabel = LANG === "pt" ? "Total trabalhadoras(es) domésticas" : "Total domestic workers";
+  const negrasLabel = LANG === "pt" ? "% pretas + pardas" : "% Black (pretas + pardas)";
+
+  tooltip.innerHTML = `
+    <div class="ttl">${name} <span class="sub">(${sigla})</span></div>
+    <div class="num">${negrasLabel}: <b>${pct}</b></div>
+    <div class="num sub">${totalLabel}: ${total} ${LANG === "pt" ? "mil" : "thousand"}</div>
+  `;
+  tooltip.classList.add("visible");
+
+  // Position relative to the .map-box container
+  const box = document.getElementById("box-map").getBoundingClientRect();
+  let x = (ev.clientX || 0) - box.left + 12;
+  let y = (ev.clientY || 0) - box.top + 12;
+  // Don't overflow the right edge
+  if (x + 220 > box.width) x = Math.max(8, box.width - 230);
+  tooltip.style.left = x + "px";
+  tooltip.style.top  = y + "px";
+}
+function hideMapTooltip() {
+  const t = document.getElementById("map-tooltip");
+  if (t) t.classList.remove("visible");
+}
+
+async function renderMapUF() {
+  const ok = await loadMapSvg();
+  if (!ok) return;
+
+  const period = pickMapPeriod();
+  if (!period) {
+    setEmpty("box-map", true);
+    return;
+  }
+  setText("map-period-label", fmtPeriod(period));
+  setEmpty("box-map", false);
+
+  const byUf = computeMapData(period);
+  _mapTooltipDataCache = byUf;
+
+  const dim = MAP_STATE.dimension;
+  const buckets = (dim === "pct_negras") ? MAP_BUCKETS_PCT_NEGRAS : MAP_BUCKETS_TOTAL;
+
+  // Color all paths
+  const svg = document.querySelector("#map-svg-host svg");
+  if (!svg) return;
+  for (const path of svg.querySelectorAll("path[id^='uf-']")) {
+    const code = path.id.replace(/^uf-/, "");
+    const d = byUf[code];
+    let v = null;
+    if (d) v = (dim === "pct_negras") ? d.pct_negras : d.total_k;
+    path.style.fill = colorForValue(v, buckets);
+    // Make focusable for keyboard navigation
+    if (!path.hasAttribute("tabindex")) path.setAttribute("tabindex", "0");
+  }
+
+  renderMapLegend(buckets, dim);
+
+  // Wire dimension toggle (idempotent — set up once)
+  document.querySelectorAll(".map-toggle button[data-map-dim]").forEach(btn => {
+    if (btn.dataset.wired) return;
+    btn.dataset.wired = "1";
+    btn.addEventListener("click", () => {
+      MAP_STATE.dimension = btn.dataset.mapDim;
+      document.querySelectorAll(".map-toggle button").forEach(b =>
+        b.setAttribute("aria-pressed", b.dataset.mapDim === MAP_STATE.dimension ? "true" : "false")
+      );
+      renderMapUF();
+    });
+  });
+}
+
 function renderRegion() {
-  const ufRows = STATE.workers.filter(r =>
+  // UF distribution chart — prefer PNADC-MICRODATA when available so the bar
+  // chart and the new map are consistent. Fall back to the older PNADC-6383
+  // source if microdata UF rows aren't loaded yet (e.g., partial backfill).
+  const allUf = STATE.workers.filter(r =>
     r.geo_level === "uf" && r.formality_code === "total" && r.sex_code === "T" && r.race_code === "total");
+  const microUf = allUf.filter(r => r.source_table === "PNADC-MICRODATA");
+  const ufRows = microUf.length ? microUf
+                                : allUf.filter(r => r.source_table !== "PNADC-MICRODATA");
   if (!ufRows.length) { setEmpty("box-region", true); destroyChart("region"); return; }
 
   // Year filter: pick the most recent period that falls inside the chosen year. Default = latest.

@@ -129,6 +129,14 @@
   <li><strong>Nota</strong>: a Tabela 6383 oferece apenas a classificação por número de domicílios, não por contrato em si. A LC 150/2015 estabelece a fronteira jurídica em <em>2 dias por semana por empregador</em>; o SIDRA não publica esse corte exato, mas o número de domicílios é uma aproximação amplamente aceita</li>
 </ul>
 
+<h3>3.4b Composição por sexo (série temporal)</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-MICRODATA</code> — mesma origem das séries 3.5 e 3.6, agora aplicando <code>V2007</code> (sexo) com pesos <code>V1028</code>.</li>
+  <li><strong>Cobertura</strong>: 56 trimestres, 2012Q1 → 2025Q4. Atualizada a cada nova divulgação trimestral.</li>
+  <li><strong>Achado</strong>: a participação feminina caiu ligeiramente de <strong>93,0 % (2012) para 91,7 % (2025)</strong> — uma diminuição de 1,3 pp ao longo de 13 anos. O declínio acelerou durante a COVID-19 (homens voltaram em número ligeiramente maior quando mulheres foram forçadas a sair). Combinado com 3.5 (racialização +5,2 pp) e 3.6 (hiato salarial estável), o quadro: trabalhadoras domésticas são <em>mais negras, um pouco menos femininas e igualmente sub-remuneradas</em> em 2025 vs. 2012. Mas mesmo no extremo do declínio, ~92 % continuam sendo mulheres — feminização extrema.</li>
+  <li><strong>Histórico</strong>: até 05/2026 esta cifra era atribuída ao DIEESE como valor estático único (91,9 %); foi substituída pela série temporal computada após o pipeline de microdados ser estendido para incluir agregações por sexo.</li>
+</ul>
+
 <h3>3.5 Composição por cor/raça (série temporal)</h3>
 <ul>
   <li><strong>Fonte</strong>: <code>PNADC-MICRODATA</code> — microdados oficiais da PNAD Contínua trimestral, processados pelo nosso ETL (<code>etl/pnadc_microdata.py</code>) com aplicação dos pesos amostrais V1028.</li>
@@ -294,6 +302,14 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>SIDRA variable</strong>: <code>8336</code></li>
   <li><strong>Classification</strong>: <code>c785</code> (Number of households worked in), categories <code>40277</code> ("single household" — proxy for monthly worker / mensalista) and <code>40278</code> ("more than one household" — proxy for day-rate / diarista)</li>
   <li><strong>Note</strong>: Table 6383 only offers the household-count classification, not contract type per se. LC 150/2015 sets the legal threshold at <em>2 days/week per employer</em>; SIDRA does not publish that exact cut, but household count is a widely accepted approximation</li>
+</ul>
+
+<h3>3.4b Sex composition (time series)</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-MICRODATA</code> — same source as 3.5 and 3.6, now applying <code>V2007</code> (sex) with V1028 sampling weights.</li>
+  <li><strong>Coverage</strong>: 56 quarters, 2012Q1 → 2025Q4. Updated with each IBGE quarterly release.</li>
+  <li><strong>Finding</strong>: women's share fell slightly from <strong>93.0 % (2012) to 91.7 % (2025)</strong> — a -1.3 pp shift over 13 years. The decline accelerated during COVID-19 (men returned to domestic work in slightly higher numbers when women were forced out). Combined with 3.5 (racialization +5.2 pp) and 3.6 (wage gap stable), the picture: domestic workers are <em>more Black, slightly less female, and equally underpaid</em> in 2025 vs. 2012. Even at the bottom of the decline, ~92 % are women — feminization remains extreme.</li>
+  <li><strong>History</strong>: until 05/2026 this figure was attributed to DIEESE as a single static value (91.9 %); replaced by the computed time series after the microdata pipeline was extended to include sex aggregations.</li>
 </ul>
 
 <h3>3.5 Race composition (time series)</h3>

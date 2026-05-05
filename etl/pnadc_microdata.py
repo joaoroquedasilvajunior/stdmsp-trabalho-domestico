@@ -475,6 +475,8 @@ def aggregate_by_race(df: pd.DataFrame) -> pd.DataFrame:
 
 # PNADC V2010 (cor/raça) → our dim_race.code
 RACE_MAP = {"1": "branca", "2": "preta", "3": "amarela", "4": "parda", "5": "indigena"}
+# PNADC V2007 (sexo) → our dim_sex.code
+SEX_MAP = {"1": "M", "2": "F"}
 # VD4009 (posição) → our dim_formality.code, restricted to trabalhador doméstico
 FORMALITY_MAP = {"03": "com_carteira", "04": "sem_carteira"}
 
@@ -535,6 +537,47 @@ def build_fact_rows(df: pd.DataFrame, period: str) -> list[dict]:
             "_geo_level": "country",
             "_sex": "T", "_age": "total",
             "_race": "preta_parda", "_formality": form,
+            "workers_thousands": round(float(w) / 1000, 2),
+        })
+
+    return rows
+
+
+def build_sex_rows(df: pd.DataFrame, period: str) -> list[dict]:
+    """Produce fact_workers payload rows for sex × formality aggregations.
+
+    Output: 2 sexes × 3 formalities (com_carteira, sem_carteira, total) = 6 rows
+    per quarter. race_code = 'total', age_code = 'total' on these rows.
+    """
+    df = df.copy()
+    df["weight"] = pd.to_numeric(df["V1028"], errors="coerce")
+    if df["weight"].max() > 1e9:
+        df["weight"] = df["weight"] / 1e9
+
+    DOMESTIC_CODES = ["03", "04"]
+    dom = df[df["VD4009"].isin(DOMESTIC_CODES)].copy()
+    dom["sex_code"] = dom["V2007"].map(SEX_MAP)
+    dom["formality_code"] = dom["VD4009"].map(FORMALITY_MAP)
+    dom = dom[dom["sex_code"].notna() & dom["formality_code"].notna()]
+
+    db_period = microdata_period_to_db_code(period)
+    rows: list[dict] = []
+
+    # Sex × formality
+    for (sex, form), w in dom.groupby(["sex_code", "formality_code"])["weight"].sum().items():
+        rows.append({
+            "_period_code": db_period,
+            "_geo_code": "BR", "_geo_level": "country",
+            "_sex": sex, "_race": "total", "_formality": form, "_age": "total",
+            "workers_thousands": round(float(w) / 1000, 2),
+        })
+
+    # Sex × total (sum across formalities)
+    for sex, w in dom.groupby("sex_code")["weight"].sum().items():
+        rows.append({
+            "_period_code": db_period,
+            "_geo_code": "BR", "_geo_level": "country",
+            "_sex": sex, "_race": "total", "_formality": "total", "_age": "total",
             "workers_thousands": round(float(w) / 1000, 2),
         })
 
@@ -757,13 +800,22 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
             df = pd.read_fwf(fh, colspecs=colspecs, names=list(specs.keys()),
                              dtype=str, keep_default_na=False)
 
-    # ---- counts (fact_workers) ----
+    # ---- counts by race (fact_workers) ----
     rows = build_fact_rows(df, period)
     n_dom = sum(r["workers_thousands"] for r in rows
                 if r["_race"] != "preta_parda" and r["_formality"] == "total")
     n_negras = sum(r["workers_thousands"] for r in rows
                    if r["_race"] == "preta_parda" and r["_formality"] == "total")
     pct_negras = round(100 * n_negras / n_dom, 1) if n_dom else None
+
+    # ---- counts by sex (fact_workers) ----
+    sex_rows = build_sex_rows(df, period)
+    rows.extend(sex_rows)   # share the same Supabase upsert (fact_workers)
+    n_women = sum(r["workers_thousands"] for r in sex_rows
+                  if r["_sex"] == "F" and r["_formality"] == "total")
+    n_men = sum(r["workers_thousands"] for r in sex_rows
+                if r["_sex"] == "M" and r["_formality"] == "total")
+    pct_mulheres = round(100 * n_women / (n_women + n_men), 1) if (n_women + n_men) else None
 
     # ---- wages (fact_wages) ----
     wage_rows = build_wage_rows(df, period)
@@ -778,14 +830,14 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
     if upsert:
         inserted_workers = upsert_to_supabase(rows)
         inserted_wages = upsert_wages_to_supabase(wage_rows)
-        log.info("[%s] upserted %d worker rows + %d wage rows · total %.0fk · pretas+pardas %s%% · wage gap %s%% (negras/nao-negras)",
-                 period, inserted_workers, inserted_wages, n_dom, pct_negras, wage_gap_pct)
+        log.info("[%s] upserted %d worker rows + %d wage rows · total %.0fk · pretas+pardas %s%% · mulheres %s%% · wage gap %s%%",
+                 period, inserted_workers, inserted_wages, n_dom, pct_negras, pct_mulheres, wage_gap_pct)
     else:
-        log.info("[%s] (dry run) %d worker rows + %d wage rows · total %.0fk · pretas+pardas %s%% · wage gap %s%%",
-                 period, len(rows), len(wage_rows), n_dom, pct_negras, wage_gap_pct)
+        log.info("[%s] (dry run) %d worker rows + %d wage rows · total %.0fk · pretas+pardas %s%% · mulheres %s%% · wage gap %s%%",
+                 period, len(rows), len(wage_rows), n_dom, pct_negras, pct_mulheres, wage_gap_pct)
 
     return {"period": period, "total_workers_k": n_dom, "pct_negras": pct_negras,
-            "wage_gap_pct": wage_gap_pct}
+            "pct_mulheres": pct_mulheres, "wage_gap_pct": wage_gap_pct}
 
 
 # ----- main --------------------------------------------------------------------
@@ -834,9 +886,9 @@ def main():
         if "error" in r:
             print(f"  {r['period']}  ❌ {r['error'][:80]}")
         else:
-            gap = r.get("wage_gap_pct")
-            gap_s = f"{gap:.1f}%" if gap is not None else "—"
-            print(f"  {r['period']}  total {r['total_workers_k']:>5.0f}k  · pretas+pardas {r['pct_negras']}%  · wage gap negras/nao-negras {gap_s}")
+            gap = r.get("wage_gap_pct"); gap_s = f"{gap:.1f}%" if gap is not None else "—"
+            mul = r.get("pct_mulheres"); mul_s = f"{mul:.1f}%" if mul is not None else "—"
+            print(f"  {r['period']}  total {r['total_workers_k']:>5.0f}k  · pretas+pardas {r['pct_negras']}%  · mulheres {mul_s}  · wage gap {gap_s}")
     print("======================================\n")
     n_ok = sum(1 for r in summary if "error" not in r)
     n_fail = len(summary) - n_ok

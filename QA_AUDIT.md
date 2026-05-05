@@ -303,6 +303,35 @@ reais; we use them only for the ratio (where deflation cancels out). The
 6391, which is IBGE-deflated to constant reais. This distinction is now
 documented in Section 3.6 of the methodology page.
 
+### 2026-05-06 (continued) — % Mulheres now computed from microdata
+
+The microdata pipeline (`build_sex_rows`) now also aggregates trabalhadoras
+domésticas by sex × formality × period using `V2007` and `V1028`. Backfill
+across all 56 quarters added 336 sex-breakdown rows to `fact_workers`
+(2 sexes × 3 formalities × 56 quarters). The dashboard's `% Mulheres` KPI
+tile reads the computed value when available; falls back to the DIEESE
+static fact (91.9 %) only if the microdata isn't loaded.
+
+**Validation.** Computed value matches DIEESE within rounding (our 2024 =
+91.8 %, DIEESE = 91.9 %).
+
+**Finding (revised after backfill).** The series isn't quite flat —
+women's share declined slightly from **93.0 % (2012) to 91.7 % (2025)**, a
+−1.3 pp shift over 13 years. The decline accelerated during COVID-19
+(men returned to domestic work in slightly higher proportion as women were
+pushed out). Combined with the +5.2 pp racialization finding and the stable
+wage gap, the multi-dimensional picture: trabalhadoras domésticas in 2025
+are *more Black, slightly less female, and equally underpaid* than in 2012.
+
+**Methodology** Section 3.4b added (PT + EN) documenting the new computed
+provenance.
+
+**State of the dashboard.** All four KPI tiles, plus two of the eight
+charts, are now driven by computed (not attributed) values. Three figures
+remain DIEESE-attributed and worth eventually computing as well: this leaves
+zero KPI tiles using DIEESE static facts when microdata is loaded — a
+meaningful threshold for the dashboard's research credibility.
+
 ---
 
 ## Sources

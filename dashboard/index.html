@@ -606,15 +606,15 @@ function renderKpis() {
     : (isBR ? "—" : (LANG === "pt" ? "n/d" : "n/a"))   // 6383 doesn't carry the formality split
   );
 
-  // Sex / race come from two layers:
-  //   - pct_women still from DIEESE static fact (no microdata cross-tab yet)
-  //   - pct_negras: prefer the computed value from PNADC microdata when available;
-  //     fall back to the DIEESE static fact otherwise.
+  // Sex / race: prefer values computed from PNADC microdata when the backfill
+  // is loaded; fall back to the DIEESE static fact otherwise.
   const sfWomen  = STATE.staticFacts["pct_women"];
   const sfNegras = STATE.staticFacts["pct_negras"];
+  const computedWomen  = getComputedPctMulheres();
   const computedNegras = getComputedPctNegras();
-  setText("kpi-women-value", sfWomen ? fmt(sfWomen.value_num, 1) + "%" : "—");
+  const womenPct  = computedWomen  != null ? computedWomen  : (sfWomen  ? sfWomen.value_num  : null);
   const negrasPct = computedNegras != null ? computedNegras : (sfNegras ? sfNegras.value_num : null);
+  setText("kpi-women-value", womenPct  != null ? fmt(womenPct, 1)  + "%" : "—");
   setText("kpi-black-value", negrasPct != null ? fmt(negrasPct, 1) + "%" : "—");
 
   const womenCard = document.getElementById("kpi-women-card");
@@ -628,17 +628,13 @@ function renderKpis() {
   const periodLabel = pickedCode ? fmtPeriod(pickedCode) : (LANG === "pt" ? "sem dados" : "no data");
   setText("kpi-total-meta",
     (LANG === "pt" ? "milhares de pessoas · " : "thousands of people · ") + geoLabel + " · " + periodLabel);
-  // When dimmed, swap the meta line to explain the tile is national-only.
-  const womenMeta = isBR
-    ? (LANG === "pt" ? "fonte: DIEESE · BR" : "source: DIEESE · BR")
-    : (LANG === "pt" ? "disponível só para Brasil" : "available for Brazil only");
-  // The Negras tile now reads from microdata (computed) when available — flag it.
-  const negrasMeta = !isBR
-    ? (LANG === "pt" ? "disponível só para Brasil" : "available for Brazil only")
-    : (computedNegras != null
-        ? (LANG === "pt" ? "fonte: PNADC microdados (computado)" : "source: PNADC microdata (computed)")
-        : (LANG === "pt" ? "fonte: DIEESE · BR" : "source: DIEESE · BR"));
-  if (sfWomen)  setText("kpi-women-meta", womenMeta);
+  // Meta lines reflect the actual provenance for each tile (computed vs attributed).
+  const computedTag = LANG === "pt" ? "fonte: PNADC microdados (computado)" : "source: PNADC microdata (computed)";
+  const dieeseTag   = LANG === "pt" ? "fonte: DIEESE · BR" : "source: DIEESE · BR";
+  const onlyBR      = LANG === "pt" ? "disponível só para Brasil" : "available for Brazil only";
+  const womenMeta  = !isBR ? onlyBR : (computedWomen  != null ? computedTag : dieeseTag);
+  const negrasMeta = !isBR ? onlyBR : (computedNegras != null ? computedTag : dieeseTag);
+  setText("kpi-women-meta", womenMeta);
   setText("kpi-black-meta", negrasMeta);
 }
 
@@ -737,6 +733,21 @@ function renderWages() {
       maintainAspectRatio: false,
     },
   });
+}
+
+// Helper: latest computed % mulheres from PNADC microdata sex aggregates.
+function getComputedPctMulheres() {
+  const rows = STATE.workers.filter(r =>
+    r.source_table === "PNADC-MICRODATA" && r.race_code === "total" && r.formality_code === "total"
+  );
+  if (!rows.length) return null;
+  const latestPeriod = rows.map(r => String(r.period_code)).sort().slice(-1)[0];
+  const women = rows.find(r => String(r.period_code) === latestPeriod && r.sex_code === "F");
+  const men   = rows.find(r => String(r.period_code) === latestPeriod && r.sex_code === "M");
+  if (!women || !men) return null;
+  const total = Number(women.workers_thousands) + Number(men.workers_thousands);
+  if (!total) return null;
+  return 100 * Number(women.workers_thousands) / total;
 }
 
 // Helper: latest computed % pretas+pardas from PNADC microdata, or null if

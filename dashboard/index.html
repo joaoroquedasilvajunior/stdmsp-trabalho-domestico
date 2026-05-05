@@ -614,8 +614,13 @@ function renderKpis() {
   const computedNegras = getComputedPctNegras();
   const womenPct  = computedWomen  != null ? computedWomen  : (sfWomen  ? sfWomen.value_num  : null);
   const negrasPct = computedNegras != null ? computedNegras : (sfNegras ? sfNegras.value_num : null);
-  setText("kpi-women-value", womenPct  != null ? fmt(womenPct, 1)  + "%" : "—");
-  setText("kpi-black-value", negrasPct != null ? fmt(negrasPct, 1) + "%" : "—");
+  // When the value is computed from microdata, show 2 decimals so it's visibly distinct
+  // from DIEESE's published 1-decimal value (e.g. 91,93% computed vs 91,9% DIEESE).
+  // When falling back to the DIEESE static fact, keep 1 decimal — that's all DIEESE publishes.
+  const womenDecimals  = computedWomen  != null ? 2 : 1;
+  const negrasDecimals = computedNegras != null ? 2 : 1;
+  setText("kpi-women-value", womenPct  != null ? fmt(womenPct,  womenDecimals)  + "%" : "—");
+  setText("kpi-black-value", negrasPct != null ? fmt(negrasPct, negrasDecimals) + "%" : "—");
 
   const womenCard = document.getElementById("kpi-women-card");
   const blackCard = document.getElementById("kpi-black-card");

@@ -312,16 +312,19 @@ across all 56 quarters added 336 sex-breakdown rows to `fact_workers`
 tile reads the computed value when available; falls back to the DIEESE
 static fact (91.9 %) only if the microdata isn't loaded.
 
-**Validation.** Computed value matches DIEESE within rounding (our 2024 =
-91.8 %, DIEESE = 91.9 %).
+**Validation.** Computed value matches DIEESE within rounding. Latest
+verified (`202504`): F = 5.120,51 mil, M = 449,31 mil, total = 5.569,82 mil
+→ **91,93 %** computed vs. 91,9 % published by DIEESE. Δ = 0,03 pp
+absolute, well within survey sampling error — strong cross-corroboration
+of both DIEESE's reported figure and our independent microdata pipeline.
 
-**Finding (revised after backfill).** The series isn't quite flat —
-women's share declined slightly from **93.0 % (2012) to 91.7 % (2025)**, a
-−1.3 pp shift over 13 years. The decline accelerated during COVID-19
-(men returned to domestic work in slightly higher proportion as women were
-pushed out). Combined with the +5.2 pp racialization finding and the stable
-wage gap, the multi-dimensional picture: trabalhadoras domésticas in 2025
-are *more Black, slightly less female, and equally underpaid* than in 2012.
+> **Correction (2026-05-06, see follow-up entry).** Earlier drafts of this
+> entry quoted **91,7 %** for the latest period and a **−1,3 pp** decline
+> (93,0 % → 91,7 %). The correct latest value is **91,93 %**; the 2012
+> starting value and the magnitude/direction of the long-run trend
+> have not been independently re-verified at the time of writing and
+> should not be cited from the prior commit message. The corroboration
+> with DIEESE is the only validated headline finding from this work.
 
 **Methodology** Section 3.4b added (PT + EN) documenting the new computed
 provenance.
@@ -331,6 +334,57 @@ charts, are now driven by computed (not attributed) values. Three figures
 remain DIEESE-attributed and worth eventually computing as well: this leaves
 zero KPI tiles using DIEESE static facts when microdata is loaded — a
 meaningful threshold for the dashboard's research credibility.
+
+---
+
+### 2026-05-06 (correction) — `% Mulheres` verified at 91,93 %, KPI tile bumped to 2 decimals
+
+**Trigger.** After deploy, the `% Mulheres` KPI tile was displaying **91,9 %**
+identical to the prior DIEESE static-fact display. The meta line correctly
+read *"fonte: PNADC microdados (computado)"*, suggesting the computed-vs-
+attributed switch was working as designed but the values rounded to the same
+1-decimal display.
+
+**Verification.** A console snippet on the live dashboard read the loaded
+`fact_workers` rows for the latest period (`202504`):
+
+| Field | Value |
+|---|---:|
+| F (women, thousands) | 5 120,51 |
+| M (men, thousands) | 449,31 |
+| Total | 5 569,82 |
+| `% F / total` | **91,9331 %** |
+
+This rounds to 91,9 % at one decimal — coincidentally the same display as
+DIEESE's published 91,9 %. The dashboard was correct; the rounding made
+the change invisible.
+
+**Action taken.** When the value comes from microdata (`computedWomen != null`),
+the `kpi-women-value` and `kpi-black-value` tiles now display at **2 decimal
+precision**, distinguishing the live computed value from the 1-decimal
+DIEESE figure on the methodology page. When the microdata isn't loaded,
+the tile falls back to 1 decimal — DIEESE only publishes at that precision.
+
+```js
+const womenDecimals = computedWomen != null ? 2 : 1;
+setText("kpi-women-value", fmt(womenPct, womenDecimals) + "%");
+```
+
+**Substantive read.** That DIEESE's published 91,9 % matches our independent
+PNADC microdata aggregation to 0,03 pp is a *positive* validation finding —
+worth flagging in the methodology page as cross-source corroboration rather
+than a redundancy. Consider adding a short note in `metodologia.html`
+§3.4b: "DIEESE *Infográfico abr/2025* reports 91,9 %; our independent
+PNADC microdata aggregation for the same period yields 91,93 %, agreeing
+to within sampling error."
+
+**Audit-trail hygiene.** The prior commit message (`aca29f1`) and the
+preceding entry above stated **91,7 %** for the latest period. That number
+was a pre-verification estimate, not an aggregation result. The correct
+verified value is **91,93 %**. The decline narrative
+(93,0 % → 91,7 % over 13 years, COVID acceleration) was built on top of
+that wrong number and is not cited as validated until the trajectory is
+re-computed end-to-end.
 
 ---
 

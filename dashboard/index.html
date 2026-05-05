@@ -405,8 +405,8 @@ const I18N = {
     "map-loading": "Carregando mapa…",
     "chart-region": "Distribuição por UF",
     "chart-region-meta": "milhares de pessoas · top 10 UFs · trimestre mais recente disponível",
-    "chart-intl": "Comparativo internacional — América Latina",
-    "chart-intl-meta": "ILOSTAT · trabalhadoras(es) domésticas(os) por país, milhares",
+    "chart-intl": "Comparativo internacional — Brasil ↔ México",
+    "chart-intl-meta": "Trajetória ILOSTAT · trabalhadoras(es) domésticas(os) (ISCO 91) por ano · BR e MX em destaque, demais países da América Latina como contexto",
     "about-title": "Sobre os dados",
     "about-body": "Os números deste painel vêm da PNAD Contínua (IBGE), do Censo Demográfico 2022 e do ILOSTAT. A categoria \"trabalhador(a) doméstico(a)\" segue a definição do IBGE, que inclui empregadas(os) mensalistas e diaristas, com ou sem carteira de trabalho assinada. Os dados de salário se referem ao setor \"Serviços domésticos\" da PNADC, em reais constantes (real). O comparativo internacional usa a categoria mais ampla ISCO-08 91 do ILOSTAT (\"trabalhadores de limpeza e auxiliares\"), o que explica por que os totais nacionais nesse gráfico são maiores do que os totais de \"trabalhador doméstico\" do IBGE.",
     empty: "Sem dados ainda. Rode o ETL para preencher.",
@@ -458,8 +458,8 @@ const I18N = {
     "map-loading": "Loading map…",
     "chart-region": "Distribution by state",
     "chart-region-meta": "thousands of people · top 10 states · latest available quarter",
-    "chart-intl": "International comparison — Latin America",
-    "chart-intl-meta": "ILOSTAT · domestic workers by country, thousands",
+    "chart-intl": "International comparison — Brazil ↔ Mexico",
+    "chart-intl-meta": "ILOSTAT trajectory · domestic workers (ISCO 91) by year · Brazil and Mexico featured, other Latin American countries shown as context",
     "about-title": "About the data",
     "about-body": "The numbers in this dashboard come from the PNAD Contínua (IBGE), the 2022 Demographic Census, and ILOSTAT. The category \"domestic worker\" follows IBGE's definition, which includes monthly employees and daily-rate workers, with or without a signed work card. Wage figures are for the PNADC \"Domestic services\" sector, in constant (real) reais. The international comparator uses ILOSTAT's broader ISCO-08 group 91 (\"cleaners and helpers\"), which is why national totals there are higher than IBGE's \"domestic worker\" totals.",
     empty: "No data yet. Run the ETL to populate.",
@@ -1478,32 +1478,79 @@ function renderMensalistas() {
 }
 
 function renderIntl() {
-  // Keep one row per country — the most recent year available — then sort descending.
-  const latestByCountry = {};
-  for (const r of STATE.intl) {
-    const cur = latestByCountry[r.country_iso3];
-    if (!cur || r.year > cur.year) latestByCountry[r.country_iso3] = r;
+  // Time-series multi-line comparator. Brasil and México are featured (thicker
+  // lines, dashboard accent / charcoal); the other 6 LatAm peers stay in
+  // muted gray as secondary context — Mayer's research is BR↔MX-anchored.
+  if (!STATE.intl.length) {
+    setEmpty("box-intl", true); destroyChart("intl"); return;
   }
-  const rows = Object.values(latestByCountry).sort((a, b) => b.domestic_workers_thousands - a.domestic_workers_thousands);
-  setEmpty("box-intl", rows.length === 0);
+
+  // Group by country, sort each series chronologically.
+  const byCountry = {};
+  for (const r of STATE.intl) {
+    if (!byCountry[r.country_iso3]) byCountry[r.country_iso3] = [];
+    byCountry[r.country_iso3].push(r);
+  }
+  for (const c of Object.keys(byCountry)) {
+    byCountry[c].sort((a, b) => a.year - b.year);
+  }
+
+  // Union of years across all countries — irregular gaps will show as line breaks.
+  const allYears = [...new Set(STATE.intl.map(r => r.year))].filter(y => y).sort((a, b) => a - b);
+
+  // Featured countries get thicker lines and a higher draw order (z-index).
+  const FEATURED = {
+    BRA: { color: "#b91c1c", width: 3.2, order: 1 },
+    MEX: { color: "#1f2937", width: 3.2, order: 2 },
+  };
+  const MUTED = { color: "#9ca3af", width: 1.2, order: 10, dash: [4, 4] };
+
+  // Order: BR, MX, then alphabetical so the legend reads naturally.
+  const countryOrder = Object.keys(byCountry).sort((a, b) => {
+    if (a === "BRA") return -1; if (b === "BRA") return 1;
+    if (a === "MEX") return -1; if (b === "MEX") return 1;
+    return a.localeCompare(b);
+  });
+
+  const datasets = countryOrder.map(iso3 => {
+    const rows = byCountry[iso3];
+    const dataByYear = Object.fromEntries(rows.map(r => [r.year, r.domestic_workers_thousands]));
+    const style = FEATURED[iso3] || MUTED;
+    return {
+      label: LANG === "pt" ? rows[0].country_pt : rows[0].country_en,
+      data: allYears.map(y => (dataByYear[y] != null ? Number(dataByYear[y]) : null)),
+      borderColor: style.color,
+      backgroundColor: style.color + "20",
+      borderWidth: style.width,
+      borderDash: style.dash || [],
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      tension: 0.25,
+      spanGaps: true,
+      order: style.order,
+    };
+  });
+
+  setEmpty("box-intl", false);
   destroyChart("intl");
-  if (!rows.length) return;
   charts.intl = new Chart(document.getElementById("chart-intl"), {
-    type: "bar",
-    data: {
-      labels: rows.map(r => `${LANG === "pt" ? r.country_pt : r.country_en} (${r.year})`),
-      datasets: [{
-        data: rows.map(r => r.domestic_workers_thousands),
-        backgroundColor: rows.map(r => r.country_iso3 === "BRA" ? "#b91c1c" : (r.country_iso3 === "MEX" ? "#1f2937" : "#9ca3af")),
-      }],
-    },
+    type: "line",
+    data: { labels: allYears, datasets },
     options: {
       plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: c => fmt(c.parsed.y) + " mil" } },
+        legend: { position: "bottom", labels: { boxWidth: 14, boxHeight: 10, padding: 8, font: { size: 11 } } },
+        tooltip: {
+          mode: "index",
+          intersect: false,
+          callbacks: { label: c => c.dataset.label + ": " + fmt(c.parsed.y) + (LANG === "pt" ? " mil" : "k") },
+        },
       },
-      scales: { y: { ticks: { callback: v => fmt(v) } } },
+      scales: {
+        y: { ticks: { callback: v => fmt(v) }, beginAtZero: false },
+        x: { ticks: { maxTicksLimit: 10 } },
+      },
       maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
     },
   });
 }

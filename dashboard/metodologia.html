@@ -177,12 +177,15 @@
   <li><strong>Limitação</strong>: UFs pequenas (RR, AP, AC, TO) com células raciais raras (especialmente <em>indígena</em> e <em>amarela</em>) podem ter estimativas ruidosas. A leitura de cabeçalho — % pretas + pardas — é robusta em todas as UFs, com tamanho amostral suficiente em todos os 56 trimestres</li>
 </ul>
 
-<h3>3.8 Comparativo internacional</h3>
+<h3>3.8 Comparativo internacional — Brasil ↔ México (trajetória)</h3>
 <ul>
   <li><strong>Fonte</strong>: <code>ILOSTAT</code></li>
   <li><strong>Indicador</strong>: <code>EMP_TEMP_SEX_OC2_NB_A</code> com filtro ISCO-08 grupo 91 ("Cleaners and helpers")</li>
-  <li><strong>Países comparadores</strong>: Brasil, México, Argentina, Colômbia, Chile, Peru, Uruguai, Equador</li>
-  <li><strong>Aviso importante</strong>: ISCO-08 91 é mais amplo que a categoria "Trabalhador doméstico" do IBGE; inclui faxineiras de escritório, auxiliares de limpeza em hotelaria, etc. Os totais nacionais neste gráfico são <em>maiores</em> que os totais da PNADC para a mesma população. A comparação só é válida <em>entre países</em> dentro do ILOSTAT, não entre ILOSTAT e PNADC</li>
+  <li><strong>Forma do gráfico</strong>: linhas anuais. <strong>Brasil</strong> e <strong>México</strong> aparecem em destaque (linhas grossas, vermelho-chita e grafite); os demais 6 países da América Latina (Argentina, Colômbia, Chile, Peru, Uruguai, Equador) aparecem como contexto em cinza tracejado</li>
+  <li><strong>Por que BR ↔ MX em destaque</strong>: o eixo comparativo da pesquisa de Jean-François Mayer (Concordia) é justamente o par Brasil-México — duas das maiores categorias de trabalho doméstico da América Latina, ambas com legislação federal específica (LC 150/2015 no BR; reformas IMSS 2019–2024 no MX), e ambas com ratificação da Convenção 189 da OIT</li>
+  <li><strong>Cobertura</strong>: BR 2012–2025 (14 pontos), MX 2013–2025 (13 pontos). Os outros países variam (Peru tem só 4 pontos; Argentina, Uruguai, Colômbia têm séries de ~15 anos)</li>
+  <li><strong>Aviso importante (mantido)</strong>: ISCO-08 91 é mais amplo que a categoria "Trabalhador doméstico" do IBGE — inclui faxineiras de escritório, auxiliares de limpeza em hotelaria, hospital, etc. Os totais nacionais aqui (BR ~7,8 milhões em 2025) são <em>maiores</em> que os totais da PNADC para a mesma população (5,5 milhões). A comparação só é válida <em>entre países</em> dentro do ILOSTAT, não entre ILOSTAT e PNADC</li>
+  <li><strong>Próximos passos (P2.2)</strong>: completar dimensões adicionais (% mulheres, taxa de informalidade) por país, exigindo extensão do <code>fetch_ilostat.py</code> para puxar indicadores complementares. Decisão pendente; não bloqueia esta versão</li>
 </ul>
 
 <h2>4. Notas metodológicas</h2>
@@ -365,12 +368,15 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>Limitation</strong>: small states (RR, AP, AC, TO) with rare race cells (especially <em>indigenous</em> and <em>Asian</em>) can have noisy estimates. The headline reading — % pretas + pardas — is robust across all states, with sufficient sample size in every one of the 56 quarters</li>
 </ul>
 
-<h3>3.8 International comparison</h3>
+<h3>3.8 International comparison — Brazil ↔ Mexico (trajectory)</h3>
 <ul>
   <li><strong>Source</strong>: <code>ILOSTAT</code></li>
   <li><strong>Indicator</strong>: <code>EMP_TEMP_SEX_OC2_NB_A</code> filtered to ISCO-08 group 91 ("Cleaners and helpers")</li>
-  <li><strong>Comparator countries</strong>: Brazil, Mexico, Argentina, Colombia, Chile, Peru, Uruguay, Ecuador</li>
-  <li><strong>Important caveat</strong>: ISCO-08 91 is broader than IBGE's "Domestic worker" category; it includes office cleaners, hotel housekeeping, hospital cleaning auxiliaries, etc. National totals on this chart are <em>larger</em> than PNADC totals for the same population. The comparison is valid <em>between countries</em> within ILOSTAT, but never between ILOSTAT and PNADC</li>
+  <li><strong>Chart shape</strong>: annual time series. <strong>Brazil</strong> and <strong>Mexico</strong> are featured (thick lines in chita-red and charcoal); the other 6 Latin American countries (Argentina, Colombia, Chile, Peru, Uruguay, Ecuador) appear as context in dashed gray</li>
+  <li><strong>Why BR ↔ MX featured</strong>: the comparative axis of Jean-François Mayer's research (Concordia) is the Brazil-Mexico pair — two of Latin America's largest domestic-work categories, both with specific federal legislation (LC 150/2015 in BR; IMSS reforms 2019–2024 in MX), and both with ILO Convention 189 ratification</li>
+  <li><strong>Coverage</strong>: BR 2012–2025 (14 points), MX 2013–2025 (13 points). The other countries vary (Peru has only 4 points; Argentina, Uruguay, Colombia have ~15-year series)</li>
+  <li><strong>Important caveat (kept)</strong>: ISCO-08 91 is broader than IBGE's "Domestic worker" category — it includes office cleaners, hotel housekeeping, hospital cleaning auxiliaries, etc. National totals here (BR ~7.8 M in 2025) are <em>larger</em> than PNADC totals for the same population (5.5 M). The comparison is valid <em>between countries</em> within ILOSTAT, never between ILOSTAT and PNADC</li>
+  <li><strong>Next steps (P2.2)</strong>: complete additional dimensions (% women, informality rate) per country, which requires extending <code>fetch_ilostat.py</code> to pull complementary indicators. Decision pending; doesn't block this version</li>
 </ul>
 
 <h2>4. Methodological notes</h2>

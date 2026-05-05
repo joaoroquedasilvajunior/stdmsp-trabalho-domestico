@@ -343,14 +343,31 @@ function showError(msg) {
 
 const STATE = { workers: [], wages: [], hours: [], intl: [], sources: [], staticFacts: {}, filters: { year: null, geo: "BR" } };
 
+// Fetch ALL rows from a Supabase view, paging past the server's default
+// max-rows cap (often 1,000). Returns the concatenated array.
+async function fetchAllPages(viewName) {
+  const PAGE = 1000;
+  let all = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await sbClient.from(viewName).select("*").range(from, from + PAGE - 1);
+    if (error) throw error;
+    if (!data || !data.length) break;
+    all = all.concat(data);
+    if (data.length < PAGE) break;
+  }
+  return all;
+}
+
 async function loadAll() {
   if (!sbClient) throw new Error("Supabase client not initialized");
 
+  // dw_workers can exceed the Supabase default page cap (1,007 microdata rows
+  // alone), so we paginate it. Other views are small enough for a single fetch.
   const queries = await Promise.allSettled([
-    sbClient.from("dw_workers").select("*").limit(5000),
-    sbClient.from("dw_wages").select("*").limit(5000),
-    sbClient.from("dw_hours").select("*").limit(5000),
-    sbClient.from("dw_intl").select("*").limit(2000),
+    fetchAllPages("dw_workers").then(data => ({ data })),
+    sbClient.from("dw_wages").select("*").range(0, 4999),
+    sbClient.from("dw_hours").select("*").range(0, 4999),
+    sbClient.from("dw_intl").select("*").range(0, 1999),
     sbClient.from("dw_sources").select("*"),
     sbClient.from("dw_static_facts").select("*"),
   ]);

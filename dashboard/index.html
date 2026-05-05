@@ -348,13 +348,21 @@ const STATE = { workers: [], wages: [], hours: [], intl: [], sources: [], static
 async function fetchAllPages(viewName) {
   const PAGE = 1000;
   let all = [];
-  for (let from = 0; ; from += PAGE) {
-    const { data, error } = await sbClient.from(viewName).select("*").range(from, from + PAGE - 1);
-    if (error) throw error;
+  for (let pageNum = 0; pageNum < 20; pageNum++) {
+    const from = pageNum * PAGE;
+    const to = from + PAGE - 1;
+    const { data, error } = await sbClient.from(viewName).select("*").range(from, to);
+    console.log(`fetchAllPages(${viewName}) page ${pageNum} range[${from},${to}]: got ${data?.length ?? 0} rows`);
+    if (error) {
+      console.error(`fetchAllPages(${viewName}) error:`, error);
+      if (pageNum === 0) throw error;
+      break;     // partial result is better than nothing past page 0
+    }
     if (!data || !data.length) break;
     all = all.concat(data);
     if (data.length < PAGE) break;
   }
+  console.log(`fetchAllPages(${viewName}) total: ${all.length} rows`);
   return all;
 }
 

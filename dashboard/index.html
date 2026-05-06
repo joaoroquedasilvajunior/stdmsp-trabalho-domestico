@@ -353,6 +353,62 @@
 
 </section>
 
+<!-- ============ FOCO EM SÃO PAULO ============ -->
+<section id="foco-sp" class="border-t rule" style="background: var(--accent-soft);">
+  <div class="max-w-6xl mx-auto px-5 py-8">
+    <h2 class="text-xl md:text-2xl font-medium" data-i18n="focus-sp-title">Foco no estado de São Paulo</h2>
+    <p class="text-sm text-gray-700 mb-5 max-w-3xl" data-i18n="focus-sp-subtitle">Recorte específico do estado onde a STDMSP atua. Todos os números desta seção são agregados a partir dos microdados da PNAD Contínua, restritos à UF=SP. Itens fora deste recorte (cumprimento da LC 150 em SP, hiato salarial estadual, jornada e contribuição previdenciária) exigirão extensão da pipeline e ficam sinalizados ao final.</p>
+
+    <!-- 4 SP-specific KPI tiles -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="border rule rounded-lg p-4 bg-white">
+        <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="focus-sp-kpi-total">Trabalhadoras em SP</div>
+        <div class="text-3xl font-medium num mt-1" id="focus-sp-total">—</div>
+        <div class="text-xs text-gray-500 mt-1" id="focus-sp-total-meta" data-i18n="focus-sp-kpi-total-meta">milhares · trim. mais recente</div>
+      </div>
+      <div class="border rule rounded-lg p-4 bg-white">
+        <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="focus-sp-kpi-share">% do total Brasil</div>
+        <div class="text-3xl font-medium num mt-1" id="focus-sp-share">—</div>
+        <div class="text-xs text-gray-500 mt-1" data-i18n="focus-sp-kpi-share-meta">SP / Brasil</div>
+      </div>
+      <div class="border rule rounded-lg p-4 bg-white">
+        <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="focus-sp-kpi-negras">% Negras em SP</div>
+        <div class="text-3xl font-medium num mt-1" id="focus-sp-negras">—</div>
+        <div class="text-xs text-gray-500 mt-1" id="focus-sp-negras-meta" data-i18n="focus-sp-kpi-negras-meta">vs. ~69% nacional</div>
+      </div>
+      <div class="border rule rounded-lg p-4 bg-white">
+        <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="focus-sp-kpi-delta">Variação 2012 → 2025</div>
+        <div class="text-3xl font-medium num mt-1" id="focus-sp-delta">—</div>
+        <div class="text-xs text-gray-500 mt-1" data-i18n="focus-sp-kpi-delta-meta">no nº absoluto de trabalhadoras</div>
+      </div>
+    </div>
+
+    <!-- 3 SP-specific charts -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <article class="border rule rounded-lg p-4 bg-white md:col-span-2">
+        <h3 class="text-base font-medium" data-i18n="focus-sp-chart-trajectory">SP × Brasil — trajetória (PNADC microdados)</h3>
+        <p class="text-xs text-gray-500 mb-3" data-i18n="focus-sp-chart-trajectory-meta">duas linhas com escalas independentes para que o efeito da pandemia em SP fique visível</p>
+        <div class="chart-box" id="box-focus-sp-trajectory"><canvas id="chart-focus-sp-trajectory"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+      </article>
+
+      <article class="border rule rounded-lg p-4 bg-white">
+        <h3 class="text-base font-medium" data-i18n="focus-sp-chart-race">Composição racial em SP ao longo do tempo</h3>
+        <p class="text-xs text-gray-500 mb-3" data-i18n="focus-sp-chart-race-meta">% por cor/raça · trimestres fixos 2012–2025</p>
+        <div class="chart-box" id="box-focus-sp-race"><canvas id="chart-focus-sp-race"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+      </article>
+
+      <article class="border rule rounded-lg p-4 bg-white">
+        <h3 class="text-base font-medium" data-i18n="focus-sp-chart-southeast">Sudeste — comparação entre estados</h3>
+        <p class="text-xs text-gray-500 mb-3" data-i18n="focus-sp-chart-southeast-meta">SP, MG, RJ, ES · trim. mais recente · total em milhares e % negras lado a lado</p>
+        <div class="chart-box" id="box-focus-sp-southeast"><canvas id="chart-focus-sp-southeast"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+      </article>
+    </div>
+
+    <!-- Honest scope footnote -->
+    <p class="text-xs text-gray-600 mt-5 leading-relaxed" data-i18n="focus-sp-footnote"><strong>O que esta seção não traz (e por quê).</strong> Salário médio em SP, hiato salarial racial em SP, taxa de formalização em SP, jornada média e contribuição previdenciária — todos exigem extensão da pipeline de microdados (recorte UF aplicado às variáveis VD4019, VD4009 e novos campos de hora/previdência). Não foram computados nesta versão para evitar publicar números que ainda não passaram por verificação de reconciliação. Próxima fase: priorizar com a STDMSP qual desses recortes entra primeiro.</p>
+  </div>
+</section>
+
 <!-- ============ ABOUT THE DATA ============ -->
 <section class="border-t rule bg-white">
   <div class="max-w-6xl mx-auto px-5 py-6 text-sm text-gray-700">
@@ -438,6 +494,23 @@ const I18N = {
     "c189-title": "Status legal — Convenção 189 da OIT",
     "c189-meta": "Ano de ratificação por país. A C189 (Convenção sobre Trabalhadoras e Trabalhadores Domésticos, 2011) estabelece direitos iguais aos de outras categorias.",
     "c189-footnote": "Brasil ratificou em janeiro de 2018, três anos após a entrada em vigor da LC 150/2015 — ou seja, a legislação interna precedeu o compromisso internacional. México ratificou apenas em julho de 2020. Uruguai foi o primeiro país do mundo a ratificar, em junho de 2012. Fonte: NORMLEX (OIT).",
+    "focus-sp-title": "Foco no estado de São Paulo",
+    "focus-sp-subtitle": "Recorte específico do estado onde a STDMSP atua. Todos os números desta seção são agregados a partir dos microdados da PNAD Contínua, restritos à UF=SP. Itens fora deste recorte (cumprimento da LC 150 em SP, hiato salarial estadual, jornada e contribuição previdenciária) exigirão extensão da pipeline e ficam sinalizados ao final.",
+    "focus-sp-kpi-total": "Trabalhadoras em SP",
+    "focus-sp-kpi-total-meta": "milhares · trim. mais recente",
+    "focus-sp-kpi-share": "% do total Brasil",
+    "focus-sp-kpi-share-meta": "SP / Brasil",
+    "focus-sp-kpi-negras": "% Negras em SP",
+    "focus-sp-kpi-negras-meta": "vs. ~69% nacional",
+    "focus-sp-kpi-delta": "Variação 2012 → 2025",
+    "focus-sp-kpi-delta-meta": "no nº absoluto de trabalhadoras",
+    "focus-sp-chart-trajectory": "SP × Brasil — trajetória (PNADC microdados)",
+    "focus-sp-chart-trajectory-meta": "duas linhas com escalas independentes para que o efeito da pandemia em SP fique visível",
+    "focus-sp-chart-race": "Composição racial em SP ao longo do tempo",
+    "focus-sp-chart-race-meta": "% por cor/raça · trimestres fixos 2012–2025",
+    "focus-sp-chart-southeast": "Sudeste — comparação entre estados",
+    "focus-sp-chart-southeast-meta": "SP, MG, RJ, ES · trim. mais recente · total em milhares e % negras lado a lado",
+    "focus-sp-footnote": "<strong>O que esta seção não traz (e por quê).</strong> Salário médio em SP, hiato salarial racial em SP, taxa de formalização em SP, jornada média e contribuição previdenciária — todos exigem extensão da pipeline de microdados (recorte UF aplicado às variáveis VD4019, VD4009 e novos campos de hora/previdência). Não foram computados nesta versão para evitar publicar números que ainda não passaram por verificação de reconciliação. Próxima fase: priorizar com a STDMSP qual desses recortes entra primeiro.",
     "about-title": "Sobre os dados",
     "about-body": "Os números deste painel vêm da PNAD Contínua (IBGE), do Censo Demográfico 2022 e do ILOSTAT. A categoria \"trabalhador(a) doméstico(a)\" segue a definição do IBGE, que inclui empregadas(os) mensalistas e diaristas, com ou sem carteira de trabalho assinada. Os dados de salário se referem ao setor \"Serviços domésticos\" da PNADC, em reais constantes (real). O comparativo internacional usa a categoria mais ampla ISCO-08 91 do ILOSTAT (\"trabalhadores de limpeza e auxiliares\"), o que explica por que os totais nacionais nesse gráfico são maiores do que os totais de \"trabalhador doméstico\" do IBGE.",
     empty: "Sem dados ainda. Rode o ETL para preencher.",
@@ -494,6 +567,23 @@ const I18N = {
     "c189-title": "Legal status — ILO Convention 189",
     "c189-meta": "Year of ratification per country. C189 (Domestic Workers Convention, 2011) establishes rights equal to those of other categories of workers.",
     "c189-footnote": "Brazil ratified in January 2018, three years after LC 150/2015 came into force — meaning domestic legislation preceded the international commitment. Mexico only ratified in July 2020. Uruguay was the first country in the world to ratify, in June 2012. Source: NORMLEX (ILO).",
+    "focus-sp-title": "Focus on São Paulo state",
+    "focus-sp-subtitle": "Specific cut for the state where STDMSP operates. All numbers in this section are aggregated from PNAD Contínua microdata, restricted to UF=SP. Items outside this cut (LC 150 enforcement in SP, state-level wage gap, hours, retirement contributions) require pipeline extensions and are flagged at the end.",
+    "focus-sp-kpi-total": "Domestic workers in SP",
+    "focus-sp-kpi-total-meta": "thousands · latest quarter",
+    "focus-sp-kpi-share": "% of Brazil total",
+    "focus-sp-kpi-share-meta": "SP / Brazil",
+    "focus-sp-kpi-negras": "% Black in SP",
+    "focus-sp-kpi-negras-meta": "vs. ~69% national",
+    "focus-sp-kpi-delta": "Change 2012 → 2025",
+    "focus-sp-kpi-delta-meta": "in absolute headcount",
+    "focus-sp-chart-trajectory": "SP × Brazil — trajectory (PNADC microdata)",
+    "focus-sp-chart-trajectory-meta": "two lines on independent axes so the pandemic shock in SP is visible",
+    "focus-sp-chart-race": "Race composition in SP over time",
+    "focus-sp-chart-race-meta": "% by race · fixed quarters 2012–2025",
+    "focus-sp-chart-southeast": "Southeast — state comparison",
+    "focus-sp-chart-southeast-meta": "SP, MG, RJ, ES · latest quarter · total thousands and % Black side by side",
+    "focus-sp-footnote": "<strong>What this section does not include (and why).</strong> Mean wage in SP, racial wage gap in SP, formalization rate in SP, mean hours, and retirement contribution — all require extending the microdata pipeline (UF cut applied to variables VD4019, VD4009, and new hours/contribution fields). They were not computed in this version to avoid publishing numbers that haven't been reconciled. Next phase: prioritize with STDMSP which of these to ship first.",
     "about-title": "About the data",
     "about-body": "The numbers in this dashboard come from the PNAD Contínua (IBGE), the 2022 Demographic Census, and ILOSTAT. The category \"domestic worker\" follows IBGE's definition, which includes monthly employees and daily-rate workers, with or without a signed work card. Wage figures are for the PNADC \"Domestic services\" sector, in constant (real) reais. The international comparator uses ILOSTAT's broader ISCO-08 group 91 (\"cleaners and helpers\"), which is why national totals there are higher than IBGE's \"domestic worker\" totals.",
     empty: "No data yet. Run the ETL to populate.",
@@ -794,6 +884,7 @@ function render() {
   renderRegion();
   renderIntl();
   renderC189();
+  renderFocusSP();
   renderSources();
   setText("updated-at", new Date().toLocaleDateString(LANG === "pt" ? "pt-BR" : "en-CA"));
 }
@@ -1617,6 +1708,247 @@ function renderC189() {
       <span class="year">${r.year}</span>
     </div>`;
   }).join("");
+}
+
+// ============ FOCO EM SÃO PAULO ============
+// SP-specific section. Pure UI work over data already in fact_workers
+// (geo_level='uf', g.code='35'). Verified findings, no new aggregations.
+
+const SP_CODE = "35";
+
+function spRowsForUf(uf, raceCode = null) {
+  return STATE.workers.filter(r =>
+    r.source_table === "PNADC-MICRODATA"
+    && r.geo_level === "uf"
+    && String(r.geo_code).padStart(2, "0") === uf
+    && r.formality_code === "total"
+    && r.sex_code === "T"
+    && (raceCode == null || r.race_code === raceCode)
+  );
+}
+
+function brTotalRowsByPeriod() {
+  // BR-level totals (race='total' isn't emitted at country level — sum F+M instead)
+  // We use the country-level race-disaggregated rows summed across all races.
+  const rows = STATE.workers.filter(r =>
+    r.source_table === "PNADC-MICRODATA"
+    && r.geo_level === "country"
+    && r.formality_code === "total"
+    && r.sex_code === "T"
+    && ["branca", "preta", "parda", "amarela", "indigena"].includes(r.race_code)
+  );
+  const byPeriod = {};
+  for (const r of rows) {
+    const p = String(r.period_code);
+    byPeriod[p] = (byPeriod[p] || 0) + Number(r.workers_thousands);
+  }
+  return byPeriod;
+}
+
+function renderFocusSP() {
+  // ---- KPI tiles ----
+  const spTotalRows = spRowsForUf(SP_CODE, "total")
+    .map(r => ({ p: String(r.period_code), v: Number(r.workers_thousands) }))
+    .sort((a, b) => a.p.localeCompare(b.p));
+  const spNegrasRows = spRowsForUf(SP_CODE, "preta_parda")
+    .map(r => ({ p: String(r.period_code), v: Number(r.workers_thousands) }));
+  const negrasByPeriod = Object.fromEntries(spNegrasRows.map(r => [r.p, r.v]));
+
+  if (!spTotalRows.length) {
+    setEmpty("box-focus-sp-trajectory", true); destroyChart("focusSpTrajectory");
+    setEmpty("box-focus-sp-race", true); destroyChart("focusSpRace");
+    setEmpty("box-focus-sp-southeast", true); destroyChart("focusSpSoutheast");
+    return;
+  }
+
+  const latest = spTotalRows[spTotalRows.length - 1];
+  const earliest = spTotalRows[0];
+  const latestNegras = negrasByPeriod[latest.p];
+  const pctNegrasSp = latestNegras ? 100 * latestNegras / latest.v : null;
+
+  // BR total at the same period for the share KPI
+  const brTotals = brTotalRowsByPeriod();
+  const brAtLatest = brTotals[latest.p] || null;
+  const sharePct = brAtLatest ? 100 * latest.v / brAtLatest : null;
+
+  // Variação since 2012 (first available period)
+  const deltaPct = earliest.v ? 100 * (latest.v - earliest.v) / earliest.v : null;
+
+  setText("focus-sp-total", fmt(latest.v, 0));
+  setText("focus-sp-total-meta",
+    (LANG === "pt" ? "milhares · " : "thousands · ") + fmtPeriod(latest.p));
+  setText("focus-sp-share", sharePct != null ? fmt(sharePct, 1) + "%" : "—");
+  setText("focus-sp-negras", pctNegrasSp != null ? fmt(pctNegrasSp, 1) + "%" : "—");
+  setText("focus-sp-delta",
+    deltaPct != null ? (deltaPct >= 0 ? "+" : "") + fmt(deltaPct, 1) + "%" : "—");
+
+  // ---- Trajectory chart: SP and BR, dual y-axes (different magnitudes) ----
+  renderFocusSpTrajectory(spTotalRows, brTotals);
+  // ---- Race composition over time, SP only ----
+  renderFocusSpRace();
+  // ---- Southeast comparator ----
+  renderFocusSpSoutheast();
+}
+
+function renderFocusSpTrajectory(spTotalRows, brTotals) {
+  const periods = spTotalRows.map(r => r.p);
+  const spSeries = spTotalRows.map(r => r.v);
+  const brSeries = periods.map(p => brTotals[p] != null ? brTotals[p] : null);
+
+  setEmpty("box-focus-sp-trajectory", false);
+  destroyChart("focusSpTrajectory");
+  charts.focusSpTrajectory = new Chart(document.getElementById("chart-focus-sp-trajectory"), {
+    type: "line",
+    data: {
+      labels: periods.map(fmtPeriod),
+      datasets: [
+        {
+          label: LANG === "pt" ? "São Paulo (eixo esq.)" : "São Paulo (left axis)",
+          data: spSeries, borderColor: "#b91c1c", backgroundColor: "#b91c1c20",
+          borderWidth: 2.5, pointRadius: 0, tension: 0.25, yAxisID: "ySp", order: 1,
+        },
+        {
+          label: LANG === "pt" ? "Brasil (eixo dir.)" : "Brazil (right axis)",
+          data: brSeries, borderColor: "#1f2937", backgroundColor: "#1f293720",
+          borderWidth: 2, borderDash: [4, 4], pointRadius: 0, tension: 0.25,
+          yAxisID: "yBr", order: 2,
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 14, padding: 8, font: { size: 11 } } },
+        tooltip: { mode: "index", intersect: false,
+          callbacks: { label: c => c.dataset.label + ": " + fmt(c.parsed.y, 0) + (LANG === "pt" ? " mil" : "k") } },
+      },
+      scales: {
+        ySp: { position: "left", ticks: { callback: v => fmt(v, 0) }, title: { display: true, text: LANG === "pt" ? "SP (mil)" : "SP (k)", color: "#b91c1c" } },
+        yBr: { position: "right", ticks: { callback: v => fmt(v, 0) }, title: { display: true, text: LANG === "pt" ? "Brasil (mil)" : "Brazil (k)", color: "#1f2937" }, grid: { drawOnChartArea: false } },
+        x: { ticks: { maxTicksLimit: 8 } },
+      },
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+    },
+  });
+}
+
+function renderFocusSpRace() {
+  // Five-line race composition for SP, parallel to renderRace() but UF-filtered
+  const rows = STATE.workers.filter(r =>
+    r.source_table === "PNADC-MICRODATA"
+    && r.geo_level === "uf"
+    && String(r.geo_code).padStart(2, "0") === SP_CODE
+    && r.formality_code === "total"
+    && r.sex_code === "T"
+    && ["branca", "preta", "parda", "amarela", "indigena"].includes(r.race_code)
+  );
+  if (!rows.length) {
+    setEmpty("box-focus-sp-race", true); destroyChart("focusSpRace"); return;
+  }
+  const periods = [...new Set(rows.map(r => String(r.period_code)))].sort();
+  const periodTotals = {};
+  for (const p of periods) periodTotals[p] = 0;
+  for (const r of rows) periodTotals[String(r.period_code)] += Number(r.workers_thousands);
+  const byRace = { branca: {}, preta: {}, parda: {}, amarela: {}, indigena: {} };
+  for (const r of rows) byRace[r.race_code][String(r.period_code)] = Number(r.workers_thousands);
+
+  const COLORS = { parda: "#b91c1c", branca: "#9ca3af", preta: "#1f2937", amarela: "#f59e0b", indigena: "#0d9488" };
+  const LABELS = LANG === "pt"
+    ? { parda: "Parda", branca: "Branca", preta: "Preta", amarela: "Amarela", indigena: "Indígena" }
+    : { parda: "Brown (parda)", branca: "White", preta: "Black", amarela: "East Asian", indigena: "Indigenous" };
+  const order = ["parda", "branca", "preta", "amarela", "indigena"];
+
+  const datasets = order.map(race => ({
+    label: LABELS[race],
+    data: periods.map(p => {
+      const tot = periodTotals[p];
+      return tot ? 100 * (byRace[race][p] || 0) / tot : 0;
+    }),
+    borderColor: COLORS[race], backgroundColor: COLORS[race] + "20",
+    fill: false, tension: 0.25, pointRadius: 0, borderWidth: 2,
+  }));
+
+  setEmpty("box-focus-sp-race", false);
+  destroyChart("focusSpRace");
+  charts.focusSpRace = new Chart(document.getElementById("chart-focus-sp-race"), {
+    type: "line",
+    data: { labels: periods.map(fmtPeriod), datasets },
+    options: {
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 14, padding: 8, font: { size: 11 } } },
+        tooltip: { callbacks: { label: c => c.dataset.label + ": " + fmt(c.parsed.y, 1) + "%" } },
+      },
+      scales: {
+        y: { ticks: { callback: v => v + "%" }, suggestedMin: 0, suggestedMax: 60 },
+        x: { ticks: { maxTicksLimit: 8 } },
+      },
+      maintainAspectRatio: false,
+    },
+  });
+}
+
+function renderFocusSpSoutheast() {
+  // Latest-period snapshot for the four southeastern UFs.
+  const SE_UFS = ["35", "31", "33", "32"];
+  const NAMES_PT = { "35": "São Paulo", "31": "Minas Gerais", "33": "Rio de Janeiro", "32": "Espírito Santo" };
+  const NAMES_EN = { "35": "São Paulo", "31": "Minas Gerais", "33": "Rio de Janeiro", "32": "Espírito Santo" };
+
+  // Pick the latest period available in SP (assume same coverage for SE peers)
+  const spPeriods = STATE.workers
+    .filter(r => r.source_table === "PNADC-MICRODATA" && r.geo_level === "uf" && String(r.geo_code).padStart(2, "0") === SP_CODE)
+    .map(r => String(r.period_code));
+  if (!spPeriods.length) {
+    setEmpty("box-focus-sp-southeast", true); destroyChart("focusSpSoutheast"); return;
+  }
+  const period = spPeriods.sort().slice(-1)[0];
+
+  const data = SE_UFS.map(uf => {
+    const row = (race) => STATE.workers.find(r =>
+      r.source_table === "PNADC-MICRODATA" && r.geo_level === "uf"
+      && String(r.geo_code).padStart(2, "0") === uf
+      && String(r.period_code) === period
+      && r.race_code === race && r.formality_code === "total" && r.sex_code === "T");
+    const total = row("total");
+    const negras = row("preta_parda");
+    return {
+      uf, name: LANG === "pt" ? NAMES_PT[uf] : NAMES_EN[uf],
+      total_k: total ? Number(total.workers_thousands) : null,
+      pct_negras: (total && negras) ? 100 * Number(negras.workers_thousands) / Number(total.workers_thousands) : null,
+    };
+  }).filter(r => r.total_k != null).sort((a, b) => b.total_k - a.total_k);
+
+  setEmpty("box-focus-sp-southeast", data.length === 0);
+  destroyChart("focusSpSoutheast");
+  if (!data.length) return;
+
+  charts.focusSpSoutheast = new Chart(document.getElementById("chart-focus-sp-southeast"), {
+    type: "bar",
+    data: {
+      labels: data.map(r => r.name),
+      datasets: [{
+        label: LANG === "pt" ? "Total (milhares)" : "Total (thousands)",
+        data: data.map(r => r.total_k),
+        backgroundColor: data.map(r => r.uf === SP_CODE ? "#b91c1c" : "#9ca3af"),
+      }],
+    },
+    options: {
+      indexAxis: "y",
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: c => fmt(c.parsed.x, 0) + (LANG === "pt" ? " mil" : "k"),
+            afterLabel: c => {
+              const r = data[c.dataIndex];
+              return (LANG === "pt" ? "% negras: " : "% Black: ") + fmt(r.pct_negras, 1) + "%";
+            },
+          },
+        },
+      },
+      scales: { x: { ticks: { callback: v => fmt(v, 0) } } },
+      maintainAspectRatio: false,
+    },
+  });
 }
 
 function renderSources() {

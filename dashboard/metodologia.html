@@ -177,6 +177,23 @@
   <li><strong>Limitação</strong>: UFs pequenas (RR, AP, AC, TO) com células raciais raras (especialmente <em>indígena</em> e <em>amarela</em>) podem ter estimativas ruidosas. A leitura de cabeçalho — % pretas + pardas — é robusta em todas as UFs, com tamanho amostral suficiente em todos os 56 trimestres</li>
 </ul>
 
+<h3>3.7d Jornada média e contribuição previdenciária (Foco em SP)</h3>
+<ul>
+  <li><strong>Fontes</strong>: <code>fact_hours</code> e <code>fact_prev</code>, novas tabelas populadas pela pipeline PNADC microdados (variáveis <code>V4039</code> — horas habituais por semana no trabalho principal — e <code>V4032</code> — era contribuinte de previdência na semana de referência)</li>
+  <li><strong>Recorte</strong>: UF=SP, sexo=T, formality=total, raça em {<code>preta_parda</code>, <code>nao_negras</code>}; mais o total Brasil como referência cinza pontilhada</li>
+  <li><strong>Cobertura</strong>: 56 trimestres (1T 2012 → 4T 2025), com 1 trimestre intermediário (3T 2025) re-corrido após falha de espaço em disco</li>
+  <li><strong>Linha de referência</strong>: o gráfico de jornada inclui linha horizontal pontilhada a <strong>44h/semana</strong>, o limite legal definido pela CLT (Art. 7º, XIII da CF) e mantido para domésticas pela LC 150/2015 Art. 2º</li>
+  <li><strong>Achados centrais (4T 2025 em SP)</strong>:
+    <ul>
+      <li>Jornada média: <strong>32,4 h/semana</strong> (preta+parda 33,2h · não-negras 31,4h) — bem abaixo do limite legal, refletindo a alta proporção de diaristas em SP</li>
+      <li>% sobre 44h: ~9,6% — apenas uma em cada dez trabalha mais do que o limite</li>
+      <li>Contribuição previdenciária: <strong>19,8% em SP</strong> (preta+parda 20,4% · não-negras 19,2%), ligeiramente acima da média nacional (~14,6%)</li>
+      <li>O gap entre taxa de formalização (24%) e contribuição previdenciária (14,6%) nacional indica que <em>mesmo entre trabalhadoras com carteira, muitas não estão tendo a contribuição efetivamente recolhida</em></li>
+    </ul>
+  </li>
+  <li><strong>Limitação</strong>: o recorte UF é feito ao nível <code>formality=total</code>. Para mostrar especificamente a diferença entre <em>com carteira</em> e <em>sem carteira</em> em SP, a pipeline precisaria emitir <code>UF × formality</code> além de <code>UF × race</code>. Não está pronto nesta versão; ficará no backlog até a STDMSP indicar se essa visão importa</li>
+</ul>
+
 <h3>3.8 Comparativo internacional — Brasil ↔ México (trajetória)</h3>
 <ul>
   <li><strong>Fonte</strong>: <code>ILOSTAT</code></li>
@@ -409,6 +426,23 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>Central finding</strong>: the geographic gradient maps onto the historical geography of domestic work in Brazil exactly. Bahia at 90.3% is the national peak; the Northeast and Amazon all sit above 80%. The South (Santa Catarina 29.4%, Rio Grande do Sul 32.0%) is the floor. São Paulo, home to STDMSP, sits at 56.4% — below the national mean (~69%) but with 1.26 million domestic workers it is by far the largest absolute cluster in the country</li>
   <li><strong>Validation</strong>: the sum of all 27 state totals reconciles with the Brazil-level total within 0.02 pp (1.18k on 5.57M), confirming the weighted aggregation has no systematic bias</li>
   <li><strong>Limitation</strong>: small states (RR, AP, AC, TO) with rare race cells (especially <em>indigenous</em> and <em>Asian</em>) can have noisy estimates. The headline reading — % pretas + pardas — is robust across all states, with sufficient sample size in every one of the 56 quarters</li>
+</ul>
+
+<h3>3.7d Mean hours and social security contribution (Focus on SP)</h3>
+<ul>
+  <li><strong>Sources</strong>: <code>fact_hours</code> and <code>fact_prev</code>, new tables populated by the PNADC microdata pipeline (variables <code>V4039</code> — habitual weekly hours in main job — and <code>V4032</code> — was contributing to previdência in the reference week)</li>
+  <li><strong>Cut</strong>: UF=SP, sex=T, formality=total, race in {<code>preta_parda</code>, <code>nao_negras</code>}; plus Brazil total as dashed-gray reference</li>
+  <li><strong>Coverage</strong>: 56 quarters (Q1 2012 → Q4 2025), with one mid-series quarter (Q3 2025) re-run after a disk-space failure</li>
+  <li><strong>Reference line</strong>: the hours chart includes a horizontal dashed line at <strong>44h/week</strong>, the legal maximum set by Brazil's labor consolidation (CLT Art. 7-XIII) and maintained for domestic workers by LC 150/2015 Art. 2</li>
+  <li><strong>Central findings (Q4 2025 in SP)</strong>:
+    <ul>
+      <li>Mean hours: <strong>32.4 h/week</strong> (preta+parda 33.2h · non-Black 31.4h) — well below the legal limit, reflecting SP's high diarista share</li>
+      <li>% over 44h: ~9.6% — only one in ten works more than the limit</li>
+      <li>Social security contribution: <strong>19.8% in SP</strong> (preta+parda 20.4% · non-Black 19.2%), slightly above the national average (~14.6%)</li>
+      <li>The gap between formalization rate (24%) and social security contribution (14.6%) at the national level indicates that <em>even among domestic workers with signed work cards, many are not having their contributions actually paid</em></li>
+    </ul>
+  </li>
+  <li><strong>Limitation</strong>: the UF cut is done at <code>formality=total</code>. To show specifically the difference between <em>with</em> and <em>without</em> signed work card in SP, the pipeline would need to emit <code>UF × formality</code> in addition to <code>UF × race</code>. Not done in this version; left in the backlog until STDMSP indicates if that view matters</li>
 </ul>
 
 <h3>3.8 International comparison — Brazil ↔ Mexico (trajectory)</h3>

@@ -403,10 +403,22 @@
         <p class="text-xs text-gray-500 mb-3" data-i18n="focus-sp-chart-southeast-meta">SP, MG, RJ, ES · trim. mais recente · total em milhares e % negras lado a lado</p>
         <div class="chart-box" id="box-focus-sp-southeast"><canvas id="chart-focus-sp-southeast"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
       </article>
+
+      <article class="border rule rounded-lg p-4 bg-white">
+        <h3 class="text-base font-medium" data-i18n="focus-sp-chart-hours">Jornada média em SP</h3>
+        <p class="text-xs text-gray-500 mb-3" data-i18n="focus-sp-chart-hours-meta">horas/semana · trabalhadoras domésticas em SP, por raça · linha pontilhada = limite legal de 44h</p>
+        <div class="chart-box" id="box-focus-sp-hours"><canvas id="chart-focus-sp-hours"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+      </article>
+
+      <article class="border rule rounded-lg p-4 bg-white">
+        <h3 class="text-base font-medium" data-i18n="focus-sp-chart-prev">% contribuindo para previdência em SP</h3>
+        <p class="text-xs text-gray-500 mb-3" data-i18n="focus-sp-chart-prev-meta">% das trabalhadoras domésticas em SP que contribuem para a previdência (V4032) · por raça</p>
+        <div class="chart-box" id="box-focus-sp-prev"><canvas id="chart-focus-sp-prev"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+      </article>
     </div>
 
-    <!-- Honest scope footnote -->
-    <p class="text-xs text-gray-600 mt-5 leading-relaxed" data-i18n="focus-sp-footnote"><strong>O que esta seção não traz (e por quê).</strong> Salário médio em SP, hiato salarial racial em SP, taxa de formalização em SP, jornada média e contribuição previdenciária — todos exigem extensão da pipeline de microdados (recorte UF aplicado às variáveis VD4019, VD4009 e novos campos de hora/previdência). Não foram computados nesta versão para evitar publicar números que ainda não passaram por verificação de reconciliação. Próxima fase: priorizar com a STDMSP qual desses recortes entra primeiro.</p>
+    <!-- Honest scope footnote — now smaller since hours + previdência are covered -->
+    <p class="text-xs text-gray-600 mt-5 leading-relaxed" data-i18n="focus-sp-footnote"><strong>O que esta seção ainda não traz.</strong> Salário médio em SP e hiato salarial racial em SP exigem agregar a variável de rendimento (VD4019) por UF — recorte ainda não computado para evitar publicar números antes de reconciliação. Hoje a seção cobre: composição racial, jornada média e previdência. Próximo recorte a priorizar com a STDMSP: salário em SP, ou taxa de formalização em SP (carteira por UF).</p>
   </div>
 </section>
 
@@ -511,7 +523,11 @@ const I18N = {
     "focus-sp-chart-race-meta": "% por cor/raça · trimestres fixos 2012–2025",
     "focus-sp-chart-southeast": "Sudeste — comparação entre estados",
     "focus-sp-chart-southeast-meta": "SP, MG, RJ, ES · trim. mais recente · total em milhares e % negras lado a lado",
-    "focus-sp-footnote": "<strong>O que esta seção não traz (e por quê).</strong> Salário médio em SP, hiato salarial racial em SP, taxa de formalização em SP, jornada média e contribuição previdenciária — todos exigem extensão da pipeline de microdados (recorte UF aplicado às variáveis VD4019, VD4009 e novos campos de hora/previdência). Não foram computados nesta versão para evitar publicar números que ainda não passaram por verificação de reconciliação. Próxima fase: priorizar com a STDMSP qual desses recortes entra primeiro.",
+    "focus-sp-chart-hours": "Jornada média em SP",
+    "focus-sp-chart-hours-meta": "horas/semana · trabalhadoras domésticas em SP, por raça · linha pontilhada = limite legal de 44h",
+    "focus-sp-chart-prev": "% contribuindo para previdência em SP",
+    "focus-sp-chart-prev-meta": "% das trabalhadoras domésticas em SP que contribuem para a previdência (V4032) · por raça",
+    "focus-sp-footnote": "<strong>O que esta seção ainda não traz.</strong> Salário médio em SP e hiato salarial racial em SP exigem agregar a variável de rendimento (VD4019) por UF — recorte ainda não computado para evitar publicar números antes de reconciliação. Hoje a seção cobre: composição racial, jornada média e previdência. Próximo recorte a priorizar com a STDMSP: salário em SP, ou taxa de formalização em SP (carteira por UF).",
     "about-title": "Sobre os dados",
     "about-body": "Os números deste painel vêm da PNAD Contínua (IBGE), do Censo Demográfico 2022 e do ILOSTAT. A categoria \"trabalhador(a) doméstico(a)\" segue a definição do IBGE, que inclui empregadas(os) mensalistas e diaristas, com ou sem carteira de trabalho assinada. Os dados de salário se referem ao setor \"Serviços domésticos\" da PNADC, em reais constantes (real). O comparativo internacional usa a categoria mais ampla ISCO-08 91 do ILOSTAT (\"trabalhadores de limpeza e auxiliares\"), o que explica por que os totais nacionais nesse gráfico são maiores do que os totais de \"trabalhador doméstico\" do IBGE.",
     empty: "Sem dados ainda. Rode o ETL para preencher.",
@@ -584,7 +600,11 @@ const I18N = {
     "focus-sp-chart-race-meta": "% by race · fixed quarters 2012–2025",
     "focus-sp-chart-southeast": "Southeast — state comparison",
     "focus-sp-chart-southeast-meta": "SP, MG, RJ, ES · latest quarter · total thousands and % Black side by side",
-    "focus-sp-footnote": "<strong>What this section does not include (and why).</strong> Mean wage in SP, racial wage gap in SP, formalization rate in SP, mean hours, and retirement contribution — all require extending the microdata pipeline (UF cut applied to variables VD4019, VD4009, and new hours/contribution fields). They were not computed in this version to avoid publishing numbers that haven't been reconciled. Next phase: prioritize with STDMSP which of these to ship first.",
+    "focus-sp-chart-hours": "Mean weekly hours in SP",
+    "focus-sp-chart-hours-meta": "hours/week · domestic workers in SP, by race · dashed line = 44h legal limit",
+    "focus-sp-chart-prev": "% contributing to social security in SP",
+    "focus-sp-chart-prev-meta": "% of SP domestic workers contributing to previdência (V4032) · by race",
+    "focus-sp-footnote": "<strong>What this section does not yet include.</strong> Mean wage in SP and racial wage gap in SP require aggregating the income variable (VD4019) by UF — not yet computed, to avoid publishing un-reconciled numbers. The section now covers: race composition, mean hours, and social security contribution. Next cut to prioritize with STDMSP: wages in SP, or formalization rate in SP (signed work card by UF).",
     "about-title": "About the data",
     "about-body": "The numbers in this dashboard come from the PNAD Contínua (IBGE), the 2022 Demographic Census, and ILOSTAT. The category \"domestic worker\" follows IBGE's definition, which includes monthly employees and daily-rate workers, with or without a signed work card. Wage figures are for the PNADC \"Domestic services\" sector, in constant (real) reais. The international comparator uses ILOSTAT's broader ISCO-08 group 91 (\"cleaners and helpers\"), which is why national totals there are higher than IBGE's \"domestic worker\" totals.",
     empty: "No data yet. Run the ETL to populate.",
@@ -675,7 +695,7 @@ function showError(msg) {
   banner.innerHTML = `<div class="max-w-6xl mx-auto px-5 py-3 text-sm text-red-900"><strong>Erro:</strong> ${msg}</div>`;
 }
 
-const STATE = { workers: [], wages: [], hours: [], intl: [], sources: [], staticFacts: {}, filters: { year: null, geo: "BR" } };
+const STATE = { workers: [], wages: [], hours: [], prev: [], intl: [], sources: [], staticFacts: {}, filters: { year: null, geo: "BR" } };
 
 // Fetch ALL rows from a Supabase view, paging past the server's default
 // max-rows cap (often 1,000). Returns the concatenated array.
@@ -703,17 +723,19 @@ async function fetchAllPages(viewName) {
 async function loadAll() {
   if (!sbClient) throw new Error("Supabase client not initialized");
 
-  // dw_workers and dw_wages both exceed the Supabase default page cap (1,000)
-  // after the microdata backfills, so we paginate them. Smaller views fit in one fetch.
+  // dw_workers, dw_wages, dw_hours, dw_prev all exceed the Supabase default
+  // page cap (1,000) after the microdata backfills, so we paginate them.
+  // Smaller views fit in one fetch.
   const queries = await Promise.allSettled([
     fetchAllPages("dw_workers").then(data => ({ data })),
     fetchAllPages("dw_wages").then(data => ({ data })),
-    sbClient.from("dw_hours").select("*").range(0, 4999),
+    fetchAllPages("dw_hours").then(data => ({ data })),
+    fetchAllPages("dw_prev").then(data => ({ data })),
     sbClient.from("dw_intl").select("*").range(0, 1999),
     sbClient.from("dw_sources").select("*"),
     sbClient.from("dw_static_facts").select("*"),
   ]);
-  const labels = ["dw_workers","dw_wages","dw_hours","dw_intl","dw_sources","dw_static_facts"];
+  const labels = ["dw_workers","dw_wages","dw_hours","dw_prev","dw_intl","dw_sources","dw_static_facts"];
   const results = queries.map((q, i) => {
     if (q.status === "rejected") {
       console.error(`${labels[i]} request rejected:`, q.reason);
@@ -726,11 +748,12 @@ async function loadAll() {
     console.log(`${labels[i]}: ${q.value.data?.length ?? 0} rows`);
     return q.value;
   });
-  const [w, wg, h, i, s, sf] = results;
+  const [w, wg, h, pv, i, s, sf] = results;
 
   STATE.workers = w.data || [];
   STATE.wages   = wg.data || [];
   STATE.hours   = h.data  || [];
+  STATE.prev    = pv.data || [];
   STATE.intl    = i.data  || [];
   STATE.sources = s.data  || [];
   STATE.staticFacts = Object.fromEntries((sf.data || []).map(r => [r.fact_code, r]));
@@ -1916,6 +1939,181 @@ function renderFocusSP() {
   renderFocusSpRace();
   // ---- Southeast comparator ----
   renderFocusSpSoutheast();
+  // ---- Hours and previdência (new — Phase Y) ----
+  renderFocusSpHours();
+  renderFocusSpPrev();
+}
+
+function renderFocusSpHours() {
+  // Two lines for SP (preta_parda and nao_negras) + a reference line for BR total.
+  // Horizontal annotation at 44h marks the legal weekly maximum.
+  const rows = STATE.hours.filter(r =>
+    r.source_table === "PNADC-MICRODATA"
+    && r.geo_level === "uf"
+    && String(r.geo_code).padStart(2, "0") === SP_CODE
+    && r.formality_code === "total"
+    && r.sex_code === "T"
+    && ["preta_parda", "nao_negras"].includes(r.race_code)
+  );
+  const brRows = STATE.hours.filter(r =>
+    r.source_table === "PNADC-MICRODATA"
+    && r.geo_level === "country"
+    && r.formality_code === "total"
+    && r.sex_code === "T"
+    && r.race_code === "total"
+  );
+  if (!rows.length) {
+    setEmpty("box-focus-sp-hours", true); destroyChart("focusSpHours"); return;
+  }
+
+  const periods = [...new Set(rows.map(r => String(r.period_code)))].sort();
+  const byRacePeriod = (race, p) => {
+    const r = rows.find(x => x.race_code === race && String(x.period_code) === p);
+    return r ? Number(r.mean_hours_per_week) : null;
+  };
+  const brByPeriod = Object.fromEntries(brRows.map(r => [String(r.period_code), Number(r.mean_hours_per_week)]));
+
+  const datasets = [
+    {
+      label: LANG === "pt" ? "SP · preta + parda" : "SP · Black",
+      data: periods.map(p => byRacePeriod("preta_parda", p)),
+      borderColor: "#b91c1c", backgroundColor: "#b91c1c20",
+      borderWidth: 2, pointRadius: 0, tension: 0.25, spanGaps: true,
+    },
+    {
+      label: LANG === "pt" ? "SP · não-negras" : "SP · non-Black",
+      data: periods.map(p => byRacePeriod("nao_negras", p)),
+      borderColor: "#1f2937", backgroundColor: "#1f293720",
+      borderWidth: 2, pointRadius: 0, tension: 0.25, spanGaps: true,
+    },
+    {
+      label: LANG === "pt" ? "Brasil (total)" : "Brazil (total)",
+      data: periods.map(p => brByPeriod[p] != null ? brByPeriod[p] : null),
+      borderColor: "#9ca3af", backgroundColor: "transparent",
+      borderWidth: 1.2, borderDash: [4, 4], pointRadius: 0, tension: 0.25, spanGaps: true,
+    },
+  ];
+
+  setEmpty("box-focus-sp-hours", false);
+  destroyChart("focusSpHours");
+  charts.focusSpHours = new Chart(document.getElementById("chart-focus-sp-hours"), {
+    type: "line",
+    data: { labels: periods.map(fmtPeriod), datasets },
+    options: {
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 14, padding: 8, font: { size: 11 } } },
+        tooltip: { mode: "index", intersect: false,
+          callbacks: { label: c => c.dataset.label + ": " + fmt(c.parsed.y, 1) + "h" } },
+        annotation: {
+          annotations: {
+            // Legal weekly limit reference line at 44h
+            legal_limit: {
+              type: "line", scaleID: "y", value: 44,
+              borderColor: "rgba(180, 83, 9, 0.55)",
+              borderWidth: 1.5, borderDash: [6, 4],
+              label: {
+                display: true,
+                content: LANG === "pt" ? "Limite legal: 44h/semana" : "Legal limit: 44h/week",
+                position: "end",
+                color: "#9a3412",
+                backgroundColor: "rgba(255, 255, 255, 0.92)",
+                font: { size: 9, weight: "500" },
+                padding: { top: 2, bottom: 2, left: 4, right: 4 },
+              },
+            },
+            ...buildPolicyAnnotations(periods, "fixo"),
+          },
+        },
+      },
+      scales: {
+        y: {
+          ticks: { callback: v => v + "h" },
+          suggestedMin: 25, suggestedMax: 48,
+          title: { display: true, text: LANG === "pt" ? "horas/semana" : "hours/week" },
+        },
+        x: { ticks: { maxTicksLimit: 8 } },
+      },
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+    },
+  });
+}
+
+function renderFocusSpPrev() {
+  // Two lines for SP (preta_parda and nao_negras) + a reference line for BR total.
+  // Y-axis 0-100 to keep the absolute magnitude honest — the line sits near
+  // the bottom and that's the point.
+  const rows = STATE.prev.filter(r =>
+    r.source_table === "PNADC-MICRODATA"
+    && r.geo_level === "uf"
+    && String(r.geo_code).padStart(2, "0") === SP_CODE
+    && r.formality_code === "total"
+    && r.sex_code === "T"
+    && ["preta_parda", "nao_negras"].includes(r.race_code)
+  );
+  const brRows = STATE.prev.filter(r =>
+    r.source_table === "PNADC-MICRODATA"
+    && r.geo_level === "country"
+    && r.formality_code === "total"
+    && r.sex_code === "T"
+    && r.race_code === "total"
+  );
+  if (!rows.length) {
+    setEmpty("box-focus-sp-prev", true); destroyChart("focusSpPrev"); return;
+  }
+
+  const periods = [...new Set(rows.map(r => String(r.period_code)))].sort();
+  const byRacePeriod = (race, p) => {
+    const r = rows.find(x => x.race_code === race && String(x.period_code) === p);
+    return r ? Number(r.pct_with_prev) : null;
+  };
+  const brByPeriod = Object.fromEntries(brRows.map(r => [String(r.period_code), Number(r.pct_with_prev)]));
+
+  const datasets = [
+    {
+      label: LANG === "pt" ? "SP · preta + parda" : "SP · Black",
+      data: periods.map(p => byRacePeriod("preta_parda", p)),
+      borderColor: "#b91c1c", backgroundColor: "#b91c1c20",
+      borderWidth: 2, pointRadius: 0, tension: 0.25, spanGaps: true,
+    },
+    {
+      label: LANG === "pt" ? "SP · não-negras" : "SP · non-Black",
+      data: periods.map(p => byRacePeriod("nao_negras", p)),
+      borderColor: "#1f2937", backgroundColor: "#1f293720",
+      borderWidth: 2, pointRadius: 0, tension: 0.25, spanGaps: true,
+    },
+    {
+      label: LANG === "pt" ? "Brasil (total)" : "Brazil (total)",
+      data: periods.map(p => brByPeriod[p] != null ? brByPeriod[p] : null),
+      borderColor: "#9ca3af", backgroundColor: "transparent",
+      borderWidth: 1.2, borderDash: [4, 4], pointRadius: 0, tension: 0.25, spanGaps: true,
+    },
+  ];
+
+  setEmpty("box-focus-sp-prev", false);
+  destroyChart("focusSpPrev");
+  charts.focusSpPrev = new Chart(document.getElementById("chart-focus-sp-prev"), {
+    type: "line",
+    data: { labels: periods.map(fmtPeriod), datasets },
+    options: {
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 14, padding: 8, font: { size: 11 } } },
+        tooltip: { mode: "index", intersect: false,
+          callbacks: { label: c => c.dataset.label + ": " + fmt(c.parsed.y, 1) + "%" } },
+        annotation: { annotations: buildPolicyAnnotations(periods, "fixo") },
+      },
+      scales: {
+        y: {
+          ticks: { callback: v => v + "%" },
+          suggestedMin: 0, suggestedMax: 50,
+          title: { display: true, text: LANG === "pt" ? "% contribuindo" : "% contributing" },
+        },
+        x: { ticks: { maxTicksLimit: 8 } },
+      },
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+    },
+  });
 }
 
 function renderFocusSpTrajectory(spTotalRows, brTotals) {

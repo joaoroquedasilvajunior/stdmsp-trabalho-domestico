@@ -871,7 +871,34 @@ function setEmpty(boxId, isEmpty) { document.getElementById(boxId).setAttribute(
 // ============ POLICY TIMELINE ANNOTATIONS ============
 // Vertical dashed lines marking the load-bearing policy moments. Used as
 // `options.plugins.annotation.annotations` on time-series charts via the
-// chartjs-plugin-annotation library (loaded from CDN, auto-registers).
+// chartjs-plugin-annotation library.
+
+// Defensive registration: the UMD bundle should auto-register the plugin
+// with Chart.js, but some CDN load orders / bundler quirks leave it
+// un-registered (annotations silently disappear from all charts). Force
+// registration here so the load order is irrelevant.
+(function registerAnnotationPlugin() {
+  if (typeof Chart === "undefined") return;
+  // The UMD bundle exposes the plugin under different globals depending on
+  // version. Check the known names; register whichever is present.
+  const candidates = [
+    window["chartjs-plugin-annotation"],
+    window.ChartAnnotation,
+    window.chartjsPluginAnnotation,
+  ];
+  for (const plugin of candidates) {
+    if (plugin && typeof Chart.register === "function") {
+      try {
+        Chart.register(plugin);
+        console.log("chartjs-plugin-annotation registered:", plugin.id || "(no id)");
+        return;
+      } catch (e) {
+        // already registered or invalid — try the next candidate
+      }
+    }
+  }
+  console.warn("chartjs-plugin-annotation not found on window — annotations will be absent");
+})();
 //
 // Each event has matching period codes for both PNADC granularities:
 //   - code_movel: trimestre móvel, 6-digit YYYYMM (end-month of window)

@@ -177,15 +177,44 @@ def parse_sas_input(text: str) -> dict[str, tuple[int, int]]:
     return specs
 
 
+# Variables we extract from the PNADC microdata. The dictionary parser
+# discovers byte positions automatically; we just list what to keep.
+#
+#   V4032  — was a contributor to social security (previdência) in the
+#            reference week. Binary 1=Sim, 2=Não. Used for retirement-
+#            rights aggregation.
+#   V4039  — hours habitually worked per week in main job. Numeric, 0–98.
+#            Used for jornada média and % over the 44h legal weekly limit.
+NEEDED_VARS = [
+    "Ano", "Trimestre", "UF",
+    "V1028",   # population weight
+    "V2007",   # sex
+    "V2010",   # cor/raça
+    "V4032",   # previdência contributor (1/2)
+    "V4039",   # weekly hours (main job)
+    "VD4009",  # posição na ocupação
+    "VD4019",  # rendimento mensal habitual
+]
+
+
 def load_column_specs() -> dict[str, tuple[int, int]]:
     """Return {var: (start, end)} for the variables we need, by parsing the
-    SAS INPUT file from IBGE's dictionary zip. Cached to disk after first run."""
+    SAS INPUT file from IBGE's dictionary zip. Cached to disk after first run.
+
+    The cache is invalidated automatically if NEEDED_VARS has grown since the
+    last run — so adding new variables here doesn't require manually deleting
+    the cache file.
+    """
     cache = RAW_DIR / "column_specs.json"
     import json
     if cache.exists():
         loaded = json.loads(cache.read_text())
-        log.info("column specs cache hit: %s (%d vars)", cache, len(loaded))
-        return {k: tuple(v) for k, v in loaded.items()}
+        if all(v in loaded for v in NEEDED_VARS):
+            log.info("column specs cache hit: %s (%d vars)", cache, len(loaded))
+            return {k: tuple(v) for k, v in loaded.items()}
+        else:
+            missing = [v for v in NEEDED_VARS if v not in loaded]
+            log.info("column specs cache missing %s; re-parsing dictionary", missing)
 
     dict_zip = download_dictionary()
     log.info("parsing dictionary %s", dict_zip)
@@ -211,9 +240,8 @@ def load_column_specs() -> dict[str, tuple[int, int]]:
     log.info("parsed %d variables from dictionary", len(all_specs))
 
     # Pull only the variables we use, error if any are missing.
-    needed = ["Ano", "Trimestre", "UF", "V1028", "V2007", "V2010", "VD4009", "VD4019"]
     specs = {}
-    for v in needed:
+    for v in NEEDED_VARS:
         if v not in all_specs:
             raise KeyError(f"Variable {v} not found in dictionary. Available: {sorted(all_specs)[:30]}…")
         specs[v] = all_specs[v]
@@ -480,6 +508,18 @@ SEX_MAP = {"1": "M", "2": "F"}
 # VD4009 (posição) → our dim_formality.code, restricted to trabalhador doméstico
 FORMALITY_MAP = {"03": "com_carteira", "04": "sem_carteira"}
 
+# PNADC UF (numeric IBGE code, 2-digit zero-padded) → sigla. Used for sanity
+# logs only; the database stores the numeric codes since dim_geo.code matches
+# what fetch_sidra.py inserts (uf rows zfill(2) the SIDRA numeric code).
+UF_CODE_TO_SIGLA = {
+    "11": "RO", "12": "AC", "13": "AM", "14": "RR", "15": "PA", "16": "AP", "17": "TO",
+    "21": "MA", "22": "PI", "23": "CE", "24": "RN", "25": "PB", "26": "PE",
+    "27": "AL", "28": "SE", "29": "BA",
+    "31": "MG", "32": "ES", "33": "RJ", "35": "SP",
+    "41": "PR", "42": "SC", "43": "RS",
+    "50": "MS", "51": "MT", "52": "GO", "53": "DF",
+}
+
 
 def build_fact_rows(df: pd.DataFrame, period: str) -> list[dict]:
     """Produce fact_workers payload rows from a parsed quarter's microdata.
@@ -487,6 +527,8 @@ def build_fact_rows(df: pd.DataFrame, period: str) -> list[dict]:
     Output: 5 races × 3 formalities (com/sem/total) = 15 rows max per quarter,
     plus a 'total' race aggregate × 3 formalities = 3 rows. All BR-level,
     sex='T', age='total'. Skips rows where race code is 'ignorado' (V2010 = 9).
+
+    Each row carries n_unweighted (unweighted sample count) for CI calculations.
     """
     df = df.copy()
     df["weight"] = pd.to_numeric(df["V1028"], errors="coerce")
@@ -503,41 +545,39 @@ def build_fact_rows(df: pd.DataFrame, period: str) -> list[dict]:
     rows: list[dict] = []
 
     # Race × formality (e.g., "preta com_carteira")
-    for (race, form), w in dom.groupby(["race_code", "formality_code"])["weight"].sum().items():
+    for (race, form), g in dom.groupby(["race_code", "formality_code"]):
         rows.append({
             "_period_code": db_period,
-            "_geo_code": "BR",
-            "_geo_level": "country",
+            "_geo_code": "BR", "_geo_level": "country",
             "_sex": "T", "_age": "total",
             "_race": race, "_formality": form,
-            "workers_thousands": round(float(w) / 1000, 2),
+            "workers_thousands": round(float(g["weight"].sum()) / 1000, 2),
+            "n_unweighted": int(len(g)),
         })
 
     # Race × total (sum across com+sem carteira)
-    for race, w in dom.groupby("race_code")["weight"].sum().items():
+    for race, g in dom.groupby("race_code"):
         rows.append({
             "_period_code": db_period,
-            "_geo_code": "BR",
-            "_geo_level": "country",
+            "_geo_code": "BR", "_geo_level": "country",
             "_sex": "T", "_age": "total",
             "_race": race, "_formality": "total",
-            "workers_thousands": round(float(w) / 1000, 2),
+            "workers_thousands": round(float(g["weight"].sum()) / 1000, 2),
+            "n_unweighted": int(len(g)),
         })
 
     # preta_parda (Black) aggregate × each formality + total
+    is_negra_br = dom["race_code"].isin(["preta", "parda"])
     for form in ["com_carteira", "sem_carteira", "total"]:
-        if form == "total":
-            mask = dom["race_code"].isin(["preta", "parda"])
-        else:
-            mask = dom["race_code"].isin(["preta", "parda"]) & (dom["formality_code"] == form)
-        w = dom.loc[mask, "weight"].sum()
+        mask = is_negra_br if form == "total" else is_negra_br & (dom["formality_code"] == form)
+        g = dom[mask]
         rows.append({
             "_period_code": db_period,
-            "_geo_code": "BR",
-            "_geo_level": "country",
+            "_geo_code": "BR", "_geo_level": "country",
             "_sex": "T", "_age": "total",
             "_race": "preta_parda", "_formality": form,
-            "workers_thousands": round(float(w) / 1000, 2),
+            "workers_thousands": round(float(g["weight"].sum()) / 1000, 2),
+            "n_unweighted": int(len(g)),
         })
 
     return rows
@@ -564,22 +604,316 @@ def build_sex_rows(df: pd.DataFrame, period: str) -> list[dict]:
     rows: list[dict] = []
 
     # Sex × formality
-    for (sex, form), w in dom.groupby(["sex_code", "formality_code"])["weight"].sum().items():
+    for (sex, form), g in dom.groupby(["sex_code", "formality_code"]):
         rows.append({
             "_period_code": db_period,
             "_geo_code": "BR", "_geo_level": "country",
             "_sex": sex, "_race": "total", "_formality": form, "_age": "total",
-            "workers_thousands": round(float(w) / 1000, 2),
+            "workers_thousands": round(float(g["weight"].sum()) / 1000, 2),
+            "n_unweighted": int(len(g)),
         })
 
     # Sex × total (sum across formalities)
-    for sex, w in dom.groupby("sex_code")["weight"].sum().items():
+    for sex, g in dom.groupby("sex_code"):
         rows.append({
             "_period_code": db_period,
             "_geo_code": "BR", "_geo_level": "country",
             "_sex": sex, "_race": "total", "_formality": "total", "_age": "total",
-            "workers_thousands": round(float(w) / 1000, 2),
+            "workers_thousands": round(float(g["weight"].sum()) / 1000, 2),
+            "n_unweighted": int(len(g)),
         })
+
+    return rows
+
+
+def build_uf_race_rows(df: pd.DataFrame, period: str) -> list[dict]:
+    """Produce fact_workers payload rows for race × UF aggregations.
+
+    For each of the 27 UFs (federation units), emit:
+      - 5 race rows (branca, preta, parda, amarela, indigena) at formality='total'
+      - 1 preta_parda aggregate row at formality='total'
+      - 1 nao_negras aggregate row at formality='total'  (branca + amarela + indigena)
+      - 1 race='total' row at formality='total'           (denominator for ratios)
+
+    Total: 27 × 8 = 216 rows per quarter; ~12k rows across the 56-quarter backfill.
+
+    All rows have sex='T', age='total', formality='total'. Skips rows with
+    race='ignorado' (V2010=9) so denominators across (preta+parda+branca+
+    amarela+indigena) sum to the explicit race='total' row up to those skips.
+
+    Caveats for downstream consumers:
+      - Small UFs (RR, AP, AC, TO) will have noisy estimates for rare race
+        cells (Indigenous, Asian). The map UI should treat % negras as the
+        headline metric since pretas+pardas have non-trivial sample size in
+        every UF; rare-cell estimates should be footnoted.
+      - This function does NOT emit a com_carteira/sem_carteira split per UF.
+        That can be added later if a "% formality per UF" map view is needed.
+    """
+    df = df.copy()
+    df["weight"] = pd.to_numeric(df["V1028"], errors="coerce")
+    if df["weight"].max() > 1e9:
+        df["weight"] = df["weight"] / 1e9
+
+    DOMESTIC_CODES = ["03", "04"]
+    dom = df[df["VD4009"].isin(DOMESTIC_CODES)].copy()
+    dom["race_code"] = dom["V2010"].map(RACE_MAP)
+    dom["uf_code"] = dom["UF"].astype(str).str.zfill(2)
+    dom = dom[dom["race_code"].notna() & dom["uf_code"].isin(UF_CODE_TO_SIGLA)]
+
+    db_period = microdata_period_to_db_code(period)
+    rows: list[dict] = []
+
+    def _row(uf, race, group):
+        return {
+            "_period_code": db_period,
+            "_geo_code": uf, "_geo_level": "uf",
+            "_sex": "T", "_age": "total",
+            "_race": race, "_formality": "total",
+            "workers_thousands": round(float(group["weight"].sum()) / 1000, 2),
+            "n_unweighted": int(len(group)),
+        }
+
+    # Race × UF (5 races × 27 UFs = 135 rows)
+    for (uf, race), g in dom.groupby(["uf_code", "race_code"]):
+        rows.append(_row(uf, race, g))
+
+    # preta_parda × UF (27 rows)
+    is_negra = dom["race_code"].isin(["preta", "parda"])
+    for uf, g in dom[is_negra].groupby("uf_code"):
+        rows.append(_row(uf, "preta_parda", g))
+
+    # nao_negras × UF — branca + amarela + indigena (27 rows)
+    is_nao_negra = dom["race_code"].isin(["branca", "amarela", "indigena"])
+    for uf, g in dom[is_nao_negra].groupby("uf_code"):
+        rows.append(_row(uf, "nao_negras", g))
+
+    # race='total' × UF — explicit denominator for the % negras computation (27 rows)
+    for uf, g in dom.groupby("uf_code"):
+        rows.append(_row(uf, "total", g))
+
+    return rows
+
+
+def build_hours_rows(df: pd.DataFrame, period: str) -> list[dict]:
+    """Aggregate weekly hours (V4039) for trabalhadoras(es) domésticas(os).
+
+    Emits weighted mean hours + % over 44h + unweighted sample size for:
+      - BR × sex × race × formality (5 races × 2 sex × 2 form = 20)
+      - BR × race × total formality at sex='T' (5 races × 3 form = 15)
+      - BR × preta_parda × each formality at sex='T' (3)
+      - BR × nao_negras × each formality at sex='T' (3)
+      - UF × race × formality_total at sex='T' (5 × 27 = 135)
+      - UF × preta_parda × formality_total (27)
+      - UF × nao_negras × formality_total (27)
+      - UF × race='total' × formality_total (27)
+
+    Total: ~260 rows per quarter; ~15k rows over the 56-quarter backfill.
+
+    Drops rows where V4039 is null/zero (i.e., people who didn't work in the
+    reference week or whose hours weren't recorded). Skips race='ignorado'.
+    """
+    df = df.copy()
+    df["weight"] = pd.to_numeric(df["V1028"], errors="coerce")
+    if df["weight"].max() > 1e9:
+        df["weight"] = df["weight"] / 1e9
+    df["hours"] = pd.to_numeric(df["V4039"], errors="coerce")
+
+    DOMESTIC_CODES = ["03", "04"]
+    dom = df[df["VD4009"].isin(DOMESTIC_CODES)
+             & df["hours"].notna()
+             & (df["hours"] > 0)
+             & (df["hours"] <= 98)].copy()  # 98 is PNADC's max-hours sentinel
+    dom["race_code"] = dom["V2010"].map(RACE_MAP)
+    dom["sex_code"] = dom["V2007"].map(SEX_MAP)
+    dom["formality_code"] = dom["VD4009"].map(FORMALITY_MAP)
+    dom["uf_code"] = dom["UF"].astype(str).str.zfill(2)
+    dom = dom[dom["race_code"].notna() & dom["sex_code"].notna() & dom["formality_code"].notna()]
+
+    db_period = microdata_period_to_db_code(period)
+    rows: list[dict] = []
+
+    def _agg(group):
+        w = group["weight"]; h = group["hours"]
+        if w.sum() == 0:
+            return None
+        return {
+            "mean_hours_per_week": round(float((h * w).sum() / w.sum()), 2),
+            "pct_over_44h": round(100 * float(((h > 44) * w).sum() / w.sum()), 2),
+            "n_unweighted": int(len(group)),
+        }
+
+    def _row(uf, level, sex, race, form, agg):
+        if agg is None:
+            return None
+        return {
+            "_period_code": db_period,
+            "_geo_code": uf, "_geo_level": level,
+            "_sex": sex, "_race": race, "_formality": form,
+            **agg,
+        }
+
+    # BR × sex × race × formality (com/sem)
+    for (sex, race, form), g in dom.groupby(["sex_code", "race_code", "formality_code"]):
+        r = _row("BR", "country", sex, race, form, _agg(g))
+        if r: rows.append(r)
+
+    # BR × race × total formality at sex='T'
+    for race, g in dom.groupby("race_code"):
+        r = _row("BR", "country", "T", race, "total", _agg(g))
+        if r: rows.append(r)
+
+    # BR × race × each formality at sex='T'
+    for (race, form), g in dom.groupby(["race_code", "formality_code"]):
+        r = _row("BR", "country", "T", race, form, _agg(g))
+        if r: rows.append(r)
+
+    # BR × preta_parda aggregate at sex='T' × each formality + total
+    is_negra = dom["race_code"].isin(["preta", "parda"])
+    for form_code in ["com_carteira", "sem_carteira", "total"]:
+        mask = is_negra if form_code == "total" else is_negra & (dom["formality_code"] == form_code)
+        g = dom[mask]
+        if len(g):
+            r = _row("BR", "country", "T", "preta_parda", form_code, _agg(g))
+            if r: rows.append(r)
+
+    # BR × nao_negras aggregate at sex='T' × each formality + total
+    is_nao_negra = dom["race_code"].isin(["branca", "amarela", "indigena"])
+    for form_code in ["com_carteira", "sem_carteira", "total"]:
+        mask = is_nao_negra if form_code == "total" else is_nao_negra & (dom["formality_code"] == form_code)
+        g = dom[mask]
+        if len(g):
+            r = _row("BR", "country", "T", "nao_negras", form_code, _agg(g))
+            if r: rows.append(r)
+
+    # BR × race='total' at sex='T' × total formality (overall mean for BR)
+    r = _row("BR", "country", "T", "total", "total", _agg(dom))
+    if r: rows.append(r)
+
+    # UF × race × formality='total' at sex='T'
+    uf_codes_valid = dom["uf_code"].isin(UF_CODE_TO_SIGLA)
+    dom_uf = dom[uf_codes_valid]
+    for (uf, race), g in dom_uf.groupby(["uf_code", "race_code"]):
+        r = _row(uf, "uf", "T", race, "total", _agg(g))
+        if r: rows.append(r)
+
+    # UF × preta_parda × formality='total' at sex='T'
+    is_negra_uf = dom_uf["race_code"].isin(["preta", "parda"])
+    for uf, g in dom_uf[is_negra_uf].groupby("uf_code"):
+        r = _row(uf, "uf", "T", "preta_parda", "total", _agg(g))
+        if r: rows.append(r)
+
+    # UF × nao_negras × formality='total' at sex='T'
+    is_nao_negra_uf = dom_uf["race_code"].isin(["branca", "amarela", "indigena"])
+    for uf, g in dom_uf[is_nao_negra_uf].groupby("uf_code"):
+        r = _row(uf, "uf", "T", "nao_negras", "total", _agg(g))
+        if r: rows.append(r)
+
+    # UF × race='total' × formality='total' at sex='T'
+    for uf, g in dom_uf.groupby("uf_code"):
+        r = _row(uf, "uf", "T", "total", "total", _agg(g))
+        if r: rows.append(r)
+
+    return rows
+
+
+def build_prev_rows(df: pd.DataFrame, period: str) -> list[dict]:
+    """Aggregate previdência contribution (V4032=1) among trabalhadoras
+    domésticas. Same structure as build_hours_rows. Drops rows with missing
+    V4032 (rare for employed people).
+
+    Substantive expectation: pct_with_prev among 'sem_carteira' should be
+    much lower than among 'com_carteira'. The com–sem gap is the headline
+    advocacy number (retirement rights).
+    """
+    df = df.copy()
+    df["weight"] = pd.to_numeric(df["V1028"], errors="coerce")
+    if df["weight"].max() > 1e9:
+        df["weight"] = df["weight"] / 1e9
+    # V4032: 1=Sim (contributing), 2=Não, blank=not applicable
+    df["prev_yes"] = (df["V4032"].astype(str).str.strip() == "1").astype(int)
+    df["prev_known"] = df["V4032"].astype(str).str.strip().isin(["1", "2"])
+
+    DOMESTIC_CODES = ["03", "04"]
+    dom = df[df["VD4009"].isin(DOMESTIC_CODES) & df["prev_known"]].copy()
+    dom["race_code"] = dom["V2010"].map(RACE_MAP)
+    dom["sex_code"] = dom["V2007"].map(SEX_MAP)
+    dom["formality_code"] = dom["VD4009"].map(FORMALITY_MAP)
+    dom["uf_code"] = dom["UF"].astype(str).str.zfill(2)
+    dom = dom[dom["race_code"].notna() & dom["sex_code"].notna() & dom["formality_code"].notna()]
+
+    db_period = microdata_period_to_db_code(period)
+    rows: list[dict] = []
+
+    def _agg(group):
+        w = group["weight"]; y = group["prev_yes"]
+        if w.sum() == 0:
+            return None
+        return {
+            "pct_with_prev": round(100 * float((y * w).sum() / w.sum()), 2),
+            "n_with_prev": int(group["prev_yes"].sum()),
+            "n_unweighted": int(len(group)),
+        }
+
+    def _row(uf, level, sex, race, form, agg):
+        if agg is None:
+            return None
+        return {
+            "_period_code": db_period,
+            "_geo_code": uf, "_geo_level": level,
+            "_sex": sex, "_race": race, "_formality": form,
+            **agg,
+        }
+
+    # Same level structure as hours
+    for (sex, race, form), g in dom.groupby(["sex_code", "race_code", "formality_code"]):
+        r = _row("BR", "country", sex, race, form, _agg(g))
+        if r: rows.append(r)
+
+    for race, g in dom.groupby("race_code"):
+        r = _row("BR", "country", "T", race, "total", _agg(g))
+        if r: rows.append(r)
+
+    for (race, form), g in dom.groupby(["race_code", "formality_code"]):
+        r = _row("BR", "country", "T", race, form, _agg(g))
+        if r: rows.append(r)
+
+    is_negra = dom["race_code"].isin(["preta", "parda"])
+    for form_code in ["com_carteira", "sem_carteira", "total"]:
+        mask = is_negra if form_code == "total" else is_negra & (dom["formality_code"] == form_code)
+        g = dom[mask]
+        if len(g):
+            r = _row("BR", "country", "T", "preta_parda", form_code, _agg(g))
+            if r: rows.append(r)
+
+    is_nao_negra = dom["race_code"].isin(["branca", "amarela", "indigena"])
+    for form_code in ["com_carteira", "sem_carteira", "total"]:
+        mask = is_nao_negra if form_code == "total" else is_nao_negra & (dom["formality_code"] == form_code)
+        g = dom[mask]
+        if len(g):
+            r = _row("BR", "country", "T", "nao_negras", form_code, _agg(g))
+            if r: rows.append(r)
+
+    r = _row("BR", "country", "T", "total", "total", _agg(dom))
+    if r: rows.append(r)
+
+    dom_uf = dom[dom["uf_code"].isin(UF_CODE_TO_SIGLA)]
+    for (uf, race), g in dom_uf.groupby(["uf_code", "race_code"]):
+        r = _row(uf, "uf", "T", race, "total", _agg(g))
+        if r: rows.append(r)
+
+    is_negra_uf = dom_uf["race_code"].isin(["preta", "parda"])
+    for uf, g in dom_uf[is_negra_uf].groupby("uf_code"):
+        r = _row(uf, "uf", "T", "preta_parda", "total", _agg(g))
+        if r: rows.append(r)
+
+    is_nao_negra_uf = dom_uf["race_code"].isin(["branca", "amarela", "indigena"])
+    for uf, g in dom_uf[is_nao_negra_uf].groupby("uf_code"):
+        r = _row(uf, "uf", "T", "nao_negras", "total", _agg(g))
+        if r: rows.append(r)
+
+    for uf, g in dom_uf.groupby("uf_code"):
+        r = _row(uf, "uf", "T", "total", "total", _agg(g))
+        if r: rows.append(r)
 
     return rows
 
@@ -713,6 +1047,86 @@ def upsert_wages_to_supabase(rows: list[dict]) -> int:
     return inserted
 
 
+def upsert_hours_to_supabase(rows: list[dict]) -> int:
+    """Push hours rows into domestic_work.fact_hours."""
+    sb = get_supabase_client()
+    if sb is None or not rows:
+        return 0
+    schema = sb.schema("domestic_work")
+    time_lookup = {r["period_code"]: r["time_id"] for r in schema.table("dim_time").select("period_code,time_id").execute().data}
+    geo_lookup = {(r["level"], r["code"]): r["geo_id"] for r in schema.table("dim_geo").select("level,code,geo_id").execute().data}
+    race_lookup = {r["code"]: r["race_id"] for r in schema.table("dim_race").select("code,race_id").execute().data}
+    formality_lookup = {r["code"]: r["formality_id"] for r in schema.table("dim_formality").select("code,formality_id").execute().data}
+    sex_lookup = {r["code"]: r["sex_id"] for r in schema.table("dim_sex").select("code,sex_id").execute().data}
+
+    payload = []
+    for r in rows:
+        try:
+            payload.append({
+                "time_id":      time_lookup[r["_period_code"]],
+                "geo_id":       geo_lookup[(r["_geo_level"], r["_geo_code"])],
+                "sex_id":       sex_lookup[r["_sex"]],
+                "race_id":      race_lookup[r["_race"]],
+                "formality_id": formality_lookup[r["_formality"]],
+                "mean_hours_per_week": r["mean_hours_per_week"],
+                "pct_over_44h":        r["pct_over_44h"],
+                "n_unweighted":        r["n_unweighted"],
+                "source_table": SOURCE_TABLE_TAG,
+            })
+        except KeyError as e:
+            log.warning("missing dim lookup for hours row %s: %s", r, e)
+
+    inserted = 0
+    for i in range(0, len(payload), 250):
+        chunk = payload[i:i + 250]
+        res = schema.table("fact_hours").upsert(
+            chunk,
+            on_conflict="time_id,geo_id,sex_id,race_id,formality_id,source_table",
+        ).execute()
+        inserted += len(res.data or [])
+    return inserted
+
+
+def upsert_prev_to_supabase(rows: list[dict]) -> int:
+    """Push previdência rows into domestic_work.fact_prev."""
+    sb = get_supabase_client()
+    if sb is None or not rows:
+        return 0
+    schema = sb.schema("domestic_work")
+    time_lookup = {r["period_code"]: r["time_id"] for r in schema.table("dim_time").select("period_code,time_id").execute().data}
+    geo_lookup = {(r["level"], r["code"]): r["geo_id"] for r in schema.table("dim_geo").select("level,code,geo_id").execute().data}
+    race_lookup = {r["code"]: r["race_id"] for r in schema.table("dim_race").select("code,race_id").execute().data}
+    formality_lookup = {r["code"]: r["formality_id"] for r in schema.table("dim_formality").select("code,formality_id").execute().data}
+    sex_lookup = {r["code"]: r["sex_id"] for r in schema.table("dim_sex").select("code,sex_id").execute().data}
+
+    payload = []
+    for r in rows:
+        try:
+            payload.append({
+                "time_id":      time_lookup[r["_period_code"]],
+                "geo_id":       geo_lookup[(r["_geo_level"], r["_geo_code"])],
+                "sex_id":       sex_lookup[r["_sex"]],
+                "race_id":      race_lookup[r["_race"]],
+                "formality_id": formality_lookup[r["_formality"]],
+                "pct_with_prev": r["pct_with_prev"],
+                "n_with_prev":   r["n_with_prev"],
+                "n_unweighted":  r["n_unweighted"],
+                "source_table":  SOURCE_TABLE_TAG,
+            })
+        except KeyError as e:
+            log.warning("missing dim lookup for prev row %s: %s", r, e)
+
+    inserted = 0
+    for i in range(0, len(payload), 250):
+        chunk = payload[i:i + 250]
+        res = schema.table("fact_prev").upsert(
+            chunk,
+            on_conflict="time_id,geo_id,sex_id,race_id,formality_id,source_table",
+        ).execute()
+        inserted += len(res.data or [])
+    return inserted
+
+
 def get_supabase_client():
     """Lazily import + construct the supabase client. Returns None if creds
     aren't available — callers should treat that as "skip upsert"."""
@@ -767,6 +1181,7 @@ def upsert_to_supabase(rows: list[dict]) -> int:
                 "formality_id": formality_lookup[r["_formality"]],
                 "age_id":       age_lookup[r["_age"]],
                 "workers_thousands": r["workers_thousands"],
+                "n_unweighted": r.get("n_unweighted"),
                 "source_table": SOURCE_TABLE_TAG,
             })
         except KeyError as e:
@@ -817,6 +1232,32 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
                 if r["_sex"] == "M" and r["_formality"] == "total")
     pct_mulheres = round(100 * n_women / (n_women + n_men), 1) if (n_women + n_men) else None
 
+    # ---- counts by race × UF (fact_workers, geo_level='uf') ----
+    uf_rows = build_uf_race_rows(df, period)
+    rows.extend(uf_rows)   # share the same Supabase upsert (fact_workers)
+    # Diagnostic: % negras among São Paulo domesticas — important for the union
+    sp_negras = next((r for r in uf_rows
+                      if r["_geo_code"] == "35" and r["_race"] == "preta_parda"), None)
+    sp_total = next((r for r in uf_rows
+                     if r["_geo_code"] == "35" and r["_race"] == "total"), None)
+    pct_negras_sp = (round(100 * sp_negras["workers_thousands"] / sp_total["workers_thousands"], 1)
+                     if sp_negras and sp_total and sp_total["workers_thousands"] else None)
+
+    # ---- hours (fact_hours) ----
+    hours_rows = build_hours_rows(df, period)
+
+    # ---- previdência (fact_prev) ----
+    prev_rows = build_prev_rows(df, period)
+    # Diagnostic: top-line previdência rate for the union's framing.
+    prev_total = next((r for r in prev_rows
+                       if r["_geo_code"] == "BR" and r["_race"] == "total"
+                       and r["_sex"] == "T" and r["_formality"] == "total"), None)
+    pct_prev_total = prev_total["pct_with_prev"] if prev_total else None
+    hours_total = next((r for r in hours_rows
+                        if r["_geo_code"] == "BR" and r["_race"] == "total"
+                        and r["_sex"] == "T" and r["_formality"] == "total"), None)
+    mean_hours = hours_total["mean_hours_per_week"] if hours_total else None
+
     # ---- wages (fact_wages) ----
     wage_rows = build_wage_rows(df, period)
     wage_negras = next((r for r in wage_rows
@@ -830,14 +1271,26 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
     if upsert:
         inserted_workers = upsert_to_supabase(rows)
         inserted_wages = upsert_wages_to_supabase(wage_rows)
-        log.info("[%s] upserted %d worker rows + %d wage rows · total %.0fk · pretas+pardas %s%% · mulheres %s%% · wage gap %s%%",
-                 period, inserted_workers, inserted_wages, n_dom, pct_negras, pct_mulheres, wage_gap_pct)
+        inserted_hours = upsert_hours_to_supabase(hours_rows)
+        inserted_prev = upsert_prev_to_supabase(prev_rows)
+        log.info("[%s] upserted %d workers + %d wages + %d hours + %d prev · total %.0fk · "
+                 "pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · wage gap %s%% · "
+                 "horas méd %s · %% previdência %s%%",
+                 period, inserted_workers, inserted_wages, inserted_hours, inserted_prev,
+                 n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
+                 mean_hours, pct_prev_total)
     else:
-        log.info("[%s] (dry run) %d worker rows + %d wage rows · total %.0fk · pretas+pardas %s%% · mulheres %s%% · wage gap %s%%",
-                 period, len(rows), len(wage_rows), n_dom, pct_negras, pct_mulheres, wage_gap_pct)
+        log.info("[%s] (dry run) %d workers + %d wages + %d hours + %d prev · total %.0fk · "
+                 "pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · wage gap %s%% · "
+                 "horas méd %s · %% previdência %s%%",
+                 period, len(rows), len(wage_rows), len(hours_rows), len(prev_rows),
+                 n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
+                 mean_hours, pct_prev_total)
 
     return {"period": period, "total_workers_k": n_dom, "pct_negras": pct_negras,
-            "pct_mulheres": pct_mulheres, "wage_gap_pct": wage_gap_pct}
+            "pct_negras_sp": pct_negras_sp, "pct_mulheres": pct_mulheres,
+            "wage_gap_pct": wage_gap_pct,
+            "mean_hours": mean_hours, "pct_prev": pct_prev_total}
 
 
 # ----- main --------------------------------------------------------------------
@@ -888,7 +1341,13 @@ def main():
         else:
             gap = r.get("wage_gap_pct"); gap_s = f"{gap:.1f}%" if gap is not None else "—"
             mul = r.get("pct_mulheres"); mul_s = f"{mul:.1f}%" if mul is not None else "—"
-            print(f"  {r['period']}  total {r['total_workers_k']:>5.0f}k  · pretas+pardas {r['pct_negras']}%  · mulheres {mul_s}  · wage gap {gap_s}")
+            sp = r.get("pct_negras_sp"); sp_s = f"{sp:.1f}%" if sp is not None else "—"
+            mh = r.get("mean_hours"); mh_s = f"{mh:.1f}h" if mh is not None else "—"
+            pv = r.get("pct_prev"); pv_s = f"{pv:.1f}%" if pv is not None else "—"
+            print(f"  {r['period']}  total {r['total_workers_k']:>5.0f}k"
+                  f"  · pretas+pardas BR {r['pct_negras']}% / SP {sp_s}"
+                  f"  · mulheres {mul_s}  · wage gap {gap_s}"
+                  f"  · jornada {mh_s}  · prev {pv_s}")
     print("======================================\n")
     n_ok = sum(1 for r in summary if "error" not in r)
     n_fail = len(summary) - n_ok

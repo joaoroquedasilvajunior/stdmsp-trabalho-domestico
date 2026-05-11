@@ -196,6 +196,41 @@
   <li><strong>Por que importa</strong>: a C189 é o instrumento internacional vinculante que reconhece trabalhadoras domésticas como categoria com direitos iguais aos de outras profissões. A ratificação obriga o país a adequar a legislação interna. No caso brasileiro, a LC 150/2015 (Lei das Domésticas) <em>antecedeu</em> a ratificação (2018), invertendo a sequência típica em que o tratado força a reforma interna. Uruguai foi o primeiro país do mundo a ratificar, em junho de 2012, um ano depois da adoção da Convenção pela Conferência da OIT</li>
 </ul>
 
+<h3>3.7c Intervalos de confiança e tamanho amostral (mapa por UF)</h3>
+<ul>
+  <li><strong>Cálculo</strong>: intervalo de Wilson (95%) para a proporção, ancorado no tamanho amostral <em>não-ponderado</em> da linha <code>race='total'</code> de cada UF. A fórmula:
+    <code>(p + z²/2n ± z√(p(1−p)/n + z²/4n²)) / (1 + z²/n)</code>, com <code>z = 1,96</code>.
+  </li>
+  <li><strong>Por que Wilson e não normal</strong>: o intervalo de Wilson é o padrão recomendado para proporções porque não fica enviesado em direção a 0 ou 100% em amostras pequenas. Para os 27 UFs, isso é especialmente relevante: UFs grandes (SP, MG, BA) têm IC estreito (~±1 pp), UFs pequenas (RR, AP, AC) podem ter IC de ±5–8 pp.
+  </li>
+  <li><strong>Onde aparece no painel</strong>: na tooltip do mapa, abaixo da estimativa pontual de % negras. Formato: "IC 95%: 54,8% – 57,9%".
+  </li>
+  <li><strong>Supressão de amostras muito pequenas</strong>:
+    <ul>
+      <li><code>n_unweighted &lt; 30</code> — UF é cinzeada no mapa e a tooltip marca "estimativa pouco confiável"</li>
+      <li><code>30 ≤ n_unweighted &lt; 100</code> — UF mantém a cor, mas a tooltip mostra um aviso de "amostra pequena"</li>
+      <li><code>n_unweighted ≥ 100</code> — sem marca adicional, apenas o IC entre parênteses</li>
+    </ul>
+  </li>
+  <li><strong>Limitação importante</strong>: o IC capta apenas a variabilidade da amostra. Não captura erro de viés (e.g., subnotificação sistemática de trabalho informal pelas próprias entrevistadas), erro de cobertura (e.g., domicílios em áreas precárias subamostrados), ou viés de medida (e.g., autoclassificação racial). Para essas fontes de incerteza, a metodologia da PNAD Contínua publicada pelo IBGE é a referência.
+  </li>
+</ul>
+
+<h3>3.9 Anotações de linha do tempo política</h3>
+<ul>
+  <li><strong>Fonte</strong>: hardcoded em <code>dashboard/index.html</code> · função <code>buildPolicyAnnotations()</code></li>
+  <li><strong>Eventos marcados</strong> (linhas verticais tracejadas nos gráficos de série temporal):
+    <ul>
+      <li><strong>EC 72/2013</strong> — emenda constitucional que igualou direitos das trabalhadoras domésticas aos demais empregados (abril/2013)</li>
+      <li><strong>LC 150/2015</strong> — Lei das Domésticas, regulamentando a EC 72/2013 (entrou em vigor em junho/2015)</li>
+      <li><strong>Brasil ratifica C189</strong> — Convenção 189 da OIT (janeiro/2018)</li>
+      <li><strong>COVID-19</strong> — início dos lockdowns no Brasil (março/2020)</li>
+      <li><strong>México ratifica C189</strong> — relevante para o comparador BR ↔ MX (julho/2020)</li>
+    </ul>
+  </li>
+  <li><strong>Por que importam</strong>: localizam empiricamente onde a política deveria ter produzido inflexões. A leitura das séries fica menos abstrata — o leitor pode olhar para "% formalização" em junho/2015 e ver o efeito (ou ausência dele) da LC 150 visualmente, sem precisar reconstituir a cronologia mentalmente.</li>
+</ul>
+
 <h2>4. Notas metodológicas</h2>
 
 <h3>4.1 Trimestre móvel × trimestre fixo</h3>
@@ -393,6 +428,41 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>Indicator</strong>: year of ratification of Convention 189 (Domestic Workers, 2011) per country</li>
   <li><strong>Data (static, hardcoded — verified against NORMLEX 2026-05)</strong>: Uruguay 2012-06 · Ecuador 2013-12 · Argentina 2014-03 · Colombia 2014-05 · Chile 2015-06 · Brazil 2018-01 · Peru 2018-11 · Mexico 2020-07</li>
   <li><strong>Why it matters</strong>: C189 is the binding international instrument recognizing domestic workers as a category with rights equal to other occupations. Ratification obligates the country to align domestic legislation. In Brazil's case, LC 150/2015 (the Domestic Workers' Law) <em>preceded</em> the ratification (2018), inverting the typical sequence where treaties drive domestic reform. Uruguay was the first country in the world to ratify, in June 2012, one year after the Convention was adopted by the ILO Conference</li>
+</ul>
+
+<h3>3.7c Confidence intervals and sample size (UF map)</h3>
+<ul>
+  <li><strong>Calculation</strong>: Wilson 95% interval for the proportion, anchored on the <em>unweighted</em> sample size of the <code>race='total'</code> row for each UF. Formula:
+    <code>(p + z²/2n ± z√(p(1−p)/n + z²/4n²)) / (1 + z²/n)</code>, with <code>z = 1.96</code>.
+  </li>
+  <li><strong>Why Wilson and not normal</strong>: the Wilson interval is the standard recommended for proportions because it doesn't bias toward 0 or 100% in small samples. For the 27 UFs this matters: large UFs (SP, MG, BA) get narrow CIs (~±1 pp), small UFs (RR, AP, AC) can have CIs of ±5–8 pp.
+  </li>
+  <li><strong>Where it appears</strong>: in the map tooltip, below the point estimate of % Black. Format: "95% CI: 54.8% – 57.9%".
+  </li>
+  <li><strong>Small-sample suppression</strong>:
+    <ul>
+      <li><code>n_unweighted &lt; 30</code> — UF is greyed out on the map and the tooltip flags "estimate unreliable"</li>
+      <li><code>30 ≤ n_unweighted &lt; 100</code> — UF keeps its color but tooltip shows a "small sample" warning</li>
+      <li><code>n_unweighted ≥ 100</code> — no additional flag, just the CI in parentheses</li>
+    </ul>
+  </li>
+  <li><strong>Important limitation</strong>: the CI captures only sampling variability. It does NOT capture bias error (e.g., systematic under-reporting of informal work by respondents), coverage error (e.g., precarious-housing households under-sampled), or measurement error (e.g., racial self-classification). For those sources of uncertainty, IBGE's published PNAD Contínua methodology is the reference.
+  </li>
+</ul>
+
+<h3>3.9 Policy timeline annotations</h3>
+<ul>
+  <li><strong>Source</strong>: hardcoded in <code>dashboard/index.html</code> · <code>buildPolicyAnnotations()</code> function</li>
+  <li><strong>Events marked</strong> (dashed vertical lines on time-series charts):
+    <ul>
+      <li><strong>EC 72/2013</strong> — constitutional amendment equalizing domestic workers' rights to other employees (April 2013)</li>
+      <li><strong>LC 150/2015</strong> — Domestic Workers' Law, regulating EC 72/2013 (in force June 2015)</li>
+      <li><strong>Brazil ratifies C189</strong> — ILO Convention 189 (January 2018)</li>
+      <li><strong>COVID-19</strong> — start of lockdowns in Brazil (March 2020)</li>
+      <li><strong>Mexico ratifies C189</strong> — relevant for the BR ↔ MX comparator (July 2020)</li>
+    </ul>
+  </li>
+  <li><strong>Why they matter</strong>: they empirically locate where policy was supposed to produce inflections. Reading the time-series becomes less abstract — a viewer can look at "% formalization" in June 2015 and see (or fail to see) the effect of LC 150 visually, without having to reconstruct the chronology mentally.</li>
 </ul>
 
 <h2>4. Methodological notes</h2>

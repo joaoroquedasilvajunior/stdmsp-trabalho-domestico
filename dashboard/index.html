@@ -7,6 +7,7 @@
   <meta name="description" content="Painel de dados sobre trabalhadoras e trabalhadores domésticos no Brasil. Sindicato das Trabalhadoras Domésticas do Município de São Paulo + pesquisa de Jean-François Mayer (Concordia).">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -824,6 +825,75 @@ const charts = {};
 function destroyChart(key) { if (charts[key]) { charts[key].destroy(); delete charts[key]; } }
 function setEmpty(boxId, isEmpty) { document.getElementById(boxId).setAttribute("data-empty", String(isEmpty)); }
 
+// ============ POLICY TIMELINE ANNOTATIONS ============
+// Vertical dashed lines marking the load-bearing policy moments. Used as
+// `options.plugins.annotation.annotations` on time-series charts via the
+// chartjs-plugin-annotation library (loaded from CDN, auto-registers).
+//
+// Each event has matching period codes for both PNADC granularities:
+//   - code_movel: trimestre móvel, 6-digit YYYYMM (end-month of window)
+//   - code_fixo:  trimestre fixo,  6-digit YYYYTT (year + quarter)
+// The helper picks whichever matches the chart's `periods` array.
+
+const POLICY_EVENTS = [
+  { iso: "2013-04", code_movel: "201306", code_fixo: "201302",
+    label_pt: "EC 72",  label_en: "EC 72",
+    note_pt: "Emenda constitucional · direitos das domésticas",
+    note_en: "Constitutional amendment · domestic-worker rights" },
+  { iso: "2015-06", code_movel: "201508", code_fixo: "201502",
+    label_pt: "LC 150", label_en: "LC 150",
+    note_pt: "Lei das Domésticas em vigor",
+    note_en: "Domestic Workers' Law enters into force" },
+  { iso: "2018-01", code_movel: "201803", code_fixo: "201801",
+    label_pt: "BR ratifica C189", label_en: "BR ratifies C189",
+    note_pt: "Brasil ratifica a Convenção 189 da OIT",
+    note_en: "Brazil ratifies ILO Convention 189" },
+  { iso: "2020-03", code_movel: "202005", code_fixo: "202001",
+    label_pt: "COVID-19", label_en: "COVID-19",
+    note_pt: "Lockdowns no Brasil",
+    note_en: "Lockdowns in Brazil" },
+  { iso: "2020-07", code_movel: "202009", code_fixo: "202003",
+    label_pt: "MX ratifica C189", label_en: "MX ratifies C189",
+    note_pt: "México ratifica a Convenção 189 da OIT",
+    note_en: "Mexico ratifies ILO Convention 189" },
+];
+
+function buildPolicyAnnotations(periodCodes, scheme = "fixo") {
+  // periodCodes: array of raw period codes (strings) in chronological order.
+  // scheme: 'movel' (YYYYMM) or 'fixo' (YYYYTT).
+  // Returns an object suitable for options.plugins.annotation.annotations.
+  if (!Array.isArray(periodCodes) || !periodCodes.length) return {};
+  const annotations = {};
+  for (const ev of POLICY_EVENTS) {
+    const target = scheme === "movel" ? ev.code_movel : ev.code_fixo;
+    // Find the nearest period in the array (>= target)
+    const idx = periodCodes.findIndex(p => String(p) >= String(target));
+    if (idx < 0) continue;
+    annotations[`policy_${ev.iso}`] = {
+      type: "line",
+      scaleID: "x",
+      value: idx,
+      borderColor: "rgba(75, 85, 99, 0.45)",
+      borderWidth: 1,
+      borderDash: [4, 4],
+      label: {
+        display: true,
+        content: LANG === "pt" ? ev.label_pt : ev.label_en,
+        position: "start",
+        color: "#374151",
+        backgroundColor: "rgba(255, 255, 255, 0.92)",
+        font: { size: 9, weight: "500" },
+        padding: { top: 2, bottom: 2, left: 4, right: 4 },
+        yAdjust: 0,
+        borderColor: "rgba(75, 85, 99, 0.45)",
+        borderWidth: 1,
+        borderRadius: 3,
+      },
+    };
+  }
+  return annotations;
+}
+
 // Inline Chart.js plugin: when the year filter is set, lightly shade the band of
 // data points that fall within that year. Lets the time-series charts respond to
 // the year filter without collapsing to a single point.
@@ -997,6 +1067,7 @@ function renderTrend() {
       plugins: {
         legend: { display: false },
         tooltip: { callbacks: { label: c => fmt(c.parsed.y) + " mil" } },
+        annotation: { annotations: buildPolicyAnnotations(rows.map(r => r.period_code), "movel") },
         ...yearBandOpts(rows.map(r => r.period_code)),
       },
       scales: {
@@ -1031,6 +1102,7 @@ function renderFormality() {
       plugins: {
         legend: { display: false },
         tooltip: { callbacks: { label: c => fmt(c.parsed.y, 1) + "%" } },
+        annotation: { annotations: buildPolicyAnnotations(series.map(s => s.period_code), "movel") },
         ...yearBandOpts(series.map(s => s.period_code)),
       },
       scales: {
@@ -1065,6 +1137,7 @@ function renderWages() {
       plugins: {
         legend: { display: false },
         tooltip: { callbacks: { label: c => "R$ " + fmt(c.parsed.y, 0) } },
+        annotation: { annotations: buildPolicyAnnotations(rows.map(r => r.period_code), "movel") },
         ...yearBandOpts(rows.map(r => r.period_code)),
       },
       scales: {
@@ -1179,6 +1252,7 @@ function renderRace() {
       plugins: {
         legend: { position: "bottom", labels: { font: { size: 11 }, boxWidth: 12 } },
         tooltip: { callbacks: { label: c => c.dataset.label + ": " + fmt(c.parsed.y, 1) + "%" } },
+        annotation: { annotations: buildPolicyAnnotations(periods, "fixo") },
         ...yearBandOpts(periods),
       },
       scales: {
@@ -1269,6 +1343,7 @@ function renderWageGap() {
       plugins: {
         legend: { display: false },
         tooltip: { callbacks: { label: c => "Negras = " + fmt(c.parsed.y, 1) + "% das não-negras" } },
+        annotation: { annotations: buildPolicyAnnotations(periods, "fixo") },
         ...yearBandOpts(periods),
       },
       scales: {
@@ -1352,7 +1427,7 @@ async function loadMapSvg() {
 }
 
 // Build the per-UF aggregate for the map's selected period.
-// Returns { uf_code: { pct_negras, total_k, negras_k } }.
+// Returns { uf_code: { pct_negras, total_k, negras_k, n_unweighted, ci_lo, ci_hi } }.
 function computeMapData(periodCode) {
   const rows = STATE.workers.filter(r =>
     r.source_table === "PNADC-MICRODATA"
@@ -1365,7 +1440,7 @@ function computeMapData(periodCode) {
   for (const r of rows) {
     const code = String(r.geo_code).padStart(2, "0");
     if (!byUf[code]) byUf[code] = {};
-    if (r.race_code === "total")       byUf[code].total_k  = Number(r.workers_thousands);
+    if (r.race_code === "total")       { byUf[code].total_k  = Number(r.workers_thousands); byUf[code].n_total = r.n_unweighted ? Number(r.n_unweighted) : null; }
     if (r.race_code === "preta_parda") byUf[code].negras_k = Number(r.workers_thousands);
     if (r.race_code === "branca")      byUf[code].brancas_k  = Number(r.workers_thousands);
     if (r.race_code === "parda")       byUf[code].pardas_k   = Number(r.workers_thousands);
@@ -1378,8 +1453,31 @@ function computeMapData(periodCode) {
     d.pct_negras = (d.total_k && d.negras_k != null)
       ? 100 * d.negras_k / d.total_k
       : null;
+    // Wilson 95% CI for the proportion estimate. Anchored on the
+    // unweighted sample size of the 'total' row (the denominator).
+    if (d.pct_negras != null && d.n_total && d.n_total > 0) {
+      const ci = wilsonCi(d.pct_negras / 100, d.n_total);
+      d.ci_lo = ci ? ci.lo : null;
+      d.ci_hi = ci ? ci.hi : null;
+      d.precision_flag = d.n_total < 30 ? "suppress"
+                       : d.n_total < 100 ? "low"
+                       : null;
+    }
   }
   return byUf;
+}
+
+// Wilson score 95% interval for a proportion. p in [0,1], n is unweighted
+// sample size. Returns {lo, hi} as percentages in [0,100], or null if invalid.
+function wilsonCi(p, n, z = 1.96) {
+  if (!n || n <= 0 || p == null || isNaN(p)) return null;
+  const denom = 1 + (z * z) / n;
+  const center = (p + (z * z) / (2 * n)) / denom;
+  const halfWidth = (z * Math.sqrt(p * (1 - p) / n + (z * z) / (4 * n * n))) / denom;
+  return {
+    lo: 100 * Math.max(0, center - halfWidth),
+    hi: 100 * Math.min(1, center + halfWidth),
+  };
 }
 
 // Pick the period to show on the map: the latest quarter in the selected
@@ -1434,10 +1532,32 @@ function onMapHover(ev) {
   const totalLabel = LANG === "pt" ? "Total trabalhadoras(es) domésticas" : "Total domestic workers";
   const negrasLabel = LANG === "pt" ? "% pretas + pardas" : "% Black (pretas + pardas)";
 
+  // 95% confidence interval line (only when n_unweighted is available)
+  let ciLine = "";
+  if (data.ci_lo != null && data.ci_hi != null) {
+    const ciLabel = LANG === "pt" ? "IC 95%" : "95% CI";
+    ciLine = `<div class="num sub">${ciLabel}: ${data.ci_lo.toFixed(1)}% – ${data.ci_hi.toFixed(1)}%</div>`;
+  }
+  // Small-sample badge
+  let precisionLine = "";
+  if (data.precision_flag === "low") {
+    precisionLine = LANG === "pt"
+      ? `<div class="sub" style="color: #ca8a04;">⚠ amostra pequena (n=${data.n_total})</div>`
+      : `<div class="sub" style="color: #ca8a04;">⚠ small sample (n=${data.n_total})</div>`;
+  } else if (data.precision_flag === "suppress") {
+    precisionLine = LANG === "pt"
+      ? `<div class="sub" style="color: #dc2626;">⚠ amostra muito pequena (n=${data.n_total}) — estimativa pouco confiável</div>`
+      : `<div class="sub" style="color: #dc2626;">⚠ very small sample (n=${data.n_total}) — estimate unreliable</div>`;
+  } else if (data.n_total) {
+    precisionLine = `<div class="sub" style="color: #6b7280;">n = ${data.n_total}</div>`;
+  }
+
   tooltip.innerHTML = `
     <div class="ttl">${name} <span class="sub">(${sigla})</span></div>
     <div class="num">${negrasLabel}: <b>${pct}</b></div>
+    ${ciLine}
     <div class="num sub">${totalLabel}: ${total} ${LANG === "pt" ? "mil" : "thousand"}</div>
+    ${precisionLine}
   `;
   tooltip.classList.add("visible");
 
@@ -1481,7 +1601,15 @@ async function renderMapUF() {
     const d = byUf[code];
     let v = null;
     if (d) v = (dim === "pct_negras") ? d.pct_negras : d.total_k;
-    path.style.fill = colorForValue(v, buckets);
+    // Suppress very-small-sample cells visually so readers don't anchor on
+    // unreliable estimates. The tooltip still shows the value + the warning.
+    if (d && d.precision_flag === "suppress") {
+      path.style.fill = "#d1d5db";   // distinct grey, hatched pattern would be nicer
+      path.style.strokeDasharray = "2,2";
+    } else {
+      path.style.fill = colorForValue(v, buckets);
+      path.style.strokeDasharray = "none";
+    }
     // Make focusable for keyboard navigation
     if (!path.hasAttribute("tabindex")) path.setAttribute("tabindex", "0");
   }
@@ -1820,6 +1948,7 @@ function renderFocusSpTrajectory(spTotalRows, brTotals) {
         legend: { position: "bottom", labels: { boxWidth: 14, padding: 8, font: { size: 11 } } },
         tooltip: { mode: "index", intersect: false,
           callbacks: { label: c => c.dataset.label + ": " + fmt(c.parsed.y, 0) + (LANG === "pt" ? " mil" : "k") } },
+        annotation: { annotations: buildPolicyAnnotations(periods, "fixo") },
       },
       scales: {
         ySp: { position: "left", ticks: { callback: v => fmt(v, 0) }, title: { display: true, text: LANG === "pt" ? "SP (mil)" : "SP (k)", color: "#b91c1c" } },
@@ -1877,6 +2006,7 @@ function renderFocusSpRace() {
       plugins: {
         legend: { position: "bottom", labels: { boxWidth: 14, padding: 8, font: { size: 11 } } },
         tooltip: { callbacks: { label: c => c.dataset.label + ": " + fmt(c.parsed.y, 1) + "%" } },
+        annotation: { annotations: buildPolicyAnnotations(periods, "fixo") },
       },
       scales: {
         y: { ticks: { callback: v => v + "%" }, suggestedMin: 0, suggestedMax: 60 },

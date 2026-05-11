@@ -158,6 +158,21 @@
   <li><strong>Histórico</strong>: até 05/2026 esta cifra era atribuída ao DIEESE como valor estático único (76 %, depois corrigido para 84 %); foi substituída pela série temporal computada após o pipeline de microdados ser estendido para incluir agregações salariais.</li>
 </ul>
 
+<h3>3.6b Jornada média e contribuição previdenciária (Brasil)</h3>
+<ul>
+  <li><strong>Fontes</strong>: <code>fact_hours</code> e <code>fact_prev</code> (variáveis <code>V4039</code> e <code>V4032</code> da PNADC, agregadas pela equipe do projeto)</li>
+  <li><strong>Recorte</strong>: nível país, sexo=T, formality=total, raça em {<code>preta_parda</code>, <code>nao_negras</code>, <code>total</code>}. As linhas raça-específicas usam o agregado <em>nao_negras</em> = branca + amarela + indígena para limitar o número de séries no gráfico</li>
+  <li><strong>Cobertura</strong>: 56 trimestres (1T 2012 → 4T 2025) · pesos amostrais <code>V1028</code> aplicados</li>
+  <li><strong>Linha de referência no gráfico de jornada</strong>: <strong>44h/semana</strong> — limite legal definido pela Constituição Federal Art. 7º, XIII e estendido às trabalhadoras domésticas pela LC 150/2015 Art. 2º</li>
+  <li><strong>Achados centrais</strong>:
+    <ul>
+      <li>Jornada média ~32h/semana, estável em 13 anos — a categoria é majoritariamente diarista, não cumprindo a definição clássica de "tempo integral"</li>
+      <li>Taxa de previdência ~14,6% — drasticamente abaixo da taxa de formalização (24%). Isso significa que <em>mesmo entre as trabalhadoras com carteira assinada, muitas não estão tendo a contribuição efetivamente recolhida.</em> É a métrica mais sensível para o argumento de descumprimento da LC 150/2015</li>
+    </ul>
+  </li>
+  <li><strong>Limitação</strong>: o gráfico não mostra a quebra por formalidade (com carteira × sem carteira) ao nível Brasil porque o pipeline atual emite a agregação raça=total apenas com formality=total. A combinação raça=total × formality=com_carteira pode ser computada por <em>soma ponderada</em> a partir das linhas raça-específicas (peso = workers_thousands de <code>fact_workers</code>) — ficou no backlog</li>
+</ul>
+
 <h3>3.7 Distribuição por UF (gráfico de barras)</h3>
 <ul>
   <li><strong>Fonte primária</strong>: <code>PNADC-MICRODATA</code> (microdados PNAD Contínua agregados pela equipe do projeto, aplicando <code>V1028</code> e variável <code>UF</code>)</li>
@@ -407,6 +422,21 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>Central finding</strong>: the gap has stayed <strong>between 84 % and 87 % across 13 years</strong>. Combined with finding 3.5 (Black share of the category rose from 62.5 % to 67.7 %), the picture is sharp: Black women are a <em>growing</em> share of an occupation whose racial wage disadvantage <em>has not narrowed</em>.</li>
   <li><strong>Nominal vs real</strong>: wages computed here are in <strong>nominal (current) reais</strong>, not deflated. For the ratio this doesn't matter (numerator and denominator are in the same currency at the same period); for the absolute-wage trend chart we still use PNADC Table 6391 (IBGE-deflated to constant reais).</li>
   <li><strong>History</strong>: until 05/2026 this figure was attributed to DIEESE as a single static value (76 %, then corrected to 84 %); it was replaced by the computed time series after the microdata pipeline was extended to include wage aggregations.</li>
+</ul>
+
+<h3>3.6b Mean hours and social security contribution (Brazil)</h3>
+<ul>
+  <li><strong>Sources</strong>: <code>fact_hours</code> and <code>fact_prev</code> (PNADC variables <code>V4039</code> and <code>V4032</code>, aggregated by the project team)</li>
+  <li><strong>Cut</strong>: country level, sex=T, formality=total, race in {<code>preta_parda</code>, <code>nao_negras</code>, <code>total</code>}. The race-specific lines use the <em>nao_negras</em> aggregate = white + Asian + Indigenous to limit the number of series in the chart</li>
+  <li><strong>Coverage</strong>: 56 quarters (Q1 2012 → Q4 2025) · <code>V1028</code> sample weights applied</li>
+  <li><strong>Reference line on the hours chart</strong>: <strong>44h/week</strong> — legal limit set by Federal Constitution Art. 7-XIII and extended to domestic workers by LC 150/2015 Art. 2</li>
+  <li><strong>Central findings</strong>:
+    <ul>
+      <li>Mean hours ~32h/week, stable across 13 years — the category is largely day-rate (diaristas), not meeting the classic "full-time" definition</li>
+      <li>Social security contribution rate ~14.6% — dramatically below the formality rate (24%). This means that <em>even among women with signed work cards, many do not have contributions actually being paid in.</em> This is the most sensitive metric for the argument that LC 150/2015 is being violated</li>
+    </ul>
+  </li>
+  <li><strong>Limitation</strong>: the chart does not show a breakdown by formality (with/without signed work card) at Brazil level because the current pipeline emits the race=total aggregation only with formality=total. The race=total × formality=com_carteira combination can be computed by <em>weighted sum</em> from the race-specific rows (weight = workers_thousands from <code>fact_workers</code>) — left in the backlog</li>
 </ul>
 
 <h3>3.7 Distribution by state (bar chart)</h3>

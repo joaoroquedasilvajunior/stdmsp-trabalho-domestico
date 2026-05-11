@@ -306,6 +306,18 @@
     <p class="text-xs text-gray-700 mt-2 leading-snug" id="wage-gap-narrative" data-i18n="wage-gap-narrative">Para cada R$ 100 recebidos por uma trabalhadora doméstica não-negra, uma trabalhadora doméstica negra recebe R$ 76.</p>
   </article>
 
+  <article class="border rule rounded-lg p-4 bg-white">
+    <h2 class="text-base font-medium" data-i18n="chart-br-hours">Jornada média no Brasil</h2>
+    <p class="text-xs text-gray-500 mb-3" data-i18n="chart-br-hours-meta">horas habituais por semana no trabalho principal · PNADC microdados V4039 · linha pontilhada = limite legal de 44h (LC 150/2015 Art. 2º)</p>
+    <div class="chart-box" id="box-br-hours"><canvas id="chart-br-hours"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+  </article>
+
+  <article class="border rule rounded-lg p-4 bg-white">
+    <h2 class="text-base font-medium" data-i18n="chart-br-prev">% contribuindo para previdência (Brasil)</h2>
+    <p class="text-xs text-gray-500 mb-3" data-i18n="chart-br-prev-meta">% de trabalhadoras domésticas que contribuíram para a previdência na semana de referência · PNADC microdados V4032 · por raça</p>
+    <div class="chart-box" id="box-br-prev"><canvas id="chart-br-prev"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+  </article>
+
   <article class="border rule rounded-lg p-4 bg-white md:col-span-2">
     <h2 class="text-base font-medium" data-i18n="chart-map">Mapa: composição racial por UF</h2>
     <p class="text-xs text-gray-500 mb-3" data-i18n="chart-map-meta">% pretas + pardas entre trabalhadoras(es) domésticas(os), por estado · PNADC microdados · computado</p>
@@ -491,6 +503,10 @@ const I18N = {
     "chart-wage-gap": "Hiato salarial racial ao longo do tempo",
     "chart-wage-gap-meta": "% que negras recebem em relação a não-negras · PNAD Contínua microdados · computado",
     "wage-gap-narrative": "Para cada R$ 100 recebidos por uma trabalhadora doméstica não-negra, uma trabalhadora doméstica negra recebe R$ 76.",
+    "chart-br-hours": "Jornada média no Brasil",
+    "chart-br-hours-meta": "horas habituais por semana no trabalho principal · PNADC microdados V4039 · linha pontilhada = limite legal de 44h (LC 150/2015 Art. 2º)",
+    "chart-br-prev": "% contribuindo para previdência (Brasil)",
+    "chart-br-prev-meta": "% de trabalhadoras domésticas que contribuíram para a previdência na semana de referência · PNADC microdados V4032 · por raça",
     "chart-map": "Mapa: composição racial por UF",
     "chart-map-meta": "% pretas + pardas entre trabalhadoras(es) domésticas(os), por estado · PNADC microdados · computado",
     "chart-map-source": "Fonte: PNAD Contínua microdados (IBGE), agregado pela equipe do projeto. UFs com população amostral pequena (e.g., RR, AP) podem ter estimativas mais ruidosas.",
@@ -568,6 +584,10 @@ const I18N = {
     "chart-wage-gap": "Racial wage gap over time",
     "chart-wage-gap-meta": "% Black workers earn vs. non-Black · PNADC microdata · computed",
     "wage-gap-narrative": "For every R$ 100 earned by a non-Black domestic worker, a Black domestic worker earns R$ 76.",
+    "chart-br-hours": "Mean weekly hours in Brazil",
+    "chart-br-hours-meta": "habitual hours per week in main job · PNADC microdata V4039 · dashed line = 44h legal limit (LC 150/2015 Art. 2)",
+    "chart-br-prev": "% contributing to social security (Brazil)",
+    "chart-br-prev-meta": "% of domestic workers contributing to previdência in the reference week · PNADC microdata V4032 · by race",
     "chart-map": "Map: race composition by state",
     "chart-map-meta": "% pretas + pardas (Black) among domestic workers, by state · PNADC microdata · computed",
     "chart-map-source": "Source: PNAD Contínua microdata (IBGE), aggregated by the project team. States with small sample sizes (e.g., RR, AP) may have noisier estimates.",
@@ -973,6 +993,8 @@ function render() {
   renderMensalistas();
   renderRace();
   renderWageGap();
+  renderBrHours();
+  renderBrPrev();
   renderMapUF();
   renderRegion();
   renderIntl();
@@ -1377,6 +1399,165 @@ function renderWageGap() {
         },
       },
       maintainAspectRatio: false,
+    },
+  });
+}
+
+// ============ BR-WIDE HOURS + PREVIDÊNCIA ============
+// Two charts at the national level. Each shows preta+parda vs nao_negras
+// across the 56-quarter PNADC microdata window, with BR total as a faint
+// dashed reference. Hours chart includes the 44h legal-limit horizontal line.
+
+function renderBrHours() {
+  const rows = STATE.hours.filter(r =>
+    r.source_table === "PNADC-MICRODATA"
+    && r.geo_level === "country"
+    && r.sex_code === "T"
+    && r.formality_code === "total"
+    && ["total", "preta_parda", "nao_negras"].includes(r.race_code)
+  );
+  if (!rows.length) {
+    setEmpty("box-br-hours", true); destroyChart("brHours"); return;
+  }
+  const periods = [...new Set(rows.map(r => String(r.period_code)))].sort();
+  const byRace = race => Object.fromEntries(
+    rows.filter(r => r.race_code === race)
+        .map(r => [String(r.period_code), Number(r.mean_hours_per_week)])
+  );
+  const seriesTotal = byRace("total");
+  const seriesNegras = byRace("preta_parda");
+  const seriesNaoNegras = byRace("nao_negras");
+
+  const datasets = [
+    {
+      label: LANG === "pt" ? "Preta + parda" : "Black (pretas + pardas)",
+      data: periods.map(p => seriesNegras[p] ?? null),
+      borderColor: "#b91c1c", backgroundColor: "#b91c1c20",
+      borderWidth: 2, pointRadius: 0, tension: 0.25, spanGaps: true,
+    },
+    {
+      label: LANG === "pt" ? "Não-negras" : "Non-Black",
+      data: periods.map(p => seriesNaoNegras[p] ?? null),
+      borderColor: "#1f2937", backgroundColor: "#1f293720",
+      borderWidth: 2, pointRadius: 0, tension: 0.25, spanGaps: true,
+    },
+    {
+      label: LANG === "pt" ? "Brasil (total)" : "Brazil (total)",
+      data: periods.map(p => seriesTotal[p] ?? null),
+      borderColor: "#9ca3af", backgroundColor: "transparent",
+      borderWidth: 1.2, borderDash: [4, 4], pointRadius: 0, tension: 0.25, spanGaps: true,
+    },
+  ];
+
+  setEmpty("box-br-hours", false);
+  destroyChart("brHours");
+  charts.brHours = new Chart(document.getElementById("chart-br-hours"), {
+    type: "line",
+    plugins: [yearBandPlugin],
+    data: { labels: periods.map(fmtPeriodTrim), datasets },
+    options: {
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 14, padding: 8, font: { size: 11 } } },
+        tooltip: { mode: "index", intersect: false,
+          callbacks: { label: c => c.dataset.label + ": " + fmt(c.parsed.y, 1) + "h" } },
+        annotation: {
+          annotations: {
+            legal_limit: {
+              type: "line", scaleID: "y", value: 44,
+              borderColor: "rgba(180, 83, 9, 0.55)",
+              borderWidth: 1.5, borderDash: [6, 4],
+              label: {
+                display: true,
+                content: LANG === "pt" ? "44h legal" : "44h legal",
+                position: "end",
+                color: "#9a3412",
+                backgroundColor: "rgba(255, 255, 255, 0.92)",
+                font: { size: 9, weight: "500" },
+                padding: { top: 2, bottom: 2, left: 4, right: 4 },
+              },
+            },
+            ...buildPolicyAnnotations(periods, "fixo"),
+          },
+        },
+        ...yearBandOpts(periods),
+      },
+      scales: {
+        y: {
+          ticks: { callback: v => v + "h" },
+          suggestedMin: 25, suggestedMax: 48,
+        },
+        x: { ticks: { autoSkip: true, maxTicksLimit: 14, maxRotation: 0 } },
+      },
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+    },
+  });
+}
+
+function renderBrPrev() {
+  const rows = STATE.prev.filter(r =>
+    r.source_table === "PNADC-MICRODATA"
+    && r.geo_level === "country"
+    && r.sex_code === "T"
+    && r.formality_code === "total"
+    && ["total", "preta_parda", "nao_negras"].includes(r.race_code)
+  );
+  if (!rows.length) {
+    setEmpty("box-br-prev", true); destroyChart("brPrev"); return;
+  }
+  const periods = [...new Set(rows.map(r => String(r.period_code)))].sort();
+  const byRace = race => Object.fromEntries(
+    rows.filter(r => r.race_code === race)
+        .map(r => [String(r.period_code), Number(r.pct_with_prev)])
+  );
+  const seriesTotal = byRace("total");
+  const seriesNegras = byRace("preta_parda");
+  const seriesNaoNegras = byRace("nao_negras");
+
+  const datasets = [
+    {
+      label: LANG === "pt" ? "Preta + parda" : "Black (pretas + pardas)",
+      data: periods.map(p => seriesNegras[p] ?? null),
+      borderColor: "#b91c1c", backgroundColor: "#b91c1c20",
+      borderWidth: 2, pointRadius: 0, tension: 0.25, spanGaps: true,
+    },
+    {
+      label: LANG === "pt" ? "Não-negras" : "Non-Black",
+      data: periods.map(p => seriesNaoNegras[p] ?? null),
+      borderColor: "#1f2937", backgroundColor: "#1f293720",
+      borderWidth: 2, pointRadius: 0, tension: 0.25, spanGaps: true,
+    },
+    {
+      label: LANG === "pt" ? "Brasil (total)" : "Brazil (total)",
+      data: periods.map(p => seriesTotal[p] ?? null),
+      borderColor: "#9ca3af", backgroundColor: "transparent",
+      borderWidth: 1.2, borderDash: [4, 4], pointRadius: 0, tension: 0.25, spanGaps: true,
+    },
+  ];
+
+  setEmpty("box-br-prev", false);
+  destroyChart("brPrev");
+  charts.brPrev = new Chart(document.getElementById("chart-br-prev"), {
+    type: "line",
+    plugins: [yearBandPlugin],
+    data: { labels: periods.map(fmtPeriodTrim), datasets },
+    options: {
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 14, padding: 8, font: { size: 11 } } },
+        tooltip: { mode: "index", intersect: false,
+          callbacks: { label: c => c.dataset.label + ": " + fmt(c.parsed.y, 1) + "%" } },
+        annotation: { annotations: buildPolicyAnnotations(periods, "fixo") },
+        ...yearBandOpts(periods),
+      },
+      scales: {
+        y: {
+          ticks: { callback: v => v + "%" },
+          suggestedMin: 0, suggestedMax: 40,
+        },
+        x: { ticks: { autoSkip: true, maxTicksLimit: 14, maxRotation: 0 } },
+      },
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
     },
   });
 }

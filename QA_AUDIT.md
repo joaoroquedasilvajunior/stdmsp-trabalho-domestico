@@ -527,6 +527,133 @@ explicitly, the data is in `fact_workers` ready to plot.
 
 ---
 
+### 2026-05-06 (v2.0 consolidation) — three-phase substantive expansion
+
+**Headline.** Dashboard moved from v1.6 to v2.0 with: new microdata variables (hours,
+previdência, unweighted sample size), policy timeline annotations on all
+time-series charts, Wilson 95% confidence intervals on the UF map, a Foco em São
+Paulo section with five charts, BR-wide hours + previdência charts in the main
+grid, an ILO C189 ratification panel, and a routine Supabase RLS hardening pass.
+
+**Phase A — Pipeline extension.** `etl/pnadc_microdata.py` now extracts variables
+V4039 (jornada habitual horas/semana, trabalho principal) and V4032 (era
+contribuinte de previdência na semana de referência) from the PNADC microdata.
+Two new build functions emit aggregations into new tables `fact_hours` and
+`fact_prev`, mirroring the structure of `fact_workers`. Plus a column
+`n_unweighted` (unweighted sample size) added to all microdata-derived fact
+tables, for downstream confidence-interval work.
+
+Backfill: 56/56 quarters processed (one disk-space failure on 2025Q3 recovered
+in a single-quarter rerun). Resulting row counts:
+
+| Table | Rows | Periods |
+|---|---:|---:|
+| `fact_hours` | 13 399 | 56 |
+| `fact_prev` | 12 263 | 56 |
+| `fact_workers` (with `n_unweighted`) | 12 428 | 56 |
+
+**Phase B — Policy timeline annotations.** Loaded `chartjs-plugin-annotation`
+from CDN and wired vertical-line annotations into nine time-series charts
+(trend, formality, wages, race composition, wage gap, BR hours, BR previdência,
+SP×BR trajectory, SP race composition). Five policy events marked:
+
+- **EC 72/2013** (constitutional amendment equalizing domestic workers' rights)
+- **LC 150/2015 in force** (Lei das Domésticas)
+- **Brasil ratifies C189** (jan 2018)
+- **COVID-19** (mar 2020 lockdowns)
+- **México ratifies C189** (jul 2020, for the BR↔MX framing)
+
+The hours chart additionally carries a horizontal reference at **44h/semana**,
+the legal weekly limit defined by CF Art. 7-XIII and extended to domestic
+workers by LC 150/2015 Art. 2.
+
+One small reliability fix during this session: the plugin's UMD file is
+`chartjs-plugin-annotation.min.js`, not `.umd.min.js` as initially assumed; the
+correct URL returns a 200, the wrong one returned 404 and silently disabled
+all annotations.
+
+**Phase C — Wilson 95% CIs on the UF map.** The map tooltip now shows
+`IC 95%: lo – hi` for the % negras estimate per state, anchored on the
+unweighted sample size of each UF's `race='total'` row. Small-sample
+suppression: n<30 greys the UF out with a dashed border, 30≤n<100 shows
+a yellow "amostra pequena" warning, n≥100 shows the plain CI. Methodology
+§3.7c documents the calculation and the explicit limitation that the CI
+captures only sampling variability — not bias, coverage, or measurement
+error. View `public.dw_workers` was rebuilt to expose the new column.
+
+**Phase X + Y — Hours and previdência charts.** Two new chart articles in the
+main BR grid (between wage gap and the UF map) and two new chart articles in
+the Foco em SP section. Each chart shows three lines: preta+parda, não-negras,
+and BR/SP total (dashed grey reference). The Foco em SP version uses the SP
+microdata cut; the BR version uses the country-level cut. Methodology sections
+§3.6b (BR) and §3.7d (SP) document both.
+
+**Foco em São Paulo section** (separate Phase SP, also this session). New
+chita-cream-tinted section below the existing dashboard with 4 SP-specific KPI
+tiles + 5 charts: SP×BR trajectory, SP race composition over time, Southeast
+state comparator, SP jornada média, SP previdência. Designed for STDMSP to
+share with state and municipal politicians. Honest scope footnote at the
+bottom flags what remains deferred (SP wages and SP formality split).
+
+**C189 ratification panel.** Eight-card grid below the BR↔MX comparator listing
+each comparator country's year of ILO C189 ratification, ordered chronologically.
+Uruguay 2012 (first in the world) through Mexico 2020. Substantive footnote
+flags that Brazil's LC 150/2015 *preceded* its 2018 C189 ratification —
+domestic legislation came before the international commitment. Methodology
+§3.8b documents the source (NORMLEX, ILO).
+
+**Security hardening.** Supabase Postgres LINTER flagged 12 RLS-disabled errors
+on `domestic_work.*` tables plus 1 search-path warning on
+`public.update_updated_at`. Migration applied via MCP: RLS enabled on every
+domestic_work table with a `public_read` policy (data is intentionally public
+— now stated explicitly); function search-path locked to `(public, pg_catalog)`.
+Remaining `email_signups` warning is SceneQuebec scope (shared Supabase
+instance) and out of scope here. Memory updated to record the
+cross-project hosting arrangement.
+
+**Map projection fix.** During the Foco em SP work I noticed the UF map
+rendered as a thin horizontal line. Root cause: `make_projection` in
+`etl/build_uf_svg.py` mixed units between axes (longitude in degrees, latitude
+in log-Mercator). Replaced with a clean equirectangular projection plus
+`cos(lat_center)` longitude correction. Brazil's bbox is now rendered with
+~1:1 aspect ratio.
+
+**Verified substantive findings from the new data (4T 2025 unless noted).**
+
+| Metric | Value | Note |
+|---|---:|---|
+| Jornada média (Brasil) | **31,7h/semana** | Stable across 13 years; far below 44h legal limit. The category is structurally part-time / diarista, not 40h-week formal employment. |
+| % over 44h (Brasil) | ~10% | Only one in ten works more than the legal limit. |
+| Previdência rate (Brasil) | **14,6%** | Drastically below the formality rate (24%). Implication: even women with carteira often don't have contributions actually being paid in. This is the sharpest single advocacy number for the LC 150 enforcement-gap argument. |
+| Jornada média (SP, 4T 2025) | **32,4h/semana** | Marginally higher than national. |
+| Jornada SP por raça | preta+parda 33,2h · não-negras 31,4h | Reverses the national expectation — in SP specifically, negras work slightly *more* hours than non-Black peers. Likely because SP's negra workforce is concentrated in mensalistas. |
+| Previdência SP por raça | preta+parda 20,4% · não-negras 19,2% | Same reversal — SP negras contribute slightly *more* than non-Black peers, against the typical racial gap. |
+
+The SP racial reversal is a publishable-grade finding for Mayer's research
+on intersectional labor markets — it complicates the simple racialization
+narrative and is supported by clean PNADC microdata at 4T 2025.
+
+**Status of the v2.0 dashboard.** 11 charts in the BR grid + UF map + 5 charts
+in Foco em SP + the C189 panel + 4 KPI tiles + story mode + bilingual
+methodology page. All four advocacy levers (headcount, race, wages/wage-gap,
+formality, hours) covered at the BR level. SP-specific cuts cover everything
+except wages and the formality split (deferred to a future pipeline addition
+once STDMSP feedback identifies priority).
+
+**Outstanding items / next decisions:**
+
+1. **STDMSP pilot feedback** (P3.3) — link with `?modo=historia` sent for review.
+2. **SP wages + SP formality split** — pipeline addition needed (UF × VD4019, UF × formality cross-tabs). ~3-4 hours. Should be informed by which numbers the union actually requests in their feedback.
+3. **ENIGH heavy path** (P2.2) — Mexican microdata pipeline to replicate the
+   racialization / wage gap / hours analysis for Mexico. Big scope (3-5 days),
+   only worth doing if Mayer commits to a comparative paper.
+4. **Two unreliable-publication warnings logged in Phase B** — `chartjs-plugin-annotation`
+   v3 docs say the UMD bundle auto-registers, but the version we use needs
+   explicit `Chart.register()`. The defensive registration block now handles
+   both cases.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

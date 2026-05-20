@@ -1,0 +1,12 @@
+{
+  "generated_at": "2026-05-20T17:32:31.446070+00:00",
+  "views": {
+    "dw_workers": 13103,
+    "dw_wages": 1343,
+    "dw_hours": 13399,
+    "dw_prev": 12263,
+    "dw_intl": 94,
+    "dw_sources": 5,
+    "dw_static_facts": 3
+  }
+}

@@ -29,16 +29,26 @@ in collaboration with **Jean-François Mayer** (Concordia University, RITHAL).
 ```
 .
 ├── README.md                  ← you are here
+├── QA_AUDIT.md                ← audit trail: number verification + change log
+├── RESUMO_EXECUTIVO.md/.docx  ← one-page executive summary (PT) for stakeholders
 ├── schema/
 │   └── 001_init.sql           ← version-controlled DDL (already applied to Supabase)
 ├── etl/
 │   ├── manifest.yaml          ← which SIDRA tables to fetch with what params
-│   ├── fetch_sidra.py         ← PNADC fetcher → fact_workers / fact_wages / fact_hours
+│   ├── fetch_sidra.py         ← SIDRA aggregate fetcher → fact_workers / fact_wages / fact_hours
+│   ├── pnadc_microdata.py     ← PNADC microdata pipeline → race/sex/UF/hours/prev aggregates
 │   ├── fetch_ilostat.py       ← ILOSTAT fetcher → fact_intl
+│   ├── build_uf_svg.py        ← one-off: builds dashboard/assets/brazil-uf.svg
+│   ├── export_static.py       ← exports dw_* views → dashboard/data/*.json
+│   ├── refresh.sh             ← post-ETL helper: runs export_static + stages data
 │   ├── .env.example           ← copy to .env, fill Supabase service role key
 │   └── requirements.txt
 └── dashboard/
-    └── index.html             ← bilingual PT+EN dashboard, embeddable
+    ├── index.html             ← bilingual PT+EN dashboard, embeddable
+    ├── metodologia.html       ← methodology page (PT + EN)
+    ├── calculadora.html       ← "Como você se compara?" calculator
+    ├── assets/                ← chita SVG bands, brazil-uf.svg map geometry
+    └── data/                  ← static JSON exports the dashboard reads at runtime
 ```
 
 ## Setup
@@ -126,19 +136,49 @@ Consciência Negra). The refresh ritual:
      from domestic_work.static_fact
     order by fact_code;
    ```
-3. **Re-run the PNADC ETL** if a new trimestre móvel has dropped since the
-   last run:
+3. **Re-run the ETL** if a new trimestre has dropped since the last run:
 
    ```bash
    cd etl && source .venv/bin/activate
    python fetch_sidra.py
+   python pnadc_microdata.py 0X2026     # the new quarter (single-quarter mode)
+   python fetch_ilostat.py              # if ILOSTAT has new annual data
    ```
 4. **Append a new entry to `QA_AUDIT.md` → Refresh log** documenting what
    you checked, what changed, and the next check date. Don't rewrite past
    entries.
-5. **Commit and push** — Cloudflare Pages auto-deploys. The DIEESE values
-   are read live from Supabase, so no dashboard code change is needed unless
-   the schema itself changed.
+5. **Regenerate the static data + deploy** — see the next section.
+
+## Data refresh — static export (REQUIRED after any ETL run)
+
+The dashboard is a **static site**: it reads `dashboard/data/*.json`, committed
+to the repo and served by the same Cloudflare deploy as `index.html`. It does
+**not** hold a live Supabase connection. (This was changed on 2026-05-20 after
+a free-tier Supabase project pause took the live site down.)
+
+Consequence: **after any ETL run, the static JSON must be regenerated** or the
+dashboard silently serves stale data. Use the helper script:
+
+```bash
+./etl/refresh.sh
+```
+
+It runs `etl/export_static.py` (pages every `dw_*` view into
+`dashboard/data/<view>.json` + a `manifest.json` timestamp), stages
+`dashboard/data/`, and prints the commit + push commands. Then:
+
+```bash
+git commit -m "data: refresh static export 2026qN"
+git push origin main
+```
+
+Cloudflare Pages auto-deploys on push. The dashboard's "data updated on" line
+reflects `manifest.generated_at`, so a skipped export shows up as a stale date
+rather than silently-wrong numbers.
+
+**Supabase can pause freely between refreshes** — it is only the ETL target
+and source of truth now, not a runtime dependency for the public site. Resume
+the `sceneqc` project only when you need to run the ETL or `export_static.py`.
 
 ## Local development
 

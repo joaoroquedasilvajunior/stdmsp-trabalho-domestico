@@ -654,6 +654,47 @@ once STDMSP feedback identifies priority).
 
 ---
 
+### 2026-05-20 — Static-export migration (dashboard decoupled from live Supabase)
+
+**Trigger.** The `sceneqc` Supabase project (free tier) auto-paused mid-session.
+A paused project serves no API requests, so the live dashboard went dark — it
+had been reading the `dw_*` views over the Supabase REST API at runtime.
+(Coincided with, but was unrelated to, a Supabase status-page incident about
+incorrect resume-deadline display. That incident was cosmetic; the pause was
+real. Project data was never at risk.)
+
+**Diagnosis.** The dashboard's runtime dependency on a live database was a
+single point of failure inappropriate for the data's nature: the `dw_*` views
+are **read-only aggregates that change only when the quarterly ETL runs**.
+There is no reason for the public site to hold a live DB connection.
+
+**Fix.** Migrated the dashboard to a static-first data layer:
+
+- `etl/export_static.py` — new script. Pages through all seven `dw_*` views
+  and writes `dashboard/data/<view>.json` plus a `manifest.json` carrying the
+  export timestamp. Run after each quarterly ETL refresh, then commit
+  `dashboard/data/`.
+- `dashboard/index.html` `loadAll()` — rewritten to `fetch()` the static
+  JSON files instead of querying Supabase. The Supabase JS client is no
+  longer used at runtime (init code left in place, harmless).
+- The "data updated on" line now reflects `manifest.generated_at` (the export
+  timestamp), so stale data is visible rather than masked by today's date.
+
+**Result.** The public dashboard is now a fully static site — immune to
+Supabase project pausing, faster to load (no pagination round-trips, no DB
+latency), and still updatable via the documented ETL → export → commit flow.
+Supabase remains the ETL target and source of truth; it is simply no longer
+a runtime dependency for the public site.
+
+**Operational note.** The refresh cadence is now: run the ETL → run
+`etl/export_static.py` → `git add dashboard/data/` → commit → push. The
+static JSON totals ~13 MB uncommitted (gzipped to ~1.5 MB on the wire by
+Cloudflare). If git-history growth becomes a concern after several quarters,
+a columnar JSON format or git LFS can cut the footprint — deferred until it
+actually matters.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

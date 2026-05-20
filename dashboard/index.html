@@ -741,52 +741,52 @@ async function fetchAllPages(viewName) {
 }
 
 async function loadAll() {
-  if (!sbClient) throw new Error("Supabase client not initialized");
+  // Static-first data layer. The dashboard reads pre-exported JSON from
+  // ./data/*.json — committed alongside index.html and served by the same
+  // Cloudflare deploy. This makes the public site immune to Supabase
+  // free-tier project pausing (which took the site down on 2026-05-20).
+  // Supabase remains the ETL target / source of truth; it is no longer a
+  // runtime dependency. Re-export via etl/export_static.py after each
+  // quarterly ETL refresh, then commit dashboard/data/.
+  const views = ["dw_workers","dw_wages","dw_hours","dw_prev","dw_intl","dw_sources","dw_static_facts"];
+  const data = {};
+  let loadError = null;
 
-  // dw_workers, dw_wages, dw_hours, dw_prev all exceed the Supabase default
-  // page cap (1,000) after the microdata backfills, so we paginate them.
-  // Smaller views fit in one fetch.
-  const queries = await Promise.allSettled([
-    fetchAllPages("dw_workers").then(data => ({ data })),
-    fetchAllPages("dw_wages").then(data => ({ data })),
-    fetchAllPages("dw_hours").then(data => ({ data })),
-    fetchAllPages("dw_prev").then(data => ({ data })),
-    sbClient.from("dw_intl").select("*").range(0, 1999),
-    sbClient.from("dw_sources").select("*"),
-    sbClient.from("dw_static_facts").select("*"),
-  ]);
-  const labels = ["dw_workers","dw_wages","dw_hours","dw_prev","dw_intl","dw_sources","dw_static_facts"];
-  const results = queries.map((q, i) => {
-    if (q.status === "rejected") {
-      console.error(`${labels[i]} request rejected:`, q.reason);
-      return { data: [], error: q.reason };
-    }
-    if (q.value.error) {
-      console.error(`${labels[i]} returned error:`, q.value.error);
-      return { data: [], error: q.value.error };
-    }
-    console.log(`${labels[i]}: ${q.value.data?.length ?? 0} rows`);
-    return q.value;
-  });
-  const [w, wg, h, pv, i, s, sf] = results;
+  try {
+    const fetched = await Promise.all(views.map(v =>
+      fetch(`./data/${v}.json`).then(r => {
+        if (!r.ok) throw new Error(`${v}.json HTTP ${r.status}`);
+        return r.json();
+      })
+    ));
+    views.forEach((v, idx) => { data[v] = fetched[idx] || []; });
+    views.forEach(v => console.log(`${v}: ${data[v].length} rows (static)`));
+  } catch (e) {
+    console.error("static data load failed:", e);
+    loadError = e;
+  }
 
-  STATE.workers = w.data || [];
-  STATE.wages   = wg.data || [];
-  STATE.hours   = h.data  || [];
-  STATE.prev    = pv.data || [];
-  STATE.intl    = i.data  || [];
-  STATE.sources = s.data  || [];
-  STATE.staticFacts = Object.fromEntries((sf.data || []).map(r => [r.fact_code, r]));
+  STATE.workers = data.dw_workers || [];
+  STATE.wages   = data.dw_wages   || [];
+  STATE.hours   = data.dw_hours   || [];
+  STATE.prev    = data.dw_prev    || [];
+  STATE.intl    = data.dw_intl    || [];
+  STATE.sources = data.dw_sources || [];
+  STATE.staticFacts = Object.fromEntries((data.dw_static_facts || []).map(r => [r.fact_code, r]));
 
-  // If every read errored, show a clear banner with the underlying message.
-  const allFailed = results.every(r => r.error);
-  if (allFailed) {
-    const firstErr = results.find(r => r.error)?.error;
-    showError("All Supabase reads failed. " + (firstErr?.message || JSON.stringify(firstErr)));
+  // Manifest carries the export timestamp — used for the "data updated on" line.
+  try {
+    const mf = await fetch("./data/manifest.json").then(r => r.ok ? r.json() : null);
+    if (mf && mf.generated_at) STATE.dataGeneratedAt = mf.generated_at;
+  } catch (e) { /* manifest is optional — non-fatal */ }
+
+  if (loadError) {
+    showError("Não foi possível carregar os dados do painel (./data/*.json). " +
+      (loadError.message || loadError));
   }
 
   const empty = STATE.workers.length === 0;
-  if (!allFailed) {
+  if (!loadError) {
     document.getElementById("loading-banner").classList.toggle("hidden", !empty);
   }
   if (empty) seedSampleData();
@@ -1028,7 +1028,10 @@ function render() {
   renderC189();
   renderFocusSP();
   renderSources();
-  setText("updated-at", new Date().toLocaleDateString(LANG === "pt" ? "pt-BR" : "en-CA"));
+  // "Data updated on" reflects the static-export timestamp (when the JSON was
+  // last regenerated from Supabase), not today's date — so staleness is visible.
+  const stamp = STATE.dataGeneratedAt ? new Date(STATE.dataGeneratedAt) : new Date();
+  setText("updated-at", stamp.toLocaleDateString(LANG === "pt" ? "pt-BR" : "en-CA"));
 }
 
 function fmt(n, digits=0) {

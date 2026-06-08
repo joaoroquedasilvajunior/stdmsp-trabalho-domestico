@@ -1083,6 +1083,128 @@ become 3-column on desktop). Schedule when ready.
 
 ---
 
+## 2026-06-08 — Phase D3 (Housing) + D2 chefe discrepancy flagged
+
+**Scope.** Third and final socioeconomic-profile dimension. Adds PNADC
+`V0212` (tenure) to the microdata pipeline, populates `fact_housing` +
+`dw_housing` view, surfaces a third chart card in the Perfil grid
+(which is now 3-column on desktop). Also formally records an open
+methodological question on the D2 "% chefe de família" finding before
+it reaches publication.
+
+### Schema (applied via Supabase MCP migration `housing_dimension_d3`)
+
+- `domestic_work.dim_housing` — 5 rows (`proprio`, `alugado`,
+  `cedido_empregador`, `outro`, `total`).
+- `domestic_work.fact_housing` — keyed by
+  `(time_id, geo_id, sex_id, race_id, housing_id, source_table)`.
+- `public.dw_housing` — joined view, `security_invoker = true`.
+- RLS + `public_read` policy, grants for anon/authenticated.
+
+### Pipeline (`etl/pnadc_microdata.py`)
+
+- `V0212` added to `NEEDED_VARS`. The PNADC fixed-width file repeats
+  domicile-level variables on each person record, so no refactor of
+  the colspec parser was needed — we just request V0212 like any other
+  variable and the dictionary parser places the column for us.
+- `HOUSING_TENURE_MAP` collapses 7 native codes into 4 buckets.
+  Code 4 (cedido por empregador) is kept distinct — this is the
+  empregada doméstica residente, a structurally vulnerable sub-category
+  that DIEESE doesn't break out separately.
+- `build_housing_rows()` and `upsert_housing_to_supabase()` follow the
+  same shape as D1 / D2. Divide-by-1000 in `_row` is correct from the
+  start (no bug to fix this time — the D1 lesson held).
+- `process_period()` now logs two new diagnostics:
+  **`% próprio`** and **`% live-in`**.
+
+### Export (`etl/export_static.py`)
+
+- `dw_housing` added to `VIEWS` between `dw_family` and `dw_intl`.
+
+### Dashboard (`dashboard/index.html`)
+
+- Perfil socioeconômico section's grid is now
+  `grid-cols-1 md:grid-cols-2 lg:grid-cols-3` — three side-by-side
+  cards on desktop, two on tablet, stacked on mobile.
+- `renderHousing()` mirrors the D1/D2 render functions exactly:
+  filters BR/sex='T'/aggregate-race-tracks, picks the latest period,
+  emits a vertical grouped bar chart (4 tenure buckets × 2 race
+  series).
+- Bilingual i18n strings added (`chart-housing*`, four `hous-*` bucket
+  labels, two race-track labels).
+- Empty placeholder `dashboard/data/dw_housing.json` shipped.
+
+### Methodology (`dashboard/metodologia.html`)
+
+- §3.12 added (PT + EN). Documents the variable, the 7→4 collapse,
+  the explicit reasoning for keeping `cedido_empregador` distinct, and
+  the policy-relevant headline cuts.
+- One important limitation spelled out: V0212 codes the tenure of the
+  whole household, not the individual worker. For live-in workers
+  (V2003 = 15) this means V0212 reflects the employer's household —
+  which is precisely what makes the `cedido_empregador` bucket the
+  right marker for that case. For other workers, V0212 reflects their
+  own home, which is not necessarily where they work.
+
+### Open question recorded in §3.11 (D2 follow-up)
+
+The D2 dashboard computes ~57% chefe de família across races, weighted.
+DIEESE Infográfico abr/2026 publishes 46%. The ~11 pp gap is too large
+for rounding or sampling noise. Added a flagged note (PT + EN) to §3.11
+of the methodology page listing the three competing hypotheses
+(women-only filter, age cutoff, "chefe" definition) and stating
+explicitly that the figure should not be cited as a publishable
+finding until the DIEESE methodology is verified in the matching
+semi-annual bulletin. The chart still renders the race-disaggregated
+breakdown, which is the substantive contribution; the absolute level
+is the disputed bit.
+
+### Next steps (Joao's side)
+
+```bash
+cd ~/Documents/Claude/Domestic\ Work
+source etl/.venv/bin/activate
+
+# Single quarter — runs all three (D1 ed, D2 fam, D3 hous) for 1T 2026.
+# Look for the new "% próprio" and "% live-in" diagnostics:
+python etl/pnadc_microdata.py 012026
+
+./etl/refresh.sh
+git add etl/pnadc_microdata.py etl/export_static.py \
+        schema/ \
+        dashboard/index.html dashboard/metodologia.html dashboard/data/ \
+        QA_AUDIT.md
+git commit -m "feat(D3): housing dimension — V0212, fact_housing, moradia card"
+git push origin main
+```
+
+### Sanity-check targets (1T 2026)
+
+DIEESE doesn't publish housing tenure for the category, so there is no
+direct external check. Plausibility bounds:
+
+- **% próprio (total)** should land in the **50–70% range**. Brazilian
+  homeownership across all workers is roughly 70%; trabalhadoras
+  domésticas are poorer than average so expect somewhat lower.
+- **% cedido_empregador (total)** should be **small but non-zero** —
+  likely in the **1–4% range**. This is the live-in domestic workers,
+  a shrinking historic category. Anything above 5% would be a surprise
+  worth investigating; below 1% would suggest under-counting.
+
+The race split is itself the substantive finding — DIEESE doesn't
+break it out and we are the first to surface it.
+
+### Phase D wrap
+
+D1 (Education), D2 (Family), and D3 (Housing) close out the Perfil
+socioeconômico section. Three new chart cards, three new variables,
+three new fact tables, all running through one shared pipeline and
+matching shared dashboard pattern. The category now has a tidy
+"who they are beyond the work" view that complements the "what the
+work looks like" view in the rest of the dashboard.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

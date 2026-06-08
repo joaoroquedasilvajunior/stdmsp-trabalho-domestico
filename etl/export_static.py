@@ -58,6 +58,7 @@ VIEWS = [
     "dw_prev",
     "dw_education",
     "dw_family",
+    "dw_housing",
     "dw_intl",
     "dw_sources",
     "dw_static_facts",

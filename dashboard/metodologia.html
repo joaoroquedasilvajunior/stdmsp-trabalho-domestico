@@ -297,6 +297,25 @@
   <li><strong>Cálculo do %</strong>: <code>pct_within_race</code> = soma de pesos no bucket / soma total de pesos da raça. Importante: para a cifra de "chefe de família" reportada pelo DIEESE (46%), o denominador é a categoria como um todo, não um grupo racial específico — por isso o valor que mais aproxima o DIEESE é <code>race_code = 'total'</code>, não 'preta_parda' ou 'nao_negras'.</li>
   <li><strong>Limitação importante</strong>: V2003 codifica a relação <em>da pessoa entrevistada</em> com a pessoa responsável pelo domicílio. Não codifica diretamente "mãe solo" ou "domicílio monoparental" — para chegar a esses recortes a próxima iteração teria que cruzar o V2003 com indicadores de presença de cônjuge e de filhos no mesmo domicílio (V1014/V1015 + idades). Fica para uma fase futura se houver demanda.</li>
   <li><strong>Gráfico no painel</strong>: barras agrupadas verticais, 4 buckets no eixo X, duas barras por bucket (Negras vs. Não-negras), no trimestre fixo mais recente disponível.</li>
+  <li><strong>⚠ Discrepância pendente com DIEESE</strong>: o painel computa cerca de 57% de chefes de família entre trabalhadoras domésticas no 1T 2026 (média ponderada por raça), enquanto o Infográfico DIEESE abr/2026 reporta 46%. A diferença de ~11 pp é grande demais para ser arredondamento ou pequena variação amostral. Hipóteses em investigação: (a) DIEESE pode filtrar para mulheres apenas (V2007=2), enquanto o painel usa sex='T'; (b) corte de idade diferente; (c) definição de "chefe" mais restrita (somente chefes únicos vs co-responsáveis). Antes de citar a cifra do painel como achado publicável, conferir o método DIEESE no boletim semestral correspondente.</li>
+</ul>
+
+<h3>3.12 Moradia — forma de habitação (Phase D3)</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-MICRODATA</code> · variável <code>V0212</code> (forma de habitação / tenure), agregada pela equipe do projeto com pesos amostrais <code>V1028</code>.</li>
+  <li><strong>Categorias</strong>: os 7 códigos nativos da PNADC (1 a 7) são colapsados em 4 buckets, com a categoria "cedido pelo empregador" mantida em separado por relevância política:
+    <ul>
+      <li><strong>Próprio</strong> — códigos 1 (Próprio já pago) + 2 (Próprio em pagamento).</li>
+      <li><strong>Alugado</strong> — código 3 (Alugado).</li>
+      <li><strong>Cedido pelo empregador</strong> — código 4. Identifica as <em>empregadas domésticas residentes</em>, sub-categoria historicamente menos protegida (vínculo de moradia atrelado ao trabalho). Mantida em separado para tornar visível esse contingente.</li>
+      <li><strong>Cedido / outro</strong> — códigos 5 (cedido por familiar) + 6 (cedido outra forma) + 7 (outra condição).</li>
+    </ul>
+  </li>
+  <li><strong>Cortes emitidos pela pipeline</strong>: BR × sexo='T' × raça × bucket. Mesmas raças que D1 e D2.</li>
+  <li><strong>Cálculo do %</strong>: <code>pct_within_race</code> = soma de pesos no bucket / soma total de pesos da raça.</li>
+  <li><strong>Achados de manchete</strong>: % próprio (taxa de propriedade da casa) e % cedido pelo empregador (sinaliza vulnerabilidade estrutural — moradia depende do vínculo de emprego).</li>
+  <li><strong>Limitação importante</strong>: V0212 codifica a forma de habitação <em>do domicílio inteiro</em>, repetida em cada registro pessoal. Para a trabalhadora doméstica registrada como <code>V2003 = 15</code> (empregada doméstica residente), V0212 vai indicar a forma de habitação <em>do empregador</em>, não da própria trabalhadora — mas isso é exatamente o que queremos capturar com o bucket "cedido pelo empregador". Para outras trabalhadoras domésticas, V0212 representa a forma de habitação da casa onde ela mora (que não é necessariamente onde ela trabalha).</li>
+  <li><strong>Gráfico no painel</strong>: barras agrupadas verticais, 4 buckets no eixo X, duas barras por bucket (Negras vs. Não-negras), no trimestre fixo mais recente disponível.</li>
 </ul>
 
 <h2>4. Notas metodológicas</h2>
@@ -599,6 +618,25 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>Cuts emitted by the pipeline</strong>: BR × sex='T' × race × bucket. Same races as Phase D1.</li>
   <li><strong>Percentage calculation</strong>: <code>pct_within_race</code> = sum of weights in the bucket / total weight of the race. Important: for the DIEESE-reported "head of household" figure (46%), the denominator is the category as a whole, not a specific race group — so the closest match to DIEESE is <code>race_code = 'total'</code>, not 'preta_parda' or 'nao_negras'.</li>
   <li><strong>Important limitation</strong>: V2003 codes the relationship of <em>the surveyed person</em> to the household head. It does not directly code "single mother" or "single-parent household" — to reach those cuts a future iteration would need to cross V2003 with indicators of spouse presence and children in the same household (V1014/V1015 + ages). Left for a future phase if there's demand.</li>
+  <li><strong>Chart on the dashboard</strong>: vertical grouped bars, 4 buckets on the X axis, two bars per bucket (Black vs. Non-Black), at the most recent available fixed quarter.</li>
+  <li><strong>⚠ Open discrepancy with DIEESE</strong>: the dashboard computes ~57% household heads among domestic workers for Q1 2026 (weighted average across races), while the DIEESE Infográfico Apr/2026 reports 46%. The ~11 pp gap is too large to be rounding or small-sample noise. Hypotheses under investigation: (a) DIEESE may filter to women only (V2007=2) while the dashboard uses sex='T'; (b) different age cutoff; (c) a more restrictive definition of "head" (sole heads vs co-responsible). Verify the DIEESE methodology in the matching semi-annual bulletin before citing the dashboard figure as a publishable finding.</li>
+</ul>
+
+<h3>3.12 Housing — tenure (Phase D3)</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-MICRODATA</code> · variable <code>V0212</code> (housing tenure), aggregated by the project team with sample weights <code>V1028</code>.</li>
+  <li><strong>Categories</strong>: PNADC's 7 native codes (1–7) collapsed into 4 buckets, with "granted by employer" kept distinct for policy relevance:
+    <ul>
+      <li><strong>Owned</strong> — codes 1 (Owned, paid) + 2 (Owned, being paid).</li>
+      <li><strong>Rented</strong> — code 3.</li>
+      <li><strong>Granted by employer</strong> — code 4. Identifies <em>live-in domestic workers</em>, a historically less-protected sub-category (housing tied to the employment relationship). Kept separate to make this contingent visible.</li>
+      <li><strong>Granted / other</strong> — codes 5 (granted by relative) + 6 (other granted) + 7 (other tenure).</li>
+    </ul>
+  </li>
+  <li><strong>Cuts emitted by the pipeline</strong>: BR × sex='T' × race × bucket. Same races as D1 and D2.</li>
+  <li><strong>Percentage calculation</strong>: <code>pct_within_race</code> = sum of weights in the bucket / total weight of the race.</li>
+  <li><strong>Headline findings</strong>: % owned (homeownership rate) and % granted-by-employer (signals structural vulnerability — housing depends on the employment relationship).</li>
+  <li><strong>Important limitation</strong>: V0212 codes the tenure of <em>the entire household</em>, repeated on each person record. For a domestic worker recorded as <code>V2003 = 15</code> (live-in domestic worker), V0212 reflects the <em>employer's</em> household tenure, not the worker's own — but that is exactly what we want to capture with the "granted by employer" bucket. For other domestic workers, V0212 represents the tenure of the home they live in (which is not necessarily where they work).</li>
   <li><strong>Chart on the dashboard</strong>: vertical grouped bars, 4 buckets on the X axis, two bars per bucket (Black vs. Non-Black), at the most recent available fixed quarter.</li>
 </ul>
 

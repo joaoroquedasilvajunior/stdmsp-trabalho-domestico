@@ -32,7 +32,8 @@ in collaboration with **Jean-François Mayer** (Concordia University, RITHAL).
 ├── QA_AUDIT.md                ← audit trail: number verification + change log
 ├── RESUMO_EXECUTIVO.md/.docx  ← one-page executive summary (PT) for stakeholders
 ├── schema/
-│   └── 001_init.sql           ← version-controlled DDL (already applied to Supabase)
+│   ├── 001_init.sql           ← original DDL (April 2026)
+│   └── 002_recovery.sql       ← consolidated DDL incl. fact_prev, static_fact, n_unweighted, dw_prev, dw_static_facts — used to rebuild after data loss
 ├── etl/
 │   ├── manifest.yaml          ← which SIDRA tables to fetch with what params
 │   ├── fetch_sidra.py         ← SIDRA aggregate fetcher → fact_workers / fact_wages / fact_hours
@@ -41,6 +42,7 @@ in collaboration with **Jean-François Mayer** (Concordia University, RITHAL).
 │   ├── build_uf_svg.py        ← one-off: builds dashboard/assets/brazil-uf.svg
 │   ├── export_static.py       ← exports dw_* views → dashboard/data/*.json
 │   ├── refresh.sh             ← post-ETL helper: runs export_static + stages data
+│   ├── repopulate_from_json.py ← rebuilds Supabase from committed JSON after schema loss
 │   ├── .env.example           ← copy to .env, fill Supabase service role key
 │   └── requirements.txt
 └── dashboard/
@@ -179,6 +181,39 @@ rather than silently-wrong numbers.
 **Supabase can pause freely between refreshes** — it is only the ETL target
 and source of truth now, not a runtime dependency for the public site. Resume
 the `sceneqc` project only when you need to run the ETL or `export_static.py`.
+
+## Schema recovery — if Supabase data is lost
+
+Free-tier Supabase projects can lose all data if the pause window is
+exceeded (this happened on 2026-06-08: the `domestic_work` schema was
+purged, the `public` schema emptied). The static-export migration means
+the public dashboard keeps working off `dashboard/data/*.json`, but the
+queryable backend has to be rebuilt before the next ETL run.
+
+Rebuild ritual:
+
+```bash
+# 1. Wake the Supabase project (it may need a restore_project MCP call).
+
+# 2. Apply the schema DDL — recreates every table, view, RLS policy.
+#    Idempotent; safe to re-run.
+psql "$SUPABASE_DB_URL" -f schema/002_recovery.sql
+# ...or via the Supabase MCP apply_migration tool with the file contents.
+
+# 3. Repopulate from the committed JSON exports.
+cd etl && source .venv/bin/activate
+python repopulate_from_json.py
+
+# 4. Verify counts match the manifest.
+python export_static.py --check
+```
+
+If step 4 reports the same row counts as `dashboard/data/manifest.json`,
+the rebuild is complete and `etl/refresh.sh` is operational again. The
+public dashboard is unaffected throughout — it reads JSON, not Supabase.
+
+`schema/002_recovery.sql` and `repopulate_from_json.py` are both
+idempotent. Re-running them after a successful rebuild is a no-op.
 
 ## Local development
 

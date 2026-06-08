@@ -192,6 +192,7 @@ NEEDED_VARS = [
     "V2010",   # cor/raça
     "V4032",   # previdência contributor (1/2)
     "V4039",   # weekly hours (main job)
+    "VD3004",  # nível de instrução mais elevado alcançado (D1 — education)
     "VD4009",  # posição na ocupação
     "VD4019",  # rendimento mensal habitual
 ]
@@ -503,6 +504,19 @@ def aggregate_by_race(df: pd.DataFrame) -> pd.DataFrame:
 
 # PNADC V2010 (cor/raça) → our dim_race.code
 RACE_MAP = {"1": "branca", "2": "preta", "3": "amarela", "4": "parda", "5": "indigena"}
+
+# VD3004 (highest education level reached). PNADC native codes 1-7 collapsed into
+# 5 buckets aligned with DIEESE reporting conventions. "sem instrução" (code 1)
+# is grouped with "fundamental incompleto" (code 2) — matches DIEESE Infográfico.
+EDUCATION_MAP = {
+    "1": "fund_inc",   # Sem instrução / < 1 ano
+    "2": "fund_inc",   # Fundamental incompleto
+    "3": "fund_comp",  # Fundamental completo
+    "4": "med_inc",    # Médio incompleto
+    "5": "med_comp",   # Médio completo
+    "6": "sup",        # Superior incompleto
+    "7": "sup",        # Superior completo
+}
 # PNADC V2007 (sexo) → our dim_sex.code
 SEX_MAP = {"1": "M", "2": "F"}
 # VD4009 (posição) → our dim_formality.code, restricted to trabalhador doméstico
@@ -918,6 +932,81 @@ def build_prev_rows(df: pd.DataFrame, period: str) -> list[dict]:
     return rows
 
 
+def build_education_rows(df: pd.DataFrame, period: str) -> list[dict]:
+    """Aggregate education levels (VD3004) for trabalhadoras(es) domésticas(os).
+
+    Emits weighted count + % within race for:
+      - BR × sex='T' × race × education_bucket (5 races × 5 buckets = 25)
+      - BR × sex='T' × preta_parda × education_bucket (5)
+      - BR × sex='T' × nao_negras × education_bucket (5)
+      - BR × sex='T' × race × education='total' (5 + 2 = 7)
+      - BR × sex='T' × race='total' × education_bucket (5)
+
+    Total: ~50 rows per quarter; ~2.8k rows over the 56-quarter backfill.
+
+    Skips rows where VD3004 is null / not in the 1-7 native code set.
+    """
+    df = df.copy()
+    df["weight"] = pd.to_numeric(df["V1028"], errors="coerce")
+    if df["weight"].max() > 1e9:
+        df["weight"] = df["weight"] / 1e9
+
+    DOMESTIC_CODES = ["03", "04"]
+    dom = df[df["VD4009"].isin(DOMESTIC_CODES) & df["weight"].notna()].copy()
+    dom["race_code"] = dom["V2010"].map(RACE_MAP)
+    # VD3004 is stored as a 1-char string; strip whitespace just in case
+    dom["ed_raw"] = dom["VD3004"].astype(str).str.strip()
+    dom["education_code"] = dom["ed_raw"].map(EDUCATION_MAP)
+    dom = dom[dom["race_code"].notna() & dom["education_code"].notna()]
+
+    db_period = microdata_period_to_db_code(period)
+    rows: list[dict] = []
+
+    EDUCATION_BUCKETS = ["fund_inc", "fund_comp", "med_inc", "med_comp", "sup"]
+
+    def _row(geo, level, sex, race, education, w_sum, w_race_total, n):
+        if w_sum is None or w_sum == 0:
+            return None
+        pct = round(100 * w_sum / w_race_total, 2) if w_race_total else None
+        return {
+            "_period_code": db_period,
+            "_geo_code": geo, "_geo_level": level,
+            "_sex": sex, "_race": race, "_education": education,
+            "workers_thousands": round(float(w_sum), 2),
+            "pct_within_race": pct,
+            "n_unweighted": int(n),
+        }
+
+    def emit_for_subset(race_label: str, subset: pd.DataFrame):
+        """Emit 5 education-bucket rows + 1 total row for a (race-defined) subset."""
+        total_w = subset["weight"].sum()
+        for ed in EDUCATION_BUCKETS:
+            g = subset[subset["education_code"] == ed]
+            r = _row("BR", "country", "T", race_label, ed,
+                     g["weight"].sum(), total_w, len(g))
+            if r: rows.append(r)
+        r = _row("BR", "country", "T", race_label, "total",
+                 total_w, total_w, len(subset))
+        if r: rows.append(r)
+
+    # Per-native-race emissions (branca, preta, amarela, parda, indigena)
+    for race, g in dom.groupby("race_code"):
+        emit_for_subset(race, g)
+
+    # Aggregate negras (preta + parda)
+    is_negra = dom["race_code"].isin(["preta", "parda"])
+    emit_for_subset("preta_parda", dom[is_negra])
+
+    # Aggregate nao_negras (branca + amarela + indigena)
+    is_nao_negra = dom["race_code"].isin(["branca", "amarela", "indigena"])
+    emit_for_subset("nao_negras", dom[is_nao_negra])
+
+    # Race='total' — all domestic workers regardless of race
+    emit_for_subset("total", dom)
+
+    return rows
+
+
 # ----- Supabase upsert --------------------------------------------------------
 
 SOURCE_TABLE_TAG = "PNADC-MICRODATA"
@@ -1127,6 +1216,46 @@ def upsert_prev_to_supabase(rows: list[dict]) -> int:
     return inserted
 
 
+def upsert_education_to_supabase(rows: list[dict]) -> int:
+    """Push education rows into domestic_work.fact_education."""
+    sb = get_supabase_client()
+    if sb is None or not rows:
+        return 0
+    schema = sb.schema("domestic_work")
+    time_lookup = {r["period_code"]: r["time_id"] for r in schema.table("dim_time").select("period_code,time_id").execute().data}
+    geo_lookup = {(r["level"], r["code"]): r["geo_id"] for r in schema.table("dim_geo").select("level,code,geo_id").execute().data}
+    race_lookup = {r["code"]: r["race_id"] for r in schema.table("dim_race").select("code,race_id").execute().data}
+    sex_lookup = {r["code"]: r["sex_id"] for r in schema.table("dim_sex").select("code,sex_id").execute().data}
+    edu_lookup = {r["code"]: r["education_id"] for r in schema.table("dim_education").select("code,education_id").execute().data}
+
+    payload = []
+    for r in rows:
+        try:
+            payload.append({
+                "time_id":      time_lookup[r["_period_code"]],
+                "geo_id":       geo_lookup[(r["_geo_level"], r["_geo_code"])],
+                "sex_id":       sex_lookup[r["_sex"]],
+                "race_id":      race_lookup[r["_race"]],
+                "education_id": edu_lookup[r["_education"]],
+                "workers_thousands": r["workers_thousands"],
+                "pct_within_race":   r["pct_within_race"],
+                "n_unweighted":      r["n_unweighted"],
+                "source_table":      SOURCE_TABLE_TAG,
+            })
+        except KeyError as e:
+            log.warning("missing dim lookup for education row %s: %s", r, e)
+
+    inserted = 0
+    for i in range(0, len(payload), 250):
+        chunk = payload[i:i + 250]
+        res = schema.table("fact_education").upsert(
+            chunk,
+            on_conflict="time_id,geo_id,sex_id,race_id,education_id,source_table",
+        ).execute()
+        inserted += len(res.data or [])
+    return inserted
+
+
 def get_supabase_client():
     """Lazily import + construct the supabase client. Returns None if creds
     aren't available — callers should treat that as "skip upsert"."""
@@ -1258,6 +1387,14 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
                         and r["_sex"] == "T" and r["_formality"] == "total"), None)
     mean_hours = hours_total["mean_hours_per_week"] if hours_total else None
 
+    # ---- education (fact_education) ----
+    edu_rows = build_education_rows(df, period)
+    # Diagnostic: % fund_inc among negras (the DIEESE-comparable cut).
+    edu_negra_fund = next((r for r in edu_rows
+                           if r["_geo_code"] == "BR" and r["_race"] == "preta_parda"
+                           and r["_education"] == "fund_inc"), None)
+    pct_fund_inc_negras = edu_negra_fund["pct_within_race"] if edu_negra_fund else None
+
     # ---- wages (fact_wages) ----
     wage_rows = build_wage_rows(df, period)
     wage_negras = next((r for r in wage_rows
@@ -1273,24 +1410,26 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
         inserted_wages = upsert_wages_to_supabase(wage_rows)
         inserted_hours = upsert_hours_to_supabase(hours_rows)
         inserted_prev = upsert_prev_to_supabase(prev_rows)
-        log.info("[%s] upserted %d workers + %d wages + %d hours + %d prev · total %.0fk · "
+        inserted_edu = upsert_education_to_supabase(edu_rows)
+        log.info("[%s] upserted %d workers + %d wages + %d hours + %d prev + %d edu · total %.0fk · "
                  "pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · wage gap %s%% · "
-                 "horas méd %s · %% previdência %s%%",
-                 period, inserted_workers, inserted_wages, inserted_hours, inserted_prev,
+                 "horas méd %s · %% previdência %s%% · %% fund_inc (negras) %s%%",
+                 period, inserted_workers, inserted_wages, inserted_hours, inserted_prev, inserted_edu,
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
-                 mean_hours, pct_prev_total)
+                 mean_hours, pct_prev_total, pct_fund_inc_negras)
     else:
-        log.info("[%s] (dry run) %d workers + %d wages + %d hours + %d prev · total %.0fk · "
+        log.info("[%s] (dry run) %d workers + %d wages + %d hours + %d prev + %d edu · total %.0fk · "
                  "pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · wage gap %s%% · "
-                 "horas méd %s · %% previdência %s%%",
-                 period, len(rows), len(wage_rows), len(hours_rows), len(prev_rows),
+                 "horas méd %s · %% previdência %s%% · %% fund_inc (negras) %s%%",
+                 period, len(rows), len(wage_rows), len(hours_rows), len(prev_rows), len(edu_rows),
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
-                 mean_hours, pct_prev_total)
+                 mean_hours, pct_prev_total, pct_fund_inc_negras)
 
     return {"period": period, "total_workers_k": n_dom, "pct_negras": pct_negras,
             "pct_negras_sp": pct_negras_sp, "pct_mulheres": pct_mulheres,
             "wage_gap_pct": wage_gap_pct,
-            "mean_hours": mean_hours, "pct_prev": pct_prev_total}
+            "mean_hours": mean_hours, "pct_prev": pct_prev_total,
+            "pct_fund_inc_negras": pct_fund_inc_negras}
 
 
 # ----- main --------------------------------------------------------------------

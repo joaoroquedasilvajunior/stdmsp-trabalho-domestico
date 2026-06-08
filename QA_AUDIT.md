@@ -873,6 +873,101 @@ Supabase rebuild decision.
 
 ---
 
+## 2026-06-08 — Phase D1 (Education dimension)
+
+**Scope.** First of three planned socioeconomic-profile dimensions
+(Education → Family → Housing). Adds the PNADC VD3004 variable to the
+microdata pipeline, populates a new `fact_education` table + `dw_education`
+view, and surfaces the result as a race-disaggregated bar chart in a new
+"Perfil socioeconômico" section between the events panel and Foco em São
+Paulo.
+
+### Schema (applied via Supabase MCP migration `education_dimension_d1`)
+
+- `domestic_work.dim_education` — 6 rows (5 education buckets + `total`).
+  Codes: `fund_inc`, `fund_comp`, `med_inc`, `med_comp`, `sup`, `total`.
+- `domestic_work.fact_education` — keyed by
+  `(time_id, geo_id, sex_id, race_id, education_id, source_table)`. Columns
+  include `workers_thousands`, `pct_within_race`, `n_unweighted`.
+- `public.dw_education` — joined view, `security_invoker = true`.
+- RLS + `public_read` policy on both new tables, grants for anon/authenticated.
+
+### Pipeline (etl/pnadc_microdata.py)
+
+- Added `VD3004` to `NEEDED_VARS`. The colspec cache auto-invalidates on the
+  next run because `NEEDED_VARS` grew.
+- New `EDUCATION_MAP` collapses PNADC native codes 1–7 into 5 DIEESE-aligned
+  buckets (codes 1+2 → `fund_inc`, code 3 → `fund_comp`, code 4 → `med_inc`,
+  code 5 → `med_comp`, codes 6+7 → `sup`).
+- New `build_education_rows()` emits BR × sex='T' × race × education_bucket
+  rows, plus aggregates for `preta_parda`, `nao_negras`, and `total`. Each
+  row carries `pct_within_race` precomputed so the dashboard doesn't have to
+  re-aggregate.
+- New `upsert_education_to_supabase()` does dim-id lookups for time/geo/sex/
+  race/education and chunked upserts into `fact_education`.
+- `process_period()` now builds + upserts education rows alongside the
+  others and logs a new diagnostic — `% fund_inc among negras` — for
+  quick comparison against DIEESE.
+
+### Export (etl/export_static.py)
+
+- `VIEWS` list grows by one: `dw_education` inserted between `dw_prev` and
+  `dw_intl`.
+
+### Dashboard (dashboard/index.html)
+
+- New `<section id="perfil">` "Perfil socioeconômico" placed between the
+  Mobilização panel and Foco em São Paulo. Holds one card for now
+  (Education); Family + Housing in D2/D3.
+- `renderEducation()` reads `STATE.education`, filters to BR-country/sex=T/
+  the two aggregate race tracks, picks the latest period_code, builds a
+  Chart.js vertical grouped bar chart (5 buckets × 2 race series).
+- `loadAll()` made resilient to per-view 404s — a missing JSON now logs a
+  warning and falls back to `[]` rather than killing the whole dashboard.
+  This protects future dimension adds.
+- Empty placeholder `dashboard/data/dw_education.json` shipped (`[]`) so
+  the path resolves cleanly until Joao runs the pipeline backfill.
+
+### Methodology (dashboard/metodologia.html)
+
+- §3.10 added (PT + EN) documenting variable, bucket convention,
+  cross-validation against the DIEESE 59%-sem-educação-básica-completa
+  figure.
+
+### Next steps (Joao's side)
+
+```bash
+cd ~/Documents/Claude/Domestic\ Work
+source etl/.venv/bin/activate
+# Single quarter first to sanity-check before the full backfill:
+python etl/pnadc_microdata.py 012026 --no-upsert  # dry run, look at the new
+                                                  # "% fund_inc (negras)" line
+python etl/pnadc_microdata.py 012026              # write 1T 2026 only
+# Then ./etl/refresh.sh + commit + push to see the chart light up.
+# Full backfill of education for all 56 quarters takes ~30-40 min:
+python etl/pnadc_microdata.py --all               # only if you want history;
+                                                  # for the snapshot chart,
+                                                  # one quarter is enough.
+```
+
+### Sanity-check targets (1T 2026)
+
+DIEESE Infográfico abr/2026 (base 4T 2025) reports 39% fundamental
+incompleto across the whole category. Our `% fund_inc (negras)` diagnostic
+should land near that — modestly higher for negras specifically, modestly
+lower for não-negras. If the diagnostic line on the 1T 2026 run is in the
+30–50% range for negras, we're in good shape; outside that, dig in before
+running the backfill.
+
+### Outstanding (D2 + D3 to come)
+
+Family (V2003 / V2005 / household roll-up) and Housing (V0212 / V0213 /
+domicile section) follow the same pattern in subsequent commits. Each
+brings ~50 lines of pipeline, ~30 lines of SQL, one chart card slotted
+into the same "Perfil socioeconômico" section.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

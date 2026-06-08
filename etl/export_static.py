@@ -56,6 +56,7 @@ VIEWS = [
     "dw_wages",
     "dw_hours",
     "dw_prev",
+    "dw_education",
     "dw_intl",
     "dw_sources",
     "dw_static_facts",

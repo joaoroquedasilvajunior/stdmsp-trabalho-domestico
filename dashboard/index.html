@@ -926,7 +926,9 @@ const POLICY_EVENTS = [
     label_pt: "MX ratifica C189", label_en: "MX ratifies C189",
     note_pt: "México ratifica a Convenção 189 da OIT",
     note_en: "Mexico ratifies ILO Convention 189" },
-  { iso: "2026-04", code_movel: "202606", code_fixo: "202602",
+  { iso: "2026-04", code_movel: "202604", code_fixo: "202602",
+    // code_movel = trim. móvel fev-mar-abr/2026 — first window that contains the event month
+    // code_fixo  = 2T 2026 — needs pnadc_microdata.py 022026 to render on fixed charts
     label_pt: "PNC + Conadon", label_en: "PNC + Conadon",
     note_pt: "Política Nacional de Cuidados (aprovada no Senado) e criação da Conadon no MTE — fiscalização do trabalho doméstico e de cuidados",
     note_en: "National Care Policy (Senate-approved) and creation of Conadon at MTE — labour inspection for domestic and care work" },

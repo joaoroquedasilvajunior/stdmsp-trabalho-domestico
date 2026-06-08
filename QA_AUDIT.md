@@ -703,35 +703,58 @@ events (Política Nacional de Cuidados + Conadon), the PNADC 2025–2026 master-
 sample transition, and documents an unplanned finding: the Supabase project
 `sceneqc` lost all data during its most recent free-tier pause.
 
-### Supabase data loss (P0 finding)
+### Supabase status — misdiagnosis of data loss (resolved same day)
 
-On waking the project to update `static_fact`, `domestic_work` schema did not
-exist. Listing schemas returned only the Supabase defaults plus `public`, and
-`public` is also empty. Project metadata reports
-`created_at: 2026-04-20T18:01:51Z` — meaning the project was effectively
-re-created on that date, after the May pause exceeded the free-tier
-inactivity-purge window.
+While reaching for `domestic_work.static_fact` to apply the DIEESE abril/2026
+update, the first `information_schema.tables` query (filtered to
+`table_type = 'BASE TABLE'`) returned an empty result for the
+`domestic_work` schema and an empty `public` schema. Combined with the
+project `created_at` timestamp showing `2026-04-20`, this was initially read
+as a free-tier inactivity-purge — i.e., the schema and all data had been
+dropped. A correction migration (`schema/002_recovery.sql`) and a JSON-to-
+Supabase repopulator (`etl/repopulate_from_json.py`) were drafted on that
+assumption.
 
-**Vindication of the static-export migration.** The 2026-05-20 architectural
-shift is what saved this refresh. The dashboard is a static site that reads
-`dashboard/data/*.json` (committed to git). Those JSON files are now the
-de-facto source of truth for everything we display. The public dashboard
-remained fully functional throughout — the data loss is invisible to users.
+**The data was never lost.** A second, plainer query
+(`select 'fact_workers' as t, count(*) ... from domestic_work.fact_workers`)
+returned the exact row counts recorded in `dashboard/data/manifest.json`:
+13 103 workers, 1 343 wages, 13 399 hours, 12 263 prev, 94 intl, 5 sources,
+3 static_facts. Every table, every view, every row was present. The first
+query result was an MCP / proxy transient — not a real schema state.
 
-**Consequence for this refresh.** The DIEESE abril/2026 update was applied by
-editing `dashboard/data/dw_static_facts.json` directly, bypassing Supabase.
-The `etl/refresh.sh` helper is now broken until the schema is rebuilt, since
-`etl/export_static.py` queries `dw_*` views that no longer exist.
+**What this refresh actually did, in clean terms.**
 
-**Outstanding decision (carried forward).** Whether to rebuild the
-`domestic_work` schema in Supabase from the committed JSON exports + the
-PNADC microdata pipeline, or to drop Supabase from the loop entirely and
-treat `dashboard/data/` as the durable record. The first preserves the
-queryable backend for future pipeline runs; the second simplifies operations.
-Either way: the next PNADC microdata run (when Joao executes
-`pnadc_microdata.py 012026` on his Mac) needs a target — either a rebuilt
-Supabase schema or a refactor of the pipeline to write directly into
-`dashboard/data/*.json`.
+- Edited the three `dashboard/data/dw_static_facts.json` rows to the
+  DIEESE abril/2026 figures (this is what users now see).
+- Pushed the equivalent `update` statements into
+  `domestic_work.static_fact` in Supabase via the MCP, so the queryable
+  source of truth matches the static export. Both layers now carry:
+  `pct_women 91.9`, `pct_negras 68.0`, `wage_ratio_black_to_nonblack 87.1`,
+  source = DIEESE Infográfico abr/2026, source_date = 2026-04-01.
+
+**Kept anyway as a disaster-recovery kit.**
+
+- `schema/002_recovery.sql` — consolidates 001_init.sql plus the
+  Phase-A and static-export additions (`fact_prev`, `static_fact`,
+  `n_unweighted`, `race_id` on `fact_hours`, `dw_prev`, `dw_static_facts`,
+  RLS policies) that had only ever existed as ad-hoc `apply_migration`
+  calls. Idempotent. If a real free-tier purge ever happens, this is the
+  DDL to apply.
+- `etl/repopulate_from_json.py` — reads the committed JSON exports and
+  upserts them back into Supabase. Inverse of `export_static.py`. Also
+  idempotent. Same purpose.
+- README has a "Schema recovery — if Supabase data is lost" section
+  describing the four-step ritual: wake → apply DDL → repopulate → verify.
+
+**Cost of the misdiagnosis.** None to the public site (it never depended
+on Supabase being up). The cost was time spent drafting the recovery kit
+and the temporary credibility hit of carrying a wrong claim in the audit
+log. Recording the correction here in the same audit entry rather than
+quietly editing the history.
+
+**Lesson.** When `information_schema` returns an unexpected empty, run a
+direct `select count(*) from <expected.table>` before declaring loss. The
+direct query is what the application actually does.
 
 ### DIEESE Infográfico abril/2026 — figures captured
 

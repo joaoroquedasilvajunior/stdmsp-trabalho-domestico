@@ -282,6 +282,23 @@
   <li><strong>Gráfico no painel</strong>: barras agrupadas verticais, 5 buckets no eixo X, duas barras por bucket (Negras vs. Não-negras), no trimestre fixo mais recente disponível.</li>
 </ul>
 
+<h3>3.11 Posição no domicílio (Phase D2)</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-MICRODATA</code> · variável <code>V2003</code> (condição no domicílio), agregada pela equipe do projeto com pesos amostrais <code>V1028</code>.</li>
+  <li><strong>Categorias</strong>: os 17 códigos nativos da PNADC (01 a 17) são colapsados em 4 buckets para clareza visual e foco no recorte que tem rendimento de manchete (% chefe de família):
+    <ul>
+      <li><strong>Chefe de família</strong> — código 01 (Pessoa responsável). DIEESE Infográfico abr/2026 publica 46% como cifra de manchete para a categoria como um todo.</li>
+      <li><strong>Cônjuge</strong> — código 02 (Cônjuge / companheiro/a).</li>
+      <li><strong>Filha(o) / enteada(o)</strong> — códigos 03 (Filha/o) + 04 (Enteada/o).</li>
+      <li><strong>Outro / agregada</strong> — códigos 05 a 17 (genro/nora, pai/mãe, sogro/a, neto/a, bisneto/a, irmão/ã, outro parente, agregada, convivente, pensionista, empregada doméstica residente, parente do empregado, individual em domicílio coletivo).</li>
+    </ul>
+  </li>
+  <li><strong>Cortes emitidos pela pipeline</strong>: BR × sexo='T' × raça × bucket. Mesmas raças que a Phase D1.</li>
+  <li><strong>Cálculo do %</strong>: <code>pct_within_race</code> = soma de pesos no bucket / soma total de pesos da raça. Importante: para a cifra de "chefe de família" reportada pelo DIEESE (46%), o denominador é a categoria como um todo, não um grupo racial específico — por isso o valor que mais aproxima o DIEESE é <code>race_code = 'total'</code>, não 'preta_parda' ou 'nao_negras'.</li>
+  <li><strong>Limitação importante</strong>: V2003 codifica a relação <em>da pessoa entrevistada</em> com a pessoa responsável pelo domicílio. Não codifica diretamente "mãe solo" ou "domicílio monoparental" — para chegar a esses recortes a próxima iteração teria que cruzar o V2003 com indicadores de presença de cônjuge e de filhos no mesmo domicílio (V1014/V1015 + idades). Fica para uma fase futura se houver demanda.</li>
+  <li><strong>Gráfico no painel</strong>: barras agrupadas verticais, 4 buckets no eixo X, duas barras por bucket (Negras vs. Não-negras), no trimestre fixo mais recente disponível.</li>
+</ul>
+
 <h2>4. Notas metodológicas</h2>
 
 <h3>4.1 Trimestre móvel × trimestre fixo</h3>
@@ -566,6 +583,23 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>Percentage calculation</strong>: <code>pct_within_race</code> = sum of weights in the bucket / total weight of the race. It is a percent <em>within</em> the race group, not of the category total.</li>
   <li><strong>Cross-validation</strong>: for the category overall, the sum <em>Primary incomplete + Secondary incomplete</em> should approximate the "59% without complete basic education" reported by DIEESE Infográfico Apr/2026.</li>
   <li><strong>Chart on the dashboard</strong>: vertical grouped bars, 5 buckets on the X axis, two bars per bucket (Black vs. Non-Black), at the most recent available fixed quarter.</li>
+</ul>
+
+<h3>3.11 Household position (Phase D2)</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-MICRODATA</code> · variable <code>V2003</code> (household position), aggregated by the project team with sample weights <code>V1028</code>.</li>
+  <li><strong>Categories</strong>: PNADC's 17 native codes (01–17) collapsed into 4 buckets for visual clarity and to highlight the headline cut (% head of household):
+    <ul>
+      <li><strong>Head of household</strong> — code 01 (Person responsible). DIEESE Infográfico Apr/2026 publishes 46% as the headline figure for the category overall.</li>
+      <li><strong>Spouse / partner</strong> — code 02.</li>
+      <li><strong>Daughter / stepchild</strong> — codes 03 (Daughter) + 04 (Stepchild).</li>
+      <li><strong>Other / aggregated</strong> — codes 05 through 17 (son/daughter-in-law, parent, parent-in-law, grandchild, great-grandchild, sibling, other relative, aggregate, cohabitant, boarder, live-in domestic worker, relative of domestic worker, individual in collective household).</li>
+    </ul>
+  </li>
+  <li><strong>Cuts emitted by the pipeline</strong>: BR × sex='T' × race × bucket. Same races as Phase D1.</li>
+  <li><strong>Percentage calculation</strong>: <code>pct_within_race</code> = sum of weights in the bucket / total weight of the race. Important: for the DIEESE-reported "head of household" figure (46%), the denominator is the category as a whole, not a specific race group — so the closest match to DIEESE is <code>race_code = 'total'</code>, not 'preta_parda' or 'nao_negras'.</li>
+  <li><strong>Important limitation</strong>: V2003 codes the relationship of <em>the surveyed person</em> to the household head. It does not directly code "single mother" or "single-parent household" — to reach those cuts a future iteration would need to cross V2003 with indicators of spouse presence and children in the same household (V1014/V1015 + ages). Left for a future phase if there's demand.</li>
+  <li><strong>Chart on the dashboard</strong>: vertical grouped bars, 4 buckets on the X axis, two bars per bucket (Black vs. Non-Black), at the most recent available fixed quarter.</li>
 </ul>
 
 <h2>4. Methodological notes</h2>

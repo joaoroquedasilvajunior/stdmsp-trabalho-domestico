@@ -966,6 +966,121 @@ domicile section) follow the same pattern in subsequent commits. Each
 brings ~50 lines of pipeline, ~30 lines of SQL, one chart card slotted
 into the same "Perfil socioeconômico" section.
 
+### Bug found and fixed on the D1 first-run (2026-06-08, same session)
+
+The initial `build_education_rows()` produced `workers_thousands` values
+1000× too high — it summed the post-normalization weight (which is in
+single people) without dividing by 1000 to land on thousands. The bug
+was data-only and didn't affect the chart (the chart uses
+`pct_within_race`, which is unit-independent). Fixed in the function and
+the D1 rows were corrected via in-place SQL `UPDATE` (only buggy rows
+with `workers_thousands > 100` selected and divided by 1000). Future
+pipeline runs use the corrected code path. The pattern is now spelled
+out in code comments so D2 + D3 don't repeat the mistake.
+
+---
+
+## 2026-06-08 — Phase D2 (Family / household position)
+
+**Scope.** Second of the three socioeconomic-profile dimensions
+(Education → Family → Housing). Adds PNADC `V2003` to the microdata
+pipeline, populates a new `fact_family` + `dw_family` view, and surfaces
+the result as a second chart card alongside Education in the
+"Perfil socioeconômico" section.
+
+### Schema (applied via Supabase MCP migration `family_dimension_d2`)
+
+- `domestic_work.dim_family` — 5 rows (`chefe`, `conjuge`, `filha`,
+  `outro`, `total`).
+- `domestic_work.fact_family` — keyed by
+  `(time_id, geo_id, sex_id, race_id, family_id, source_table)`.
+- `public.dw_family` — joined view, `security_invoker = true`.
+- RLS + `public_read` policy, grants for anon/authenticated.
+
+### Pipeline (`etl/pnadc_microdata.py`)
+
+- `V2003` added to `NEEDED_VARS`. Colspec cache auto-invalidates on
+  next run.
+- `FAMILY_POSITION_MAP` collapses 17 native codes to 4 buckets. Code 01
+  (Pessoa responsável) maps to `chefe`; codes 03–04 to `filha`; 05–17
+  all roll into `outro` (which therefore absorbs empregadas domésticas
+  residentes, agregados, parentes do empregado, etc. — see the
+  methodology page for the full mapping).
+- `build_family_rows()` emits BR × sex='T' × race × family_position
+  rows + race aggregates + `total`. Uses the corrected divide-by-1000
+  pattern from the D1 fix.
+- `upsert_family_to_supabase()` parallels the education upsert.
+- `process_period()` now logs the new diagnostic
+  **`% chefe (total/negras)`** so each run prints two numbers — the
+  overall headline (comparable to DIEESE's 46%) and the negras
+  cut. Useful for race-gap detection without running a separate query.
+
+### Export (`etl/export_static.py`)
+
+- `dw_family` added to `VIEWS` between `dw_education` and `dw_intl`.
+
+### Dashboard (`dashboard/index.html`)
+
+- The Perfil socioeconômico section is now a 2-column responsive grid
+  (`grid-cols-1 md:grid-cols-2`) holding the Education card and the
+  new Family card side-by-side on desktop, stacked on mobile.
+- `renderFamily()` follows the same shape as `renderEducation()` —
+  filters by `geo_level=country`, `sex_code='T'`, picks the latest
+  `period_code`, builds a vertical grouped bar chart (4 buckets ×
+  2 race series).
+- i18n PT + EN for the new strings (`chart-family`,
+  `chart-family-meta`, `chart-family-source`, plus four `fam-*` bucket
+  labels and two race-track labels).
+- Empty placeholder `dashboard/data/dw_family.json` shipped (`[]`).
+  The resilient `loadAll()` from D1 will treat a missing file as
+  empty so the chart shows the overlay until the pipeline runs.
+
+### Methodology (`dashboard/metodologia.html`)
+
+- §3.11 added (PT + EN) documenting the variable, the 17→4 collapse,
+  the DIEESE cross-validation target (46% chefe de família), and a
+  flagged limitation that single-mother / single-parent-household
+  cuts require a household-level join not yet in scope.
+
+### Next steps (Joao's side)
+
+```bash
+cd ~/Documents/Claude/Domestic\ Work
+source etl/.venv/bin/activate
+
+# Single quarter — produces the new "% chefe (total/negras)" diagnostic.
+# This also re-runs education with the unit-fix in place, overwriting the
+# D1 rows via upsert.
+python etl/pnadc_microdata.py 012026
+
+# Static export + commit + push
+./etl/refresh.sh
+git add etl/pnadc_microdata.py etl/export_static.py \
+        schema/ \
+        dashboard/index.html dashboard/metodologia.html dashboard/data/ \
+        QA_AUDIT.md
+git commit -m "feat(D2): family dimension — V2003, fact_family, posição-no-domicílio card"
+git push origin main
+```
+
+### Sanity-check targets (1T 2026)
+
+DIEESE Infográfico abr/2026 publishes **46% chefes de família** for the
+category overall. The new `% chefe (total/negras)` diagnostic should
+have the `total` value land in the 42–50% range; if it does, D2 is
+verified. The negras–nao_negras gap (whichever direction) is itself
+the substantive finding of this dimension — DIEESE doesn't publish it
+race-disaggregated, so we're the first to surface it.
+
+### Outstanding (D3 to come)
+
+Housing (V0212 / V0213 / S01024 series) is the last of the three
+phases. It's the heaviest of the three pipeline-wise because it reads
+the **domicile section** of the PNADC fixed-width file, not the
+person section — small refactor of the colspec parser. Same chart
+pattern, slotted in as a third card in the Perfil grid (which will
+become 3-column on desktop). Schedule when ready.
+
 ---
 
 ## Sources

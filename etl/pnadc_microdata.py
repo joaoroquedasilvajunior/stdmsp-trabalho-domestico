@@ -188,6 +188,7 @@ def parse_sas_input(text: str) -> dict[str, tuple[int, int]]:
 NEEDED_VARS = [
     "Ano", "Trimestre", "UF",
     "V1028",   # population weight
+    "V2003",   # condição no domicílio (D2 — family / household position)
     "V2007",   # sex
     "V2010",   # cor/raça
     "V4032",   # previdência contributor (1/2)
@@ -516,6 +517,30 @@ EDUCATION_MAP = {
     "5": "med_comp",   # Médio completo
     "6": "sup",        # Superior incompleto
     "7": "sup",        # Superior completo
+}
+
+# V2003 (condição no domicílio). PNADC native codes 01-17 collapsed into
+# 4 buckets to surface the family-position story cleanly. "chefe de família"
+# is the DIEESE-headline number (Infográfico abr/2026: 46% para trabalhadoras
+# domésticas vs 58% para mulheres ocupadas em geral).
+FAMILY_POSITION_MAP = {
+    "01": "chefe",     # Pessoa responsável
+    "02": "conjuge",   # Cônjuge / companheiro(a)
+    "03": "filha",     # Filha(o)
+    "04": "filha",     # Enteada(o)
+    "05": "outro",     # Genro / nora
+    "06": "outro",     # Pai/mãe / padrasto/madrasta
+    "07": "outro",     # Sogro(a)
+    "08": "outro",     # Neto(a)
+    "09": "outro",     # Bisneto(a)
+    "10": "outro",     # Irmão / irmã
+    "11": "outro",     # Outro parente
+    "12": "outro",     # Agregado(a)
+    "13": "outro",     # Convivente
+    "14": "outro",     # Pensionista
+    "15": "outro",     # Empregado(a) doméstico(a) residente
+    "16": "outro",     # Parente do empregado doméstico
+    "17": "outro",     # Individual em domicílio coletivo
 }
 # PNADC V2007 (sexo) → our dim_sex.code
 SEX_MAP = {"1": "M", "2": "F"}
@@ -968,11 +993,14 @@ def build_education_rows(df: pd.DataFrame, period: str) -> list[dict]:
         if w_sum is None or w_sum == 0:
             return None
         pct = round(100 * w_sum / w_race_total, 2) if w_race_total else None
+        # workers_thousands is in *thousands of people*. The raw weight sum
+        # is in single people, so divide by 1000. (The unit convention matches
+        # the rest of the project — see workers_thousands in dw_workers.)
         return {
             "_period_code": db_period,
             "_geo_code": geo, "_geo_level": level,
             "_sex": sex, "_race": race, "_education": education,
-            "workers_thousands": round(float(w_sum), 2),
+            "workers_thousands": round(float(w_sum) / 1000.0, 2),
             "pct_within_race": pct,
             "n_unweighted": int(n),
         }
@@ -1002,6 +1030,82 @@ def build_education_rows(df: pd.DataFrame, period: str) -> list[dict]:
     emit_for_subset("nao_negras", dom[is_nao_negra])
 
     # Race='total' — all domestic workers regardless of race
+    emit_for_subset("total", dom)
+
+    return rows
+
+
+def build_family_rows(df: pd.DataFrame, period: str) -> list[dict]:
+    """Aggregate household position (V2003) for trabalhadoras(es) domésticas(os).
+
+    Emits weighted count + % within race for:
+      - BR × sex='T' × race × family_position (5 races × 4 positions = 20)
+      - BR × sex='T' × preta_parda × family_position (4)
+      - BR × sex='T' × nao_negras × family_position (4)
+      - BR × sex='T' × race × position='total' (5 + 2 = 7)
+      - BR × sex='T' × race='total' × family_position (4)
+
+    Total: ~40 rows per quarter; ~2.2k rows over the 56-quarter backfill.
+
+    The headline cut: % chefe de família for negras vs nao_negras. DIEESE
+    Infográfico abr/2026 reports 46% chefe de família para trabalhadoras
+    domésticas (vs 58% para mulheres ocupadas em geral) — our negras +
+    nao_negras buckets should bracket that, since the headline is not
+    race-disaggregated.
+    """
+    df = df.copy()
+    df["weight"] = pd.to_numeric(df["V1028"], errors="coerce")
+    if df["weight"].max() > 1e9:
+        df["weight"] = df["weight"] / 1e9
+
+    DOMESTIC_CODES = ["03", "04"]
+    dom = df[df["VD4009"].isin(DOMESTIC_CODES) & df["weight"].notna()].copy()
+    dom["race_code"] = dom["V2010"].map(RACE_MAP)
+    # V2003 is stored as a 2-char string; strip whitespace and pad
+    dom["v2003_raw"] = dom["V2003"].astype(str).str.strip().str.zfill(2)
+    dom["family_code"] = dom["v2003_raw"].map(FAMILY_POSITION_MAP)
+    dom = dom[dom["race_code"].notna() & dom["family_code"].notna()]
+
+    db_period = microdata_period_to_db_code(period)
+    rows: list[dict] = []
+
+    FAMILY_BUCKETS = ["chefe", "conjuge", "filha", "outro"]
+
+    def _row(geo, level, sex, race, family, w_sum, w_race_total, n):
+        if w_sum is None or w_sum == 0:
+            return None
+        pct = round(100 * w_sum / w_race_total, 2) if w_race_total else None
+        # workers_thousands in *thousands of people* — raw weight sum is in
+        # single people, divide by 1000 to match the project convention.
+        return {
+            "_period_code": db_period,
+            "_geo_code": geo, "_geo_level": level,
+            "_sex": sex, "_race": race, "_family": family,
+            "workers_thousands": round(float(w_sum) / 1000.0, 2),
+            "pct_within_race": pct,
+            "n_unweighted": int(n),
+        }
+
+    def emit_for_subset(race_label: str, subset: pd.DataFrame):
+        total_w = subset["weight"].sum()
+        for fam in FAMILY_BUCKETS:
+            g = subset[subset["family_code"] == fam]
+            r = _row("BR", "country", "T", race_label, fam,
+                     g["weight"].sum(), total_w, len(g))
+            if r: rows.append(r)
+        r = _row("BR", "country", "T", race_label, "total",
+                 total_w, total_w, len(subset))
+        if r: rows.append(r)
+
+    for race, g in dom.groupby("race_code"):
+        emit_for_subset(race, g)
+
+    is_negra = dom["race_code"].isin(["preta", "parda"])
+    emit_for_subset("preta_parda", dom[is_negra])
+
+    is_nao_negra = dom["race_code"].isin(["branca", "amarela", "indigena"])
+    emit_for_subset("nao_negras", dom[is_nao_negra])
+
     emit_for_subset("total", dom)
 
     return rows
@@ -1256,6 +1360,46 @@ def upsert_education_to_supabase(rows: list[dict]) -> int:
     return inserted
 
 
+def upsert_family_to_supabase(rows: list[dict]) -> int:
+    """Push family-position rows into domestic_work.fact_family."""
+    sb = get_supabase_client()
+    if sb is None or not rows:
+        return 0
+    schema = sb.schema("domestic_work")
+    time_lookup = {r["period_code"]: r["time_id"] for r in schema.table("dim_time").select("period_code,time_id").execute().data}
+    geo_lookup = {(r["level"], r["code"]): r["geo_id"] for r in schema.table("dim_geo").select("level,code,geo_id").execute().data}
+    race_lookup = {r["code"]: r["race_id"] for r in schema.table("dim_race").select("code,race_id").execute().data}
+    sex_lookup = {r["code"]: r["sex_id"] for r in schema.table("dim_sex").select("code,sex_id").execute().data}
+    fam_lookup = {r["code"]: r["family_id"] for r in schema.table("dim_family").select("code,family_id").execute().data}
+
+    payload = []
+    for r in rows:
+        try:
+            payload.append({
+                "time_id":   time_lookup[r["_period_code"]],
+                "geo_id":    geo_lookup[(r["_geo_level"], r["_geo_code"])],
+                "sex_id":    sex_lookup[r["_sex"]],
+                "race_id":   race_lookup[r["_race"]],
+                "family_id": fam_lookup[r["_family"]],
+                "workers_thousands": r["workers_thousands"],
+                "pct_within_race":   r["pct_within_race"],
+                "n_unweighted":      r["n_unweighted"],
+                "source_table":      SOURCE_TABLE_TAG,
+            })
+        except KeyError as e:
+            log.warning("missing dim lookup for family row %s: %s", r, e)
+
+    inserted = 0
+    for i in range(0, len(payload), 250):
+        chunk = payload[i:i + 250]
+        res = schema.table("fact_family").upsert(
+            chunk,
+            on_conflict="time_id,geo_id,sex_id,race_id,family_id,source_table",
+        ).execute()
+        inserted += len(res.data or [])
+    return inserted
+
+
 def get_supabase_client():
     """Lazily import + construct the supabase client. Returns None if creds
     aren't available — callers should treat that as "skip upsert"."""
@@ -1395,6 +1539,20 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
                            and r["_education"] == "fund_inc"), None)
     pct_fund_inc_negras = edu_negra_fund["pct_within_race"] if edu_negra_fund else None
 
+    # ---- family (fact_family) ----
+    fam_rows = build_family_rows(df, period)
+    # Diagnostic: % chefe de família for negras AND for the category overall.
+    # DIEESE Infográfico abr/2026 publishes 46% (category overall); we compute
+    # both negras and total for triangulation.
+    fam_total_chefe = next((r for r in fam_rows
+                            if r["_geo_code"] == "BR" and r["_race"] == "total"
+                            and r["_family"] == "chefe"), None)
+    pct_chefe_total = fam_total_chefe["pct_within_race"] if fam_total_chefe else None
+    fam_negra_chefe = next((r for r in fam_rows
+                            if r["_geo_code"] == "BR" and r["_race"] == "preta_parda"
+                            and r["_family"] == "chefe"), None)
+    pct_chefe_negras = fam_negra_chefe["pct_within_race"] if fam_negra_chefe else None
+
     # ---- wages (fact_wages) ----
     wage_rows = build_wage_rows(df, period)
     wage_negras = next((r for r in wage_rows
@@ -1411,25 +1569,34 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
         inserted_hours = upsert_hours_to_supabase(hours_rows)
         inserted_prev = upsert_prev_to_supabase(prev_rows)
         inserted_edu = upsert_education_to_supabase(edu_rows)
-        log.info("[%s] upserted %d workers + %d wages + %d hours + %d prev + %d edu · total %.0fk · "
-                 "pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · wage gap %s%% · "
-                 "horas méd %s · %% previdência %s%% · %% fund_inc (negras) %s%%",
-                 period, inserted_workers, inserted_wages, inserted_hours, inserted_prev, inserted_edu,
+        inserted_fam = upsert_family_to_supabase(fam_rows)
+        log.info("[%s] upserted %d workers + %d wages + %d hours + %d prev + %d edu + %d fam · "
+                 "total %.0fk · pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · "
+                 "wage gap %s%% · horas méd %s · %% previdência %s%% · "
+                 "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%%",
+                 period, inserted_workers, inserted_wages, inserted_hours, inserted_prev,
+                 inserted_edu, inserted_fam,
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
-                 mean_hours, pct_prev_total, pct_fund_inc_negras)
+                 mean_hours, pct_prev_total, pct_fund_inc_negras,
+                 pct_chefe_total, pct_chefe_negras)
     else:
-        log.info("[%s] (dry run) %d workers + %d wages + %d hours + %d prev + %d edu · total %.0fk · "
-                 "pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · wage gap %s%% · "
-                 "horas méd %s · %% previdência %s%% · %% fund_inc (negras) %s%%",
-                 period, len(rows), len(wage_rows), len(hours_rows), len(prev_rows), len(edu_rows),
+        log.info("[%s] (dry run) %d workers + %d wages + %d hours + %d prev + %d edu + %d fam · "
+                 "total %.0fk · pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · "
+                 "wage gap %s%% · horas méd %s · %% previdência %s%% · "
+                 "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%%",
+                 period, len(rows), len(wage_rows), len(hours_rows), len(prev_rows),
+                 len(edu_rows), len(fam_rows),
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
-                 mean_hours, pct_prev_total, pct_fund_inc_negras)
+                 mean_hours, pct_prev_total, pct_fund_inc_negras,
+                 pct_chefe_total, pct_chefe_negras)
 
     return {"period": period, "total_workers_k": n_dom, "pct_negras": pct_negras,
             "pct_negras_sp": pct_negras_sp, "pct_mulheres": pct_mulheres,
             "wage_gap_pct": wage_gap_pct,
             "mean_hours": mean_hours, "pct_prev": pct_prev_total,
-            "pct_fund_inc_negras": pct_fund_inc_negras}
+            "pct_fund_inc_negras": pct_fund_inc_negras,
+            "pct_chefe_total": pct_chefe_total,
+            "pct_chefe_negras": pct_chefe_negras}
 
 
 # ----- main --------------------------------------------------------------------

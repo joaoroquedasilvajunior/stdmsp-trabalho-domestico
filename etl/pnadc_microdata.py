@@ -1053,9 +1053,10 @@ def build_education_rows(df: pd.DataFrame, period: str) -> list[dict]:
 
 
 def build_family_rows(df: pd.DataFrame, period: str) -> list[dict]:
-    """Aggregate household position (V2003) for trabalhadoras(es) domésticas(os).
+    """Aggregate household position (V2003) for trabalhadoras(es) domésticas(os),
+    with wage cross-tab (VD4019) — the "breadwinner paradox" panel.
 
-    Emits weighted count + % within race for:
+    Emits weighted count + % within race + mean wage for:
       - BR × sex='T' × race × family_position (5 races × 4 positions = 20)
       - BR × sex='T' × preta_parda × family_position (4)
       - BR × sex='T' × nao_negras × family_position (4)
@@ -1064,16 +1065,25 @@ def build_family_rows(df: pd.DataFrame, period: str) -> list[dict]:
 
     Total: ~40 rows per quarter; ~2.2k rows over the 56-quarter backfill.
 
-    The headline cut: % chefe de família for negras vs nao_negras. DIEESE
-    Infográfico abr/2026 reports 46% chefe de família para trabalhadoras
-    domésticas (vs 58% para mulheres ocupadas em geral) — our negras +
-    nao_negras buckets should bracket that, since the headline is not
-    race-disaggregated.
+    Two headline cuts:
+      - % chefe de família by race (DIEESE 2026 publishes 46% aggregate,
+        doesn't disaggregate by race)
+      - mean wage of chefes by race (nobody publishes this — the breadwinner
+        paradox: workers carrying more household financial responsibility
+        also earning less due to the racial gap)
+
+    Wage notes:
+      - VD4019 is rendimento mensal habitual em qualquer trabalho (R$ nominal).
+      - Computed only over workers with VD4019 > 0 (drops the unemployed +
+        non-earners — they shouldn't anchor a "wage of chefes" reading).
+      - wage_n_with_income tracks the unweighted sample feeding the wage
+        estimate, separately from n_unweighted (the count for the % cell).
     """
     df = df.copy()
     df["weight"] = pd.to_numeric(df["V1028"], errors="coerce")
     if df["weight"].max() > 1e9:
         df["weight"] = df["weight"] / 1e9
+    df["wage"] = pd.to_numeric(df["VD4019"], errors="coerce")
 
     DOMESTIC_CODES = ["03", "04"]
     dom = df[df["VD4009"].isin(DOMESTIC_CODES) & df["weight"].notna()].copy()
@@ -1088,7 +1098,17 @@ def build_family_rows(df: pd.DataFrame, period: str) -> list[dict]:
 
     FAMILY_BUCKETS = ["chefe", "conjuge", "filha", "outro"]
 
-    def _row(geo, level, sex, race, family, w_sum, w_race_total, n):
+    def _wage_stats(cell: pd.DataFrame):
+        """Weighted mean wage over workers with VD4019 > 0. Returns
+        (wage_mean_brl, wage_n_with_income) or (None, 0) if the cell is empty."""
+        with_inc = cell[cell["wage"].notna() & (cell["wage"] > 0)]
+        if len(with_inc) == 0 or with_inc["weight"].sum() == 0:
+            return None, 0
+        wmean = (with_inc["wage"] * with_inc["weight"]).sum() / with_inc["weight"].sum()
+        return round(float(wmean), 2), int(len(with_inc))
+
+    def _row(geo, level, sex, race, family, w_sum, w_race_total, n,
+             wage_mean_brl, wage_n_with_income):
         if w_sum is None or w_sum == 0:
             return None
         pct = round(100 * w_sum / w_race_total, 2) if w_race_total else None
@@ -1101,18 +1121,28 @@ def build_family_rows(df: pd.DataFrame, period: str) -> list[dict]:
             "workers_thousands": round(float(w_sum) / 1000.0, 2),
             "pct_within_race": pct,
             "n_unweighted": int(n),
+            "wage_mean_brl": wage_mean_brl,
+            "wage_n_with_income": wage_n_with_income,
         }
 
     def emit_for_subset(race_label: str, subset: pd.DataFrame):
         total_w = subset["weight"].sum()
+        # Per-bucket rows
         for fam in FAMILY_BUCKETS:
             g = subset[subset["family_code"] == fam]
+            wage_mean, wage_n = _wage_stats(g)
             r = _row("BR", "country", "T", race_label, fam,
-                     g["weight"].sum(), total_w, len(g))
-            if r: rows.append(r)
+                     g["weight"].sum(), total_w, len(g),
+                     wage_mean, wage_n)
+            if r:
+                rows.append(r)
+        # Race-total row (across all family positions)
+        wage_mean, wage_n = _wage_stats(subset)
         r = _row("BR", "country", "T", race_label, "total",
-                 total_w, total_w, len(subset))
-        if r: rows.append(r)
+                 total_w, total_w, len(subset),
+                 wage_mean, wage_n)
+        if r:
+            rows.append(r)
 
     for race, g in dom.groupby("race_code"):
         emit_for_subset(race, g)
@@ -1472,10 +1502,12 @@ def upsert_family_to_supabase(rows: list[dict]) -> int:
                 "sex_id":    sex_lookup[r["_sex"]],
                 "race_id":   race_lookup[r["_race"]],
                 "family_id": fam_lookup[r["_family"]],
-                "workers_thousands": r["workers_thousands"],
-                "pct_within_race":   r["pct_within_race"],
-                "n_unweighted":      r["n_unweighted"],
-                "source_table":      SOURCE_TABLE_TAG,
+                "workers_thousands":   r["workers_thousands"],
+                "pct_within_race":     r["pct_within_race"],
+                "wage_mean_brl":       r.get("wage_mean_brl"),
+                "wage_n_with_income":  r.get("wage_n_with_income"),
+                "n_unweighted":        r["n_unweighted"],
+                "source_table":        SOURCE_TABLE_TAG,
             })
         except KeyError as e:
             log.warning("missing dim lookup for family row %s: %s", r, e)
@@ -1684,6 +1716,17 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
                             and r["_family"] == "chefe"), None)
     pct_chefe_negras = fam_negra_chefe["pct_within_race"] if fam_negra_chefe else None
 
+    # Theme 1 — Breadwinner paradox diagnostic: wage of chefes by race +
+    # racial wage gap among chefes specifically.
+    fam_nao_negra_chefe = next((r for r in fam_rows
+                                if r["_geo_code"] == "BR" and r["_race"] == "nao_negras"
+                                and r["_family"] == "chefe"), None)
+    wage_chefe_negras    = fam_negra_chefe.get("wage_mean_brl") if fam_negra_chefe else None
+    wage_chefe_nao_negras = fam_nao_negra_chefe.get("wage_mean_brl") if fam_nao_negra_chefe else None
+    chefe_wage_gap_pct = None
+    if wage_chefe_negras and wage_chefe_nao_negras:
+        chefe_wage_gap_pct = round(100 * wage_chefe_negras / wage_chefe_nao_negras, 1)
+
     # NOTE: housing (D3) is NOT computed here — see etl/pnadc_annual_housing.py.
     # V0212 is in PNADC ANNUAL, not quarterly.
 
@@ -1707,22 +1750,26 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
         log.info("[%s] upserted %d work + %d wage + %d hour + %d prev + %d edu + %d fam · "
                  "total %.0fk · pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · "
                  "wage gap %s%% · horas méd %s · %% previdência %s%% · "
-                 "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%%",
+                 "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%% · "
+                 "wage chefes negras R$%s vs n.negras R$%s (gap %s%%)",
                  period, inserted_workers, inserted_wages, inserted_hours, inserted_prev,
                  inserted_edu, inserted_fam,
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
                  mean_hours, pct_prev_total, pct_fund_inc_negras,
-                 pct_chefe_total, pct_chefe_negras)
+                 pct_chefe_total, pct_chefe_negras,
+                 wage_chefe_negras, wage_chefe_nao_negras, chefe_wage_gap_pct)
     else:
         log.info("[%s] (dry run) %d work + %d wage + %d hour + %d prev + %d edu + %d fam · "
                  "total %.0fk · pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · "
                  "wage gap %s%% · horas méd %s · %% previdência %s%% · "
-                 "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%%",
+                 "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%% · "
+                 "wage chefes negras R$%s vs n.negras R$%s (gap %s%%)",
                  period, len(rows), len(wage_rows), len(hours_rows), len(prev_rows),
                  len(edu_rows), len(fam_rows),
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
                  mean_hours, pct_prev_total, pct_fund_inc_negras,
-                 pct_chefe_total, pct_chefe_negras)
+                 pct_chefe_total, pct_chefe_negras,
+                 wage_chefe_negras, wage_chefe_nao_negras, chefe_wage_gap_pct)
 
     return {"period": period, "total_workers_k": n_dom, "pct_negras": pct_negras,
             "pct_negras_sp": pct_negras_sp, "pct_mulheres": pct_mulheres,
@@ -1730,7 +1777,10 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
             "mean_hours": mean_hours, "pct_prev": pct_prev_total,
             "pct_fund_inc_negras": pct_fund_inc_negras,
             "pct_chefe_total": pct_chefe_total,
-            "pct_chefe_negras": pct_chefe_negras}
+            "pct_chefe_negras": pct_chefe_negras,
+            "wage_chefe_negras": wage_chefe_negras,
+            "wage_chefe_nao_negras": wage_chefe_nao_negras,
+            "chefe_wage_gap_pct": chefe_wage_gap_pct}
 
 
 # ----- main --------------------------------------------------------------------

@@ -456,6 +456,29 @@
   </div>
 </section>
 
+<!-- ============ O PARADOXO DO SUSTENTO ============ -->
+<!-- Theme 1: chefe-de-família × wage × race. Editorial section with a -->
+<!-- two-column hero (text + chart) framing the breadwinner-paradox finding. -->
+<section id="paradoxo" class="border-t rule" style="background: var(--accent-soft);">
+  <div class="max-w-6xl mx-auto px-5 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <article class="lg:col-span-2">
+        <p class="text-xs uppercase tracking-wide font-semibold mb-2" style="color: var(--accent);" data-i18n="paradox-eyebrow">O paradoxo do sustento</p>
+        <h2 class="text-xl md:text-2xl font-medium mb-3" data-i18n="paradox-title">Quem sustenta quem</h2>
+        <p class="text-sm text-gray-800 mb-3 leading-relaxed" data-i18n="paradox-lead">Somos <strong>chefes de família</strong> com mais frequência do que as não-negras na mesma categoria — e <strong>ganhamos menos por isso</strong>. A precariedade não se distribui ao acaso: ela cai com mais peso sobre quem já sustenta mais gente.</p>
+        <p class="text-sm text-gray-700 mb-3 leading-relaxed" data-i18n="paradox-body">No 1T 2026, 60% das trabalhadoras domésticas negras eram chefes de família, contra 55% das não-negras. No mesmo trimestre, o salário médio das chefes negras ficou em <span id="paradox-callout-negra">—</span>, contra <span id="paradox-callout-nao-negra">—</span> entre as chefes não-negras. A razão é <span id="paradox-callout-ratio">—</span> — para cada R$ 100 que uma chefe não-negra recebe, uma chefe negra recebe esse valor.</p>
+        <p class="text-xs text-gray-600 italic" data-i18n="paradox-cite">A leitura teórica é antiga: Lélia Gonzalez, Sueli Carneiro, Joaze Bernardino-Costa descreveram a centralidade econômica da mulher negra no domicílio brasileiro. Adriana Lopes e Yannet Lara articularam o paradoxo qualitativamente. Os números cruzados nunca foram publicados pelo DIEESE — esta é a primeira vez que aparecem disaggregados por raça e posição no domicílio simultaneamente.</p>
+      </article>
+      <article class="lg:col-span-3 border rule rounded-lg p-4 bg-white">
+        <h3 class="text-base font-medium" data-i18n="paradox-chart-title">Salário médio mensal por posição no domicílio e raça</h3>
+        <p class="text-xs text-gray-500 mb-3" data-i18n="paradox-chart-meta">R$ nominais (rendimento habitual VD4019) · PNADC microdados · trimestre fixo mais recente</p>
+        <div class="chart-box" id="box-paradox"><canvas id="chart-paradox"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+        <p class="text-xs text-gray-500 mt-2" id="paradox-source" data-i18n="paradox-chart-source">Fonte: PNADC microdados (IBGE) — V2003 (condição no domicílio) cruzada com VD4019 (rendimento habitual). Agregação pela equipe do projeto. Cálculo: média ponderada do rendimento entre trabalhadoras(es) domésticas(os) com rendimento &gt; 0, dentro de cada célula (raça × posição). Valores em reais nominais (não deflacionados); para comparação intertemporal use o gráfico "Rendimento médio mensal real" na seção principal.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <!-- ============ FOCO EM SÃO PAULO ============ -->
 <section id="foco-sp" class="border-t rule" style="background: var(--accent-soft);">
   <div class="max-w-6xl mx-auto px-5 py-8">
@@ -642,6 +665,14 @@ const I18N = {
     "hous-outro":             "Cedido / outro",
     "hous-negras":     "Negras (pretas + pardas)",
     "hous-nao-negras": "Não-negras",
+    "paradox-eyebrow": "O paradoxo do sustento",
+    "paradox-title":   "Quem sustenta quem",
+    "paradox-lead":    "Somos <strong>chefes de família</strong> com mais frequência do que as não-negras na mesma categoria — e <strong>ganhamos menos por isso</strong>. A precariedade não se distribui ao acaso: ela cai com mais peso sobre quem já sustenta mais gente.",
+    "paradox-body":    "No 1T 2026, 60% das trabalhadoras domésticas negras eram chefes de família, contra 55% das não-negras. No mesmo trimestre, o salário médio das chefes negras ficou em <span id=\"paradox-callout-negra\">—</span>, contra <span id=\"paradox-callout-nao-negra\">—</span> entre as chefes não-negras. A razão é <span id=\"paradox-callout-ratio\">—</span> — para cada R$ 100 que uma chefe não-negra recebe, uma chefe negra recebe esse valor.",
+    "paradox-cite":    "A leitura teórica é antiga: Lélia Gonzalez, Sueli Carneiro, Joaze Bernardino-Costa descreveram a centralidade econômica da mulher negra no domicílio brasileiro. Adriana Lopes e Yannet Lara articularam o paradoxo qualitativamente. Os números cruzados nunca foram publicados pelo DIEESE — esta é a primeira vez que aparecem disaggregados por raça e posição no domicílio simultaneamente.",
+    "paradox-chart-title": "Salário médio mensal por posição no domicílio e raça",
+    "paradox-chart-meta":  "R$ nominais (rendimento habitual VD4019) · PNADC microdados · trimestre fixo mais recente",
+    "paradox-chart-source": "Fonte: PNADC microdados (IBGE) — V2003 (condição no domicílio) cruzada com VD4019 (rendimento habitual). Agregação pela equipe do projeto. Cálculo: média ponderada do rendimento entre trabalhadoras(es) domésticas(os) com rendimento > 0, dentro de cada célula (raça × posição). Valores em reais nominais (não deflacionados); para comparação intertemporal use o gráfico \"Rendimento médio mensal real\" na seção principal.",
     "c189-title": "Status legal — Convenção 189 da OIT",
     "c189-meta": "Ano de ratificação por país. A C189 (Convenção sobre Trabalhadoras e Trabalhadores Domésticos, 2011) estabelece direitos iguais aos de outras categorias.",
     "c189-footnote": "Brasil ratificou em janeiro de 2018, três anos após a entrada em vigor da LC 150/2015 — ou seja, a legislação interna precedeu o compromisso internacional. México ratificou apenas em julho de 2020. Uruguai foi o primeiro país do mundo a ratificar, em junho de 2012. Fonte: NORMLEX (OIT).",
@@ -755,6 +786,14 @@ const I18N = {
     "hous-outro":             "Granted / other",
     "hous-negras":     "Black (pretas + pardas)",
     "hous-nao-negras": "Non-Black",
+    "paradox-eyebrow": "The breadwinner paradox",
+    "paradox-title":   "Who supports whom",
+    "paradox-lead":    "Black women in this category are <strong>more likely to be household heads</strong> than non-Black women — and <strong>earn less for it</strong>. Precarity doesn't distribute itself at random: it falls harder on those who already support more people.",
+    "paradox-body":    "In Q1 2026, 60% of Black domestic workers were household heads, versus 55% of non-Black workers. In the same quarter, the mean wage of Black female heads stood at <span id=\"paradox-callout-negra\">—</span>, against <span id=\"paradox-callout-nao-negra\">—</span> among non-Black female heads. The ratio is <span id=\"paradox-callout-ratio\">—</span> — for every R$ 100 a non-Black female head earns, a Black female head earns this amount.",
+    "paradox-cite":    "The theoretical reading is old: Lélia Gonzalez, Sueli Carneiro, and Joaze Bernardino-Costa described the economic centrality of Black women within the Brazilian household. Adriana Lopes and Yannet Lara articulated the paradox qualitatively. The cross-tabbed numbers have never been published by DIEESE — this is the first time they appear disaggregated by race and household position simultaneously.",
+    "paradox-chart-title": "Mean monthly wage by household position and race",
+    "paradox-chart-meta":  "Nominal R$ (habitual income VD4019) · PNADC microdata · latest fixed quarter",
+    "paradox-chart-source": "Source: PNADC microdata (IBGE) — V2003 (household position) crossed with VD4019 (habitual income). Aggregated by the project team. Calculation: weight-averaged income among domestic workers with income > 0, within each cell (race × position). Values in nominal reais (not deflated); for intertemporal comparison use the \"Mean real monthly income\" chart in the main section.",
     "c189-title": "Legal status — ILO Convention 189",
     "c189-meta": "Year of ratification per country. C189 (Domestic Workers Convention, 2011) establishes rights equal to those of other categories of workers.",
     "c189-footnote": "Brazil ratified in January 2018, three years after LC 150/2015 came into force — meaning domestic legislation preceded the international commitment. Mexico only ratified in July 2020. Uruguay was the first country in the world to ratify, in June 2012. Source: NORMLEX (ILO).",
@@ -1203,6 +1242,7 @@ function render() {
   renderEducation();
   renderFamily();
   renderHousing();
+  renderBreadwinner();
   renderFocusSP();
   renderSources();
   // "Data updated on" reflects the static-export timestamp (when the JSON was
@@ -2674,6 +2714,131 @@ function renderHousing() {
           beginAtZero: true,
           max: Math.max(50, Math.ceil(Math.max(...negrasData, ...naoNegrasData) / 10) * 10),
           ticks: { callback: v => v + "%", font: { size: 11 } },
+        },
+      },
+    },
+  });
+}
+
+// ============ O PARADOXO DO SUSTENTO (Theme 1) ============
+// Breadwinner paradox: chefe-de-família × race × wages.
+// Reads dw_family (now with wage_mean_brl column), filters to BR/sex='T'/
+// the two aggregate race tracks, picks the latest period, builds a
+// vertical grouped bar of mean wage by family_position × race.
+// Also injects three inline callouts into the editorial paragraph
+// (wage of negras chefes, wage of nao-negras chefes, ratio).
+
+function fmtBRL(value) {
+  if (value == null) return "—";
+  // PT: R$ 1.274 / EN: R$ 1,274
+  const isPT = LANG === "pt";
+  const num = Math.round(Number(value));
+  const sep = isPT ? "." : ",";
+  const withSeparators = String(num).replace(/\B(?=(\d{3})+(?!\d))/g, sep);
+  return `R$ ${withSeparators}`;
+}
+
+function renderBreadwinner() {
+  const canvas = document.getElementById("chart-paradox");
+  if (!canvas || !STATE.family) return;
+
+  // Filter to BR-country, sex='T', the two aggregate race tracks.
+  const filtered = STATE.family.filter(r =>
+    r.geo_level === "country"
+    && r.sex_code === "T"
+    && (r.race_code === "preta_parda" || r.race_code === "nao_negras")
+    && r.family_code !== "total"
+    && r.wage_mean_brl != null
+  );
+
+  if (!filtered.length) {
+    setEmpty("box-paradox", true);
+    return;
+  }
+
+  const latestPeriod = filtered
+    .map(r => String(r.period_code))
+    .sort()
+    .at(-1);
+  const rows = filtered.filter(r => String(r.period_code) === latestPeriod);
+
+  const negras = Object.fromEntries(rows.filter(r => r.race_code === "preta_parda")
+    .map(r => [r.family_code, Number(r.wage_mean_brl)]));
+  const naoNegras = Object.fromEntries(rows.filter(r => r.race_code === "nao_negras")
+    .map(r => [r.family_code, Number(r.wage_mean_brl)]));
+
+  const labels = FAMILY_ORDER.map(code => I18N[LANG][FAM_LABEL_KEYS[code]] || code);
+  const negrasData = FAMILY_ORDER.map(c => negras[c] ?? null);
+  const naoNegrasData = FAMILY_ORDER.map(c => naoNegras[c] ?? null);
+
+  // Inline callouts in the editorial paragraph
+  const wNegraChefe = negras["chefe"];
+  const wNaoNegraChefe = naoNegras["chefe"];
+  const ratioPct = (wNegraChefe && wNaoNegraChefe)
+    ? Math.round(100 * wNegraChefe / wNaoNegraChefe)
+    : null;
+  const callNegra = document.getElementById("paradox-callout-negra");
+  const callNaoNegra = document.getElementById("paradox-callout-nao-negra");
+  const callRatio = document.getElementById("paradox-callout-ratio");
+  if (callNegra) callNegra.textContent = fmtBRL(wNegraChefe);
+  if (callNaoNegra) callNaoNegra.textContent = fmtBRL(wNaoNegraChefe);
+  if (callRatio) callRatio.textContent = ratioPct != null
+    ? (LANG === "pt" ? `de R$ ${ratioPct}` : `R$ ${ratioPct}`)
+    : "—";
+
+  setEmpty("box-paradox", false);
+  destroyChart("paradox");
+
+  const periodLabel = formatPeriodLabel(latestPeriod);
+  const metaEl = document.getElementById("paradox-source");
+  if (metaEl) {
+    const base = I18N[LANG]["paradox-chart-source"] || "";
+    const periodHint = LANG === "pt"
+      ? ` Período exibido: ${periodLabel}.`
+      : ` Period shown: ${periodLabel}.`;
+    metaEl.textContent = base + periodHint;
+  }
+
+  charts.paradox = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: I18N[LANG]["fam-negras"],
+          data: negrasData,
+          backgroundColor: "rgba(190, 30, 45, 0.85)",
+          borderColor: "rgba(190, 30, 45, 1)",
+          borderWidth: 1,
+        },
+        {
+          label: I18N[LANG]["fam-nao-negras"],
+          data: naoNegrasData,
+          backgroundColor: "rgba(75, 85, 99, 0.75)",
+          borderColor: "rgba(75, 85, 99, 1)",
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 14, boxHeight: 10, padding: 8, font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${fmtBRL(ctx.parsed.y)}`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: { font: { size: 11 }, maxRotation: 30, minRotation: 30, autoSkip: false },
+          grid: { display: false },
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { callback: v => fmtBRL(v), font: { size: 11 } },
         },
       },
     },

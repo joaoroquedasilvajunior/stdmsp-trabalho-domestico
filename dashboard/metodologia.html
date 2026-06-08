@@ -264,6 +264,24 @@
   <li><strong>Por que importam</strong>: localizam empiricamente onde a política deveria ter produzido inflexões. A leitura das séries fica menos abstrata — o leitor pode olhar para "% formalização" em junho/2015 e ver o efeito (ou ausência dele) da LC 150 visualmente, sem precisar reconstituir a cronologia mentalmente.</li>
 </ul>
 
+<h3>3.10 Escolaridade (Phase D1)</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-MICRODATA</code> · variável <code>VD3004</code> (nível de instrução mais elevado alcançado), agregada pela equipe do projeto com pesos amostrais <code>V1028</code>.</li>
+  <li><strong>Categorias</strong>: os 7 códigos nativos da PNADC (1 a 7) são colapsados em 5 buckets, seguindo a convenção do DIEESE para facilitar comparação direta:
+    <ul>
+      <li><strong>Fundamental incompleto</strong> — códigos 1 (Sem instrução / menos de 1 ano) + 2 (Fundamental incompleto). Agrupar 1 com 2 segue o Infográfico DIEESE abr/2026, que reporta "39% fundamental incompleto" como bucket único.</li>
+      <li><strong>Fundamental completo</strong> — código 3.</li>
+      <li><strong>Médio incompleto</strong> — código 4.</li>
+      <li><strong>Médio completo</strong> — código 5.</li>
+      <li><strong>Superior</strong> — códigos 6 (incompleto) + 7 (completo).</li>
+    </ul>
+  </li>
+  <li><strong>Cortes emitidos pela pipeline</strong>: BR × sexo='T' × raça × bucket. Inclui as raças nativas (branca, preta, parda, amarela, indígena), os agregados <code>preta_parda</code> (negras) e <code>nao_negras</code> (branca + amarela + indígena), e <code>total</code>.</li>
+  <li><strong>Cálculo do %</strong>: <code>pct_within_race</code> = soma de pesos no bucket / soma total de pesos da raça. É um percentual <em>dentro</em> do grupo racial, não do total da categoria.</li>
+  <li><strong>Validação cruzada</strong>: para a categoria como um todo, a soma <em>Fundamental incompleto + Médio incompleto</em> deve aproximar o "59% sem educação básica completa" reportado pelo DIEESE Infográfico abr/2026.</li>
+  <li><strong>Gráfico no painel</strong>: barras agrupadas verticais, 5 buckets no eixo X, duas barras por bucket (Negras vs. Não-negras), no trimestre fixo mais recente disponível.</li>
+</ul>
+
 <h2>4. Notas metodológicas</h2>
 
 <h3>4.1 Trimestre móvel × trimestre fixo</h3>
@@ -530,6 +548,24 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
     </ul>
   </li>
   <li><strong>Why they matter</strong>: they empirically locate where policy was supposed to produce inflections. Reading the time-series becomes less abstract — a viewer can look at "% formalization" in June 2015 and see (or fail to see) the effect of LC 150 visually, without having to reconstruct the chronology mentally.</li>
+</ul>
+
+<h3>3.10 Education (Phase D1)</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-MICRODATA</code> · variable <code>VD3004</code> (highest education level reached), aggregated by the project team with sample weights <code>V1028</code>.</li>
+  <li><strong>Categories</strong>: PNADC's 7 native codes (1–7) collapsed into 5 buckets, following DIEESE convention to allow direct comparison:
+    <ul>
+      <li><strong>Primary incomplete</strong> — codes 1 (No instruction / under 1 year) + 2 (Primary incomplete). Grouping 1 with 2 mirrors the DIEESE Infográfico Apr/2026 reporting "39% primary incomplete" as a single bucket.</li>
+      <li><strong>Primary complete</strong> — code 3.</li>
+      <li><strong>Secondary incomplete</strong> — code 4.</li>
+      <li><strong>Secondary complete</strong> — code 5.</li>
+      <li><strong>Tertiary</strong> — codes 6 (incomplete) + 7 (complete).</li>
+    </ul>
+  </li>
+  <li><strong>Cuts emitted by the pipeline</strong>: BR × sex='T' × race × bucket. Includes the native races (branca, preta, parda, amarela, indígena), the aggregates <code>preta_parda</code> (Black) and <code>nao_negras</code> (non-Black: branca + amarela + indígena), and <code>total</code>.</li>
+  <li><strong>Percentage calculation</strong>: <code>pct_within_race</code> = sum of weights in the bucket / total weight of the race. It is a percent <em>within</em> the race group, not of the category total.</li>
+  <li><strong>Cross-validation</strong>: for the category overall, the sum <em>Primary incomplete + Secondary incomplete</em> should approximate the "59% without complete basic education" reported by DIEESE Infográfico Apr/2026.</li>
+  <li><strong>Chart on the dashboard</strong>: vertical grouped bars, 5 buckets on the X axis, two bars per bucket (Black vs. Non-Black), at the most recent available fixed quarter.</li>
 </ul>
 
 <h2>4. Methodological notes</h2>

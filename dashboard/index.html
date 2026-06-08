@@ -427,6 +427,19 @@
   <div class="events-grid" id="events-grid" aria-label="Eventos recentes da categoria"></div>
 </section>
 
+<!-- ============ PERFIL SOCIOECONÔMICO ============ -->
+<section id="perfil" class="max-w-6xl mx-auto px-5 py-6 border-t rule">
+  <h2 class="text-xl md:text-2xl font-medium" data-i18n="profile-title">Perfil socioeconômico</h2>
+  <p class="text-sm text-gray-700 mb-5 max-w-3xl" data-i18n="profile-subtitle">Quem somos para além da categoria de trabalho — escolaridade, família, moradia. Cuts derivados dos microdados PNADC, no trimestre fixo mais recente disponível. Família e moradia chegam nas próximas atualizações.</p>
+
+  <article class="border rule rounded-lg p-4 bg-white">
+    <h3 class="text-base font-medium" data-i18n="chart-education">Escolaridade — negras × não-negras</h3>
+    <p class="text-xs text-gray-500 mb-3" data-i18n="chart-education-meta">% dentro de cada grupo · PNADC microdados VD3004 · trimestre fixo mais recente</p>
+    <div class="chart-box" id="box-education"><canvas id="chart-education"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+    <p class="text-xs text-gray-500 mt-2" id="education-source" data-i18n="chart-education-source">Fonte: PNADC microdados (IBGE), variável VD3004 (nível de instrução mais elevado alcançado), agregada pela equipe do projeto. As categorias seguem a convenção DIEESE (Sem instrução + Fundamental incompleto agrupados em "Fundamental incompleto"; Superior incompleto + completo agrupados em "Superior").</p>
+  </article>
+</section>
+
 <!-- ============ FOCO EM SÃO PAULO ============ -->
 <section id="foco-sp" class="border-t rule" style="background: var(--accent-soft);">
   <div class="max-w-6xl mx-auto px-5 py-8">
@@ -583,6 +596,18 @@ const I18N = {
     "chart-intl-meta": "Trajetória ILOSTAT · trabalhadoras(es) domésticas(os) (ISCO 91) por ano · BR e MX em destaque, demais países da América Latina como contexto",
     "events-title": "Mobilização e atualizações",
     "events-subtitle": "Eventos recentes que tocam a categoria — políticas, fiscalização, mobilização sindical. Conteúdo editorial; atualizado conforme novos eventos surgem.",
+    "profile-title": "Perfil socioeconômico",
+    "profile-subtitle": "Quem somos para além da categoria de trabalho — escolaridade, família, moradia. Cuts derivados dos microdados PNADC, no trimestre fixo mais recente disponível. Família e moradia chegam nas próximas atualizações.",
+    "chart-education": "Escolaridade — negras × não-negras",
+    "chart-education-meta": "% dentro de cada grupo · PNADC microdados VD3004 · trimestre fixo mais recente",
+    "chart-education-source": "Fonte: PNADC microdados (IBGE), variável VD3004 (nível de instrução mais elevado alcançado), agregada pela equipe do projeto. As categorias seguem a convenção DIEESE (Sem instrução + Fundamental incompleto agrupados em \"Fundamental incompleto\"; Superior incompleto + completo agrupados em \"Superior\").",
+    "edu-fund-inc":  "Fundamental incompleto",
+    "edu-fund-comp": "Fundamental completo",
+    "edu-med-inc":   "Médio incompleto",
+    "edu-med-comp":  "Médio completo",
+    "edu-sup":       "Superior",
+    "edu-negras":     "Negras (pretas + pardas)",
+    "edu-nao-negras": "Não-negras",
     "c189-title": "Status legal — Convenção 189 da OIT",
     "c189-meta": "Ano de ratificação por país. A C189 (Convenção sobre Trabalhadoras e Trabalhadores Domésticos, 2011) estabelece direitos iguais aos de outras categorias.",
     "c189-footnote": "Brasil ratificou em janeiro de 2018, três anos após a entrada em vigor da LC 150/2015 — ou seja, a legislação interna precedeu o compromisso internacional. México ratificou apenas em julho de 2020. Uruguai foi o primeiro país do mundo a ratificar, em junho de 2012. Fonte: NORMLEX (OIT).",
@@ -666,6 +691,18 @@ const I18N = {
     "chart-intl-meta": "ILOSTAT trajectory · domestic workers (ISCO 91) by year · Brazil and Mexico featured, other Latin American countries shown as context",
     "events-title": "Mobilization and updates",
     "events-subtitle": "Recent events affecting the category — policy, enforcement, union mobilization. Editorial content; updated as new events occur.",
+    "profile-title": "Socioeconomic profile",
+    "profile-subtitle": "Who we are beyond the work category — education, family, housing. Cuts derived from PNADC microdata, latest available fixed quarter. Family and housing land in upcoming updates.",
+    "chart-education": "Education — Black vs. non-Black",
+    "chart-education-meta": "% within each group · PNADC microdata VD3004 · latest fixed quarter",
+    "chart-education-source": "Source: PNADC microdata (IBGE), variable VD3004 (highest education level reached), aggregated by the project team. Categories follow DIEESE convention (No instruction + Primary incomplete grouped as \"Primary incomplete\"; Tertiary incomplete + complete grouped as \"Tertiary\").",
+    "edu-fund-inc":  "Primary incomplete",
+    "edu-fund-comp": "Primary complete",
+    "edu-med-inc":   "Secondary incomplete",
+    "edu-med-comp":  "Secondary complete",
+    "edu-sup":       "Tertiary",
+    "edu-negras":     "Black (pretas + pardas)",
+    "edu-nao-negras": "Non-Black",
     "c189-title": "Legal status — ILO Convention 189",
     "c189-meta": "Year of ratification per country. C189 (Domestic Workers Convention, 2011) establishes rights equal to those of other categories of workers.",
     "c189-footnote": "Brazil ratified in January 2018, three years after LC 150/2015 came into force — meaning domestic legislation preceded the international commitment. Mexico only ratified in July 2020. Uruguay was the first country in the world to ratify, in June 2012. Source: NORMLEX (ILO).",
@@ -813,15 +850,25 @@ async function loadAll() {
   // Supabase remains the ETL target / source of truth; it is no longer a
   // runtime dependency. Re-export via etl/export_static.py after each
   // quarterly ETL refresh, then commit dashboard/data/.
-  const views = ["dw_workers","dw_wages","dw_hours","dw_prev","dw_intl","dw_sources","dw_static_facts"];
+  const views = ["dw_workers","dw_wages","dw_hours","dw_prev","dw_education","dw_intl","dw_sources","dw_static_facts"];
   const data = {};
   let loadError = null;
 
   try {
+    // Per-view resilience: a 404 on one view (e.g., a newly added one whose
+    // first backfill hasn't landed yet) shouldn't kill the whole dashboard.
+    // We log the miss to the console, keep going with the others, and the
+    // corresponding chart shows the "Sem dados ainda" overlay.
     const fetched = await Promise.all(views.map(v =>
       fetch(`./data/${v}.json`).then(r => {
-        if (!r.ok) throw new Error(`${v}.json HTTP ${r.status}`);
+        if (!r.ok) {
+          console.warn(`${v}.json HTTP ${r.status} — using empty fallback`);
+          return [];
+        }
         return r.json();
+      }).catch(err => {
+        console.warn(`${v}.json fetch failed (${err.message}) — using empty fallback`);
+        return [];
       })
     ));
     views.forEach((v, idx) => { data[v] = fetched[idx] || []; });
@@ -831,12 +878,13 @@ async function loadAll() {
     loadError = e;
   }
 
-  STATE.workers = data.dw_workers || [];
-  STATE.wages   = data.dw_wages   || [];
-  STATE.hours   = data.dw_hours   || [];
-  STATE.prev    = data.dw_prev    || [];
-  STATE.intl    = data.dw_intl    || [];
-  STATE.sources = data.dw_sources || [];
+  STATE.workers   = data.dw_workers   || [];
+  STATE.wages     = data.dw_wages     || [];
+  STATE.hours     = data.dw_hours     || [];
+  STATE.prev      = data.dw_prev      || [];
+  STATE.education = data.dw_education || [];
+  STATE.intl      = data.dw_intl      || [];
+  STATE.sources   = data.dw_sources   || [];
   STATE.staticFacts = Object.fromEntries((data.dw_static_facts || []).map(r => [r.fact_code, r]));
 
   // Manifest carries the export timestamp — used for the "data updated on" line.
@@ -1098,6 +1146,7 @@ function render() {
   renderIntl();
   renderC189();
   renderEvents();
+  renderEducation();
   renderFocusSP();
   renderSources();
   // "Data updated on" reflects the static-export timestamp (when the JSON was
@@ -2237,6 +2286,125 @@ function renderEvents() {
       </article>
     `;
   }).join("");
+}
+
+// ============ EDUCAÇÃO (Phase D1) ============
+// Grouped bar chart: % within each race × 5 education buckets.
+// Reads dw_education (geo='country'/'BR', sex='T') filtered to the latest
+// available period for the cleanest snapshot. Two race tracks: preta_parda
+// and nao_negras. If dw_education is empty (microdata pipeline hasn't been
+// re-run with VD3004 yet), the chart shows the empty overlay.
+
+const EDUCATION_ORDER = ["fund_inc", "fund_comp", "med_inc", "med_comp", "sup"];
+const EDU_LABEL_KEYS = {
+  fund_inc:  "edu-fund-inc",
+  fund_comp: "edu-fund-comp",
+  med_inc:   "edu-med-inc",
+  med_comp:  "edu-med-comp",
+  sup:       "edu-sup",
+};
+
+function renderEducation() {
+  const canvas = document.getElementById("chart-education");
+  if (!canvas || !STATE.education) return;
+
+  // Filter to BR-country, sex='T', the two aggregate race tracks.
+  const filtered = STATE.education.filter(r =>
+    r.geo_level === "country"
+    && r.sex_code === "T"
+    && (r.race_code === "preta_parda" || r.race_code === "nao_negras")
+    && r.education_code !== "total"
+  );
+
+  if (!filtered.length) {
+    setEmpty("box-education", true);
+    return;
+  }
+
+  // Pick the latest period_code we have for either race track.
+  const latestPeriod = filtered
+    .map(r => String(r.period_code))
+    .sort()
+    .at(-1);
+  const rows = filtered.filter(r => String(r.period_code) === latestPeriod);
+
+  const negras = Object.fromEntries(rows.filter(r => r.race_code === "preta_parda")
+    .map(r => [r.education_code, Number(r.pct_within_race)]));
+  const naoNegras = Object.fromEntries(rows.filter(r => r.race_code === "nao_negras")
+    .map(r => [r.education_code, Number(r.pct_within_race)]));
+
+  const labels = EDUCATION_ORDER.map(code => I18N[LANG][EDU_LABEL_KEYS[code]] || code);
+  const negrasData = EDUCATION_ORDER.map(c => negras[c] ?? 0);
+  const naoNegrasData = EDUCATION_ORDER.map(c => naoNegras[c] ?? 0);
+
+  setEmpty("box-education", false);
+  destroyChart("education");
+
+  const periodLabel = formatPeriodLabel(latestPeriod);
+  const metaEl = document.getElementById("education-source");
+  if (metaEl) {
+    const base = I18N[LANG]["chart-education-source"] || "";
+    const periodHint = LANG === "pt"
+      ? ` Período exibido: ${periodLabel}.`
+      : ` Period shown: ${periodLabel}.`;
+    metaEl.textContent = base + periodHint;
+  }
+
+  charts.education = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: I18N[LANG]["edu-negras"],
+          data: negrasData,
+          backgroundColor: "rgba(190, 30, 45, 0.85)",
+          borderColor: "rgba(190, 30, 45, 1)",
+          borderWidth: 1,
+        },
+        {
+          label: I18N[LANG]["edu-nao-negras"],
+          data: naoNegrasData,
+          backgroundColor: "rgba(75, 85, 99, 0.75)",
+          borderColor: "rgba(75, 85, 99, 1)",
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 14, boxHeight: 10, padding: 8, font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: { font: { size: 11 }, maxRotation: 0, autoSkip: false },
+          grid: { display: false },
+        },
+        y: {
+          beginAtZero: true,
+          max: Math.max(50, Math.ceil(Math.max(...negrasData, ...naoNegrasData) / 10) * 10),
+          ticks: { callback: v => v + "%", font: { size: 11 } },
+        },
+      },
+    },
+  });
+}
+
+// Helper: trimestre fixo code "202504" → "4T 2025" / "Q4 2025"
+function formatPeriodLabel(code) {
+  if (!code || code.length < 6) return code;
+  const year = code.substring(0, 4);
+  const q = code.substring(4, 6);
+  const qNum = parseInt(q, 10);
+  if (!Number.isFinite(qNum)) return code;
+  return LANG === "pt" ? `${qNum}T ${year}` : `Q${qNum} ${year}`;
 }
 
 // ============ FOCO EM SÃO PAULO ============

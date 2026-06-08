@@ -161,6 +161,60 @@
     .c189-card .year { font-size: 18px; font-variant-numeric: tabular-nums; color: var(--accent); font-weight: 600; }
     .c189-card.featured-mx .year { color: var(--ink); }
     .c189-note { font-size: 11px; color: #666; margin-top: 12px; line-height: 1.5; }
+    /* Mobilização e atualizações — 4-card event strip */
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .event-card {
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 14px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-left-width: 3px;
+    }
+    .event-card.kind-institutional { border-left-color: var(--accent); }
+    .event-card.kind-debate        { border-left-color: #6b7280; }
+    .event-card.kind-enforcement   { border-left-color: #15803d; }
+    .event-card.kind-mobilization  { border-left-color: var(--ink); }
+    .event-date {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #666;
+    }
+    .event-kind {
+      font-weight: 600;
+    }
+    .event-card.kind-institutional .event-kind { color: var(--accent); }
+    .event-card.kind-debate        .event-kind { color: #6b7280; }
+    .event-card.kind-enforcement   .event-kind { color: #15803d; }
+    .event-card.kind-mobilization  .event-kind { color: var(--ink); }
+    .event-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.35;
+    }
+    .event-body {
+      font-size: 13px;
+      color: #444;
+      line-height: 1.5;
+      flex-grow: 1;
+    }
+    .event-source {
+      font-size: 11px;
+      color: #666;
+      border-top: 1px solid #eee;
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+    .event-source a { color: var(--accent); text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -366,6 +420,13 @@
 
 </section>
 
+<!-- ============ MOBILIZAÇÃO E ATUALIZAÇÕES ============ -->
+<section id="mobilizacao" class="max-w-6xl mx-auto px-5 py-6 border-t rule">
+  <h2 class="text-xl md:text-2xl font-medium" data-i18n="events-title">Mobilização e atualizações</h2>
+  <p class="text-sm text-gray-700 mb-5 max-w-3xl" data-i18n="events-subtitle">Eventos recentes que tocam a categoria — políticas, fiscalização, mobilização sindical. Conteúdo editorial; atualizado conforme novos eventos surgem.</p>
+  <div class="events-grid" id="events-grid" aria-label="Eventos recentes da categoria"></div>
+</section>
+
 <!-- ============ FOCO EM SÃO PAULO ============ -->
 <section id="foco-sp" class="border-t rule" style="background: var(--accent-soft);">
   <div class="max-w-6xl mx-auto px-5 py-8">
@@ -520,6 +581,8 @@ const I18N = {
     "chart-region-meta": "milhares de pessoas · top 10 UFs · trimestre mais recente disponível",
     "chart-intl": "Comparativo internacional — Brasil ↔ México",
     "chart-intl-meta": "Trajetória ILOSTAT · trabalhadoras(es) domésticas(os) (ISCO 91) por ano · BR e MX em destaque, demais países da América Latina como contexto",
+    "events-title": "Mobilização e atualizações",
+    "events-subtitle": "Eventos recentes que tocam a categoria — políticas, fiscalização, mobilização sindical. Conteúdo editorial; atualizado conforme novos eventos surgem.",
     "c189-title": "Status legal — Convenção 189 da OIT",
     "c189-meta": "Ano de ratificação por país. A C189 (Convenção sobre Trabalhadoras e Trabalhadores Domésticos, 2011) estabelece direitos iguais aos de outras categorias.",
     "c189-footnote": "Brasil ratificou em janeiro de 2018, três anos após a entrada em vigor da LC 150/2015 — ou seja, a legislação interna precedeu o compromisso internacional. México ratificou apenas em julho de 2020. Uruguai foi o primeiro país do mundo a ratificar, em junho de 2012. Fonte: NORMLEX (OIT).",
@@ -601,6 +664,8 @@ const I18N = {
     "chart-region-meta": "thousands of people · top 10 states · latest available quarter",
     "chart-intl": "International comparison — Brazil ↔ Mexico",
     "chart-intl-meta": "ILOSTAT trajectory · domestic workers (ISCO 91) by year · Brazil and Mexico featured, other Latin American countries shown as context",
+    "events-title": "Mobilization and updates",
+    "events-subtitle": "Recent events affecting the category — policy, enforcement, union mobilization. Editorial content; updated as new events occur.",
     "c189-title": "Legal status — ILO Convention 189",
     "c189-meta": "Year of ratification per country. C189 (Domestic Workers Convention, 2011) establishes rights equal to those of other categories of workers.",
     "c189-footnote": "Brazil ratified in January 2018, three years after LC 150/2015 came into force — meaning domestic legislation preceded the international commitment. Mexico only ratified in July 2020. Uruguay was the first country in the world to ratify, in June 2012. Source: NORMLEX (ILO).",
@@ -1032,6 +1097,7 @@ function render() {
   renderRegion();
   renderIntl();
   renderC189();
+  renderEvents();
   renderFocusSP();
   renderSources();
   // "Data updated on" reflects the static-export timestamp (when the JSON was
@@ -2075,6 +2141,101 @@ function renderC189() {
       <span class="country">${name}</span>
       <span class="year">${r.year}</span>
     </div>`;
+  }).join("");
+}
+
+// ============ MOBILIZAÇÃO E ATUALIZAÇÕES ============
+// Curated 4-card strip of recent events affecting the category.
+// PT uses union voice ("nós", direct attribution); EN stays neutral.
+// Order is editorial, not chronological — institutional first, mobilization
+// last, so the strip reads as "structure → debate → enforcement → struggle".
+// To add an event later: append to RECENT_EVENTS and the strip auto-renders.
+
+const RECENT_EVENTS = [
+  {
+    kind: "institutional",
+    date_pt: "Abril 2026",
+    date_en: "April 2026",
+    title_pt: "Política Nacional de Cuidados e Conadon",
+    title_en: "National Care Policy and Conadon",
+    body_pt: "O Senado aprovou a Política Nacional de Cuidados por unanimidade e o MTE criou a Conadon — Coordenação Nacional de Fiscalização do Trabalho Doméstico e de Cuidados. Pela primeira vez, a fiscalização da nossa categoria ganha uma estrutura nacional dedicada.",
+    body_en: "Brazil's Senate unanimously approved the National Care Policy, and the Ministry of Labour created Conadon — the National Coordination for Labour Inspection of Domestic and Care Work. For the first time, enforcement targeting this category has a dedicated national structure.",
+    source_label_pt: "gov.br — Seminário MTE/DIEESE",
+    source_label_en: "gov.br — MTE/DIEESE seminar",
+    source_url: "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/abril/seminario-do-mte-e-dieese-analisa-cenario-do-trabalho-domestico-no-pais",
+  },
+  {
+    kind: "debate",
+    date_pt: "9 de abril, 2026",
+    date_en: "April 9, 2026",
+    title_pt: "Seminário MTE × DIEESE — Quem cuida de quem",
+    title_en: "MTE × DIEESE Seminar — Who cares for whom",
+    body_pt: "Pesquisadoras e gestores públicos debatem o setor: efeito do salário mínimo, divisão sexual do trabalho, envelhecimento da categoria. Paula Montagner (MTE) cita ~5 milhões de trabalhadores; Laís Abramo (MDS) ressalta que somos majoritariamente mulheres negras.",
+    body_en: "Researchers and policymakers debate the sector: minimum-wage effects, the sexual division of labour, the workforce's aging. MTE's Paula Montagner cites ~5 million workers; National Care Policy Secretary Laís Abramo highlights that the workforce is majority Black women.",
+    source_label_pt: "gov.br — MTE/DIEESE",
+    source_label_en: "gov.br — MTE/DIEESE",
+    source_url: "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/abril/seminario-do-mte-e-dieese-analisa-cenario-do-trabalho-domestico-no-pais",
+  },
+  {
+    kind: "enforcement",
+    date_pt: "24–25 de abril, 2026",
+    date_en: "April 24–25, 2026",
+    title_pt: "Campanha Nacional — Saúde e Segurança são Direitos Humanos",
+    title_en: "National Campaign — Health and Safety are Human Rights",
+    body_pt: "Lançada em Belém pela SIT/MTE com Fenatrad, OIT e UFPA. Atendimentos jurídicos, vacinação e orientações previdenciárias direto para trabalhadoras domésticas. Saúde e segurança são o eixo central da edição 2026.",
+    body_en: "Launched in Belém by MTE's Labour Inspection Secretariat with Fenatrad, the ILO and UFPA. Free legal counseling, vaccination, and social-security guidance offered directly to domestic workers. Health and safety frame the 2026 campaign.",
+    source_label_pt: "MTE — Dia Nacional da Trabalhadora Doméstica",
+    source_label_en: "MTE — National Domestic Worker Day",
+    source_url: "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/abril/dia-nacional-da-trabalhadora-domestica-reforca-mobilizacao-por-direitos-e-trabalho-decente-no-brasil",
+  },
+  {
+    kind: "mobilization",
+    date_pt: "Em curso · 2025–2026",
+    date_en: "Ongoing · 2025–2026",
+    title_pt: "#SôniaLivre — pela liberdade de Sônia Maria",
+    title_en: "#SôniaLivre — to free Sônia Maria",
+    body_pt: "Intensificamos a campanha global pela liberdade de Sônia Maria. STDMSP, IPEATRA, sindicato de Campinas e auditores-fiscais do trabalho juntos. Caso emblemático da luta contra trabalho análogo à escravidão na categoria.",
+    body_en: "São Paulo domestic workers intensify the global campaign for Sônia Maria's freedom. STDMSP, IPEATRA, the Campinas union and labour inspectors stand together. A landmark case in the category's struggle against modern slavery.",
+    source_label_pt: "CUT-SP — campanha global",
+    source_label_en: "CUT-SP — global campaign",
+    source_url: "https://sp.cut.org.br/noticias/domesticas-de-sp-intensificam-campanha-global-pela-liberdade-de-sonia-maria-137e",
+  },
+];
+
+const KIND_LABELS = {
+  institutional: { pt: "INSTITUCIONAL", en: "INSTITUTIONAL" },
+  debate:        { pt: "DEBATE",        en: "DEBATE" },
+  enforcement:   { pt: "FISCALIZAÇÃO",  en: "ENFORCEMENT" },
+  mobilization:  { pt: "MOBILIZAÇÃO",   en: "MOBILIZATION" },
+};
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+  ));
+}
+
+function renderEvents() {
+  const grid = document.getElementById("events-grid");
+  if (!grid) return;
+  const lang = LANG;
+  grid.innerHTML = RECENT_EVENTS.map(e => {
+    const date  = lang === "pt" ? e.date_pt : e.date_en;
+    const title = lang === "pt" ? e.title_pt : e.title_en;
+    const body  = lang === "pt" ? e.body_pt : e.body_en;
+    const src   = lang === "pt" ? e.source_label_pt : e.source_label_en;
+    const kind  = (KIND_LABELS[e.kind] || {})[lang] || "";
+    const srcLabel = lang === "pt" ? "Fonte" : "Source";
+    return `
+      <article class="event-card kind-${e.kind}">
+        <div class="event-date">
+          <span>${escapeHtml(date)}</span> · <span class="event-kind">${escapeHtml(kind)}</span>
+        </div>
+        <h3 class="event-title">${escapeHtml(title)}</h3>
+        <p class="event-body">${escapeHtml(body)}</p>
+        <p class="event-source">${srcLabel}: <a href="${e.source_url}" target="_blank" rel="noopener">${escapeHtml(src)}</a></p>
+      </article>
+    `;
   }).join("");
 }
 

@@ -1299,6 +1299,116 @@ just the new feature.
 
 ---
 
+## 2026-06-08 — Theme 1: Breadwinner paradox panel
+
+**Scope.** First of the second-order findings (the "Theme N" series),
+selected from the menu Joao asked for after Phase D wrapped. Adds
+a wage × family-position cross-tab to surface the breadwinner paradox
+— Black women in this category are MORE likely to be household heads
+AND earn less per cell — and gives it a dedicated editorial section.
+
+### Schema (applied via Supabase MCP migration `breadwinner_paradox_family_wages_v2`)
+
+- `domestic_work.fact_family` — gains two columns: `wage_mean_brl`
+  (numeric(12,2)) and `wage_n_with_income` (int).
+- `public.dw_family` — view dropped and recreated to expose the new
+  columns (CREATE OR REPLACE can't reorder; `drop view + create view`
+  pattern used).
+- security_invoker preserved; grants re-applied.
+
+### Pipeline (`etl/pnadc_microdata.py`)
+
+- `build_family_rows()` rewritten: same shape, plus a `_wage_stats()`
+  helper that computes the weighted mean wage among cell members with
+  `VD4019 > 0`. Emitted rows now carry `wage_mean_brl` and
+  `wage_n_with_income` alongside `workers_thousands` and
+  `pct_within_race`. The wage denominator (workers with income) is
+  smaller than the cell denominator (all workers) by design —
+  non-earners would pull the mean toward zero artificially.
+- `upsert_family_to_supabase()` writes the two new columns.
+- `process_period()` now logs the breadwinner-paradox diagnostic
+  line: **`wage chefes negras R$X vs n.negras R$Y (gap Z%)`**.
+- Backwards compatible: rows from before this migration have NULL in
+  the new columns until the next pipeline run.
+
+### Dashboard (`dashboard/index.html`)
+
+- New `<section id="paradoxo">` "O paradoxo do sustento" placed between
+  the Perfil socioeconômico section and Foco em São Paulo.
+- Two-column layout on desktop (`grid-cols-1 lg:grid-cols-5`): editorial
+  hero in the left 2/5 (eyebrow + title + lead + body + scholarly
+  citation), chart in the right 3/5 (grouped bar of wage by position ×
+  race).
+- The editorial body paragraph carries three inline placeholders
+  (`paradox-callout-negra`, `paradox-callout-nao-negra`,
+  `paradox-callout-ratio`) which `renderBreadwinner()` populates with
+  the actual numbers at render time. So the editorial reads as a
+  coherent narrative with the data injected, not as a dry chart caption.
+- `renderBreadwinner()` reads `STATE.family`, filters by
+  geo_level/sex/aggregate-race-tracks and `wage_mean_brl != null`,
+  picks the latest period, builds the chart and populates the inline
+  callouts.
+- New helper `fmtBRL()` for currency formatting (PT uses `.` as
+  thousand-separator, EN uses `,`).
+- i18n strings bilingual: editorial copy in union voice (PT) and
+  researcher-neutral (EN). Scholarly citation lists Gonzalez,
+  Carneiro, Bernardino-Costa, Lopes, Lara.
+
+### Methodology (`dashboard/metodologia.html`)
+
+- §3.13 added (PT + EN) — documents the variable cross-tab, the
+  weighted-mean calculation, the nominal-vs-real choice, why this
+  cross-tab matters (first official Brazilian publication of the
+  full cross), and carries forward the §3.11 calibration caveat (the
+  absolute % chefe disputes DIEESE's 46%, but the racial gap is
+  internally consistent and publishable on its own).
+
+### Run sequence on Joao's Mac
+
+```bash
+cd ~/Documents/Claude/Domestic\ Work
+source etl/.venv/bin/activate
+
+# Single quarter — re-runs all dimensions with the new wage cross-tab
+# populated for family. Watch for the new "wage chefes negras R$X vs
+# n.negras R$Y (gap Z%)" diagnostic line.
+python etl/pnadc_microdata.py 012026
+
+./etl/refresh.sh
+git add etl/pnadc_microdata.py \
+        dashboard/index.html dashboard/metodologia.html dashboard/data/ \
+        QA_AUDIT.md
+git commit -m "feat(Theme 1): breadwinner paradox panel — chefe × wage × race"
+git push origin main
+```
+
+### Sanity-check target
+
+DIEESE Apr/2026 doesn't publish this cross-tab, so there's no direct
+external check. Plausibility bounds for the new diagnostic:
+
+- **wage chefes negras vs n.negras gap** should land near the overall
+  category wage gap (87%) — within ±3 pp. If wildly different, the
+  per-position computation is broken.
+- **wage chefes negras** in absolute terms should be in the **R$ 1,000
+  – R$ 1,700 range** for 1T 2026 (close to but possibly slightly
+  above the all-trabalhadoras mean, since heads are likelier to be
+  mensalistas with longer hours and more carteira).
+
+### Why this matters editorially
+
+This is the dashboard's first explicitly editorialized finding —
+previous sections present data with brief tooltips and methodology
+links. The breadwinner-paradox panel takes the same data and *frames*
+it as an intersectional argument, citing the Black-feminist
+scholarship that has predicted the finding for decades. The visual
+treatment (accent-soft background, eyebrow tag, two-column hero
+layout) signals to the reader that this is a *finding*, not a routine
+indicator. STDMSP and Mayer have explicit hooks for this in their
+respective audiences.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

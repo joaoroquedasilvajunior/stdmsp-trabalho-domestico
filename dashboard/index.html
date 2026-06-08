@@ -449,9 +449,9 @@
 
     <article class="border rule rounded-lg p-4 bg-white">
       <h3 class="text-base font-medium" data-i18n="chart-housing">Moradia — negras × não-negras</h3>
-      <p class="text-xs text-gray-500 mb-3" data-i18n="chart-housing-meta">% dentro de cada grupo · PNADC microdados V0212 · trimestre fixo mais recente</p>
+      <p class="text-xs text-gray-500 mb-3" data-i18n="chart-housing-meta">% dentro de cada grupo · PNADC Anual (Visita 1), variável S01017 · cadência anual</p>
       <div class="chart-box" id="box-housing"><canvas id="chart-housing"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
-      <p class="text-xs text-gray-500 mt-2" id="housing-source" data-i18n="chart-housing-source">Fonte: PNADC microdados (IBGE), variável V0212 (forma de habitação), agregada pela equipe do projeto. As 7 categorias nativas são colapsadas em 4 buckets — próprio (já pago + em pagamento), alugado, cedido pelo empregador (trabalhadoras residentes na casa onde trabalham), cedido/outro. A categoria "cedido pelo empregador" é mantida em separado por relevância política: identifica as empregadas domésticas residentes, historicamente menos protegidas.</p>
+      <p class="text-xs text-gray-500 mt-2" id="housing-source" data-i18n="chart-housing-source">Fonte: PNADC Anual — Visita 1 (IBGE), variável S01017 (forma de habitação do domicílio), agregada pela equipe do projeto. Cadência ANUAL (uma observação por ano, não trimestral como os demais cortes). As 7 categorias nativas são colapsadas em 4 buckets — próprio (já pago + em pagamento), alugado, cedido pelo empregador (trabalhadoras residentes), cedido/outro. A categoria "cedido pelo empregador" é mantida em separado por relevância política: identifica as empregadas domésticas residentes, historicamente menos protegidas.</p>
     </article>
   </div>
 </section>
@@ -634,8 +634,8 @@ const I18N = {
     "fam-negras":     "Negras (pretas + pardas)",
     "fam-nao-negras": "Não-negras",
     "chart-housing": "Moradia — negras × não-negras",
-    "chart-housing-meta": "% dentro de cada grupo · PNADC microdados V0212 · trimestre fixo mais recente",
-    "chart-housing-source": "Fonte: PNADC microdados (IBGE), variável V0212 (forma de habitação), agregada pela equipe do projeto. As 7 categorias nativas são colapsadas em 4 buckets — próprio (já pago + em pagamento), alugado, cedido pelo empregador (trabalhadoras residentes na casa onde trabalham), cedido/outro. A categoria \"cedido pelo empregador\" é mantida em separado por relevância política: identifica as empregadas domésticas residentes, historicamente menos protegidas.",
+    "chart-housing-meta": "% dentro de cada grupo · PNADC Anual (Visita 1), variável S01017 · cadência anual",
+    "chart-housing-source": "Fonte: PNADC Anual — Visita 1 (IBGE), variável S01017 (forma de habitação do domicílio), agregada pela equipe do projeto. Cadência ANUAL (uma observação por ano, não trimestral como os demais cortes). As 7 categorias nativas são colapsadas em 4 buckets — próprio (já pago + em pagamento), alugado, cedido pelo empregador (trabalhadoras residentes), cedido/outro. A categoria \"cedido pelo empregador\" é mantida em separado por relevância política: identifica as empregadas domésticas residentes, historicamente menos protegidas.",
     "hous-proprio":           "Próprio",
     "hous-alugado":           "Alugado",
     "hous-cedido_empregador": "Cedido pelo empregador",
@@ -747,8 +747,8 @@ const I18N = {
     "fam-negras":     "Black (pretas + pardas)",
     "fam-nao-negras": "Non-Black",
     "chart-housing": "Housing — Black vs. non-Black",
-    "chart-housing-meta": "% within each group · PNADC microdata V0212 · latest fixed quarter",
-    "chart-housing-source": "Source: PNADC microdata (IBGE), variable V0212 (housing tenure), aggregated by the project team. The 7 native categories are collapsed into 4 buckets — owned (paid + being paid), rented, granted by employer (live-in domestic workers), granted / other. The \"granted by employer\" category is kept separate because it identifies live-in domestic workers, historically the least protected sub-category.",
+    "chart-housing-meta": "% within each group · PNADC Annual (Visit 1), variable S01017 · annual cadence",
+    "chart-housing-source": "Source: PNADC Annual — Visit 1 (IBGE), variable S01017 (household tenure), aggregated by the project team. ANNUAL cadence (one observation per year, not quarterly like the other cuts). The 7 native categories are collapsed into 4 buckets — owned (paid + being paid), rented, granted by employer (live-in workers), granted / other. The \"granted by employer\" category is kept separate because it identifies live-in domestic workers, historically the least protected sub-category.",
     "hous-proprio":           "Owned",
     "hous-alugado":           "Rented",
     "hous-cedido_empregador": "Granted by employer",
@@ -2453,9 +2453,17 @@ function renderEducation() {
   });
 }
 
-// Helper: trimestre fixo code "202504" → "4T 2025" / "Q4 2025"
+// Helper: convert a period_code to a human label.
+//   "202504" → "4T 2025" / "Q4 2025" (trimestre fixo)
+//   "2024A"  → "2024 (anual)" / "2024 (annual)" (PNADC-A — used for housing)
 function formatPeriodLabel(code) {
-  if (!code || code.length < 6) return code;
+  if (!code) return code;
+  // Annual: trailing 'A'
+  if (/^\d{4}A$/i.test(code)) {
+    const year = code.substring(0, 4);
+    return LANG === "pt" ? `${year} (anual)` : `${year} (annual)`;
+  }
+  if (code.length < 6) return code;
   const year = code.substring(0, 4);
   const q = code.substring(4, 6);
   const qNum = parseInt(q, 10);

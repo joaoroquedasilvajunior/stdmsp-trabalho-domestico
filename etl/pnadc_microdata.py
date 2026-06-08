@@ -188,7 +188,6 @@ def parse_sas_input(text: str) -> dict[str, tuple[int, int]]:
 NEEDED_VARS = [
     "Ano", "Trimestre", "UF",
     "V1028",   # population weight
-    "V0212",   # forma de habitação — tenure (D3 — housing)
     "V2003",   # condição no domicílio (D2 — family / household position)
     "V2007",   # sex
     "V2010",   # cor/raça
@@ -197,6 +196,9 @@ NEEDED_VARS = [
     "VD3004",  # nível de instrução mais elevado alcançado (D1 — education)
     "VD4009",  # posição na ocupação
     "VD4019",  # rendimento mensal habitual
+    # NOTE: V0212 (housing tenure) is NOT in the PNADC quarterly dictionary —
+    # it lives in PNADC ANNUAL. The D3 housing pipeline runs separately via
+    # etl/pnadc_annual_housing.py and populates the same fact_housing table.
 ]
 
 
@@ -1682,18 +1684,8 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
                             and r["_family"] == "chefe"), None)
     pct_chefe_negras = fam_negra_chefe["pct_within_race"] if fam_negra_chefe else None
 
-    # ---- housing (fact_housing) ----
-    hous_rows = build_housing_rows(df, period)
-    # Diagnostics: % próprio (homeownership rate, category overall) and
-    # % cedido_empregador (live-in share — structural vulnerability marker).
-    hous_total_proprio = next((r for r in hous_rows
-                               if r["_geo_code"] == "BR" and r["_race"] == "total"
-                               and r["_housing"] == "proprio"), None)
-    pct_proprio_total = hous_total_proprio["pct_within_race"] if hous_total_proprio else None
-    hous_total_livein = next((r for r in hous_rows
-                              if r["_geo_code"] == "BR" and r["_race"] == "total"
-                              and r["_housing"] == "cedido_empregador"), None)
-    pct_livein_total = hous_total_livein["pct_within_race"] if hous_total_livein else None
+    # NOTE: housing (D3) is NOT computed here — see etl/pnadc_annual_housing.py.
+    # V0212 is in PNADC ANNUAL, not quarterly.
 
     # ---- wages (fact_wages) ----
     wage_rows = build_wage_rows(df, period)
@@ -1712,30 +1704,25 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
         inserted_prev = upsert_prev_to_supabase(prev_rows)
         inserted_edu = upsert_education_to_supabase(edu_rows)
         inserted_fam = upsert_family_to_supabase(fam_rows)
-        inserted_hous = upsert_housing_to_supabase(hous_rows)
-        log.info("[%s] upserted %d work + %d wage + %d hour + %d prev + %d edu + %d fam + %d hous · "
+        log.info("[%s] upserted %d work + %d wage + %d hour + %d prev + %d edu + %d fam · "
                  "total %.0fk · pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · "
                  "wage gap %s%% · horas méd %s · %% previdência %s%% · "
-                 "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%% · "
-                 "%% próprio %s%% · %% live-in %s%%",
+                 "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%%",
                  period, inserted_workers, inserted_wages, inserted_hours, inserted_prev,
-                 inserted_edu, inserted_fam, inserted_hous,
+                 inserted_edu, inserted_fam,
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
                  mean_hours, pct_prev_total, pct_fund_inc_negras,
-                 pct_chefe_total, pct_chefe_negras,
-                 pct_proprio_total, pct_livein_total)
+                 pct_chefe_total, pct_chefe_negras)
     else:
-        log.info("[%s] (dry run) %d work + %d wage + %d hour + %d prev + %d edu + %d fam + %d hous · "
+        log.info("[%s] (dry run) %d work + %d wage + %d hour + %d prev + %d edu + %d fam · "
                  "total %.0fk · pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · "
                  "wage gap %s%% · horas méd %s · %% previdência %s%% · "
-                 "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%% · "
-                 "%% próprio %s%% · %% live-in %s%%",
+                 "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%%",
                  period, len(rows), len(wage_rows), len(hours_rows), len(prev_rows),
-                 len(edu_rows), len(fam_rows), len(hous_rows),
+                 len(edu_rows), len(fam_rows),
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
                  mean_hours, pct_prev_total, pct_fund_inc_negras,
-                 pct_chefe_total, pct_chefe_negras,
-                 pct_proprio_total, pct_livein_total)
+                 pct_chefe_total, pct_chefe_negras)
 
     return {"period": period, "total_workers_k": n_dom, "pct_negras": pct_negras,
             "pct_negras_sp": pct_negras_sp, "pct_mulheres": pct_mulheres,
@@ -1743,9 +1730,7 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
             "mean_hours": mean_hours, "pct_prev": pct_prev_total,
             "pct_fund_inc_negras": pct_fund_inc_negras,
             "pct_chefe_total": pct_chefe_total,
-            "pct_chefe_negras": pct_chefe_negras,
-            "pct_proprio_total": pct_proprio_total,
-            "pct_livein_total": pct_livein_total}
+            "pct_chefe_negras": pct_chefe_negras}
 
 
 # ----- main --------------------------------------------------------------------

@@ -1,13 +1,12 @@
 {
-  "generated_at": "2026-06-08T00:00:00+00:00",
+  "generated_at": "2026-06-08T20:33:02.349859+00:00",
   "views": {
-    "dw_workers": 13103,
-    "dw_wages": 1343,
-    "dw_hours": 13399,
-    "dw_prev": 12263,
+    "dw_workers": 13328,
+    "dw_wages": 1364,
+    "dw_hours": 13642,
+    "dw_prev": 12487,
     "dw_intl": 94,
     "dw_sources": 5,
     "dw_static_facts": 3
-  },
-  "notes": "Refresh v2.1 — DIEESE abril/2026 static_fact updates only (microdata views unchanged from 2026-05-20 export). Supabase project sceneqc data was lost during extended pause; this refresh edits dw_static_facts.json directly. PNADC 1T 2026 microdata pipeline run pending."
+  }
 }

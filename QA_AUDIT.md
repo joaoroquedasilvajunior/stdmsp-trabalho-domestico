@@ -695,11 +695,169 @@ actually matters.
 
 ---
 
+## 2026-06-08 — Refresh v2.1 (DIEESE abril/2026 + Supabase data loss)
+
+**Scope.** First scheduled refresh after the v2.0 consolidation. Captures the
+DIEESE abril/2026 Infográfico headline figures, two new April 2026 policy
+events (Política Nacional de Cuidados + Conadon), the PNADC 2025–2026 master-
+sample transition, and documents an unplanned finding: the Supabase project
+`sceneqc` lost all data during its most recent free-tier pause.
+
+### Supabase data loss (P0 finding)
+
+On waking the project to update `static_fact`, `domestic_work` schema did not
+exist. Listing schemas returned only the Supabase defaults plus `public`, and
+`public` is also empty. Project metadata reports
+`created_at: 2026-04-20T18:01:51Z` — meaning the project was effectively
+re-created on that date, after the May pause exceeded the free-tier
+inactivity-purge window.
+
+**Vindication of the static-export migration.** The 2026-05-20 architectural
+shift is what saved this refresh. The dashboard is a static site that reads
+`dashboard/data/*.json` (committed to git). Those JSON files are now the
+de-facto source of truth for everything we display. The public dashboard
+remained fully functional throughout — the data loss is invisible to users.
+
+**Consequence for this refresh.** The DIEESE abril/2026 update was applied by
+editing `dashboard/data/dw_static_facts.json` directly, bypassing Supabase.
+The `etl/refresh.sh` helper is now broken until the schema is rebuilt, since
+`etl/export_static.py` queries `dw_*` views that no longer exist.
+
+**Outstanding decision (carried forward).** Whether to rebuild the
+`domestic_work` schema in Supabase from the committed JSON exports + the
+PNADC microdata pipeline, or to drop Supabase from the loop entirely and
+treat `dashboard/data/` as the durable record. The first preserves the
+queryable backend for future pipeline runs; the second simplifies operations.
+Either way: the next PNADC microdata run (when Joao executes
+`pnadc_microdata.py 012026` on his Mac) needs a target — either a rebuilt
+Supabase schema or a refactor of the pipeline to write directly into
+`dashboard/data/*.json`.
+
+### DIEESE Infográfico abril/2026 — figures captured
+
+Source: <https://www.dieese.org.br/infografico/2026/2026trabalhadorasDomesticas.pdf>
+Published April 2026, base PNADC 4º trimestre 2025. The HTML landing page is
+behind a login wall; the PDF is openly accessible and is the canonical artifact.
+
+Headline figures vs. the abril/2025 edition we were carrying:
+
+| Indicator | abr/2025 | abr/2026 | Δ |
+|---|---:|---:|---:|
+| Total trabalhadoras(es) domésticas(os) | 5,8M | 5,6M | −0,2M |
+| Mulheres | 92% | 92% | 0 pp |
+| Negras (entre mulheres no emprego doméstico) | 69% | 68% | **−1 pp** |
+| Razão salarial negras ÷ não-negras | 84% | **87,1%** | **+3,1 pp** |
+| Sem carteira | 75% | 76% | +1 pp |
+| Sem contribuição previdenciária | n/a | 65% | new |
+| Mensalistas / Diaristas | 54/46 | 53/47 | −1 pp |
+| Pobreza (2024 base) | n/a | 25% | new |
+
+**Wage-ratio shift, +3 pp — interpret with care.** The narrowing of the
+racial wage gap (84% → 87,1%) is the most substantive headline of the
+abril/2026 edition. Two competing readings, neither yet decisive:
+
+1. *Real narrowing.* The minimum-wage valorization policy reinstated in
+   2023 raises the floor disproportionately for the lower-paid (most
+   trabalhadoras negras), mechanically compressing the ratio. The April 9
+   2026 MTE × DIEESE seminar speakers (Paula Montagner, MTE/Estatísticas)
+   explicitly attributed wage gains in the sector to this policy.
+2. *Sample-composition artefact.* DIEESE 2025 cited mensalistas R$ 1.156 vs
+   R$ 1.376; DIEESE 2026 cites *all* trabalhadoras R$ 1.274 (negras) vs
+   R$ 1.463 (não-negras). The 2025 figure may have been narrower (mensalista-
+   only) where 2026 is broader. Until the abril/2026 *Boletim Especial*
+   drops with detailed methodology, we cannot fully separate these two
+   effects.
+
+**Action.** Updated `dashboard/data/dw_static_facts.json` rows for
+`pct_negras` (69 → 68), `wage_ratio_black_to_nonblack` (84 → 87.1), and
+refreshed the source URL/date on all three rows to point at the
+abril/2026 PDF. The `note_pt`/`note_en` on `wage_ratio_black_to_nonblack`
+now explicitly flags the +3 pp shift and the interpretive caution. The
+2025 → 2026 striking-through convention is preserved in the audit log
+rather than in the JSON itself (which would clutter the dashboard
+tooltips for end-users).
+
+### Cross-source check against microdata (4T 2025)
+
+Microdata-computed values stay unchanged from v2.0 (no PNADC re-run this
+cycle). The DIEESE abril/2026 figures now align with our computed values
+better than the 2025 edition did:
+
+| Indicator | DIEESE abr/2026 | Microdata 4T 2025 | Δ |
+|---|---:|---:|---:|
+| % Mulheres | 92% (rounded) | 91,93% | <0,1 pp ✓ |
+| % Negras (all trabalhadoras) | ~68% (women only) | 69,4% (all) | partial — different bases |
+| Sem carteira | 76% | 76% (100 − 24%) | 0 pp ✓ |
+
+The "sem contribuição previdenciária" 65% gap remains unresolved vs our
+microdata 14,6% — same finding as v2.0, methodology investigation deferred.
+
+### Policy events added — POLICY_EVENTS
+
+Added one event covering both April 2026 institutional developments:
+
+- `iso: "2026-04"` — **"PNC + Conadon"**: Política Nacional de Cuidados
+  (aprovada por unanimidade no Senado) e criação da Conadon (Coordenação
+  Nacional de Fiscalização do Trabalho Doméstico e de Cuidados) no âmbito
+  do MTE. Sources: gov.br seminário MTE-DIEESE de 9 de abril de 2026;
+  ministra Laís Abramo (Secretária Nacional de Políticas de Cuidados e
+  Família, MDS) cita ambas as iniciativas no seminário. The annotation
+  will render on time-series charts as soon as PNADC 1T 2026 lands.
+
+The campanha nacional pelo trabalho doméstico decente 2026 (SIT/MTE, lema
+"Saúde e Segurança são Direitos Humanos", lançada em Belém em 24–25 de
+abril) is editorially relevant but visually redundant with the PNC +
+Conadon annotation. Captured in the union-voice copy for the story mode
+beat about enforcement; not added as a separate timeline mark.
+
+### Methodology page (PT + EN)
+
+- Added `DIEESE-INFO-2026` row to both source tables (PT §2 and EN §2),
+  pointing at the openly-accessible PDF.
+- Added Limitation #5 (PT and EN): the 2025–2026 PNADC master-sample
+  transition from a 2010-Census-based design to a 2022-Census-based one,
+  with a note that the methodological component is small relative to
+  substantive movements in the series shown.
+
+### PNADC 1T 2026 — published, run pending
+
+SIDRA probe (Table 6320, `last 1`) returned period code 202604 =
+"fev-mar-abr 2026", confirming the rolling quarter through April is live.
+The trimestre fixo 1T 2026 (Jan–Mar 2026) on tables 6383/6391 is expected
+to also be available. Sandbox cannot run the microdata pipeline (no IBGE
+FTP access + bandwidth + needs Supabase target). Handing off to Joao to
+run `python etl/pnadc_microdata.py 012026` from his Mac — pending the
+Supabase rebuild decision.
+
+### Files changed
+
+- `dashboard/data/dw_static_facts.json` — 3 rows updated
+- `dashboard/data/manifest.json` — `generated_at` bumped to 2026-06-08;
+  `notes` field added explaining the partial refresh and Supabase data loss
+- `dashboard/index.html` — POLICY_EVENTS: 1 new entry (`2026-04` PNC +
+  Conadon)
+- `dashboard/metodologia.html` — DIEESE-INFO-2026 row in both PT and EN
+  source tables; Limitation #5 in both PT and EN limitations sections
+- `QA_AUDIT.md` — this entry
+
+### Next check
+
+- **Aug 2026** — first PNADC trimestre fixo with 2T 2026 data, run microdata
+  pipeline for 022026 (and 012026 if not yet done)
+- **Nov 2026** — DIEESE Boletim Especial usually drops mid-November
+  (Consciência Negra cycle). Check for an updated abril/2026 boletim PDF
+  that may resolve the wage-ratio +3 pp interpretation.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)
 - [IBGE press release — trimestre encerrado em fevereiro 2026](https://agenciadenoticias.ibge.gov.br/agencia-sala-de-imprensa/2013-agencia-de-noticias/releases/46206-pnad-continua-taxa-de-desocupacao-e-de-5-8-e-taxa-de-subutilizacao-e-de-14-1-no-trimestre-encerrado-em-fevereiro)
 - [DIEESE — Infográfico Trabalho Doméstico no Brasil (abril 2025)](https://www.dieese.org.br/infografico/2025/trabalhadorasDomesticas.html)
+- [DIEESE — Infográfico Trabalhadoras Domésticas no Brasil (abril 2026, PDF)](https://www.dieese.org.br/infografico/2026/2026trabalhadorasDomesticas.pdf)
+- [MTE × DIEESE — XXVI Seminário Mensal: "Quem cuida de quem" (10 abril 2026)](https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/abril/seminario-do-mte-e-dieese-analisa-cenario-do-trabalho-domestico-no-pais)
+- [MTE — Campanha Nacional pelo Trabalho Doméstico Decente 2026](https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/abril/dia-nacional-da-trabalhadora-domestica-reforca-mobilizacao-por-direitos-e-trabalho-decente-no-brasil)
 - [DIEESE — Boletim Especial Trabalho Doméstico (2024)](https://www.dieese.org.br/boletimespecial/2024/trabalhoDomestico.pdf)
 - [SIDRA Tabela 6320](https://sidra.ibge.gov.br/tabela/6320) · [Tabela 6383](https://sidra.ibge.gov.br/tabela/6383) · [Tabela 6391](https://sidra.ibge.gov.br/tabela/6391)
 - [ILOSTAT — Domestic workers](https://ilostat.ilo.org/topics/employment/domestic-workers/)

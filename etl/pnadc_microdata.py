@@ -188,6 +188,7 @@ def parse_sas_input(text: str) -> dict[str, tuple[int, int]]:
 NEEDED_VARS = [
     "Ano", "Trimestre", "UF",
     "V1028",   # population weight
+    "V0212",   # forma de habitação — tenure (D3 — housing)
     "V2003",   # condição no domicílio (D2 — family / household position)
     "V2007",   # sex
     "V2010",   # cor/raça
@@ -541,6 +542,20 @@ FAMILY_POSITION_MAP = {
     "15": "outro",     # Empregado(a) doméstico(a) residente
     "16": "outro",     # Parente do empregado doméstico
     "17": "outro",     # Individual em domicílio coletivo
+}
+
+# V0212 (forma de habitação — tenure). PNADC native codes 1-7 collapsed
+# into 4 buckets. The "cedido por empregador" case (code 4) is kept distinct
+# because it identifies live-in domestic workers (empregadas residentes),
+# a historically vulnerable sub-category worth surfacing separately.
+HOUSING_TENURE_MAP = {
+    "1": "proprio",            # Próprio - já pago
+    "2": "proprio",            # Próprio - ainda pagando
+    "3": "alugado",            # Alugado
+    "4": "cedido_empregador",  # Cedido por empregador (live-in)
+    "5": "outro",              # Cedido por familiar
+    "6": "outro",              # Cedido de outra forma
+    "7": "outro",              # Outra condição
 }
 # PNADC V2007 (sexo) → our dim_sex.code
 SEX_MAP = {"1": "M", "2": "F"}
@@ -1111,6 +1126,80 @@ def build_family_rows(df: pd.DataFrame, period: str) -> list[dict]:
     return rows
 
 
+def build_housing_rows(df: pd.DataFrame, period: str) -> list[dict]:
+    """Aggregate housing tenure (V0212) for trabalhadoras(es) domésticas(os).
+
+    Emits weighted count + % within race for:
+      - BR × sex='T' × race × housing_tenure (5 races × 4 buckets = 20)
+      - BR × sex='T' × preta_parda × housing_tenure (4)
+      - BR × sex='T' × nao_negras × housing_tenure (4)
+      - BR × sex='T' × race × tenure='total' (5 + 2 = 7)
+      - BR × sex='T' × race='total' × housing_tenure (4)
+
+    Total: ~40 rows per quarter; ~2.2k rows over the 56-quarter backfill.
+
+    The headline cuts: % próprio (homeownership rate) and % cedido_empregador
+    (live-in share). The latter is a structural-vulnerability indicator —
+    workers living at the employer's premises have weaker bargaining power
+    and historically less LC 150 protection.
+    """
+    df = df.copy()
+    df["weight"] = pd.to_numeric(df["V1028"], errors="coerce")
+    if df["weight"].max() > 1e9:
+        df["weight"] = df["weight"] / 1e9
+
+    DOMESTIC_CODES = ["03", "04"]
+    dom = df[df["VD4009"].isin(DOMESTIC_CODES) & df["weight"].notna()].copy()
+    dom["race_code"] = dom["V2010"].map(RACE_MAP)
+    dom["v0212_raw"] = dom["V0212"].astype(str).str.strip()
+    dom["housing_code"] = dom["v0212_raw"].map(HOUSING_TENURE_MAP)
+    dom = dom[dom["race_code"].notna() & dom["housing_code"].notna()]
+
+    db_period = microdata_period_to_db_code(period)
+    rows: list[dict] = []
+
+    HOUSING_BUCKETS = ["proprio", "alugado", "cedido_empregador", "outro"]
+
+    def _row(geo, level, sex, race, housing, w_sum, w_race_total, n):
+        if w_sum is None or w_sum == 0:
+            return None
+        pct = round(100 * w_sum / w_race_total, 2) if w_race_total else None
+        # workers_thousands in *thousands of people* — raw weight sum is in
+        # single people, divide by 1000 to match the project convention.
+        return {
+            "_period_code": db_period,
+            "_geo_code": geo, "_geo_level": level,
+            "_sex": sex, "_race": race, "_housing": housing,
+            "workers_thousands": round(float(w_sum) / 1000.0, 2),
+            "pct_within_race": pct,
+            "n_unweighted": int(n),
+        }
+
+    def emit_for_subset(race_label: str, subset: pd.DataFrame):
+        total_w = subset["weight"].sum()
+        for h in HOUSING_BUCKETS:
+            g = subset[subset["housing_code"] == h]
+            r = _row("BR", "country", "T", race_label, h,
+                     g["weight"].sum(), total_w, len(g))
+            if r: rows.append(r)
+        r = _row("BR", "country", "T", race_label, "total",
+                 total_w, total_w, len(subset))
+        if r: rows.append(r)
+
+    for race, g in dom.groupby("race_code"):
+        emit_for_subset(race, g)
+
+    is_negra = dom["race_code"].isin(["preta", "parda"])
+    emit_for_subset("preta_parda", dom[is_negra])
+
+    is_nao_negra = dom["race_code"].isin(["branca", "amarela", "indigena"])
+    emit_for_subset("nao_negras", dom[is_nao_negra])
+
+    emit_for_subset("total", dom)
+
+    return rows
+
+
 # ----- Supabase upsert --------------------------------------------------------
 
 SOURCE_TABLE_TAG = "PNADC-MICRODATA"
@@ -1400,6 +1489,46 @@ def upsert_family_to_supabase(rows: list[dict]) -> int:
     return inserted
 
 
+def upsert_housing_to_supabase(rows: list[dict]) -> int:
+    """Push housing-tenure rows into domestic_work.fact_housing."""
+    sb = get_supabase_client()
+    if sb is None or not rows:
+        return 0
+    schema = sb.schema("domestic_work")
+    time_lookup = {r["period_code"]: r["time_id"] for r in schema.table("dim_time").select("period_code,time_id").execute().data}
+    geo_lookup = {(r["level"], r["code"]): r["geo_id"] for r in schema.table("dim_geo").select("level,code,geo_id").execute().data}
+    race_lookup = {r["code"]: r["race_id"] for r in schema.table("dim_race").select("code,race_id").execute().data}
+    sex_lookup = {r["code"]: r["sex_id"] for r in schema.table("dim_sex").select("code,sex_id").execute().data}
+    housing_lookup = {r["code"]: r["housing_id"] for r in schema.table("dim_housing").select("code,housing_id").execute().data}
+
+    payload = []
+    for r in rows:
+        try:
+            payload.append({
+                "time_id":    time_lookup[r["_period_code"]],
+                "geo_id":     geo_lookup[(r["_geo_level"], r["_geo_code"])],
+                "sex_id":     sex_lookup[r["_sex"]],
+                "race_id":    race_lookup[r["_race"]],
+                "housing_id": housing_lookup[r["_housing"]],
+                "workers_thousands": r["workers_thousands"],
+                "pct_within_race":   r["pct_within_race"],
+                "n_unweighted":      r["n_unweighted"],
+                "source_table":      SOURCE_TABLE_TAG,
+            })
+        except KeyError as e:
+            log.warning("missing dim lookup for housing row %s: %s", r, e)
+
+    inserted = 0
+    for i in range(0, len(payload), 250):
+        chunk = payload[i:i + 250]
+        res = schema.table("fact_housing").upsert(
+            chunk,
+            on_conflict="time_id,geo_id,sex_id,race_id,housing_id,source_table",
+        ).execute()
+        inserted += len(res.data or [])
+    return inserted
+
+
 def get_supabase_client():
     """Lazily import + construct the supabase client. Returns None if creds
     aren't available — callers should treat that as "skip upsert"."""
@@ -1553,6 +1682,19 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
                             and r["_family"] == "chefe"), None)
     pct_chefe_negras = fam_negra_chefe["pct_within_race"] if fam_negra_chefe else None
 
+    # ---- housing (fact_housing) ----
+    hous_rows = build_housing_rows(df, period)
+    # Diagnostics: % próprio (homeownership rate, category overall) and
+    # % cedido_empregador (live-in share — structural vulnerability marker).
+    hous_total_proprio = next((r for r in hous_rows
+                               if r["_geo_code"] == "BR" and r["_race"] == "total"
+                               and r["_housing"] == "proprio"), None)
+    pct_proprio_total = hous_total_proprio["pct_within_race"] if hous_total_proprio else None
+    hous_total_livein = next((r for r in hous_rows
+                              if r["_geo_code"] == "BR" and r["_race"] == "total"
+                              and r["_housing"] == "cedido_empregador"), None)
+    pct_livein_total = hous_total_livein["pct_within_race"] if hous_total_livein else None
+
     # ---- wages (fact_wages) ----
     wage_rows = build_wage_rows(df, period)
     wage_negras = next((r for r in wage_rows
@@ -1570,25 +1712,30 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
         inserted_prev = upsert_prev_to_supabase(prev_rows)
         inserted_edu = upsert_education_to_supabase(edu_rows)
         inserted_fam = upsert_family_to_supabase(fam_rows)
-        log.info("[%s] upserted %d workers + %d wages + %d hours + %d prev + %d edu + %d fam · "
+        inserted_hous = upsert_housing_to_supabase(hous_rows)
+        log.info("[%s] upserted %d work + %d wage + %d hour + %d prev + %d edu + %d fam + %d hous · "
                  "total %.0fk · pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · "
                  "wage gap %s%% · horas méd %s · %% previdência %s%% · "
-                 "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%%",
+                 "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%% · "
+                 "%% próprio %s%% · %% live-in %s%%",
                  period, inserted_workers, inserted_wages, inserted_hours, inserted_prev,
-                 inserted_edu, inserted_fam,
+                 inserted_edu, inserted_fam, inserted_hous,
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
                  mean_hours, pct_prev_total, pct_fund_inc_negras,
-                 pct_chefe_total, pct_chefe_negras)
+                 pct_chefe_total, pct_chefe_negras,
+                 pct_proprio_total, pct_livein_total)
     else:
-        log.info("[%s] (dry run) %d workers + %d wages + %d hours + %d prev + %d edu + %d fam · "
+        log.info("[%s] (dry run) %d work + %d wage + %d hour + %d prev + %d edu + %d fam + %d hous · "
                  "total %.0fk · pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · "
                  "wage gap %s%% · horas méd %s · %% previdência %s%% · "
-                 "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%%",
+                 "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%% · "
+                 "%% próprio %s%% · %% live-in %s%%",
                  period, len(rows), len(wage_rows), len(hours_rows), len(prev_rows),
-                 len(edu_rows), len(fam_rows),
+                 len(edu_rows), len(fam_rows), len(hous_rows),
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
                  mean_hours, pct_prev_total, pct_fund_inc_negras,
-                 pct_chefe_total, pct_chefe_negras)
+                 pct_chefe_total, pct_chefe_negras,
+                 pct_proprio_total, pct_livein_total)
 
     return {"period": period, "total_workers_k": n_dom, "pct_negras": pct_negras,
             "pct_negras_sp": pct_negras_sp, "pct_mulheres": pct_mulheres,
@@ -1596,7 +1743,9 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
             "mean_hours": mean_hours, "pct_prev": pct_prev_total,
             "pct_fund_inc_negras": pct_fund_inc_negras,
             "pct_chefe_total": pct_chefe_total,
-            "pct_chefe_negras": pct_chefe_negras}
+            "pct_chefe_negras": pct_chefe_negras,
+            "pct_proprio_total": pct_proprio_total,
+            "pct_livein_total": pct_livein_total}
 
 
 # ----- main --------------------------------------------------------------------

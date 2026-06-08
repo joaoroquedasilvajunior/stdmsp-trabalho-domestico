@@ -302,8 +302,10 @@
 
 <h3>3.12 Moradia — forma de habitação (Phase D3)</h3>
 <ul>
-  <li><strong>Fonte</strong>: <code>PNADC-MICRODATA</code> · variável <code>V0212</code> (forma de habitação / tenure), agregada pela equipe do projeto com pesos amostrais <code>V1028</code>.</li>
-  <li><strong>Categorias</strong>: os 7 códigos nativos da PNADC (1 a 7) são colapsados em 4 buckets, com a categoria "cedido pelo empregador" mantida em separado por relevância política:
+  <li><strong>Fonte</strong>: <code>PNADC-A</code> · <strong>PNAD Contínua ANUAL — Visita 1</strong>, variável <code>S01017</code> (forma de habitação do domicílio), agregada pela equipe do projeto com pesos amostrais <code>V1032</code> (peso COM calibração).</li>
+  <li><strong>⚠ Diferença de cadência</strong>: este é o único corte do painel que vem da PNAD Contínua <strong>Anual</strong>, não da trimestral. A PNADC trimestral não inclui variáveis de moradia (V0212 só existe na PNADC Anual). Consequência prática: enquanto os demais cortes têm 56 trimestres de série histórica, a moradia tem uma observação por ano (mais recente: <code>2024A</code>, divulgada em novembro de 2025). Ainda assim, é a única fonte oficial brasileira de cobertura nacional com microdados sobre as condições de moradia das trabalhadoras domésticas.</li>
+  <li><strong>Pipeline separada</strong>: <code>etl/pnadc_annual_housing.py</code> (script dedicado, distinto de <code>pnadc_microdata.py</code> que processa a trimestral). Baixa o arquivo PNADC-A Visita 1 do FTP do IBGE, faz parse fixed-width e popula <code>fact_housing</code> com <code>source_table = 'PNADC-A'</code>.</li>
+  <li><strong>Categorias</strong>: os 7 códigos nativos da S01017 (1 a 7) são colapsados em 4 buckets, com a categoria "cedido pelo empregador" mantida em separado por relevância política:
     <ul>
       <li><strong>Próprio</strong> — códigos 1 (Próprio já pago) + 2 (Próprio em pagamento).</li>
       <li><strong>Alugado</strong> — código 3 (Alugado).</li>
@@ -314,7 +316,7 @@
   <li><strong>Cortes emitidos pela pipeline</strong>: BR × sexo='T' × raça × bucket. Mesmas raças que D1 e D2.</li>
   <li><strong>Cálculo do %</strong>: <code>pct_within_race</code> = soma de pesos no bucket / soma total de pesos da raça.</li>
   <li><strong>Achados de manchete</strong>: % próprio (taxa de propriedade da casa) e % cedido pelo empregador (sinaliza vulnerabilidade estrutural — moradia depende do vínculo de emprego).</li>
-  <li><strong>Limitação importante</strong>: V0212 codifica a forma de habitação <em>do domicílio inteiro</em>, repetida em cada registro pessoal. Para a trabalhadora doméstica registrada como <code>V2003 = 15</code> (empregada doméstica residente), V0212 vai indicar a forma de habitação <em>do empregador</em>, não da própria trabalhadora — mas isso é exatamente o que queremos capturar com o bucket "cedido pelo empregador". Para outras trabalhadoras domésticas, V0212 representa a forma de habitação da casa onde ela mora (que não é necessariamente onde ela trabalha).</li>
+  <li><strong>Limitação importante</strong>: S01017 codifica a forma de habitação <em>do domicílio inteiro</em>, repetida em cada registro pessoal. Para a trabalhadora doméstica registrada como empregada residente, S01017 vai indicar a forma de habitação <em>do empregador</em>, não da própria trabalhadora — mas isso é exatamente o que queremos capturar com o bucket "cedido pelo empregador". Para outras trabalhadoras domésticas, S01017 representa a forma de habitação da casa onde ela mora (que não é necessariamente onde ela trabalha).</li>
   <li><strong>Gráfico no painel</strong>: barras agrupadas verticais, 4 buckets no eixo X, duas barras por bucket (Negras vs. Não-negras), no trimestre fixo mais recente disponível.</li>
 </ul>
 
@@ -624,8 +626,10 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
 
 <h3>3.12 Housing — tenure (Phase D3)</h3>
 <ul>
-  <li><strong>Source</strong>: <code>PNADC-MICRODATA</code> · variable <code>V0212</code> (housing tenure), aggregated by the project team with sample weights <code>V1028</code>.</li>
-  <li><strong>Categories</strong>: PNADC's 7 native codes (1–7) collapsed into 4 buckets, with "granted by employer" kept distinct for policy relevance:
+  <li><strong>Source</strong>: <code>PNADC-A</code> · <strong>PNADC Annual — Visit 1</strong>, variable <code>S01017</code> (household tenure), aggregated by the project team with sample weights <code>V1032</code> (calibrated weight).</li>
+  <li><strong>⚠ Cadence difference</strong>: this is the only cut on the dashboard that comes from the PNADC <strong>Annual</strong>, not quarterly. Quarterly PNADC doesn't include housing variables (V0212 only exists in the annual release). Consequence: while the other cuts have 56 quarters of historical series, housing has one observation per year (latest: <code>2024A</code>, released November 2025). Even so, it is the only official Brazilian source with national-coverage microdata on domestic workers' housing conditions.</li>
+  <li><strong>Separate pipeline</strong>: <code>etl/pnadc_annual_housing.py</code> (dedicated script, distinct from <code>pnadc_microdata.py</code> which processes the quarterly). Downloads the PNADC-A Visit 1 file from IBGE's FTP, fixed-width parses it, and populates <code>fact_housing</code> with <code>source_table = 'PNADC-A'</code>.</li>
+  <li><strong>Categories</strong>: S01017's 7 native codes (1–7) collapsed into 4 buckets, with "granted by employer" kept distinct for policy relevance:
     <ul>
       <li><strong>Owned</strong> — codes 1 (Owned, paid) + 2 (Owned, being paid).</li>
       <li><strong>Rented</strong> — code 3.</li>
@@ -636,7 +640,7 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>Cuts emitted by the pipeline</strong>: BR × sex='T' × race × bucket. Same races as D1 and D2.</li>
   <li><strong>Percentage calculation</strong>: <code>pct_within_race</code> = sum of weights in the bucket / total weight of the race.</li>
   <li><strong>Headline findings</strong>: % owned (homeownership rate) and % granted-by-employer (signals structural vulnerability — housing depends on the employment relationship).</li>
-  <li><strong>Important limitation</strong>: V0212 codes the tenure of <em>the entire household</em>, repeated on each person record. For a domestic worker recorded as <code>V2003 = 15</code> (live-in domestic worker), V0212 reflects the <em>employer's</em> household tenure, not the worker's own — but that is exactly what we want to capture with the "granted by employer" bucket. For other domestic workers, V0212 represents the tenure of the home they live in (which is not necessarily where they work).</li>
+  <li><strong>Important limitation</strong>: S01017 codes the tenure of <em>the entire household</em>, repeated on each person record. For a domestic worker recorded as a live-in worker, S01017 reflects the <em>employer's</em> household tenure, not the worker's own — but that is exactly what we want to capture with the "granted by employer" bucket. For other domestic workers, S01017 represents the tenure of the home they live in (which is not necessarily where they work).</li>
   <li><strong>Chart on the dashboard</strong>: vertical grouped bars, 4 buckets on the X axis, two bars per bucket (Black vs. Non-Black), at the most recent available fixed quarter.</li>
 </ul>
 

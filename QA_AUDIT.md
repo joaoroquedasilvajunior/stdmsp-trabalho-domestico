@@ -1205,6 +1205,100 @@ work looks like" view in the rest of the dashboard.
 
 ---
 
+## 2026-06-08 — D3 pivot to PNADC ANNUAL (V0212 → S01017)
+
+**The bug.** I specified V0212 as the housing-tenure variable. V0212
+does not exist in PNADC quarterly. The dictionary parser crashed
+mid-run with `KeyError: "Variable V0212 not found in dictionary"`,
+which broke the entire quarterly script for ALL the dimensions
+(D1/D2 included) — Joao's most recent run aborted before any rows
+were upserted.
+
+**Root cause.** Housing-condition variables (tenure, water source,
+sanitation, electricity, etc.) only exist in **PNADC ANNUAL**, not
+the quarterly release. In PNADC-A they live in the `S01001`–`S01029`
+block. Tenure specifically is `S01017`, with the same 7 codes I'd
+already mapped (1–2 próprio, 3 alugado, 4 cedido por empregador,
+5–7 outro).
+
+**The fix, two steps.**
+
+1. **Hot-fix the quarterly script.** Removed `V0212` from
+   `NEEDED_VARS`. Removed the `build_housing_rows` call and the
+   `upsert_housing_to_supabase` call from `process_period()`. Removed
+   the `% próprio` and `% live-in` diagnostics from the log line.
+   The quarterly script now runs cleanly for D1+D2 again.
+2. **Build a separate annual fetcher.** New script
+   `etl/pnadc_annual_housing.py`. Downloads the latest
+   `PNADC_<year>_visita1_*.zip` from IBGE FTP (~170 MB), parses with
+   hardcoded column specs (no dictionary-parsing layer needed since
+   the layout is stable), aggregates housing tenure by race, upserts
+   into the existing `fact_housing` table with
+   `source_table = 'PNADC-A'` and a new period code style `'2024A'`.
+
+**Schema reuse.** `dim_housing`, `fact_housing`, `dw_housing` and the
+dashboard chart card all stay in place — only the data source pipeline
+changes. The 4-bucket mapping is identical.
+
+**Cadence note.** Housing has ANNUAL cadence (one observation per
+year, latest `2024A` released Nov 2025), while every other dimension
+has 56-quarter coverage. This is now spelled out in the dashboard
+chart subtitle ("PNADC Anual (Visita 1)") and prominently flagged in
+the methodology page §3.12. The `formatPeriodLabel()` helper in
+`index.html` was extended to recognize the `YYYYA` code pattern and
+render it as "2024 (anual)" / "2024 (annual)".
+
+**Files changed in the pivot.**
+
+- `etl/pnadc_microdata.py` — V0212 removed, housing-builder hook
+  removed from process_period, diagnostics trimmed
+- `etl/pnadc_annual_housing.py` — NEW, ~370 lines
+- `dashboard/index.html` — chart-housing-meta + chart-housing-source
+  updated for both PT and EN; `formatPeriodLabel()` extended for
+  annual codes
+- `dashboard/metodologia.html` — §3.12 rewritten for PT + EN with the
+  cadence-difference flag
+- `QA_AUDIT.md` — this entry
+
+**Run sequence for Joao**
+
+```bash
+cd ~/Documents/Claude/Domestic\ Work
+source etl/.venv/bin/activate
+
+# First: re-run the (now-fixed) quarterly script to confirm D1+D2
+# get current data again. This was aborted on the V0212 crash.
+python etl/pnadc_microdata.py 012026
+
+# Then: run the new annual housing fetcher (2024 = latest available)
+python etl/pnadc_annual_housing.py 2024
+# This downloads 170 MB once (cached afterwards), parses, computes,
+# and upserts ~50 rows into fact_housing.
+
+./etl/refresh.sh
+git add etl/pnadc_microdata.py etl/pnadc_annual_housing.py \
+        dashboard/index.html dashboard/metodologia.html dashboard/data/ \
+        QA_AUDIT.md
+git commit -m "fix(D3): housing source pivots to PNADC ANNUAL (V0212→S01017, cadence is annual)"
+git push origin main
+```
+
+**Sanity-check targets unchanged.** % próprio (total) in the 50–70%
+band; % live-in (total) in the 1–4% band. Now using S01017 instead
+of V0212 — same codes, same bucket mapping, same plausibility ranges.
+
+### Lesson worth memorializing
+
+When adding a PNADC variable, ALWAYS confirm it's in the right
+release (quarterly vs annual vs PNS supplement) before wiring it up.
+The variable-name space partitions cleanly: labor/employment in
+quarterly, household conditions in annual Visit 1, special supplements
+in PNS. Mixing them up like I did breaks the dictionary parser at run
+time, not at code-review time — and breaks the whole pipeline, not
+just the new feature.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

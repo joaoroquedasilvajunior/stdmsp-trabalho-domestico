@@ -1360,6 +1360,16 @@ def build_wage_rows(df: pd.DataFrame, period: str) -> list[dict]:
     new microdata-derived series serves the racial wage GAP, which is a ratio
     and so is invariant to nominal/real choice.
 
+    Two wage measures emitted per cell:
+      - mean_wage_brl_real  — monthly mean (R$/month, weighted)
+      - mean_hourly_brl     — hourly mean (R$/hour, weighted across workers
+                              with both wage>0 AND hours>0; computed as
+                              individual wage/(hours×4.33) then weight-averaged)
+
+    The hourly figure supports the per-hour racial gap decomposition: if the
+    monthly gap is wider than the hourly gap, the difference is composition
+    (Mensalista vs Diarista) rather than per-hour price.
+
     Output: 5 races + 1 nao_negras + 1 preta_parda, each × 3 formalities
     (com_carteira, sem_carteira, total). ~21 wage rows per quarter.
     """
@@ -1368,6 +1378,7 @@ def build_wage_rows(df: pd.DataFrame, period: str) -> list[dict]:
     if df["weight"].max() > 1e9:
         df["weight"] = df["weight"] / 1e9
     df["wage"] = pd.to_numeric(df["VD4019"], errors="coerce")
+    df["hours"] = pd.to_numeric(df["V4039"], errors="coerce")
 
     DOMESTIC_CODES = ["03", "04"]
     dom = df[df["VD4009"].isin(DOMESTIC_CODES)
@@ -1380,28 +1391,41 @@ def build_wage_rows(df: pd.DataFrame, period: str) -> list[dict]:
     db_period = microdata_period_to_db_code(period)
     rows: list[dict] = []
 
+    # Hours-per-month conversion: 4.33 weeks/month (52 weeks / 12 months)
+    WEEKS_PER_MONTH = 4.33
+
     def _wmean(g):
         if g["weight"].sum() == 0: return None
         return float((g["wage"] * g["weight"]).sum() / g["weight"].sum())
 
-    def _row(race, form, mean):
-        if mean is None or pd.isna(mean): return None
+    def _wmean_hourly(g):
+        """Weighted mean of individual hourly wages. Restricted to workers
+        with valid hours > 0 AND <= 98 (PNADC's max-hours sentinel)."""
+        with_hours = g[g["hours"].notna() & (g["hours"] > 0) & (g["hours"] <= 98)]
+        if with_hours["weight"].sum() == 0:
+            return None
+        hourly = with_hours["wage"] / (with_hours["hours"] * WEEKS_PER_MONTH)
+        return float((hourly * with_hours["weight"]).sum() / with_hours["weight"].sum())
+
+    def _row(race, form, mean_monthly, mean_hourly):
+        if mean_monthly is None or pd.isna(mean_monthly): return None
         return {
             "_period_code": db_period,
             "_geo_code": "BR", "_geo_level": "country",
             "_sex": "T", "_race": race, "_formality": form,
-            "mean_wage_brl_real": round(mean, 2),
+            "mean_wage_brl_real": round(mean_monthly, 2),
             "median_wage_brl_real": None,
+            "mean_hourly_brl": round(mean_hourly, 2) if mean_hourly is not None and not pd.isna(mean_hourly) else None,
         }
 
     # Race × formality (5 races × 2 formalities)
     for (race, form), group in dom.groupby(["race_code", "formality_code"]):
-        r = _row(race, form, _wmean(group))
+        r = _row(race, form, _wmean(group), _wmean_hourly(group))
         if r: rows.append(r)
 
     # Race × total (sum across com+sem)
     for race, group in dom.groupby("race_code"):
-        r = _row(race, "total", _wmean(group))
+        r = _row(race, "total", _wmean(group), _wmean_hourly(group))
         if r: rows.append(r)
 
     # preta_parda × each formality
@@ -1412,7 +1436,7 @@ def build_wage_rows(df: pd.DataFrame, period: str) -> list[dict]:
         else:
             mask = is_negra & (dom["formality_code"] == form_code)
         group = dom[mask]
-        r = _row("preta_parda", form_code, _wmean(group)) if len(group) else None
+        r = _row("preta_parda", form_code, _wmean(group), _wmean_hourly(group)) if len(group) else None
         if r: rows.append(r)
 
     # nao_negras × each formality (white + Asian + Indigenous; complement set)
@@ -1423,7 +1447,7 @@ def build_wage_rows(df: pd.DataFrame, period: str) -> list[dict]:
         else:
             mask = is_nao_negra & (dom["formality_code"] == form_code)
         group = dom[mask]
-        r = _row("nao_negras", form_code, _wmean(group)) if len(group) else None
+        r = _row("nao_negras", form_code, _wmean(group), _wmean_hourly(group)) if len(group) else None
         if r: rows.append(r)
 
     return rows
@@ -1459,6 +1483,7 @@ def upsert_wages_to_supabase(rows: list[dict]) -> int:
                 "formality_id": formality_lookup[r["_formality"]],
                 "mean_wage_brl_real":   r["mean_wage_brl_real"],
                 "median_wage_brl_real": r["median_wage_brl_real"],
+                "mean_hourly_brl":      r.get("mean_hourly_brl"),
                 "source_table": SOURCE_TABLE_TAG,
             })
         except KeyError as e:

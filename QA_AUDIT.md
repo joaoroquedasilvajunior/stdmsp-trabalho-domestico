@@ -1958,6 +1958,93 @@ layer (five editorial sections). v2.3 milestone.
 
 ---
 
+## 2026-06-09 — Per-hour wage decomposition (Mayer paper analytical refinement)
+
+**Origin.** Conversation with Joao about why a 13% monthly racial wage
+gap "feels small" given the racial-educational asymmetries in Brazilian
+labor markets. The answer involves multiple compressive forces (LC 150
+floor, negative selection of white workers into the category, weak
+returns to education within the occupation, composition by contract
+type). The dashboard can now empirically separate the last of these —
+how much of the monthly gap is hours composition vs. how much is per-
+hour price discrimination.
+
+### Schema (applied via Supabase MCP migration `hourly_wage_decomposition`)
+
+- `domestic_work.fact_wages` — gains `mean_hourly_brl` column.
+- `public.dw_wages` — view recreated to expose it (CREATE OR REPLACE
+  can't reorder columns; drop+create pattern used).
+- Grants and security_invoker preserved.
+
+### Pipeline (`etl/pnadc_microdata.py`)
+
+- `build_wage_rows()` extended to compute the weighted mean of
+  individual hourly wages: `wage / (hours × 4.33)` for workers with
+  both wage > 0 and hours in (0, 98].
+- 4.33 = 52 weeks / 12 months (standard conversion).
+- `upsert_wages_to_supabase()` writes the new column.
+- No new row type emitted — same 21 wage rows per quarter, now with
+  one more column populated.
+
+### Dashboard (`dashboard/index.html`)
+
+- New `<section id="hourly">` "Hiato por hora — o que sobra do hiato
+  mensal" placed between Theme 5 (floor effect) and Foco em São Paulo.
+- Same editorial-hero pattern. Chart: two-line time-series on the
+  same Y axis (% scale), showing the MONTHLY racial ratio (red, solid)
+  and the HOURLY racial ratio (blue, dashed) across 56 quarters.
+- Two inline callouts populated by JS: latest monthly ratio, latest
+  hourly ratio.
+- Policy timeline annotations preserved.
+
+### Methodology
+
+- §3.18 PT + EN. Documents the price-vs-composition framework
+  explicitly: if hourly ≈ monthly, price dominates; if hourly > monthly,
+  composition (mensalista/diarista segregation) dominates. Lists three
+  limitations (ratio-of-means vs mean-of-ratios, habitual vs effective
+  hours, 4.33 approximation).
+
+### Run sequence
+
+```bash
+cd ~/Documents/Claude/Domestic\ Work
+source etl/.venv/bin/activate
+python etl/pnadc_microdata.py --all   # ~30 min, populates mean_hourly_brl
+./etl/refresh.sh
+git add etl/pnadc_microdata.py \
+        dashboard/index.html dashboard/metodologia.html dashboard/data/ \
+        QA_AUDIT.md
+git commit -m "feat: per-hour wage gap by race (Mayer paper refinement)"
+git push origin main
+```
+
+### Sanity-check expectations
+
+If the composition story matters:
+- Latest HOURLY ratio should be **higher** than the latest MONTHLY
+  ratio (87%). Plausible band: 90–95%.
+- The gap between the two lines should be **persistent** across the
+  14-year series, not a recent artifact.
+
+If the price story matters:
+- HOURLY ratio ≈ MONTHLY ratio (around 87% for both).
+- The gap between the lines is small (< 2 pp).
+
+The actual result is a finding, not a prediction. Either answer is
+publishable; the dashboard makes the question answerable.
+
+### Editorial framing
+
+This is the only section in the dashboard that explicitly says "this
+is the analytical refinement Jean-François Mayer asked about." The
+PT/EN copy translates the price-vs-composition framework into language
+both STDMSP and academic audiences can read. The implications for
+policy are different in the two scenarios — and the dashboard now
+makes that choice empirically visible.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

@@ -1,6 +1,6 @@
 # Trabalho doméstico no Brasil — Resumo executivo
 
-**Junho de 2026 (v2.2) · Painel de dados em colaboração com a STDMSP e a pesquisa do Prof. Jean-François Mayer (Concordia)**
+**Junho de 2026 (v2.3) · Painel de dados em colaboração com a STDMSP e a pesquisa do Prof. Jean-François Mayer (Concordia)**
 
 Este resumo apresenta as conclusões verificadas a partir do painel <https://stdmsp-trabalho-domestico.joaoroquer.workers.dev/>, alimentado pelos microdados da PNAD Contínua trimestral (IBGE), pela PNADC Anual — Visita 1, e por validação cruzada com o Infográfico DIEESE abril/2026. Período coberto: 1º trimestre de 2012 a 1º trimestre de 2026 — **56 trimestres consecutivos**, todos os 27 estados.
 
@@ -84,6 +84,26 @@ A categoria foi durante muito tempo uma porta de entrada desproporcional para mu
 
 A leitura é clara em Joaze Bernardino-Costa (a "atualização da casa-grande/senzala"), Lélia Gonzalez (o lugar simbólico da empregada residente no imaginário das classes médias urbanas), Heleieth Saffioti (a continuidade patrimonial do trabalho doméstico), e Sueli Carneiro (a centralidade da mulher negra nessa estrutura). O painel não publica um dado novo sobre a categoria como um todo — publica a primeira visualização sistemática da *geografia* desse resíduo.
 
+### 9. Preço × composição — decompondo o hiato salarial (refinamento analítico, v2.3)
+
+**Do hiato salarial mensal de ~13 pp entre negras e não-negras, cerca de quatro quintos é preço-por-hora e cerca de um quinto é segregação por tipo de contrato.**
+
+Cruzando o rendimento mensal (VD4019) com a jornada habitual (V4039 × 4,33 semanas/mês), o painel calcula a remuneração por hora de cada trabalhadora individualmente, depois faz a razão racial:
+
+- **Razão MENSAL** (1T 2026): **87,3%**
+- **Razão por HORA** (1T 2026): **90,0%**
+- **Diferença**: ~2,7 pp do hiato mensal vem de composição de jornadas (mensalista × diarista); ~10 pp sobrevive na comparação por hora
+
+Em proporção do hiato mensal total (12,7 pp): **~79% é preço-por-hora**, **~21% é composição**.
+
+**Implicação política, decomposta:**
+- *Alavanca primária* (≈4/5 do hiato): negociação coletiva sobre tabela horária + fiscalização da igualdade salarial dentro da categoria. O hiato sobrevive quando normalizamos pelas horas — é precificação racializada do mesmo trabalho.
+- *Alavanca secundária* (≈1/5 do hiato): **formalização das diaristas** — extensão efetiva da LC 150 ao formato diarista, onde as negras se concentram desproporcionalmente. Fecharia a parcela composicional do hiato sem alterar a precificação por hora.
+
+A literatura (Saboia, Manzano-Munguía, IPEA) argumentou conceitualmente os dois mecanismos; o painel oferece a decomposição empírica explícita. **Esta é a contribuição que o painel faz para a pergunta de pesquisa de Jean-François Mayer.**
+
+*Caveat:* a razão por hora é mais volátil que a mensal (medição de horas carrega mais ruído individual que medição de salário); o pico anômalo do 3T 2021 é provavelmente artefato da reentrada assimétrica no mercado pós-COVID (mensalistas voltaram antes de diaristas). A leitura recomendada é o nível médio dos últimos 4-8 trimestres, não pontos individuais.
+
 ---
 
 ## III. Sumário cruzado — sustentabilidade dos achados
@@ -94,7 +114,8 @@ A leitura é clara em Joaze Bernardino-Costa (a "atualização da casa-grande/se
 | % Mulheres | 91,7% | 92% | ✓ |
 | % Negras (mulheres) | ~67,5% | 68% | ✓ |
 | % com carteira | 23,8% | 24% | ✓ |
-| Razão salarial negras/não-negras | 87,3% | 87,1% | ✓ |
+| Razão salarial negras/não-negras (mensal) | 87,3% | 87,1% | ✓ |
+| Razão salarial negras/não-negras (por hora) | 90,0% | n/d | novo — decomposição preço × composição |
 | % até 29 anos (categoria) | ~12% | 12% | ✓ |
 | Jornada média (h/semana) | 31,8h | n/d | descritivo |
 | % residentes (cedido empregador) | 4,5% | n/d | descritivo |
@@ -112,8 +133,8 @@ Os números deste resumo vêm dos **microdados oficiais da PNAD Contínua trimes
 A validação cruzada com as publicações da DIEESE confirma os números até a precisão de uma casa decimal nos itens que ambos publicam. Para o painel completo, intervalos de confiança por UF, séries temporais com marcação dos eventos políticos (EC 72/2013, LC 150/2015, ratificação brasileira da C189, ratificação mexicana, criação da PNC + Conadon em 2026), e comparativo internacional Brasil ↔ México:
 
 **Painel interativo:** <https://stdmsp-trabalho-domestico.joaoroquer.workers.dev/>
-**Metodologia detalhada (15 seções):** <https://stdmsp-trabalho-domestico.joaoroquer.workers.dev/metodologia.html>
+**Metodologia detalhada (18 seções):** <https://stdmsp-trabalho-domestico.joaoroquer.workers.dev/metodologia.html>
 **Código e ETL:** <https://github.com/joaoroquedasilvajunior/stdmsp-trabalho-domestico>
 **Log de auditoria com checagens cruzadas:** `QA_AUDIT.md` no repositório
 
-*Resumo executivo v2.2 · junho de 2026 · STDMSP + JF Mayer (Concordia).*
+*Resumo executivo v2.3 · junho de 2026 · STDMSP + JF Mayer (Concordia).*

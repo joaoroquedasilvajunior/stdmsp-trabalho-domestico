@@ -1616,6 +1616,125 @@ form). Same data substrate, third theoretical hook.
 
 ---
 
+## 2026-06-09 — v2.2 consolidation milestone
+
+This entry consolidates everything between the v2.0 wrap (2026-05-06)
+and now. Three major waves landed:
+
+**Wave 1 — Phase D (descriptive layer).** Three new dimensions added
+to the Perfil socioeconômico section:
+- D1 Education (VD3004) — bar chart, race-disaggregated
+- D2 Family (V2003) — bar chart, race-disaggregated
+- D3 Housing (S01017 via PNADC-A, NOT V0212 quarterly — pivot
+  documented; separate `etl/pnadc_annual_housing.py` fetcher)
+
+**Wave 2 — Themes 1, 2, 3 (argument layer).** Three editorial finding
+panels with two-column hero layout, accent-soft background, scholarly
+citations:
+- Theme 1 Breadwinner Paradox (static intersectional)
+- Theme 2 Aging Cohort (dynamic generational)
+- Theme 3 Casa-grande's Afterlife (spatial historical)
+
+**Wave 3 — Refresh + operational fixes.** DIEESE abril/2026 numbers
+applied; April 2026 policy timeline events (PNC + Conadon);
+PNADC 1T 2026 microdata ingested; full backfill of fact_age across
+56 quarters; UF-level fact_housing rows for Theme 3.
+
+### Pipeline state
+
+`etl/pnadc_microdata.py` now emits 7 fact tables in one process_period
+call: workers, wages, hours, prev, education, family (with wages),
+age. ~600 lines of pipeline code; backfill takes ~30-40 min for the
+56 quarters and produces ~45k fact rows across all dimensions.
+
+`etl/pnadc_annual_housing.py` runs separately on annual cadence
+(2024 base, released Nov 2025). Now emits both BR-level and
+state-level housing tenure rows. ~360 rows per year.
+
+`etl/export_static.py` exports 11 views: dw_workers, dw_wages, dw_hours,
+dw_prev, dw_education, dw_family, dw_housing, dw_age, dw_intl,
+dw_sources, dw_static_facts. Total static payload ~14 MB.
+
+### Three publishable findings, one per axis
+
+**(1) Breadwinner Paradox.** Among trabalhadoras domésticas, 60% das
+negras são chefes de família vs 55% das não-negras (+5 pp racial gap).
+Among chefes specifically: negras earn R$ 1.315 vs R$ 1.522 for
+não-negras (racial wage ratio 86,4% — slightly steeper than the
+overall category ratio of 87,3%). The workers carrying more household
+financial responsibility receive the sharper racial penalty.
+DIEESE doesn't publish this cross-tab.
+
+**(2) Aging Cohort.** % under-29 trabalhadoras domésticas:
+- Negras: 24% (2012) → 13% (2026), loss of ~11 pp
+- Não-negras: 18% (2012) → 10% (2026), loss of ~8 pp
+- Racial gap narrowed from 6 pp to 3 pp
+- Decline crosses every rights expansion (EC 72, LC 150, BR/MX C189)
+  without inflection — structural, not policy-driven
+Sanity check passes: aggregate ~12% matches DIEESE abril/2026's
+published total exactly.
+
+**(3) Casa-grande's Afterlife.** Live-in (cedido_empregador) share by UF.
+~4–5% nationally (~270k workers), but the geography concentrates the
+finding. First systematic publication of this distribution — DIEESE
+doesn't disaggregate by UF. Cadence annual; expectation that
+Northeast / interior Sudeste states top the list (Bernardino-Costa's
+"atualização da casa-grande/senzala" empirical trace).
+
+### Editorial framing
+
+The three themes form a deliberate triangle: race × time × geography,
+with domestic work at the center of each. Each finding cites a
+distinct scholarly lineage:
+- Theme 1: Lélia Gonzalez, Sueli Carneiro, Bernardino-Costa, Lopes, Lara
+- Theme 2: Saffioti, Acciari, IPEA
+- Theme 3: Bernardino-Costa, Gonzalez, Saffioti, Carneiro
+
+The descriptive layer (eight indicator charts in the main grid) supplies
+evidence; the Theme layer interprets it through the scholarly readings.
+This is the shift in v2.2: the dashboard moves from "data tool" to
+"argument with evidence." STDMSP gets the political/symbolic weight;
+Mayer gets the comparative-politics hooks; the methodology page §3.13
+–§3.15 carries the rigor that allows both audiences to trust the
+findings.
+
+### What's NOT yet done (carried into v2.3 backlog)
+
+- Theme 5 (minimum-wage attribution decomposition) — ~3 hours, paper-side
+- SP wages + SP formality split (UF × VD4019, UF × formality)
+- ENIGH heavy path (Mexican microdata) — only if Mayer commits to
+  comparative paper
+- Open % chefe de família calibration question vs DIEESE 46%
+- Story-mode update to include the three Themes as story beats
+
+### Methodology page section count
+
+§1 Overview · §2 Sources · §3.1–§3.15 Variables and definitions
+(15 numbered sections now, up from 9 at v2.0) · §4 Methodological
+notes · §5 Limitations · §6 Update cadence. PT and EN sides both
+complete; bilingual coverage 100% for all v2.2 additions.
+
+### Sources cross-check at v2.2
+
+| Indicator | Computed | DIEESE abr/2026 | Status |
+|---|---:|---:|---|
+| Total trabalhadoras(es) | 5.437k–5.512k | 5,6M | ✓ within rounding |
+| % Mulheres | 91,7% | 92% | ✓ |
+| % Negras (women only, abril 2026 base) | ~67.5% | 68% | ✓ |
+| % com carteira | 23.8% | 24% | ✓ |
+| Sem previdência (women only, %) | 14.0% | 35% | ⚠ unresolved |
+| Wage ratio negras/não-negras | 87.3% | 87.1% | ✓ |
+| % under_29 (total) | ~12% | 12% | ✓ |
+| % chefe de família (total) | 58% | 46% | ⚠ method gap |
+| Jornada média (h/sem) | 31.8h | n/a | descriptive |
+| % live-in (cedido empregador) | 4.5% | n/a | descriptive |
+
+The two ⚠ items are documented in §3.11 and §3.13 of the methodology.
+For publishable use: racial gaps and trajectories are safe; absolute
+chefe and previdência levels need DIEESE methodology cross-check.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

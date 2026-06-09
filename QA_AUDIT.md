@@ -2049,7 +2049,7 @@ makes that choice empirically visible.
 
 ### Trigger
 
-Conversation with Jean-François Mayer about the paper with Eliete Edwiges Barbosa
+Conversation with Jean-François Mayer about the chapter in preparation
 surfaced a sharper version of the formalization narrative: the 2017 Labor
 Reform (Lei 13.467/2017), paired with the LC 150/2015 cost increase on the
 mensalista contract, may have *accelerated* the substitution of mensalista
@@ -2128,7 +2128,7 @@ the backfill runs on Joao's Mac and takes ~1 day for all 56 quarters
 (2012Q1 → 2026Q1). Until that runs, the chart shows the standard
 "Sem dados ainda. Aguardando backfill com V4024." overlay. The
 editorial copy is intentionally complete so the section is reviewable
-by Mayer and Eliete as soon as the V4024 data lands — no second pass
+by Mayer as soon as the V4024 data lands — no second pass
 on copy needed.
 
 ### Editorial framing
@@ -2281,9 +2281,10 @@ The new panel is the first place in the dashboard that *refines*
 rather than *confirms* a researcher hypothesis. This is a
 credibility win: the dashboard demonstrably shows what the data
 says, even when the data contradicts the prior. Mayer should be
-invited to use the refined framing in the chapter; Eliete's name
-remains in the project but no longer appears in the panel cite per
-Joao's request 2026-06-09.
+invited to use the refined framing in the chapter. Eliete is the
+editor of the book the chapter is being submitted to; she is not a
+research collaborator on this project. Per Joao's request 2026-06-09
+she should not be referenced as a project participant.
 
 ### Outstanding
 
@@ -2389,7 +2390,7 @@ are preserved.
 The precise UF cut requires extending build_contract_rows()
 in etl/pnadc_microdata.py to emit per-UF cells and re-running
 the full PNADC backfill (~1 day on Joao's Mac). Queued as task
-#68 — to be executed if the Mayer/Eliete chapter needs the
+#68 — to be executed if Mayer's chapter needs the
 exact cut for the regression appendix. The dashboard panel
 links to §3.19 of the methodology, which documents the proxy
 and the cross-check.
@@ -2581,7 +2582,7 @@ If the chart renders these, all good:
   tooltips show the correct R$ values and sample sizes.
 - Task #71 (this ship) closes after deploy verification.
 - Tasks #68 (UF-precise contract pipeline) and #70 (contract-aware
-  wages pipeline) remain queued, both gated on Mayer/Eliete review.
+  wages pipeline) remain queued, both gated on Mayer review.
 
 ---
 

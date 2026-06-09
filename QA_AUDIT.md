@@ -1523,6 +1523,99 @@ labor mobility. Same data substrate, different theoretical hook.
 
 ---
 
+## 2026-06-08 — Theme 3: "Resíduo da casa-grande" (live-in geography)
+
+**Scope.** Third second-order finding. Adds state-level cuts to the
+already-built housing pipeline and surfaces the geography of live-in
+(cedido_empregador) workers as a dedicated editorial section. No
+schema change — `fact_housing` already supports `geo_level='uf'`.
+
+### Pipeline (`etl/pnadc_annual_housing.py`)
+
+- `build_housing_rows()` parameterized over (geo_code, geo_level) and
+  extended to iterate the 27 IBGE state codes after the existing BR
+  emissions. Per-UF: emits `preta_parda`, `nao_negras`, `total` race
+  aggregates × 4 housing buckets. Native races skipped at UF level —
+  their cells are too small to be useful in many states.
+- Small-sample floor: UFs with `< 30` unweighted observations are
+  logged-and-skipped to avoid noisy estimates. Same threshold also
+  applied to per-race cells within a UF.
+- Per-year row count grows from ~40 (BR only) to ~360 (BR + 27 UFs ×
+  3 race aggregates × ~4 buckets), well within Supabase limits.
+
+### Dashboard (`dashboard/index.html`)
+
+- New `<section id="residuo">` "O resíduo da casa-grande" placed
+  between Theme 2 (cohort) and Foco em São Paulo. Same accent-soft
+  two-column hero pattern as Themes 1/2.
+- Editorial copy framed around Bernardino-Costa's "atualização da
+  casa-grande/senzala," with Gonzalez, Carneiro and Saffioti cited in
+  the bottom paragraph. Three inline JS callouts: national % live-in,
+  national absolute count (rounded to thousands), top UF name + %.
+- `renderResidual()` reads `STATE.housing`, filters to `geo_level='uf' /
+  sex='T' / race='total' / housing='cedido_empregador'`, sorts by
+  `pct_within_race` descending, builds a horizontal Chart.js bar
+  chart. Top 3 UFs highlighted in accent color, rest in neutral gray.
+  Chart height set to 480px so all 27 UF labels stay readable.
+- The `box-residual` container uses `min-height: 480px` for the
+  horizontal-bar layout.
+
+### Methodology (`dashboard/metodologia.html`)
+
+- §3.15 added (PT + EN) — documents the variable reuse from §3.12,
+  the small-sample floor, the editorial framing (first systematic
+  geographic distribution of live-in, which DIEESE doesn't publish at
+  UF level), and the cadence (annual, updates when next PNADC-A
+  release lands ~August/November of the year after the base year).
+
+### Run sequence on Joao's Mac
+
+```bash
+cd ~/Documents/Claude/Domestic\ Work
+source etl/.venv/bin/activate
+
+# Re-run the annual fetcher. The zip is cached from the first run, so
+# this is just parse + aggregate + upsert — ~30 seconds.
+python etl/pnadc_annual_housing.py 2024
+
+./etl/refresh.sh
+git add etl/pnadc_annual_housing.py \
+        dashboard/index.html dashboard/metodologia.html dashboard/data/ \
+        QA_AUDIT.md
+git commit -m "feat(Theme 3): live-in continuity panel — geography of residentes"
+git push origin main
+```
+
+### Sanity-check targets
+
+The aggregate national % live-in stays ≈4–5% (no change — same
+underlying data). New per-UF expectations:
+
+- **Top of the list** likely Bahia, Maranhão, Piauí, Pará, or parts of
+  Minas Gerais — historically high concentration of trabalhadoras
+  domésticas residentes in interior regions where the patrimonial
+  relationship persists. If a Southern state (RS, SC, PR) lands at
+  the top, the data is wrong.
+- **Bottom of the list** likely Distrito Federal and capital-state
+  outliers, where urban professional households trend toward
+  diaristas (non-residentes) rather than mensalistas residentes.
+
+The exact ranking is the finding — we'll know once Joao runs and
+the chart populates.
+
+### Why this matters editorially (Theme 3 specifically)
+
+Theme 1 was a *static* intersectional finding (breadwinner paradox).
+Theme 2 was a *dynamic* generational finding (aging out). Theme 3 is a
+*spatial* historical finding (where the patrimonial relation persists).
+The three together form a triangle: race × time × geography, with
+domestic work at the center of each. STDMSP gets symbolic weight
+(the casa-grande continuity made visible); Mayer gets the spatial
+politics of care work (which states retain the pre-modern labor
+form). Same data substrate, third theoretical hook.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

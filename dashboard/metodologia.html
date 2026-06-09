@@ -348,6 +348,16 @@
   <li><strong>Triangulação com DIEESE</strong>: a fração agregada até 29 anos (raça=total) no trimestre fixo mais recente deveria ficar próxima de 12% (DIEESE abr/2026 reporta esse valor para a categoria como um todo). Se aparecer fora da faixa 8–16%, vale checar a definição de "trabalhadora doméstica" (estamos filtrando por VD4009 ∈ {03,04}).</li>
 </ul>
 
+<h3>3.15 Resíduo da casa-grande — geografia da residência (Tema 3)</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-A</code> · <strong>PNAD Contínua Anual — Visita 1</strong>, variável <code>S01017</code> (mesma usada em §3.12), agora desagregada por UF.</li>
+  <li><strong>Pipeline</strong>: <code>etl/pnadc_annual_housing.py</code> estendido (Tema 3) para emitir, além das cifras BR-level, agregados por UF × raça × bucket de moradia. Limite de pequena amostra: UFs com menos de 30 observações amostrais não-ponderadas são omitidas para evitar estimativas barulhentas em estados pequenos do Norte.</li>
+  <li><strong>O que o gráfico mostra</strong>: ranking horizontal das 27 UFs (ou menos, descontadas as omitidas por amostra pequena) pelo <code>pct_within_race</code> de <em>cedido_empregador</em> no recorte <code>race='total'</code>. As três UFs no topo são realçadas em cor de destaque; as demais ficam em cinza neutro. A leitura é direta: onde a moradia residente ainda pesa.</li>
+  <li><strong>Por que esta visualização importa</strong>: o contingente residente é pequeno (~4–5% nacional, segundo a PNADC Anual 2024), mas a geografia é o conteúdo. DIEESE publica o agregado nacional sem desagregação por UF; a literatura sobre "casa-grande/senzala atualizada" (Bernardino-Costa, Gonzalez, Carneiro, Saffioti) é qualitativa e usa exemplos pontuais. O painel oferece a primeira distribuição geográfica sistemática desse resíduo.</li>
+  <li><strong>Cautela amostral</strong>: a PNADC-A tem cerca de 200k domicílios pesquisados anualmente; ao filtrar para trabalhadoras domésticas residentes em UFs específicas, o n unweighted pode cair para algumas dezenas. Por isso usamos um piso de 30 obs; mesmo com isso, UFs próximas do piso têm intervalos de confiança amplos. O ranking é robusto no terço superior; nas posições intermediárias, a ordem pode variar entre anos por flutuação amostral.</li>
+  <li><strong>Cadência</strong>: anual. O ranking se atualiza quando uma nova PNADC-A é divulgada (geralmente entre agosto e novembro do ano seguinte).</li>
+</ul>
+
 <h2>4. Notas metodológicas</h2>
 
 <h3>4.1 Trimestre móvel × trimestre fixo</h3>
@@ -698,6 +708,16 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>Why the question matters</strong>: an aging category is not merely a demographic finding — it's a problem for the union (generational replenishment), an evidence of occupational mobility (young Black women going to other sectors), and a fracture in the historical continuity that Saffioti and Bernardino-Costa described. If young women aren't entering, something in the "atualização da casa-grande/senzala" paradigm has shifted — or at least the entry point has moved. The chart here is the start of the conversation, not the end of it.</li>
   <li><strong>True cohorts vs. pseudo-cohorts</strong>: the chart is a time series of proportions by band, not a series of birth cohorts. True cohort analysis (tracking someone born in 1995 across the years) would require exploiting PNADC's panel structure (visits 1 to 5 of the same households) — out of scope for this iteration. The reading here is "pseudo-cohort": if the share of young workers falls systematically, it's because newer cohorts are entering less than earlier cohorts did at the same age.</li>
   <li><strong>Triangulation with DIEESE</strong>: the aggregate share of under-29s (race=total) at the latest fixed quarter should land near 12% (DIEESE Apr/2026 reports that for the category as a whole). If outside the 8–16% band, worth checking the domestic-worker definition (we filter on VD4009 ∈ {03,04}).</li>
+</ul>
+
+<h3>3.15 Casa-grande's afterlife — geography of live-in (Theme 3)</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-A</code> · <strong>PNADC Annual — Visit 1</strong>, variable <code>S01017</code> (same as §3.12), now disaggregated by state.</li>
+  <li><strong>Pipeline</strong>: <code>etl/pnadc_annual_housing.py</code> extended (Theme 3) to emit, in addition to the BR-level rows, state × race × housing-bucket aggregates. Small-sample floor: states with fewer than 30 unweighted observations are omitted to avoid noisy estimates in small Northern states.</li>
+  <li><strong>What the chart shows</strong>: a horizontal ranking of the 27 states (or fewer, after small-sample omissions) by <code>pct_within_race</code> of <em>cedido_empregador</em> within the <code>race='total'</code> cut. The top three states are highlighted in accent color; the rest stay in neutral gray. The reading is direct: where live-in tenure still weighs.</li>
+  <li><strong>Why this visualization matters</strong>: the live-in contingent is small (~4–5% nationally per PNADC Annual 2024), but the geography is the content. DIEESE publishes the national aggregate without state-level disaggregation; the "casa-grande/senzala continuity" literature (Bernardino-Costa, Gonzalez, Carneiro, Saffioti) is qualitative and uses scattered examples. The dashboard offers the first systematic geographic distribution of this residue.</li>
+  <li><strong>Sampling caveat</strong>: PNADC-A surveys about 200k households per year; filtering down to live-in domestic workers within specific states drops the unweighted N to a few dozen. That's why we use a floor of 30 obs; even so, states near the floor have wide confidence intervals. The ranking is robust in the top third; in the middle positions, order may shift between years by sampling fluctuation.</li>
+  <li><strong>Cadence</strong>: annual. The ranking updates when a new PNADC-A is released (usually between August and November of the following year).</li>
 </ul>
 
 <h2>4. Methodological notes</h2>

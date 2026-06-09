@@ -503,6 +503,30 @@
   </div>
 </section>
 
+<!-- ============ RESÍDUO DA CASA-GRANDE (Theme 3) ============ -->
+<!-- Live-in (cedido_empregador) by UF — geographic vestige of the historical -->
+<!-- patrimonial labor relation. Horizontal bar chart ranks the 27 UFs by -->
+<!-- % live-in share so the geography of the continuity is immediately legible. -->
+<section id="residuo" class="border-t rule" style="background: var(--accent-soft);">
+  <div class="max-w-6xl mx-auto px-5 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <article class="lg:col-span-2">
+        <p class="text-xs uppercase tracking-wide font-semibold mb-2" style="color: var(--accent);" data-i18n="residual-eyebrow">Continuidade histórica</p>
+        <h2 class="text-xl md:text-2xl font-medium mb-3" data-i18n="residual-title">O resíduo da casa-grande</h2>
+        <p class="text-sm text-gray-800 mb-3 leading-relaxed" data-i18n="residual-lead">A trabalhadora doméstica <strong>residente</strong> — que mora na casa onde trabalha — é a figura mais antiga da categoria. É o vestígio empiricamente rastreável daquilo que Joaze Bernardino-Costa chamou de <em>atualização da casa-grande/senzala</em>: uma relação patrimonial onde moradia, vínculo de trabalho e dependência se confundem.</p>
+        <p class="text-sm text-gray-700 mb-3 leading-relaxed" data-i18n="residual-body">Nacionalmente, esse contingente é pequeno — em torno de <span id="residual-callout-pct">—</span> das trabalhadoras domésticas em 2024, segundo a PNADC Anual. Mas pequeno não é insignificante: são <span id="residual-callout-k">—</span> de pessoas, e a distribuição geográfica revela onde a continuidade ainda pesa. As barras ao lado mostram a parcela residente por estado; <span id="residual-callout-top">—</span> está no topo da lista, e a diferença entre os estados do Norte/Nordeste e os do Sul reflete a geografia histórica do trabalho doméstico no Brasil.</p>
+        <p class="text-xs text-gray-600 italic" data-i18n="residual-cite">A leitura é clara em Lélia Gonzalez (sobre o lugar simbólico da empregada residente no imaginário das classes médias urbanas), em Heleieth Saffioti (sobre a continuidade patrimonial do trabalho doméstico), e em Sueli Carneiro (sobre a centralidade da mulher negra nessa estrutura). O painel não publica um dado novo sobre a categoria como um todo — publica a primeira visualização sistemática da <em>geografia</em> desse resíduo, que a DIEESE não desagrega por UF.</p>
+      </article>
+      <article class="lg:col-span-3 border rule rounded-lg p-4 bg-white">
+        <h3 class="text-base font-medium" data-i18n="residual-chart-title">% residentes por UF</h3>
+        <p class="text-xs text-gray-500 mb-3" data-i18n="residual-chart-meta">% trabalhadoras(es) domésticas(os) em moradia cedida pelo empregador · PNADC Anual Visita 1, S01017</p>
+        <div class="chart-box" id="box-residual" style="min-height: 480px;"><canvas id="chart-residual"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+        <p class="text-xs text-gray-500 mt-2" id="residual-source" data-i18n="residual-chart-source">Fonte: PNADC Anual — Visita 1 (IBGE), variável S01017 (forma de habitação do domicílio), agregada pela equipe do projeto por UF. UFs com menos de 30 observações amostrais não-ponderadas são omitidas para evitar estimativas ruidosas (pequenos estados do Norte podem desaparecer da lista por essa razão).</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <!-- ============ FOCO EM SÃO PAULO ============ -->
 <section id="foco-sp" class="border-t rule" style="background: var(--accent-soft);">
   <div class="max-w-6xl mx-auto px-5 py-8">
@@ -705,6 +729,14 @@ const I18N = {
     "cohort-chart-title": "% até 29 anos ao longo do tempo, por raça",
     "cohort-chart-meta":  "PNADC microdados V2009 · trimestre fixo, 2012Q1 → presente",
     "cohort-chart-source": "Fonte: PNADC microdados (IBGE), variável V2009 (idade na data de referência), agregada pela equipe do projeto em buckets alinhados ao DIEESE (até 29 / 30–44 / 45–59 / 60+). A leitura recomendada é a inclinação das linhas — se ambas caem, a categoria está perdendo a base etária inferior em ambos os grupos raciais; se uma cai mais rápido que a outra, há um padrão racial na desistência geracional. DIEESE Apr/2026 reporta 12% até 29 anos para a categoria como um todo.",
+    "residual-eyebrow": "Continuidade histórica",
+    "residual-title":   "O resíduo da casa-grande",
+    "residual-lead":    "A trabalhadora doméstica <strong>residente</strong> — que mora na casa onde trabalha — é a figura mais antiga da categoria. É o vestígio empiricamente rastreável daquilo que Joaze Bernardino-Costa chamou de <em>atualização da casa-grande/senzala</em>: uma relação patrimonial onde moradia, vínculo de trabalho e dependência se confundem.",
+    "residual-body":    "Nacionalmente, esse contingente é pequeno — em torno de <span id=\"residual-callout-pct\">—</span> das trabalhadoras domésticas em 2024, segundo a PNADC Anual. Mas pequeno não é insignificante: são <span id=\"residual-callout-k\">—</span> de pessoas, e a distribuição geográfica revela onde a continuidade ainda pesa. As barras ao lado mostram a parcela residente por estado; <span id=\"residual-callout-top\">—</span> está no topo da lista, e a diferença entre os estados do Norte/Nordeste e os do Sul reflete a geografia histórica do trabalho doméstico no Brasil.",
+    "residual-cite":    "A leitura é clara em Lélia Gonzalez (sobre o lugar simbólico da empregada residente no imaginário das classes médias urbanas), em Heleieth Saffioti (sobre a continuidade patrimonial do trabalho doméstico), e em Sueli Carneiro (sobre a centralidade da mulher negra nessa estrutura). O painel não publica um dado novo sobre a categoria como um todo — publica a primeira visualização sistemática da <em>geografia</em> desse resíduo, que a DIEESE não desagrega por UF.",
+    "residual-chart-title": "% residentes por UF",
+    "residual-chart-meta":  "% trabalhadoras(es) domésticas(os) em moradia cedida pelo empregador · PNADC Anual Visita 1, S01017",
+    "residual-chart-source": "Fonte: PNADC Anual — Visita 1 (IBGE), variável S01017 (forma de habitação do domicílio), agregada pela equipe do projeto por UF. UFs com menos de 30 observações amostrais não-ponderadas são omitidas para evitar estimativas ruidosas (pequenos estados do Norte podem desaparecer da lista por essa razão).",
     "c189-title": "Status legal — Convenção 189 da OIT",
     "c189-meta": "Ano de ratificação por país. A C189 (Convenção sobre Trabalhadoras e Trabalhadores Domésticos, 2011) estabelece direitos iguais aos de outras categorias.",
     "c189-footnote": "Brasil ratificou em janeiro de 2018, três anos após a entrada em vigor da LC 150/2015 — ou seja, a legislação interna precedeu o compromisso internacional. México ratificou apenas em julho de 2020. Uruguai foi o primeiro país do mundo a ratificar, em junho de 2012. Fonte: NORMLEX (OIT).",
@@ -834,6 +866,14 @@ const I18N = {
     "cohort-chart-title": "% aged 29 or younger over time, by race",
     "cohort-chart-meta":  "PNADC microdata V2009 · fixed quarter, 2012Q1 → present",
     "cohort-chart-source": "Source: PNADC microdata (IBGE), variable V2009 (age at the reference date), aggregated by the project team into DIEESE-aligned buckets (≤29 / 30–44 / 45–59 / 60+). The recommended reading is the slope of the lines — if both fall, the category is losing its lower age base in both racial groups; if one falls faster than the other, there is a racial pattern in generational dropout. DIEESE Apr/2026 reports 12% aged 29 or younger for the category as a whole.",
+    "residual-eyebrow": "Historical continuity",
+    "residual-title":   "The casa-grande's afterlife",
+    "residual-lead":    "The <strong>live-in</strong> domestic worker — the one who lives in the house where she works — is the oldest figure in this category. She is the empirically traceable trace of what Joaze Bernardino-Costa called the <em>updating of the casa-grande/senzala</em>: a patrimonial relationship where housing, employment, and dependency blur into one.",
+    "residual-body":    "Nationally this contingent is small — around <span id=\"residual-callout-pct\">—</span> of domestic workers in 2024, according to PNADC Annual. But small is not insignificant: that is <span id=\"residual-callout-k\">—</span> people, and the geographic distribution shows where the continuity still weighs. The bars on the right rank the live-in share by state; <span id=\"residual-callout-top\">—</span> sits at the top, and the gap between Northern/Northeastern states and Southern ones reflects the historical geography of domestic work in Brazil.",
+    "residual-cite":    "The reading is clear in Lélia Gonzalez (on the symbolic place of the live-in worker in the urban middle-class imaginary), Heleieth Saffioti (on the patrimonial continuity of domestic work), and Sueli Carneiro (on the centrality of Black women within that structure). The dashboard isn't publishing a new datum about the category overall — it is publishing the first systematic visualization of the <em>geography</em> of that residue, which DIEESE does not disaggregate by UF.",
+    "residual-chart-title": "% live-in by state",
+    "residual-chart-meta":  "% of domestic workers in employer-granted housing · PNADC Annual Visit 1, S01017",
+    "residual-chart-source": "Source: PNADC Annual — Visit 1 (IBGE), variable S01017 (household tenure), aggregated by the project team at state level. States with fewer than 30 unweighted sample observations are omitted to avoid noisy estimates (small Northern states may disappear from the list for that reason).",
     "c189-title": "Legal status — ILO Convention 189",
     "c189-meta": "Year of ratification per country. C189 (Domestic Workers Convention, 2011) establishes rights equal to those of other categories of workers.",
     "c189-footnote": "Brazil ratified in January 2018, three years after LC 150/2015 came into force — meaning domestic legislation preceded the international commitment. Mexico only ratified in July 2020. Uruguay was the first country in the world to ratify, in June 2012. Source: NORMLEX (ILO).",
@@ -1285,6 +1325,7 @@ function render() {
   renderHousing();
   renderBreadwinner();
   renderCohort();
+  renderResidual();
   renderFocusSP();
   renderSources();
   // "Data updated on" reflects the static-export timestamp (when the JSON was
@@ -2983,6 +3024,115 @@ function renderCohort() {
         y: {
           beginAtZero: true,
           ticks: { callback: v => v + "%", font: { size: 11 } },
+        },
+      },
+    },
+  });
+}
+
+// ============ RESÍDUO DA CASA-GRANDE (Theme 3) ============
+// Horizontal bar chart of % live-in (cedido_empregador) by UF for the latest
+// available PNADC-A year, race='total' track. Surfaces the geographic
+// vestige of the historical patrimonial labor relation. Also injects three
+// inline callouts into the editorial paragraph: national %, national
+// absolute count (thousands), and the top UF name.
+
+function renderResidual() {
+  const canvas = document.getElementById("chart-residual");
+  if (!canvas || !STATE.housing) return;
+
+  // National-level snapshot (for inline callouts)
+  const national = STATE.housing.find(r =>
+    r.geo_level === "country"
+    && r.sex_code === "T"
+    && r.race_code === "total"
+    && r.housing_code === "cedido_empregador"
+  );
+
+  // UF-level rows for the chart
+  const ufRows = STATE.housing.filter(r =>
+    r.geo_level === "uf"
+    && r.sex_code === "T"
+    && r.race_code === "total"
+    && r.housing_code === "cedido_empregador"
+    && r.pct_within_race != null
+  );
+
+  if (!ufRows.length) {
+    setEmpty("box-residual", true);
+    return;
+  }
+
+  // Sort by % desc so the top of the bar chart reads "most live-in"
+  ufRows.sort((a, b) => Number(b.pct_within_race) - Number(a.pct_within_race));
+
+  const labels = ufRows.map(r => (LANG === "pt" ? r.geo_name_pt : r.geo_name_en));
+  const values = ufRows.map(r => Number(r.pct_within_race));
+
+  // Inline callouts in the editorial paragraph
+  const callPct = document.getElementById("residual-callout-pct");
+  const callK   = document.getElementById("residual-callout-k");
+  const callTop = document.getElementById("residual-callout-top");
+
+  if (callPct && national) {
+    const pct = Number(national.pct_within_race);
+    callPct.textContent = `${pct.toFixed(1).replace(".", LANG === "pt" ? "," : ".")}%`;
+  }
+  if (callK && national) {
+    // workers_thousands is in thousands of people — display as "270 mil"
+    const k = Math.round(Number(national.workers_thousands));
+    const sep = LANG === "pt" ? "." : ",";
+    const withSeparators = String(k).replace(/\B(?=(\d{3})+(?!\d))/g, sep);
+    callK.textContent = LANG === "pt" ? `${withSeparators} mil` : `${withSeparators} thousand`;
+  }
+  if (callTop && ufRows.length) {
+    const top = ufRows[0];
+    const name = LANG === "pt" ? top.geo_name_pt : top.geo_name_en;
+    const pct = Number(top.pct_within_race).toFixed(1).replace(".", LANG === "pt" ? "," : ".");
+    callTop.textContent = `${name} (${pct}%)`;
+  }
+
+  setEmpty("box-residual", false);
+  destroyChart("residual");
+
+  charts.residual = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: I18N[LANG]["chart-housing"] /* reuse "Moradia — ..." legend label not ideal; use a simple custom */
+          ? (LANG === "pt" ? "% residentes" : "% live-in")
+          : "% live-in",
+        data: values,
+        backgroundColor: ctx => {
+          // Highlight the top 3 in accent color, the rest in neutral.
+          const idx = ctx.dataIndex;
+          return idx < 3 ? "rgba(190, 30, 45, 0.85)" : "rgba(75, 85, 99, 0.6)";
+        },
+        borderColor: ctx => (ctx.dataIndex < 3 ? "rgba(190, 30, 45, 1)" : "rgba(75, 85, 99, 1)"),
+        borderWidth: 1,
+      }],
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.x.toFixed(1)}%`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          ticks: { callback: v => v + "%", font: { size: 11 } },
+        },
+        y: {
+          ticks: { font: { size: 11 }, autoSkip: false },
+          grid: { display: false },
         },
       },
     },

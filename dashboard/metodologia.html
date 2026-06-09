@@ -427,6 +427,28 @@
   <li><strong>Literatura</strong>: a previsão teórica do padrão vem de Pinheiro et al. (IPEA), Hirata, Acciari e Bernardino-Costa — informalização racializada como ajuste de baixa qualidade em mercados regulados, com herança colonial específica para o trabalho doméstico brasileiro.</li>
 </ul>
 
+<h3>3.20 Hiato salarial dentro do contrato (snapshot 1T 2026)</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-MICRODATA 1T 2026</code> — agregação <em>ad-hoc</em> via <code>etl/probe_wage_contract.py</code>. O script reprocessa o microdado bruto em chunks (preservando memória), filtra a categoria doméstica (VD4009 ∈ {03, 04}) e computa médias ponderadas (pesos V1028) de <code>VD4019</code> (rendimento mensal habitual) e do salário por hora individual (<code>VD4019/(V4039×4,33)</code>) em cada célula de <em>raça × contrato × formalidade</em>. Resultado materializado em <code>dashboard/data/wage_contract_snapshot.json</code>.</li>
+  <li><strong>Por que um snapshot, não uma série temporal?</strong> Esse recorte combina três dimensões (V4024 × VD4009 × V2010) com as variáveis salariais (VD4019, V4039) — fora do escopo do <code>fact_wages</code> atual, que tem apenas raça × formalidade. Estender o pipeline para emitir uma série completa de 56 trimestres é a tarefa #70, em fila para ser disparada se o capítulo de Mayer & Eliete precisar do histórico para o apêndice de regressão. Por enquanto, mostramos o último trimestre disponível como evidência direta do mecanismo.</li>
+  <li><strong>Pergunta analítica</strong>: o hiato salarial racial por hora — que, no agregado, é de cerca de 90,9% (negras ganham 90,9% por hora do que ganham as não-negras) — sobrevive dentro de cada tipo de contrato, ou se desfaz quando controlamos por contrato? A resposta separa <em>preço</em> de <em>composição</em>:
+    <ul>
+      <li><em>Hipótese composição</em>: o hiato existe porque trabalhadoras negras se concentram em contratos pior remunerados. Se controlarmos por contrato, o hiato deveria desaparecer.</li>
+      <li><em>Hipótese preço (discriminação)</em>: o hiato existe porque, para o mesmo trabalho, paga-se menos para trabalhadoras negras. Se controlarmos por contrato, o hiato deveria persistir.</li>
+    </ul>
+  </li>
+  <li><strong>Resultado</strong>: a resposta é <em>mista, com geometria racial específica por contrato</em>. Dentro do mensalismo (75% da categoria), o hiato por hora é de 96,6% — quase fechado. Dentro do diarismo (25% da categoria), o hiato é de 84,3% — um desconto racial substancial. Em outras palavras, <strong>o mensalismo equipara salário por hora; o diarismo racializa</strong>. Como a composição racial entre mensalistas e diaristas é razoavelmente simétrica (~32% das negras são diaristas vs ~36% das não-negras), o mecanismo dominante é <em>preço</em> dentro do contrato diarista, não composição entre contratos. Para o salário mensal (não por hora), as conclusões são similares mas atenuadas pelo número de horas trabalhadas.</li>
+  <li><strong>Implicação para a reforma</strong>: a expansão pós-reforma do diarismo, que documentamos nos painéis acima, lifted o salário por hora das trabalhadoras (R$ 14,12/h diarista vs R$ 10,68/h mensalista para não-negras), <em>mas com um desconto racial aplicado às trabalhadoras negras</em> (R$ 11,90/h diarista vs R$ 10,32/h mensalista). O prêmio diarista é limpo para não-negras e parcial para negras. Isso refina a hipótese de Mayer em um sentido construtivo: a discriminação racial pós-reforma não está em <em>quem</em> se torna diarista (taxas similares), mas em <em>quanto</em> se paga pela mesma hora.</li>
+  <li><strong>Limitações</strong>:
+    <ul>
+      <li><em>Snapshot único</em>: sem série temporal, não podemos testar se esse hiato dentro do diarismo se ampliou ou estreitou pós-2017Q4. A intuição editorial é que se ampliou (com a entrada de mais trabalhadoras na categoria), mas a verificação exige a tarefa #70.</li>
+      <li><em>Amostra do diarista formal</em>: 196 (negras) + 93 (não-negras). Robusto para o agregado diarista, mas o sub-bucket formal isoladamente é ruidoso — por isso o painel reporta o agregado por contrato, não as 4 células individuais.</li>
+      <li><em>V4024 ≠ definição estrita de diarista</em>: capta "trabalha em mais de 1 domicílio", proxy operacional da PNADC. Pode misturar mensalistas com hora extra em segunda casa.</li>
+      <li><em>Salário por hora ≠ salário efetivo</em>: usamos V4039 (horas habituais) × 4,33 semanas/mês, padrão IBGE. Trabalhadoras que reportam zero horas ou jornadas extremas (>98h/sem) são excluídas.</li>
+    </ul>
+  </li>
+</ul>
+
 <h2>4. Notas metodológicas</h2>
 
 <h3>4.1 Trimestre móvel × trimestre fixo</h3>
@@ -856,6 +878,28 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>Connection to Theme 3</strong>: the persistence of informal monthly work among Black workers (~48% unchanged across 14 years) is the contract-level manifestation of the "casa-grande afterlife" documented in Theme 3 — resident and quasi-resident domestic labor, a colonial inheritance concentrated in the Northeast. Read together, the two panels make the structural argument concrete: the informality floor is not a Reform effect, it is a historical continuity that the Reform left intact.</li>
   <li><strong>Geographic sub-panel (UF × race)</strong>: the "Where the card disappeared" bar chart complements the two BR-wide panels with a UF × race view. For this cut we use <em>fact_workers</em> ("% with signed card", aggregated by UF × race × period) as a <strong>proxy for formal monthly work</strong>, not <em>fact_contract</em> — because fact_contract is currently BR-only. The approximation introduces a small bias (~3–4pp) because "% with signed card" includes the formal-diarista bucket (~3–4% of the total). At the BR level we can cross-check the two: % with signed card (from fact_workers, ~23–24% in 2026Q1) ≈ % formal mensalista (from fact_contract, ~20–21%) + % formal diarista (from fact_contract, ~3–4%), confirming the proxy preserves the directional signal. UF extension of the contract pipeline (fact_contract with geo_level='uf') is queued as task #68 — triggered if Mayer & Eliete's chapter needs the precise cut for the regression appendix.</li>
   <li><strong>Literature</strong>: the theoretical prediction of this pattern comes from Pinheiro et al. (IPEA), Hirata, Acciari, and Bernardino-Costa — racialized informalization as low-quality adjustment in regulated markets, with a colonial inheritance specific to Brazilian domestic work.</li>
+</ul>
+
+<h3>3.20 Hourly wage gap within contract (2026Q1 snapshot)</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-MICRODATA 2026Q1</code> — <em>ad-hoc</em> aggregation via <code>etl/probe_wage_contract.py</code>. The script reprocesses the raw microdata in chunks (memory-efficient), filters to the domestic-worker category (VD4009 ∈ {03, 04}), and computes V1028-weighted means of <code>VD4019</code> (habitual monthly income) and the individual hourly wage (<code>VD4019/(V4039×4.33)</code>) in each <em>race × contract × formality</em> cell. Result materialized at <code>dashboard/data/wage_contract_snapshot.json</code>.</li>
+  <li><strong>Why a snapshot, not a time series?</strong> This cut combines three dimensions (V4024 × VD4009 × V2010) with the wage variables (VD4019, V4039) — outside the scope of the current <code>fact_wages</code> table, which has only race × formality. Extending the pipeline to emit a full 56-quarter series is task #70, queued to be triggered if the Mayer & Eliete chapter needs the historical series for the regression appendix. For now we show the latest available quarter as direct evidence of the mechanism.</li>
+  <li><strong>Analytical question</strong>: the racial hourly wage gap — about 90.9% in aggregate (Black workers earn 90.9% per hour of what non-Black workers earn) — does it survive within each contract type, or dissolve once we control for contract? The answer separates <em>price</em> from <em>composition</em>:
+    <ul>
+      <li><em>Composition hypothesis</em>: the gap exists because Black workers concentrate in worse-paid contracts. Control for contract and the gap should vanish.</li>
+      <li><em>Price (discrimination) hypothesis</em>: the gap exists because, for the same work, Black workers are paid less. Control for contract and the gap should persist.</li>
+    </ul>
+  </li>
+  <li><strong>Result</strong>: the answer is <em>mixed, with contract-specific racial geometry</em>. Within monthly work (75% of the category), the hourly gap is 96.6% — nearly closed. Within day-rate work (25% of the category), the gap is 84.3% — a substantial racial discount. In other words, <strong>monthly contracts equalize hourly pay; day-rate contracts racialize it</strong>. Because the racial composition between monthly and day-rate workers is reasonably symmetric (~32% of Black workers are day-rate vs. ~36% of non-Black workers), the dominant mechanism is <em>price discrimination</em> inside the day-rate contract, not composition across contracts. For monthly (not hourly) pay, the conclusions are similar but moderated by working hours.</li>
+  <li><strong>Implication for the Reform</strong>: the post-Reform expansion of day-rate work that we document in the panels above lifted workers' hourly pay (R$ 14.12/h day-rate vs R$ 10.68/h monthly for non-Black), <em>but with a racial discount applied to Black workers</em> (R$ 11.90/h day-rate vs R$ 10.32/h monthly). The day-rate premium is clean for non-Black workers and only partial for Black workers. This refines Mayer's hypothesis in a constructive direction: post-Reform racial discrimination is not in <em>who</em> becomes day-rate (rates are similar), but in <em>how much</em> each is paid per hour.</li>
+  <li><strong>Limitations</strong>:
+    <ul>
+      <li><em>Single snapshot</em>: without a time series, we cannot test whether this within-day-rate gap widened or narrowed post-2017Q4. Editorial intuition is that it widened (as more workers entered the category), but verification requires task #70.</li>
+      <li><em>Formal day-rate sample</em>: 196 (Black) + 93 (non-Black). Robust for the contract aggregate but the formal sub-bucket alone is noisy — that is why the panel reports the contract aggregate, not the four cells individually.</li>
+      <li><em>V4024 ≠ strict day-rate definition</em>: captures "works in more than one household", PNADC's operational proxy. May mix monthly workers with extra hours at a second residence.</li>
+      <li><em>Hourly wage ≠ effective wage</em>: we use V4039 (habitual hours) × 4.33 weeks/month, the IBGE standard. Workers reporting zero hours or extreme hours (>98h/week) are excluded.</li>
+    </ul>
+  </li>
 </ul>
 
 <h2>4. Methodological notes</h2>

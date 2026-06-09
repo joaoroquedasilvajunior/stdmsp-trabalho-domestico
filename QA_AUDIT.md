@@ -2438,6 +2438,153 @@ or `sex_code` filter.
 
 ---
 
+## 2026-06-09 — Wage × contract × formality probe (option B ship)
+
+### Trigger
+
+After the Reform-pivot panel established the convergence-to-the-floor
+story and the geographic-gradient sub-panel added the UF dimension,
+the natural next analytical question was: does the per-hour racial
+wage gap survive within homogeneous (contract × formality) buckets,
+or does it collapse? This is the question Mayer will want for the
+regression appendix and is the third leg of the diarista-question
+investigation that began with the V4024 panel.
+
+### Probe approach
+
+Wrote a one-off Python script `etl/probe_wage_contract.py` that
+processes one cached PNADC quarter's microdata (no Supabase round-trip),
+filters to domestic workers (VD4009 ∈ {03, 04}) on the fly in chunks
+to keep memory low, and computes V1028-weighted means of monthly
+wage (VD4019) and hourly wage (VD4019 / (V4039 × 4.33)) in each
+race × contract × formality cell. The script runs in ~6 seconds on
+the 2026Q1 file (1.7GB extracted, ~500K rows, ~5K kept after filter).
+
+### What the data showed (2026Q1, BR-wide, sex='T')
+
+| race        | contract   | formality    | n     | hourly R$ |
+|-------------|------------|--------------|-------|----------:|
+| negras      | mensalista | com_carteira | 1,386 | 10.91     |
+| negras      | mensalista | sem_carteira | 3,868 | 10.09     |
+| negras      | diarista   | com_carteira | 196   | 12.06     |
+| negras      | diarista   | sem_carteira | 1,962 | 11.89     |
+| não-negras  | mensalista | com_carteira | 565   | 11.52     |
+| não-negras  | mensalista | sem_carteira | 1,352 | 10.31     |
+| não-negras  | diarista   | com_carteira | 93    | 14.22     |
+| não-negras  | diarista   | sem_carteira | 861   | 14.11     |
+
+Within-bucket racial gap (negras ÷ não-negras):
+
+| contract   | formality    | hourly gap |
+|------------|--------------|-----------:|
+| mensalista | com_carteira | 94.7%      |
+| mensalista | sem_carteira | 97.9%      |
+| diarista   | com_carteira | 84.8% _(small sample)_ |
+| diarista   | sem_carteira | 84.3%      |
+
+Collapsed to two buckets (summing across formality):
+
+- **Mensalismo hourly gap: 96.6%** (essentially closed)
+- **Diarismo hourly gap: 84.3%** (15.7pp racial discount)
+
+For context, the BR-wide aggregate hourly gap is 90.9%.
+
+### The price-vs-composition resolution
+
+The classic decomposition asks: is the aggregate racial wage gap
+driven by Black workers being concentrated in lower-paying contracts
+(composition), or by being paid less for the same work (price)? The
+answer the probe yields is more specific than either alternative:
+
+- Composition cannot explain the aggregate gap, because the racial
+  contract mix is reasonably symmetric (~32% of Black workers are
+  day-rate vs ~36% of non-Black workers). If anything, non-Black
+  workers are slightly more diarista-heavy, which would predict
+  a smaller aggregate gap, not a larger one.
+- Within mensalismo, price is essentially equal (~97%). Black and
+  non-Black monthly workers get paid nearly the same hourly rate.
+- Within diarismo, price is unequal (~84%). For day-rate work, Black
+  workers earn ~15% less per hour than non-Black workers for what
+  is nominally the same arrangement.
+
+So: **the racial wage gap operates principally through price
+discrimination inside the day-rate contract, not through composition
+across contract types**. This is a cleaner answer than the classic
+binary and directly informs Mayer's regression specification — the
+diarista interaction term should carry the racial coefficient.
+
+### Implication for the Reform / diarista narrative
+
+The Reform's expansion of day-rate work raised hourly pay for both
+races (R$ 11.89 informal-diarista vs R$ 10.09 informal-mensalista
+for Black workers; R$ 14.11 vs R$ 10.31 for non-Black workers), but
+the absolute size of the day-rate premium is much larger for
+non-Black workers (R$ 3.80/h) than for Black workers (R$ 1.80/h).
+The premium is racially discounted. Mayer's intuition that the
+diarista expansion mattered is right; the racial mechanism just
+operates on the price axis (within-contract) rather than the
+assignment axis (between-contract).
+
+### Dashboard changes
+
+Files changed:
+- `dashboard/data/wage_contract_snapshot.json` — new static data
+  file. 8 cells (race × contract × formality) + 2 contract aggregates
+  + 1 aggregate hourly gap. Updated when the probe is re-run.
+- `dashboard/index.html` — new third sub-panel `#reform-wage` under
+  the Reform section. Editorial header explains the price-vs-composition
+  finding directly with the R$ numbers. Horizontal 2-bar chart shows
+  the mensalismo (96.6%) vs diarismo (84.3%) hourly gap with a parity
+  reference line at 100%. New `STATE.wageContractSnapshot` slot,
+  fetched alongside the dw_* views during init. New `renderReformWage()`
+  function hooked into `render()` between `renderReformGeo()` and
+  `renderFocusSP()`. New i18n keys (PT+EN):
+  `reform-wage-title`, `reform-wage-body`, `reform-wage-chart-title`,
+  `reform-wage-chart-meta`, `reform-wage-chart-source`,
+  `reform-wage-cat-mensalista`, `reform-wage-cat-diarista`,
+  `reform-wage-x-title`, `reform-wage-parity-label`.
+- `dashboard/metodologia.html` — new §3.20 PT+EN explaining the
+  probe approach, the analytical question, the result, the
+  implication for the Reform narrative, and the four explicit
+  limitations (single snapshot, small formal-diarista sample,
+  V4024 proxy nature, hourly proxy via V4039×4.33).
+- `etl/probe_wage_contract.py` — the probe script itself, reusable
+  on any cached PNADC quarter (`python etl/probe_wage_contract.py 042015`
+  for a pre-Reform baseline, for example). Streams the fixed-width
+  file in 50K-row chunks and filters on VD4009 ∈ {03, 04} on the
+  fly, ~6 seconds per quarter on a 1.7GB extracted txt.
+
+### Sanity-check values (already in the data file)
+
+If the chart renders these, all good:
+- Mensalismo bar: 96.6% of parity, tooltip shows R$ 10.32/h vs R$ 10.68/h, n = 5,254 + 1,917
+- Diarismo bar: 84.3% of parity, tooltip shows R$ 11.90/h vs R$ 14.12/h, n = 2,158 + 954
+- Parity line at 100% on the x-axis (vertical dashed line)
+- X-axis from 70% to 105%, in 5pp steps
+
+### What this doesn't yet show
+
+- **Time series.** Whether the within-diarista gap has widened or
+  narrowed since 2012 — task #70 (extend fact_wages with contract
+  dim, re-backfill) when Mayer asks for the chapter's regression
+  appendix.
+- **UF dimension.** Whether the within-diarista price gap differs
+  by state (SP vs RJ vs PE). Could be a follow-up cut once #70 is
+  done.
+- **Sex breakdown.** All probe figures are sex='T' (which for this
+  category is ~92% women anyway). A male/female stratification might
+  be worth running for robustness if the chapter needs it.
+
+### Outstanding
+
+- After Cloudflare auto-deploys: hover both bars to confirm
+  tooltips show the correct R$ values and sample sizes.
+- Task #71 (this ship) closes after deploy verification.
+- Tasks #68 (UF-precise contract pipeline) and #70 (contract-aware
+  wages pipeline) remain queued, both gated on Mayer/Eliete review.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

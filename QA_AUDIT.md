@@ -1735,6 +1735,116 @@ chefe and previdência levels need DIEESE methodology cross-check.
 
 ---
 
+## 2026-06-09 — Theme 4: Compliance geography panel
+
+**Scope.** Fourth Theme. Empirical complement to the Acciari/Pinheiro/IPEA
+compliance-gap literature: scatter plot of (% com carteira não-negras) ×
+(% com carteira negras) by UF. Anchors the Conadon institutional moment
+in 2026 with the first systematic two-axis (geography × race) visualization
+of LC 150 non-compliance.
+
+### Pipeline (`etl/pnadc_microdata.py`)
+
+- `build_uf_race_rows()` extended to emit per-formality cells at UF × race.
+  Previously only `formality='total'` was emitted per UF × race; now
+  `com_carteira` and `sem_carteira` are also emitted at the aggregate race
+  tracks (preta_parda, nao_negras, total). Native races skipped at this
+  granularity since cells become very small in many UFs.
+- Per-quarter row count: 216 → ~378 (added ~162 new rows per quarter).
+  Full backfill: ~21k rows over 56 quarters.
+- No new dim tables — reuses existing `dim_formality` codes
+  `com_carteira` / `sem_carteira` / `total`.
+
+### Dashboard (`dashboard/index.html`)
+
+- New `<section id="descumprimento">` "A geografia do descumprimento"
+  placed between Casa-grande's afterlife and Foco em São Paulo. Same
+  editorial-hero pattern (text left, chart right, accent-soft background).
+- `renderEnforcement()` reads `STATE.workers`, filters to UF × microdata
+  × latest period × aggregate race tracks, computes per-cell
+  formalization rates as `com_carteira_workers / total_workers`,
+  applies a small-sample floor (skip UFs with `n_unweighted < 30`
+  on the race='total' cell), builds a Chart.js scatter chart.
+- Chart features:
+  - Each UF = one point at (% nao_negras, % negras)
+  - Diagonal "no racial gap" reference line, dashed gray
+  - Point radius scales with √(unweighted N) so big UFs are visually
+    heavier; Chart.js native pointRadius per-point
+  - Tooltip shows UF name + both percentages + n
+  - Inline callouts: top-UF and bottom-UF by negras formalization rate
+- i18n PT + EN. PT in union/policy voice; EN researcher-neutral. Both
+  explicitly cite Acciari, Pinheiro/IPEA, the MTE 2026 campaign report,
+  and the Conadon institutional moment.
+
+### Methodology (`dashboard/metodologia.html`)
+
+- §3.16 added (PT + EN). Documents the pipeline extension, the per-cell
+  calculation, the small-sample floor, and the editorial framing (first
+  systematic two-axis visualization of LC 150 compliance gap). Explicit
+  limitation note: this is a snapshot, not a temporal-variation panel —
+  the "did this geography shift over time?" question is desirable
+  follow-on work but out of scope here.
+
+### Run sequence on Joao's Mac
+
+```bash
+cd ~/Documents/Claude/Domestic\ Work
+source etl/.venv/bin/activate
+
+# Backfill all quarters with the new per-formality UF × race cells.
+# Cached zips speed this up substantially since they're already on disk
+# from previous backfills; expect ~25-30 min.
+python etl/pnadc_microdata.py --all
+
+./etl/refresh.sh
+git add etl/pnadc_microdata.py \
+        dashboard/index.html dashboard/metodologia.html dashboard/data/ \
+        QA_AUDIT.md
+git commit -m "feat(Theme 4): compliance geography — UF × race × carteira scatter"
+git push origin main
+```
+
+### Sanity-check targets
+
+Plausibility bounds for the scatter:
+
+- **National average pulled by SIDRA-6383** is 24% com carteira (race=total).
+  Per-UF spread expected to range from ~15% (Northeast, interior states)
+  to ~35% (DF, RJ, possibly SC). Most points should cluster in the
+  20–30% range.
+- **Almost every UF below the diagonal** — DIEESE 2026 reports a
+  national racial gap of ~3 pp in formalization (24% total vs ~21%
+  negras vs ~28% não-negras when disaggregated). Expect the per-UF
+  diagonal-distance to range from ~1 pp (small gap) to ~10 pp (large
+  gap), depending on the state's labor-market structure.
+- **Top-UF (highest negras formalization)** likely **Distrito Federal,
+  Rio Grande do Sul, or São Paulo**. Bottom-UF likely **Maranhão,
+  Piauí, or one of the smaller Northeastern states** (after the
+  small-sample filter removes RR/AP/AC).
+
+If the diagonal pattern goes the other way (most points ABOVE the line),
+the per-cell calculation is wrong; check the formality_code values being
+used.
+
+### Why this matters editorially (Theme 4 specifically)
+
+The other three Themes interpret the data through Black-feminist theory
+(Theme 1), generational sociology (Theme 2), and historical continuity
+(Theme 3). Theme 4 is the *policy-instrumental* reading: this is the
+chart that tells the Ministry of Labour where to send inspectors first.
+It connects the dashboard directly to the April 2026 Conadon moment and
+the MTE National Campaign for Decent Domestic Work. For STDMSP: it gives
+the union an evidence base to demand specific enforcement priorities.
+For Mayer: it grounds the comparative-politics argument about regional
+variation in implementation capacity in measurable empirics.
+
+The four Themes now form a complete theoretical frame: intersectional
+(Theme 1) × generational (Theme 2) × historical (Theme 3) × policy
+(Theme 4). Each anchored in a distinct scholarly tradition; all on the
+same data substrate.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

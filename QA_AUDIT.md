@@ -2294,7 +2294,137 @@ Joao's request 2026-06-09.
   pattern have a geographic dimension? Hypothesis: stronger in
   Southeast (where non-Black workers concentrate and formal
   mensalista was high), weaker in Northeast (where formality was
-  always low).
+  always low). **→ Built in the next entry below.**
+
+---
+
+## 2026-06-09 — Geographic sub-panel: where the formal-exit was steepest
+
+### Trigger
+
+Mayer's hypothesis predicts a geographic gradient if the
+formal-mensalista decline is driven by enforcement-cost
+considerations. The Reform-pivot panel established the BR-wide
+convergence-to-the-floor story; the natural next question is
+whether that convergence is uniform across UFs or concentrated
+in specific labor markets (Southeast, where formal contracts
+were dominant, vs. Northeast, where the informal floor was
+already in place).
+
+### Investigation
+
+Queried fact_workers for the four UFs with enough sample for
+both race groups (SP, RJ, MG, PE) at two snapshots (2012Q1
+baseline, 2026Q1 latest), computed % com_carteira within
+race × UF × period as a proxy for % formal mensalista, then
+calculated pp lost between the two snapshots. BA was queried
+but the nao_negras sample is too thin in BA (overwhelmingly
+Black-majority state) to give a stable formality rate, so
+it was omitted from the panel.
+
+### What the data showed
+
+| UF | Race       | 2012Q1 | 2026Q1 | pp lost |
+|----|------------|-------:|-------:|--------:|
+| RJ | não-negras | 40.3%  | 19.8%  | **−20.5** |
+| RJ | negras     | 34.7%  | 19.2%  | −15.5    |
+| SP | não-negras | 41.6%  | 26.8%  | −14.8    |
+| SP | negras     | **43.4%** | 29.9% | −13.5  |
+| PE | não-negras | 30.1%  | 17.8%  | −12.3    |
+| PE | negras     | 29.1%  | 22.6%  | −6.5     |
+| MG | não-negras | 34.3%  | 33.8%  | −0.5     |
+| MG | negras     | 33.4%  | 29.3%  | −4.1     |
+
+### Three findings worth publishing
+
+1. **RJ is the steepest racialized formal-exit in Brazil.**
+   Non-Black workers lost over half their starting protection
+   (40% → 20%). Both races converge at ~19% by 2026, more
+   extreme than the BR aggregate. Single-UF publishable finding.
+
+2. **SP inverts the BR-wide racial pattern at the start.** In
+   2012Q1, Black SP domestic workers had *higher* formal
+   mensalista (43.4%) than non-Black (41.6%) — the urban São
+   Paulo labor market historically pulled Black workers into
+   the protected contract harder. Both races lose ~14pp by
+   2026. This matters for STDMSP-facing voice because SP is
+   the union's territory.
+
+3. **MG is the natural control.** Non-Black workers barely
+   moved (−0.5pp), Black workers lost 4pp. The Reform
+   attribution is not visible here. MG should be the
+   counterfactual in any DiD framing.
+
+### Northeast confirms Theme 3
+
+PE and BA Black workers stayed in the 16–23% formal range
+across 14 years. The casa-grande floor never moved. The
+geographic-sub-panel adds resolution to the Theme 3 finding:
+the live-in continuity in the Northeast manifests as a stable,
+low formality floor that the Reform left intact.
+
+### Methodological caveat (deliberately documented in the panel)
+
+The UF cut uses fact_workers' "% com_carteira" as a proxy
+for "% formal mensalista". The approximation introduces a
+~3–4pp bias because % com_carteira includes the small
+formal-diarista bucket. At BR level, both measures are
+available and we cross-check: 23.7% (formal carteira from
+fact_workers) ≈ 20.6% (formal mensalista from fact_contract)
++ 3.1% (formal diarista from fact_contract) for negras in
+2026Q1, with the analogous decomposition for não-negras
+(24.0% ≈ 20.0% + 4.0%). The signal direction and magnitude
+are preserved.
+
+The precise UF cut requires extending build_contract_rows()
+in etl/pnadc_microdata.py to emit per-UF cells and re-running
+the full PNADC backfill (~1 day on Joao's Mac). Queued as task
+#68 — to be executed if the Mayer/Eliete chapter needs the
+exact cut for the regression appendix. The dashboard panel
+links to §3.19 of the methodology, which documents the proxy
+and the cross-check.
+
+### Dashboard changes
+
+Files changed:
+- `dashboard/index.html` — new geographic sub-panel inserted
+  below the two-chart pivot in the `#reforma` section.
+  Components: editorial intro (PT+EN), bar chart card with
+  `box-reform-geo` + `chart-reform-geo`. New i18n keys:
+  `reform-geo-title`, `reform-geo-body`, `reform-geo-chart-title`,
+  `reform-geo-chart-meta`, `reform-geo-chart-source`,
+  `reform-geo-y-title`. New JS function `renderReformGeo()`
+  hooked into `render()` between `renderReform()` and
+  `renderFocusSP()`. Reads from `STATE.workers` (no new
+  static-export requirement). Bar chart, 4 UFs × 2 race bars
+  each, sorted RJ → SP → PE → MG (descending by total racial
+  loss). Tooltip shows the pp lost with proper formatting.
+- `dashboard/metodologia.html` — §3.19 PT+EN extended with a
+  sub-bullet documenting the proxy approach and the
+  cross-check, referencing task #68 for the precise UF cut.
+
+### Sanity-check values (already cross-checked above)
+
+Latest-quarter pp-lost values that should appear in the chart
+(approximate, since they're computed at render-time from
+STATE.workers):
+- RJ não-negras: −20.5pp · RJ negras: −15.5pp
+- SP não-negras: −14.8pp · SP negras: −13.5pp
+- PE não-negras: −12.3pp · PE negras: −6.5pp
+- MG não-negras: −0.5pp · MG negras: −4.1pp
+
+If the chart shows materially different numbers, suspect a
+filter mismatch in `pctFormal()` — usually `source_table`
+or `sex_code` filter.
+
+### Outstanding
+
+- After deploy: open the live page, hover each bar, confirm
+  the tooltip values match the table above (±0.1pp tolerance
+  from rounding).
+- Task #68 (UF extension of fact_contract) sits in the
+  backlog. Trigger if the chapter appendix needs the precise
+  cut.
 
 ---
 

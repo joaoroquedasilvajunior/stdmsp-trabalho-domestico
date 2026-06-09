@@ -577,6 +577,31 @@
   </div>
 </section>
 
+<!-- ============ HIATO POR HORA (analytical refinement) ============ -->
+<!-- Decomposes the monthly racial wage gap: how much survives when we -->
+<!-- normalize by hours worked? If hourly ratio > monthly ratio, the -->
+<!-- monthly gap is partly composition (Mensalista vs. Diarista shares) -->
+<!-- and not pure price-per-unit-of-work discrimination. -->
+<section id="hourly" class="border-t rule">
+  <div class="max-w-6xl mx-auto px-5 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <article class="lg:col-span-2">
+        <p class="text-xs uppercase tracking-wide font-semibold mb-2" style="color: var(--accent);" data-i18n="hourly-eyebrow">Refinamento analítico</p>
+        <h2 class="text-xl md:text-2xl font-medium mb-3" data-i18n="hourly-title">Hiato por hora — o que sobra do hiato mensal</h2>
+        <p class="text-sm text-gray-800 mb-3 leading-relaxed" data-i18n="hourly-lead">O hiato salarial mensal mistura duas coisas: <strong>quanto se paga por hora trabalhada</strong> e <strong>quantas horas se trabalha</strong>. Se as trabalhadoras não-negras concentram-se em mensalistas (jornadas mais longas) e as negras em diaristas (jornadas mais curtas e múltiplos patrões), o hiato mensal exagera o hiato de preço.</p>
+        <p class="text-sm text-gray-700 mb-3 leading-relaxed" data-i18n="hourly-body">Cruzando VD4019 (rendimento mensal) com V4039 (horas habituais semanais × 4,33), obtemos a remuneração por hora individual; a média ponderada por raça mostra o quanto o "preço da hora" difere entre os dois grupos. No último trimestre, a razão MENSAL ficou em <span id="hourly-callout-monthly">—</span> e a razão por HORA em <span id="hourly-callout-hourly">—</span>. A diferença entre as duas razões — visível como o espaço entre as linhas no gráfico — é a parte do hiato que vem de <em>composição</em>, não de <em>preço</em>.</p>
+        <p class="text-xs text-gray-600 italic" data-i18n="hourly-cite">Esta é a refinaria analítica que Jean-François Mayer pediu: se quase todo o hiato mensal sobrevive na razão por hora, o mecanismo é precificação racializada do trabalho. Se a razão por hora é substancialmente mais alta que a mensal, o mecanismo é mais bem descrito como <em>segregação ocupacional dentro da categoria</em> (negras como diaristas, não-negras como mensalistas), e a política pública apropriada é diferente — favorece formalização de diaristas (LC 150 estendida), não negociação coletiva sobre tabela horária.</p>
+      </article>
+      <article class="lg:col-span-3 border rule rounded-lg p-4 bg-white">
+        <h3 class="text-base font-medium" data-i18n="hourly-chart-title">Razão salarial negras / não-negras — mensal × por hora</h3>
+        <p class="text-xs text-gray-500 mb-3" data-i18n="hourly-chart-meta">PNADC microdados · trimestre fixo, 2012Q1 → presente · mesma escala de %</p>
+        <div class="chart-box" id="box-hourly"><canvas id="chart-hourly"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+        <p class="text-xs text-gray-500 mt-2" id="hourly-source" data-i18n="hourly-chart-source">Fonte: PNADC microdados (IBGE). Razão mensal: mean_wage_brl(preta_parda) ÷ mean_wage_brl(nao_negras). Razão por hora: média ponderada de wage/(hours×4,33) por trabalhadora individualmente, depois razão entre os dois grupos. Cobertura: trabalhadoras com rendimento &gt; 0 e jornada habitual em (0, 98h/semana). 4,33 semanas/mês é a conversão padrão (52 semanas / 12 meses).</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <!-- ============ FOCO EM SÃO PAULO ============ -->
 <section id="foco-sp" class="border-t rule" style="background: var(--accent-soft);">
   <div class="max-w-6xl mx-auto px-5 py-8">
@@ -805,6 +830,16 @@ const I18N = {
     "floor-chart-source": "Fonte: PNADC microdados (IBGE), razão calculada como mean_wage_brl(preta_parda) ÷ mean_wage_brl(nao_negras) por trimestre, usando o recorte sex='T', formality='total'. Salário mínimo nominal: valores oficiais publicados pelo governo brasileiro (Decreto anual). Valores nominais — ambos os eixos não são deflacionados. Para a leitura intertemporal de salário real, use o gráfico \"Rendimento médio mensal real\" na seção principal (que usa a Tabela PNADC-6391, deflacionada pelo IBGE).",
     "floor-legend-ratio": "Razão salarial negras ÷ não-negras",
     "floor-legend-sm":    "Salário mínimo nominal (R$)",
+    "hourly-eyebrow": "Refinamento analítico",
+    "hourly-title":   "Hiato por hora — o que sobra do hiato mensal",
+    "hourly-lead":    "O hiato salarial mensal mistura duas coisas: <strong>quanto se paga por hora trabalhada</strong> e <strong>quantas horas se trabalha</strong>. Se as trabalhadoras não-negras concentram-se em mensalistas (jornadas mais longas) e as negras em diaristas (jornadas mais curtas e múltiplos patrões), o hiato mensal exagera o hiato de preço.",
+    "hourly-body":    "Cruzando VD4019 (rendimento mensal) com V4039 (horas habituais semanais × 4,33), obtemos a remuneração por hora individual; a média ponderada por raça mostra o quanto o \"preço da hora\" difere entre os dois grupos. No último trimestre, a razão MENSAL ficou em <span id=\"hourly-callout-monthly\">—</span> e a razão por HORA em <span id=\"hourly-callout-hourly\">—</span>. A diferença entre as duas razões — visível como o espaço entre as linhas no gráfico — é a parte do hiato que vem de <em>composição</em>, não de <em>preço</em>.",
+    "hourly-cite":    "Esta é a refinaria analítica que Jean-François Mayer pediu: se quase todo o hiato mensal sobrevive na razão por hora, o mecanismo é precificação racializada do trabalho. Se a razão por hora é substancialmente mais alta que a mensal, o mecanismo é mais bem descrito como <em>segregação ocupacional dentro da categoria</em> (negras como diaristas, não-negras como mensalistas), e a política pública apropriada é diferente — favorece formalização de diaristas (LC 150 estendida), não negociação coletiva sobre tabela horária.",
+    "hourly-chart-title": "Razão salarial negras / não-negras — mensal × por hora",
+    "hourly-chart-meta":  "PNADC microdados · trimestre fixo, 2012Q1 → presente · mesma escala de %",
+    "hourly-chart-source": "Fonte: PNADC microdados (IBGE). Razão mensal: mean_wage_brl(preta_parda) ÷ mean_wage_brl(nao_negras). Razão por hora: média ponderada de wage/(hours×4,33) por trabalhadora individualmente, depois razão entre os dois grupos. Cobertura: trabalhadoras com rendimento > 0 e jornada habitual em (0, 98h/semana). 4,33 semanas/mês é a conversão padrão (52 semanas / 12 meses).",
+    "hourly-legend-monthly": "Razão MENSAL (negras ÷ não-negras)",
+    "hourly-legend-hourly":  "Razão por HORA (negras ÷ não-negras)",
     "c189-title": "Status legal — Convenção 189 da OIT",
     "c189-meta": "Ano de ratificação por país. A C189 (Convenção sobre Trabalhadoras e Trabalhadores Domésticos, 2011) estabelece direitos iguais aos de outras categorias.",
     "c189-footnote": "Brasil ratificou em janeiro de 2018, três anos após a entrada em vigor da LC 150/2015 — ou seja, a legislação interna precedeu o compromisso internacional. México ratificou apenas em julho de 2020. Uruguai foi o primeiro país do mundo a ratificar, em junho de 2012. Fonte: NORMLEX (OIT).",
@@ -960,6 +995,16 @@ const I18N = {
     "floor-chart-source": "Source: PNADC microdata (IBGE), ratio computed as mean_wage_brl(preta_parda) / mean_wage_brl(nao_negras) per quarter, using the sex='T', formality='total' cut. Nominal minimum wage: official values published by the Brazilian government (annual Decree). Both axes in nominal terms — not deflated. For real-wage intertemporal reading, use the \"Mean real monthly income\" chart in the main section (which uses PNADC Table 6391, deflated by IBGE).",
     "floor-legend-ratio": "Wage ratio Black ÷ non-Black",
     "floor-legend-sm":    "Nominal minimum wage (R$)",
+    "hourly-eyebrow": "Analytical refinement",
+    "hourly-title":   "Hourly gap — what survives the monthly gap",
+    "hourly-lead":    "The monthly wage gap mixes two things: <strong>how much is paid per hour worked</strong> and <strong>how many hours are worked</strong>. If non-Black workers concentrate in mensalistas (longer hours) and Black workers in diaristas (shorter hours, multiple employers), the monthly gap overstates the price gap.",
+    "hourly-body":    "Crossing VD4019 (monthly income) with V4039 (habitual weekly hours × 4.33), we obtain individual hourly pay; the weighted mean by race shows how much the \"price of an hour\" differs between the two groups. In the latest quarter, the MONTHLY ratio was <span id=\"hourly-callout-monthly\">—</span> and the HOURLY ratio was <span id=\"hourly-callout-hourly\">—</span>. The difference between the two ratios — visible as the gap between the lines in the chart — is the part of the wage gap that comes from <em>composition</em>, not from <em>price</em>.",
+    "hourly-cite":    "This is the analytical refinement Jean-François Mayer asked about: if almost all of the monthly gap survives the hourly comparison, the mechanism is racialized pricing of labour. If the hourly ratio is substantially higher than the monthly one, the mechanism is better described as <em>occupational segregation within the category</em> (Black workers as diaristas, non-Black as mensalistas), and the appropriate policy response is different — favouring diarista formalization (an extended LC 150), rather than collective bargaining over hourly rates.",
+    "hourly-chart-title": "Wage ratio Black / non-Black — monthly × hourly",
+    "hourly-chart-meta":  "PNADC microdata · fixed quarter, 2012Q1 → present · same % scale",
+    "hourly-chart-source": "Source: PNADC microdata (IBGE). Monthly ratio: mean_wage_brl(preta_parda) / mean_wage_brl(nao_negras). Hourly ratio: weighted mean of wage/(hours×4.33) per individual worker, then ratio between the two groups. Coverage: workers with income > 0 and habitual hours in (0, 98 h/week). 4.33 weeks/month is the standard conversion (52 weeks / 12 months).",
+    "hourly-legend-monthly": "MONTHLY ratio (Black / non-Black)",
+    "hourly-legend-hourly":  "HOURLY ratio (Black / non-Black)",
     "c189-title": "Legal status — ILO Convention 189",
     "c189-meta": "Year of ratification per country. C189 (Domestic Workers Convention, 2011) establishes rights equal to those of other categories of workers.",
     "c189-footnote": "Brazil ratified in January 2018, three years after LC 150/2015 came into force — meaning domestic legislation preceded the international commitment. Mexico only ratified in July 2020. Uruguay was the first country in the world to ratify, in June 2012. Source: NORMLEX (ILO).",
@@ -1414,6 +1459,7 @@ function render() {
   renderResidual();
   renderEnforcement();
   renderFloor();
+  renderHourly();
   renderFocusSP();
   renderSources();
   // "Data updated on" reflects the static-export timestamp (when the JSON was
@@ -3528,6 +3574,130 @@ function renderFloor() {
           ticks: { callback: v => fmtBRL(v), font: { size: 11 }, color: "rgba(75, 85, 99, 1)" },
           grid: { drawOnChartArea: false },
           title: { display: true, text: LANG === "pt" ? "Salário mínimo (R$)" : "Minimum wage (R$)", font: { size: 11 } },
+        },
+      },
+    },
+  });
+}
+
+// ============ HIATO POR HORA (analytical refinement) ============
+// Plots the monthly racial wage ratio and the per-hour racial wage ratio
+// on the same chart. The gap between the two lines is the
+// composition-vs-price decomposition: if hourly > monthly, the monthly
+// gap is partly explained by mensalista/diarista segregation.
+
+function renderHourly() {
+  const canvas = document.getElementById("chart-hourly");
+  if (!canvas || !STATE.wages) return;
+
+  // Filter to country/sex=T/formality=total/race in (preta_parda, nao_negras)
+  const wages = STATE.wages.filter(r =>
+    r.geo_level === "country"
+    && r.sex_code === "T"
+    && r.formality_code === "total"
+    && (r.race_code === "preta_parda" || r.race_code === "nao_negras")
+    && r.source_table === "PNADC-MICRODATA"
+  );
+  if (!wages.length) {
+    setEmpty("box-hourly", true);
+    return;
+  }
+
+  const byPeriod = {};
+  for (const r of wages) {
+    const p = String(r.period_code);
+    if (!byPeriod[p]) byPeriod[p] = {};
+    byPeriod[p][r.race_code] = {
+      monthly: r.mean_wage_brl_real != null ? Number(r.mean_wage_brl_real) : null,
+      hourly:  r.mean_hourly_brl    != null ? Number(r.mean_hourly_brl)    : null,
+    };
+  }
+
+  const periods = Object.keys(byPeriod).sort();
+  const valid = periods.filter(p =>
+    byPeriod[p].preta_parda && byPeriod[p].nao_negras
+    && byPeriod[p].preta_parda.monthly && byPeriod[p].nao_negras.monthly
+  );
+
+  const labels = valid.map(formatPeriodLabel);
+  const monthlyRatio = valid.map(p => {
+    const n = byPeriod[p].preta_parda.monthly;
+    const d = byPeriod[p].nao_negras.monthly;
+    return d ? Math.round(1000 * n / d) / 10 : null;
+  });
+  const hourlyRatio = valid.map(p => {
+    const n = byPeriod[p].preta_parda.hourly;
+    const d = byPeriod[p].nao_negras.hourly;
+    return (n != null && d != null && d) ? Math.round(1000 * n / d) / 10 : null;
+  });
+
+  // Inline callouts: latest values
+  const latestP = valid.at(-1);
+  const latestMonthly = monthlyRatio.at(-1);
+  const latestHourly = hourlyRatio.at(-1);
+  const callM = document.getElementById("hourly-callout-monthly");
+  const callH = document.getElementById("hourly-callout-hourly");
+  const fmtPct = v => v == null
+    ? "—"
+    : `${v.toFixed(1).replace(".", LANG === "pt" ? "," : ".")}%`;
+  if (callM) callM.textContent = fmtPct(latestMonthly);
+  if (callH) callH.textContent = fmtPct(latestHourly);
+
+  setEmpty("box-hourly", false);
+  destroyChart("hourly");
+
+  charts.hourly = new Chart(canvas, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: I18N[LANG]["hourly-legend-monthly"],
+          data: monthlyRatio,
+          borderColor: "rgba(190, 30, 45, 1)",
+          backgroundColor: "rgba(190, 30, 45, 0.10)",
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.25,
+          spanGaps: true,
+        },
+        {
+          label: I18N[LANG]["hourly-legend-hourly"],
+          data: hourlyRatio,
+          borderColor: "rgba(37, 99, 165, 1)",
+          backgroundColor: "rgba(37, 99, 165, 0.10)",
+          borderWidth: 2,
+          borderDash: [5, 4],
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.25,
+          spanGaps: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 14, boxHeight: 10, padding: 8, font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${fmtPct(ctx.parsed.y)}`,
+          },
+        },
+        annotation: {
+          annotations: buildPolicyAnnotations(valid, "fixo"),
+        },
+      },
+      scales: {
+        x: {
+          ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 },
+          grid: { display: false },
+        },
+        y: {
+          ticks: { callback: v => v + "%", font: { size: 11 } },
+          title: { display: true, text: LANG === "pt" ? "Razão (%)" : "Ratio (%)", font: { size: 11 } },
         },
       },
     },

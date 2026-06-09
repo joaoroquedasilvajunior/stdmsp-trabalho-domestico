@@ -383,6 +383,27 @@
   </li>
 </ul>
 
+<h3>3.18 Hiato por hora — decompondo o hiato mensal</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-MICRODATA</code> — cruzamento de <code>VD4019</code> (rendimento mensal habitual) com <code>V4039</code> (horas habituais por semana no trabalho principal), agregado pela equipe do projeto.</li>
+  <li><strong>Cálculo do hiato por hora</strong>: para cada trabalhadora individual com <code>VD4019 &gt; 0</code> e <code>0 &lt; V4039 ≤ 98</code>, computamos a remuneração horária como <code>wage / (hours × 4,33)</code>. A constante 4,33 é a conversão padrão semanas→meses (52 / 12). Em seguida, calculamos a média ponderada (pesos V1028) dentro de cada célula de raça × formalidade. A razão racial por hora é mean_hourly(preta_parda) ÷ mean_hourly(nao_negras).</li>
+  <li><strong>Coluna de dados</strong>: novo campo <code>mean_hourly_brl</code> em <code>fact_wages</code>, exposto na view <code>dw_wages</code>. População atrasada à partir do backfill PNADC-microdata após esta extensão.</li>
+  <li><strong>O que o gráfico mostra</strong>: duas linhas no mesmo eixo Y (% da remuneração não-negra). A linha vermelha contínua é a razão MENSAL (mesma usada em §3.6 e §3.17). A linha azul tracejada é a razão POR HORA. O espaço entre as duas é a parte do hiato mensal que vem de <em>composição de horas</em> (mensalista vs. diarista), não de preço-por-hora.</li>
+  <li><strong>Por que esta decomposição importa</strong>: a literatura sobre desigualdade racial em mercados informais (Saboia, Manzano-Munguía, IPEA) distingue dois mecanismos de hiato:
+    <ul>
+      <li><em>Hiato de preço</em>: mesmo trabalho, mesmas horas, salário diferente. Decorre de discriminação direta ou de barreiras à negociação.</li>
+      <li><em>Hiato de composição</em>: tipos diferentes de contrato (mensalista vs. diarista), com regimes horários diferentes, dentro da mesma categoria. Decorre de segregação ocupacional, não de preço.</li>
+    </ul>
+    Se a linha por hora fica próxima da linha mensal, o mecanismo dominante é preço — política de negociação coletiva e fiscalização ataca o problema. Se a linha por hora é substancialmente mais alta que a mensal, o mecanismo é composição — política de formalização de diaristas (LC 150 estendida ou novo regime jurídico) é o que muda o jogo.</li>
+  <li><strong>Limitações</strong>:
+    <ul>
+      <li><em>Razão de médias ≠ média de razões</em>. Estamos comparando médias ponderadas, não calculando uma razão individual e mediando. Os dois resultados podem diferir levemente.</li>
+      <li><em>Horas habituais ≠ horas efetivas</em>. V4039 captura horas habituais; em períodos atípicos (pandemia, mudanças de emprego), efetivas podem divergir. Estável em períodos "normais".</li>
+      <li><em>Conversão 4,33 é aproximada</em>. Meses variam de 4 a 5 semanas; usamos a média. Para análise mais precisa, multiplicar por meses específicos.</li>
+    </ul>
+  </li>
+</ul>
+
 <h2>4. Notas metodológicas</h2>
 
 <h3>4.1 Trimestre móvel × trimestre fixo</h3>
@@ -766,6 +787,27 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
       <li><em>Not an econometric decomposition</em>. A regression would isolate the floor effect from other shocks in the same period — post-pandemic recovery (2021–2023), the National Care Policy (2025–2026), Conadon (2026). The panel shows visual correlation, not causality.</li>
       <li><em>Nominal MW, not real</em>. Real floor increases (net of inflation) are the theoretical mechanism; the nominal axis may underestimate (in high-inflation periods) or overestimate (in low-inflation periods) the effect. Deflated version possible in a future iteration.</li>
       <li><em>Composition of who earns the MW shifts</em>. If the share of Black workers earning exactly 1 MW grows, that alone compresses the ratio without any individual wage rising. Decomposing the "mechanical effect" from the "behavioral effect" requires panel microdata.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3>3.18 Hourly wage gap — decomposing the monthly gap</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-MICRODATA</code> — crossing <code>VD4019</code> (habitual monthly income) with <code>V4039</code> (habitual weekly hours in the main job), aggregated by the project team.</li>
+  <li><strong>Hourly gap calculation</strong>: for each individual worker with <code>VD4019 &gt; 0</code> and <code>0 &lt; V4039 ≤ 98</code>, we compute hourly pay as <code>wage / (hours × 4.33)</code>. The constant 4.33 is the standard weeks-to-months conversion (52 / 12). We then take the weighted mean (V1028 weights) within each race × formality cell. The hourly racial ratio is mean_hourly(preta_parda) / mean_hourly(nao_negras).</li>
+  <li><strong>Data column</strong>: new <code>mean_hourly_brl</code> field on <code>fact_wages</code>, exposed in the <code>dw_wages</code> view. Populated from the PNADC-microdata backfill after this extension.</li>
+  <li><strong>What the chart shows</strong>: two lines on the same Y axis (% of non-Black pay). The solid red line is the MONTHLY ratio (same as §3.6 and §3.17). The dashed blue line is the HOURLY ratio. The space between the two is the portion of the monthly gap that comes from <em>hours composition</em> (mensalista vs. diarista), not from price-per-hour.</li>
+  <li><strong>Why this decomposition matters</strong>: the literature on racial inequality in informal markets (Saboia, Manzano-Munguía, IPEA) distinguishes two gap mechanisms:
+    <ul>
+      <li><em>Price gap</em>: same work, same hours, different wage. From direct discrimination or weak bargaining position.</li>
+      <li><em>Composition gap</em>: different contract types (mensalista vs. diarista), with different hour regimes, within the same category. From occupational segregation, not price.</li>
+    </ul>
+    If the hourly line sits close to the monthly line, the dominant mechanism is price — collective bargaining and enforcement attack the problem. If the hourly line sits substantially higher than the monthly one, the mechanism is composition — diarista formalization (an extended LC 150 or a new legal regime) is what changes the game.</li>
+  <li><strong>Limitations</strong>:
+    <ul>
+      <li><em>Ratio of means ≠ mean of ratios</em>. We're comparing weighted means, not computing an individual ratio and averaging. The two can differ slightly.</li>
+      <li><em>Habitual hours ≠ effective hours</em>. V4039 captures habitual hours; in atypical periods (pandemic, job changes), effective hours can diverge. Stable in "normal" periods.</li>
+      <li><em>The 4.33 conversion is approximate</em>. Months vary from 4 to 5 weeks; we use the average. For more precise analysis, multiply by specific months.</li>
     </ul>
   </li>
 </ul>

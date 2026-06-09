@@ -358,6 +358,16 @@
   <li><strong>Cadência</strong>: anual. O ranking se atualiza quando uma nova PNADC-A é divulgada (geralmente entre agosto e novembro do ano seguinte).</li>
 </ul>
 
+<h3>3.16 Geografia do descumprimento — formalização × raça × UF (Tema 4)</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-MICRODATA</code> · variável <code>VD4009</code> (posição na ocupação, com códigos 03 = com carteira e 04 = sem carteira) cruzada com <code>V2010</code> (cor/raça) e <code>UF</code>, agregada pela equipe do projeto com pesos amostrais <code>V1028</code>.</li>
+  <li><strong>Pipeline</strong>: <code>build_uf_race_rows</code> em <code>etl/pnadc_microdata.py</code> estendida (Tema 4) para emitir células UF × raça × formalidade (com_carteira / sem_carteira / total), além do recorte UF × raça × total que existia antes. Per quarter agora produz ~378 linhas a partir desta função, ~21k linhas no backfill completo.</li>
+  <li><strong>O que o gráfico mostra</strong>: scatter plot — um ponto por UF — onde o eixo horizontal é <em>% com carteira entre não-negras</em> e o vertical é <em>% com carteira entre negras</em>. Cálculo por célula: <code>workers_thousands(uf, race, com_carteira) / workers_thousands(uf, race, total)</code>. A diagonal pontilhada marca <em>sem hiato racial</em>; UFs abaixo dela têm negras mais informalizadas que não-negras dentro do mesmo estado. O tamanho do ponto é proporcional a √(n_unweighted total) — visualmente mais peso para UFs com amostras maiores.</li>
+  <li><strong>Piso de pequena amostra</strong>: UFs com n_unweighted &lt; 30 no recorte race='total' são omitidas do gráfico. Pequenos estados do Norte (RR, AP, AC) podem aparecer ou desaparecer conforme a amostra trimestral; o ranking dos 10 estados maiores é robusto.</li>
+  <li><strong>Por que isto importa</strong>: a cifra agregada de 24% nacional com carteira oculta variação geográfica e racial. A Conadon (Coordenação Nacional de Fiscalização do Trabalho Doméstico e de Cuidados, criada no MTE em abril de 2026) precisa priorizar geograficamente. Este painel é a primeira visualização sistemática que combina os dois eixos — UF e raça — do hiato de conformidade da LC 150. Acciari (sobre os esforços sindicais), Pinheiro et al. (IPEA, sobre falhas de implementação) e o relatório MTE/SIT da campanha 2026 convergem qualitativamente nesse diagnóstico; o gráfico oferece o complemento empírico.</li>
+  <li><strong>Limitação</strong>: o painel mostra a foto do trimestre fixo mais recente. Variação temporal (essa geografia mudou ao longo dos 14 anos?) requer um segundo painel — desejável mas fora do escopo da iteração atual.</li>
+</ul>
+
 <h2>4. Notas metodológicas</h2>
 
 <h3>4.1 Trimestre móvel × trimestre fixo</h3>
@@ -718,6 +728,16 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>Why this visualization matters</strong>: the live-in contingent is small (~4–5% nationally per PNADC Annual 2024), but the geography is the content. DIEESE publishes the national aggregate without state-level disaggregation; the "casa-grande/senzala continuity" literature (Bernardino-Costa, Gonzalez, Carneiro, Saffioti) is qualitative and uses scattered examples. The dashboard offers the first systematic geographic distribution of this residue.</li>
   <li><strong>Sampling caveat</strong>: PNADC-A surveys about 200k households per year; filtering down to live-in domestic workers within specific states drops the unweighted N to a few dozen. That's why we use a floor of 30 obs; even so, states near the floor have wide confidence intervals. The ranking is robust in the top third; in the middle positions, order may shift between years by sampling fluctuation.</li>
   <li><strong>Cadence</strong>: annual. The ranking updates when a new PNADC-A is released (usually between August and November of the following year).</li>
+</ul>
+
+<h3>3.16 Geography of non-compliance — formalization × race × state (Theme 4)</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-MICRODATA</code> · variable <code>VD4009</code> (occupation position — codes 03 with card and 04 without card) crossed with <code>V2010</code> (race) and <code>UF</code>, aggregated by the project team with sample weights <code>V1028</code>.</li>
+  <li><strong>Pipeline</strong>: <code>build_uf_race_rows</code> in <code>etl/pnadc_microdata.py</code> extended (Theme 4) to emit state × race × formality (com_carteira / sem_carteira / total) cells, in addition to the previously-existing state × race × total cut. The function now produces ~378 rows per quarter, ~21k rows over the full backfill.</li>
+  <li><strong>What the chart shows</strong>: scatter plot — one point per state — where the horizontal axis is <em>% with card among non-Black</em> and the vertical is <em>% with card among Black</em>. Per-cell calculation: <code>workers_thousands(uf, race, com_carteira) / workers_thousands(uf, race, total)</code>. The dashed diagonal marks <em>no racial gap</em>; states below it have Black workers more informal than non-Black workers within the same state. Point size is proportional to √(n_unweighted total) — visually heavier for states with larger samples.</li>
+  <li><strong>Small-sample floor</strong>: states with n_unweighted &lt; 30 in the race='total' cut are omitted from the chart. Small Northern states (RR, AP, AC) may appear or disappear depending on the quarterly sample; the ranking of the 10 largest states is robust.</li>
+  <li><strong>Why it matters</strong>: the aggregate national figure of 24% with card hides geographic and racial variation. Conadon (National Coordination for Labour Inspection of Domestic and Care Work, created at the Ministry of Labour in April 2026) needs to prioritize geographically. This panel is the first systematic visualization combining the two axes — state and race — of the LC 150 compliance gap. Acciari (on union enforcement efforts), Pinheiro et al. (IPEA, on implementation failures), and the MTE/SIT report on the 2026 campaign converge qualitatively on this diagnosis; the chart offers the empirical complement.</li>
+  <li><strong>Limitation</strong>: the panel shows a snapshot of the latest fixed quarter. Temporal variation (did this geography shift over the 14 years?) would require a second panel — desirable but outside the scope of the current iteration.</li>
 </ul>
 
 <h2>4. Methodological notes</h2>

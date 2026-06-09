@@ -699,25 +699,29 @@ def build_sex_rows(df: pd.DataFrame, period: str) -> list[dict]:
 def build_uf_race_rows(df: pd.DataFrame, period: str) -> list[dict]:
     """Produce fact_workers payload rows for race × UF aggregations.
 
-    For each of the 27 UFs (federation units), emit:
-      - 5 race rows (branca, preta, parda, amarela, indigena) at formality='total'
-      - 1 preta_parda aggregate row at formality='total'
-      - 1 nao_negras aggregate row at formality='total'  (branca + amarela + indigena)
-      - 1 race='total' row at formality='total'           (denominator for ratios)
+    Two cuts emitted:
 
-    Total: 27 × 8 = 216 rows per quarter; ~12k rows across the 56-quarter backfill.
+    (A) formality='total' (legacy, for race composition by UF):
+      - 5 race rows × 27 UFs = 135
+      - preta_parda × 27 UFs = 27
+      - nao_negras × 27 UFs = 27
+      - race='total' × 27 UFs = 27
 
-    All rows have sex='T', age='total', formality='total'. Skips rows with
-    race='ignorado' (V2010=9) so denominators across (preta+parda+branca+
-    amarela+indigena) sum to the explicit race='total' row up to those skips.
+    (B) formality='com_carteira' and 'sem_carteira' (added for Theme 4 —
+        compliance geography):
+      - preta_parda × com/sem × 27 UFs = 54
+      - nao_negras × com/sem × 27 UFs = 54
+      - race='total' × com/sem × 27 UFs = 54
+
+    Total: ~378 rows per quarter; ~21k rows across the 56-quarter backfill.
+
+    All rows have sex='T', age='total'. Skips rows with race='ignorado'.
 
     Caveats for downstream consumers:
-      - Small UFs (RR, AP, AC, TO) will have noisy estimates for rare race
-        cells (Indigenous, Asian). The map UI should treat % negras as the
-        headline metric since pretas+pardas have non-trivial sample size in
-        every UF; rare-cell estimates should be footnoted.
-      - This function does NOT emit a com_carteira/sem_carteira split per UF.
-        That can be added later if a "% formality per UF" map view is needed.
+      - Small UFs (RR, AP, AC, TO) have noisy estimates for rare race cells.
+      - For Theme 4 specifically, downstream code should apply a small-sample
+        floor (e.g., n_unweighted >= 30 within race='total' for the UF) before
+        showing UF-level formalization rates.
     """
     df = df.copy()
     df["weight"] = pd.to_numeric(df["V1028"], errors="coerce")
@@ -727,39 +731,54 @@ def build_uf_race_rows(df: pd.DataFrame, period: str) -> list[dict]:
     DOMESTIC_CODES = ["03", "04"]
     dom = df[df["VD4009"].isin(DOMESTIC_CODES)].copy()
     dom["race_code"] = dom["V2010"].map(RACE_MAP)
+    dom["formality_code"] = dom["VD4009"].map(FORMALITY_MAP)
     dom["uf_code"] = dom["UF"].astype(str).str.zfill(2)
-    dom = dom[dom["race_code"].notna() & dom["uf_code"].isin(UF_CODE_TO_SIGLA)]
+    dom = dom[dom["race_code"].notna() & dom["uf_code"].isin(UF_CODE_TO_SIGLA)
+              & dom["formality_code"].notna()]
 
     db_period = microdata_period_to_db_code(period)
     rows: list[dict] = []
 
-    def _row(uf, race, group):
+    def _row(uf, race, formality, group):
         return {
             "_period_code": db_period,
             "_geo_code": uf, "_geo_level": "uf",
             "_sex": "T", "_age": "total",
-            "_race": race, "_formality": "total",
+            "_race": race, "_formality": formality,
             "workers_thousands": round(float(group["weight"].sum()) / 1000, 2),
             "n_unweighted": int(len(group)),
         }
 
-    # Race × UF (5 races × 27 UFs = 135 rows)
-    for (uf, race), g in dom.groupby(["uf_code", "race_code"]):
-        rows.append(_row(uf, race, g))
+    # --- (A) formality='total' rows (legacy: race composition by UF) ---
 
-    # preta_parda × UF (27 rows)
+    for (uf, race), g in dom.groupby(["uf_code", "race_code"]):
+        rows.append(_row(uf, race, "total", g))
+
     is_negra = dom["race_code"].isin(["preta", "parda"])
     for uf, g in dom[is_negra].groupby("uf_code"):
-        rows.append(_row(uf, "preta_parda", g))
+        rows.append(_row(uf, "preta_parda", "total", g))
 
-    # nao_negras × UF — branca + amarela + indigena (27 rows)
     is_nao_negra = dom["race_code"].isin(["branca", "amarela", "indigena"])
     for uf, g in dom[is_nao_negra].groupby("uf_code"):
-        rows.append(_row(uf, "nao_negras", g))
+        rows.append(_row(uf, "nao_negras", "total", g))
 
-    # race='total' × UF — explicit denominator for the % negras computation (27 rows)
     for uf, g in dom.groupby("uf_code"):
-        rows.append(_row(uf, "total", g))
+        rows.append(_row(uf, "total", "total", g))
+
+    # --- (B) formality='com_carteira' / 'sem_carteira' rows (Theme 4) ---
+    # Emit per-formality within aggregate race tracks (preta_parda, nao_negras,
+    # total). The 5 native races are NOT emitted at per-formality granularity
+    # because their cells become very small in many UFs (e.g., amarela in
+    # Roraima); downstream Wilson CIs would be uninformative.
+
+    for (uf, form), g in dom[is_negra].groupby(["uf_code", "formality_code"]):
+        rows.append(_row(uf, "preta_parda", form, g))
+
+    for (uf, form), g in dom[is_nao_negra].groupby(["uf_code", "formality_code"]):
+        rows.append(_row(uf, "nao_negras", form, g))
+
+    for (uf, form), g in dom.groupby(["uf_code", "formality_code"]):
+        rows.append(_row(uf, "total", form, g))
 
     return rows
 

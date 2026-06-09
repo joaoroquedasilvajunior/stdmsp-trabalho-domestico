@@ -527,6 +527,31 @@
   </div>
 </section>
 
+<!-- ============ A GEOGRAFIA DO DESCUMPRIMENTO (Theme 4) ============ -->
+<!-- Compliance geography. Scatter plot: each UF is one point; -->
+<!-- x = % com carteira não-negras; y = % com carteira negras. Diagonal = -->
+<!-- no racial gap. Distance from origin = enforcement strength; distance -->
+<!-- below diagonal = racial dimension of non-compliance. -->
+<section id="descumprimento" class="border-t rule">
+  <div class="max-w-6xl mx-auto px-5 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <article class="lg:col-span-2">
+        <p class="text-xs uppercase tracking-wide font-semibold mb-2" style="color: var(--accent);" data-i18n="enforce-eyebrow">Geografia da fiscalização</p>
+        <h2 class="text-xl md:text-2xl font-medium mb-3" data-i18n="enforce-title">A geografia do descumprimento</h2>
+        <p class="text-sm text-gray-800 mb-3 leading-relaxed" data-i18n="enforce-lead">A cifra nacional — <strong>apenas 24% com carteira assinada</strong> — esconde uma distribuição. A LC 150 não falha de modo uniforme: falha em alguns estados muito mais que em outros, e dentro de cada estado falha de forma desigual entre raças. Onde a fiscalização precisa entrar primeiro é uma pergunta empírica.</p>
+        <p class="text-sm text-gray-700 mb-3 leading-relaxed" data-i18n="enforce-body">Cada ponto no gráfico ao lado é um estado. A coordenada horizontal é <strong>% com carteira entre não-negras</strong>; a vertical é o mesmo recorte <strong>entre negras</strong>. A diagonal pontilhada marca onde os dois grupos teriam a mesma taxa de formalização. <strong>Quase todos os pontos estão abaixo dela.</strong> A distância vertical entre o ponto e a diagonal é o hiato racial no cumprimento da LC 150 dentro daquele estado. <span id="enforce-callout-top">—</span> é o estado com a maior taxa entre as negras; <span id="enforce-callout-bottom">—</span> é o de menor. Nacionalmente, a meta legal é 100% — o canto superior direito do gráfico, vazio.</p>
+        <p class="text-xs text-gray-600 italic" data-i18n="enforce-cite">A literatura sobre <em>compliance gap</em> em trabalho doméstico — Louisa Acciari sobre fiscalização e movimentos sindicais, Pinheiro et al. (IPEA) sobre as falhas de implementação da LC 150, e o relatório do MTE de abril de 2026 sobre a Campanha Nacional pelo Trabalho Doméstico Decente — converge em um diagnóstico: a expansão jurídica de 2013–2015 não veio acompanhada de capacidade de fiscalização. A Conadon, criada em 2026 no MTE, é o primeiro arranjo institucional dedicado a essa categoria. O gráfico ao lado mostra empiricamente onde a Conadon teria mais impacto se priorizasse por escala do descumprimento.</p>
+      </article>
+      <article class="lg:col-span-3 border rule rounded-lg p-4 bg-white">
+        <h3 class="text-base font-medium" data-i18n="enforce-chart-title">% com carteira por UF — negras × não-negras</h3>
+        <p class="text-xs text-gray-500 mb-3" data-i18n="enforce-chart-meta">PNADC microdados · trimestre fixo mais recente · cada ponto = uma UF · tamanho do ponto = amostra não-ponderada</p>
+        <div class="chart-box" id="box-enforce" style="min-height: 440px;"><canvas id="chart-enforce"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+        <p class="text-xs text-gray-500 mt-2" id="enforce-source" data-i18n="enforce-chart-source">Fonte: PNADC microdados (IBGE), VD4009 (posição na ocupação — códigos 03 com carteira e 04 sem carteira) cruzada com V2010 (cor/raça), agregada pela equipe do projeto por UF. UFs com menos de 30 observações não-ponderadas no recorte race='total' são omitidas. A linha diagonal pontilhada representa "sem hiato racial" — uma UF sobre ela teria a mesma taxa de formalização entre negras e não-negras. UFs abaixo da diagonal: negras mais informais; acima: padrão inverso.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <!-- ============ FOCO EM SÃO PAULO ============ -->
 <section id="foco-sp" class="border-t rule" style="background: var(--accent-soft);">
   <div class="max-w-6xl mx-auto px-5 py-8">
@@ -737,6 +762,14 @@ const I18N = {
     "residual-chart-title": "% residentes por UF",
     "residual-chart-meta":  "% trabalhadoras(es) domésticas(os) em moradia cedida pelo empregador · PNADC Anual Visita 1, S01017",
     "residual-chart-source": "Fonte: PNADC Anual — Visita 1 (IBGE), variável S01017 (forma de habitação do domicílio), agregada pela equipe do projeto por UF. UFs com menos de 30 observações amostrais não-ponderadas são omitidas para evitar estimativas ruidosas (pequenos estados do Norte podem desaparecer da lista por essa razão).",
+    "enforce-eyebrow": "Geografia da fiscalização",
+    "enforce-title":   "A geografia do descumprimento",
+    "enforce-lead":    "A cifra nacional — <strong>apenas 24% com carteira assinada</strong> — esconde uma distribuição. A LC 150 não falha de modo uniforme: falha em alguns estados muito mais que em outros, e dentro de cada estado falha de forma desigual entre raças. Onde a fiscalização precisa entrar primeiro é uma pergunta empírica.",
+    "enforce-body":    "Cada ponto no gráfico ao lado é um estado. A coordenada horizontal é <strong>% com carteira entre não-negras</strong>; a vertical é o mesmo recorte <strong>entre negras</strong>. A diagonal pontilhada marca onde os dois grupos teriam a mesma taxa de formalização. <strong>Quase todos os pontos estão abaixo dela.</strong> A distância vertical entre o ponto e a diagonal é o hiato racial no cumprimento da LC 150 dentro daquele estado. <span id=\"enforce-callout-top\">—</span> é o estado com a maior taxa entre as negras; <span id=\"enforce-callout-bottom\">—</span> é o de menor. Nacionalmente, a meta legal é 100% — o canto superior direito do gráfico, vazio.",
+    "enforce-cite":    "A literatura sobre <em>compliance gap</em> em trabalho doméstico — Louisa Acciari sobre fiscalização e movimentos sindicais, Pinheiro et al. (IPEA) sobre as falhas de implementação da LC 150, e o relatório do MTE de abril de 2026 sobre a Campanha Nacional pelo Trabalho Doméstico Decente — converge em um diagnóstico: a expansão jurídica de 2013–2015 não veio acompanhada de capacidade de fiscalização. A Conadon, criada em 2026 no MTE, é o primeiro arranjo institucional dedicado a essa categoria. O gráfico ao lado mostra empiricamente onde a Conadon teria mais impacto se priorizasse por escala do descumprimento.",
+    "enforce-chart-title": "% com carteira por UF — negras × não-negras",
+    "enforce-chart-meta":  "PNADC microdados · trimestre fixo mais recente · cada ponto = uma UF · tamanho do ponto = amostra não-ponderada",
+    "enforce-chart-source": "Fonte: PNADC microdados (IBGE), VD4009 (posição na ocupação — códigos 03 com carteira e 04 sem carteira) cruzada com V2010 (cor/raça), agregada pela equipe do projeto por UF. UFs com menos de 30 observações não-ponderadas no recorte race='total' são omitidas. A linha diagonal pontilhada representa \"sem hiato racial\" — uma UF sobre ela teria a mesma taxa de formalização entre negras e não-negras. UFs abaixo da diagonal: negras mais informais; acima: padrão inverso.",
     "c189-title": "Status legal — Convenção 189 da OIT",
     "c189-meta": "Ano de ratificação por país. A C189 (Convenção sobre Trabalhadoras e Trabalhadores Domésticos, 2011) estabelece direitos iguais aos de outras categorias.",
     "c189-footnote": "Brasil ratificou em janeiro de 2018, três anos após a entrada em vigor da LC 150/2015 — ou seja, a legislação interna precedeu o compromisso internacional. México ratificou apenas em julho de 2020. Uruguai foi o primeiro país do mundo a ratificar, em junho de 2012. Fonte: NORMLEX (OIT).",
@@ -874,6 +907,14 @@ const I18N = {
     "residual-chart-title": "% live-in by state",
     "residual-chart-meta":  "% of domestic workers in employer-granted housing · PNADC Annual Visit 1, S01017",
     "residual-chart-source": "Source: PNADC Annual — Visit 1 (IBGE), variable S01017 (household tenure), aggregated by the project team at state level. States with fewer than 30 unweighted sample observations are omitted to avoid noisy estimates (small Northern states may disappear from the list for that reason).",
+    "enforce-eyebrow": "Enforcement geography",
+    "enforce-title":   "Geography of non-compliance",
+    "enforce-lead":    "The national figure — <strong>only 24% with signed work cards</strong> — hides a distribution. LC 150 does not fail uniformly: it fails much more in some states than in others, and within each state it fails unequally across race. Where enforcement should enter first is an empirical question.",
+    "enforce-body":    "Each point in the chart on the right is a state. The horizontal coordinate is <strong>% with signed work card among non-Black workers</strong>; the vertical is the same cut <strong>among Black workers</strong>. The dashed diagonal marks where the two groups would have the same formalization rate. <strong>Almost every point sits below it.</strong> The vertical distance between a point and the diagonal is the racial gap in LC 150 compliance within that state. <span id=\"enforce-callout-top\">—</span> is the state with the highest rate among Black workers; <span id=\"enforce-callout-bottom\">—</span> is the lowest. Nationally the legal target is 100% — the upper-right corner of the chart, empty.",
+    "enforce-cite":    "The <em>compliance gap</em> literature on domestic work — Louisa Acciari on enforcement and union movements, Pinheiro et al. (IPEA) on LC 150 implementation failures, and the MTE's April 2026 report on the National Campaign for Decent Domestic Work — converges on one diagnosis: the 2013–2015 legal expansion was not accompanied by enforcement capacity. Conadon, created in 2026 at the Ministry of Labour, is the first institutional arrangement dedicated to this category. The chart on the right shows empirically where Conadon would have the most impact if it prioritized by the scale of non-compliance.",
+    "enforce-chart-title": "% with signed work card by state — Black vs. non-Black",
+    "enforce-chart-meta":  "PNADC microdata · latest fixed quarter · each point = one state · point size = unweighted sample",
+    "enforce-chart-source": "Source: PNADC microdata (IBGE), VD4009 (position in occupation — codes 03 with card, 04 without card) crossed with V2010 (race), aggregated by the project team at state level. States with fewer than 30 unweighted observations in the race='total' cut are omitted. The dashed diagonal represents \"no racial gap\" — a state on it would have the same formalization rate for Black and non-Black workers. States below the diagonal: Black workers more informal; above: reverse pattern.",
     "c189-title": "Legal status — ILO Convention 189",
     "c189-meta": "Year of ratification per country. C189 (Domestic Workers Convention, 2011) establishes rights equal to those of other categories of workers.",
     "c189-footnote": "Brazil ratified in January 2018, three years after LC 150/2015 came into force — meaning domestic legislation preceded the international commitment. Mexico only ratified in July 2020. Uruguay was the first country in the world to ratify, in June 2012. Source: NORMLEX (ILO).",
@@ -1326,6 +1367,7 @@ function render() {
   renderBreadwinner();
   renderCohort();
   renderResidual();
+  renderEnforcement();
   renderFocusSP();
   renderSources();
   // "Data updated on" reflects the static-export timestamp (when the JSON was
@@ -3133,6 +3175,163 @@ function renderResidual() {
         y: {
           ticks: { font: { size: 11 }, autoSkip: false },
           grid: { display: false },
+        },
+      },
+    },
+  });
+}
+
+// ============ A GEOGRAFIA DO DESCUMPRIMENTO (Theme 4) ============
+// Scatter plot of (% com carteira não-negras, % com carteira negras) by UF.
+// One point per state. Diagonal = no racial gap. Point size = unweighted
+// sample for the UF's race='total' row. Small-sample floor: skip UFs with
+// total n_unweighted < 30.
+
+function renderEnforcement() {
+  const canvas = document.getElementById("chart-enforce");
+  if (!canvas || !STATE.workers) return;
+
+  // Filter to UF rows from microdata at latest period, sex='T'.
+  const ufRows = STATE.workers.filter(r =>
+    r.geo_level === "uf"
+    && r.sex_code === "T"
+    && r.source_table === "PNADC-MICRODATA"
+    && (r.race_code === "preta_parda" || r.race_code === "nao_negras" || r.race_code === "total")
+  );
+  if (!ufRows.length) {
+    setEmpty("box-enforce", true);
+    return;
+  }
+
+  const latestPeriod = [...new Set(ufRows.map(r => String(r.period_code)))].sort().at(-1);
+  const cur = ufRows.filter(r => String(r.period_code) === latestPeriod);
+
+  // Build a map keyed by (geo_code, race_code, formality_code) → row.
+  const idx = {};
+  for (const r of cur) {
+    idx[`${r.geo_code}|${r.race_code}|${r.formality_code}`] = r;
+  }
+
+  // Collect distinct UF codes that appear at any race
+  const ufCodes = [...new Set(cur.map(r => r.geo_code))];
+  const SMALL_SAMPLE_FLOOR = 30;
+  const points = [];
+
+  for (const uf of ufCodes) {
+    const totRow      = idx[`${uf}|total|total`];
+    const negraCar    = idx[`${uf}|preta_parda|com_carteira`];
+    const negraTot    = idx[`${uf}|preta_parda|total`];
+    const naoNegCar   = idx[`${uf}|nao_negras|com_carteira`];
+    const naoNegTot   = idx[`${uf}|nao_negras|total`];
+
+    if (!negraCar || !negraTot || !naoNegCar || !naoNegTot) continue;
+    if (!totRow || totRow.n_unweighted < SMALL_SAMPLE_FLOOR) continue;
+
+    const negraPct = Number(negraTot.workers_thousands) > 0
+      ? 100 * Number(negraCar.workers_thousands) / Number(negraTot.workers_thousands)
+      : null;
+    const naoNegPct = Number(naoNegTot.workers_thousands) > 0
+      ? 100 * Number(naoNegCar.workers_thousands) / Number(naoNegTot.workers_thousands)
+      : null;
+    if (negraPct == null || naoNegPct == null) continue;
+
+    points.push({
+      x: Number(naoNegPct.toFixed(1)),
+      y: Number(negraPct.toFixed(1)),
+      uf: uf,
+      label: LANG === "pt" ? negraTot.geo_name_pt : negraTot.geo_name_en,
+      n: totRow.n_unweighted,
+    });
+  }
+
+  if (!points.length) {
+    setEmpty("box-enforce", true);
+    return;
+  }
+
+  // Sort by negras % desc to pick top/bottom for callouts
+  const ranked = [...points].sort((a, b) => b.y - a.y);
+  const top = ranked[0];
+  const bottom = ranked.at(-1);
+
+  const callTop = document.getElementById("enforce-callout-top");
+  const callBot = document.getElementById("enforce-callout-bottom");
+  const fmt = v => v.toFixed(1).replace(".", LANG === "pt" ? "," : ".");
+  if (callTop) callTop.textContent = `${top.label} (${fmt(top.y)}%)`;
+  if (callBot) callBot.textContent = `${bottom.label} (${fmt(bottom.y)}%)`;
+
+  // Compute axis bounds with a small padding.
+  const xs = points.map(p => p.x);
+  const ys = points.map(p => p.y);
+  const lo = Math.max(0, Math.floor(Math.min(...xs, ...ys) - 2));
+  const hi = Math.min(100, Math.ceil(Math.max(...xs, ...ys) + 2));
+
+  // Point radius: scale by sqrt(n) so visually proportional to sample.
+  const nMax = Math.max(...points.map(p => p.n));
+  const minR = 5, maxR = 14;
+  const pointRadius = points.map(p => minR + (maxR - minR) * Math.sqrt(p.n / nMax));
+
+  setEmpty("box-enforce", false);
+  destroyChart("enforce");
+
+  charts.enforce = new Chart(canvas, {
+    type: "scatter",
+    data: {
+      datasets: [
+        // 1) Diagonal "no gap" reference line — drawn as a thin line dataset
+        {
+          type: "line",
+          label: LANG === "pt" ? "sem hiato racial" : "no racial gap",
+          data: [{ x: lo, y: lo }, { x: hi, y: hi }],
+          borderColor: "rgba(75, 85, 99, 0.5)",
+          borderWidth: 1,
+          borderDash: [6, 4],
+          pointRadius: 0,
+          fill: false,
+          tension: 0,
+          order: 2,
+        },
+        // 2) UFs themselves
+        {
+          type: "scatter",
+          label: LANG === "pt" ? "UFs" : "States",
+          data: points,
+          backgroundColor: "rgba(190, 30, 45, 0.7)",
+          borderColor: "rgba(190, 30, 45, 1)",
+          borderWidth: 1,
+          pointRadius: pointRadius,
+          pointHoverRadius: pointRadius.map(r => r + 2),
+          order: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 14, boxHeight: 10, padding: 8, font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const p = ctx.raw;
+              if (!p.uf) return ctx.dataset.label;
+              return `${p.label}: ${LANG === "pt" ? "negras" : "Black"} ${fmt(p.y)}% · ${LANG === "pt" ? "não-negras" : "non-Black"} ${fmt(p.x)}% (n=${p.n})`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          type: "linear",
+          min: lo, max: hi,
+          title: { display: true, text: LANG === "pt" ? "% com carteira — não-negras" : "% with card — non-Black", font: { size: 11 } },
+          ticks: { callback: v => v + "%", font: { size: 11 } },
+        },
+        y: {
+          type: "linear",
+          min: lo, max: hi,
+          title: { display: true, text: LANG === "pt" ? "% com carteira — negras" : "% with card — Black", font: { size: 11 } },
+          ticks: { callback: v => v + "%", font: { size: 11 } },
         },
       },
     },

@@ -1845,6 +1845,119 @@ same data substrate.
 
 ---
 
+## 2026-06-09 — Theme 5: Floor effect (minimum-wage attribution)
+
+**Scope.** Fifth and final Theme in the current arc. Visual hypothesis
+test for the MTE/DIEESE seminar attribution that the 84%→87% wage-gap
+narrowing was driven by the post-2023 minimum-wage valorization policy.
+No pipeline change — uses existing dw_wages microdata + hardcoded
+official minimum-wage trajectory.
+
+### Approach
+
+A dual-axis time-series:
+- **Left axis** (red line): wage ratio negras/não-negras computed
+  per quarter from PNADC-MICRODATA mean wages. Same data source as
+  the existing wage-gap chart, just expressed as a ratio.
+- **Right axis** (dashed gray line): nominal Brazilian minimum-wage
+  trajectory 2012–2026, hardcoded in the dashboard JS from official
+  federal decrees.
+
+If the floor-effect hypothesis is correct, both lines should rise
+together from 2023 onward (when the valorization policy was restored).
+If the ratio moves independently of the floor, the hypothesis loses
+support.
+
+### Dashboard (`dashboard/index.html`)
+
+- New `<section id="piso">` "O efeito do piso" placed between
+  Compliance Geography (Theme 4) and Foco em São Paulo. Same
+  editorial-hero pattern as the other Themes.
+- `renderFloor()` reads `STATE.wages`, builds the per-quarter ratio,
+  pairs each quarter with its year's minimum-wage value via the
+  hardcoded `MIN_WAGE_NOMINAL` map and a `smForPeriod()` helper.
+- Chart: Chart.js line chart with dual y-axes (yLeft for %, yRight
+  for R$). Policy timeline annotations carry over from
+  `buildPolicyAnnotations` so EC 72 / LC 150 / C189 / COVID / PNC
+  marks land on this chart too.
+- Two inline callouts: latest wage ratio and latest minimum-wage
+  value, populated by render-time JS.
+
+### Methodology (`dashboard/metodologia.html`)
+
+- §3.17 added (PT + EN). Explicit caveats spelled out:
+  1. Not an econometric decomposition — visual correlation, not
+     causality.
+  2. Nominal MW used, not deflated; affects magnitude not direction.
+  3. Composition-of-floor-earners change can compress the ratio
+     without any individual wage rising — separating "mechanical"
+     from "behavioral" requires panel microdata.
+
+### Editorial framing
+
+The section's editorial paragraph is unusually self-critical for
+the dashboard — it explicitly says "this is a visual consistency
+test, not a regression" and lists the alternative shocks (Conadon,
+PNC, post-pandemic recovery) that a regression would have to control
+for. This is intentional: the MTE/DIEESE seminar attribution was
+itself qualitative, and the dashboard now offers the corresponding
+visual test — promoting the qualitative argument to "consistent
+with the data" without overclaiming causality.
+
+For Mayer this is the chart that translates a policy claim into
+testable evidence; for STDMSP it shows how minimum-wage policy
+travels into the category.
+
+### Run sequence on Joao's Mac
+
+No pipeline change — just dashboard + methodology. Static export not
+strictly needed since dw_wages already has what's needed:
+
+```bash
+cd ~/Documents/Claude/Domestic\ Work
+# No ETL run required — the chart reads existing dw_wages rows.
+# Just commit the dashboard/methodology/audit changes.
+git add dashboard/index.html dashboard/metodologia.html QA_AUDIT.md
+git commit -m "feat(Theme 5): floor effect — minimum-wage attribution panel"
+git push origin main
+```
+
+### Sanity-check expectations
+
+If the floor-effect hypothesis holds:
+- The wage-ratio line should be relatively flat 2012–2022 (when the
+  minimum wage didn't grow much in real terms),
+- Then bend upward 2023–2026 (when the policy was restored),
+- And track the minimum-wage line's acceleration in that period.
+
+If the hypothesis is partial (some floor effect + some independent
+narrowing), the ratio line might rise but at a different slope than
+the MW line. If the hypothesis is wrong, the ratio could move in any
+direction unrelated to the floor — e.g., narrow during 2017-2021 when
+the floor was frozen.
+
+The dashboard's job here is to make that visual test legible. Whether
+the hypothesis is ultimately right is for a regression in a paper,
+not a panel. The dashboard is the entry point.
+
+### Five-Theme arc complete
+
+Five publishable readings of the same data substrate:
+
+| # | Theme | Axis | Anchor |
+|--|---|---|---|
+| 1 | Breadwinner paradox | Intersectional (static) | Gonzalez, Carneiro, Bernardino-Costa, Lopes, Lara |
+| 2 | Onde estão as jovens | Generational (dynamic) | Saffioti, Acciari, IPEA |
+| 3 | Casa-grande's afterlife | Historical (spatial) | Gonzalez, Saffioti, Carneiro, Bernardino-Costa |
+| 4 | Compliance geography | Policy (institutional) | Acciari, Pinheiro/IPEA, MTE/Conadon |
+| 5 | The floor effect | Policy (instrumental) | Saboia, Manzano-Munguía, MTE/DIEESE seminar |
+
+Five panels, five scholarly traditions, one dataset. The dashboard now
+holds the descriptive layer (eight indicator charts) plus the argument
+layer (five editorial sections). v2.3 milestone.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

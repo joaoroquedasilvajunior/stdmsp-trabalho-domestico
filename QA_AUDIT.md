@@ -2350,10 +2350,20 @@ it was omitted from the panel.
    2026. This matters for STDMSP-facing voice because SP is
    the union's territory.
 
-3. **MG is the natural control.** Non-Black workers barely
-   moved (−0.5pp), Black workers lost 4pp. The Reform
-   attribution is not visible here. MG should be the
-   counterfactual in any DiD framing.
+3. **MG inverts the racial direction of the BR-wide story.**
+   Non-Black workers in MG stayed essentially flat (−0.5pp)
+   while Black workers lost 4pp — the only one of the four
+   UFs where Black workers lost more than non-Black workers.
+   That makes MG analytically interesting rather than a
+   clean control: the racial direction of the formal-exit
+   is reversed there, not absent. Possible interpretation
+   (speculative until tested): a cohort effect in
+   metropolitan Belo Horizonte — Black workers pulled into
+   formal contracts in the early 2010s aging out of the
+   sector and not being replaced, while non-Black workers
+   in MG concentrate in less-formal interior arrangements
+   that were stable across the period. Worth a UF-specific
+   investigation before the chapter goes to press.
 
 ### Northeast confirms Theme 3
 

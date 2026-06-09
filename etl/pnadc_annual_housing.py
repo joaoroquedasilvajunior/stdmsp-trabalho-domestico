@@ -238,25 +238,53 @@ def build_housing_rows(df: pd.DataFrame, period_code: str) -> list[dict]:
             "n_unweighted": int(n),
         }
 
-    def emit_for_subset(race_label: str, subset: pd.DataFrame):
+    def emit_for_subset(geo_code: str, geo_level: str, race_label: str, subset: pd.DataFrame):
         total_w = subset["weight"].sum()
         for h in HOUSING_BUCKETS:
             g = subset[subset["housing_code"] == h]
-            r = _row("BR", "country", "T", race_label, h,
+            r = _row(geo_code, geo_level, "T", race_label, h,
                      g["weight"].sum(), total_w, len(g))
             if r:
                 rows.append(r)
-        r = _row("BR", "country", "T", race_label, "total",
+        r = _row(geo_code, geo_level, "T", race_label, "total",
                  total_w, total_w, len(subset))
         if r:
             rows.append(r)
 
+    # ---- BR-level emissions (existing) ----
     for race, g in dom.groupby("race_code"):
-        emit_for_subset(race, g)
+        emit_for_subset("BR", "country", race, g)
+    emit_for_subset("BR", "country", "preta_parda", dom[dom["race_code"].isin(["preta", "parda"])])
+    emit_for_subset("BR", "country", "nao_negras", dom[dom["race_code"].isin(["branca", "amarela", "indigena"])])
+    emit_for_subset("BR", "country", "total", dom)
 
-    emit_for_subset("preta_parda", dom[dom["race_code"].isin(["preta", "parda"])])
-    emit_for_subset("nao_negras", dom[dom["race_code"].isin(["branca", "amarela", "indigena"])])
-    emit_for_subset("total", dom)
+    # ---- UF-level emissions (Theme 3: live-in geography) ----
+    # IBGE 2-char UF codes — 27 federation units.
+    UF_CODES = [
+        "11", "12", "13", "14", "15", "16", "17",                  # Norte
+        "21", "22", "23", "24", "25", "26", "27", "28", "29",      # Nordeste
+        "31", "32", "33", "35",                                    # Sudeste
+        "41", "42", "43",                                          # Sul
+        "50", "51", "52", "53",                                    # Centro-Oeste
+    ]
+    SMALL_SAMPLE_THRESHOLD = 30  # skip UF × race cells with fewer unweighted obs
+    dom["uf_code"] = dom["UF"].astype(str).str.zfill(2)
+
+    for uf in UF_CODES:
+        dom_uf = dom[dom["uf_code"] == uf]
+        if len(dom_uf) < SMALL_SAMPLE_THRESHOLD:
+            log.info("  skip UF %s — only %d unweighted obs", uf, len(dom_uf))
+            continue
+        # Race aggregates only at UF level — native races have too-small cells
+        # in many UFs to be useful. preta_parda, nao_negras, total carry the
+        # editorially relevant cuts (live-in by race within state).
+        is_negra = dom_uf["race_code"].isin(["preta", "parda"])
+        is_nao_negra = dom_uf["race_code"].isin(["branca", "amarela", "indigena"])
+        if len(dom_uf[is_negra]) >= SMALL_SAMPLE_THRESHOLD:
+            emit_for_subset(uf, "uf", "preta_parda", dom_uf[is_negra])
+        if len(dom_uf[is_nao_negra]) >= SMALL_SAMPLE_THRESHOLD:
+            emit_for_subset(uf, "uf", "nao_negras", dom_uf[is_nao_negra])
+        emit_for_subset(uf, "uf", "total", dom_uf)
 
     log.info("  produced %d aggregate rows", len(rows))
     return rows

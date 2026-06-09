@@ -190,6 +190,7 @@ NEEDED_VARS = [
     "V1028",   # population weight
     "V2003",   # condição no domicílio (D2 — family / household position)
     "V2007",   # sex
+    "V2009",   # idade na data de referência (Theme 2 — age cohorts)
     "V2010",   # cor/raça
     "V4032",   # previdência contributor (1/2)
     "V4039",   # weekly hours (main job)
@@ -559,6 +560,19 @@ HOUSING_TENURE_MAP = {
     "6": "outro",              # Cedido de outra forma
     "7": "outro",              # Outra condição
 }
+
+# V2009 (idade) bucketed to match the DIEESE Apr/2026 Infográfico table.
+# Returns a string code aligned with dim_age_band, or None for invalid ages.
+def age_to_band(age: int) -> str | None:
+    if age is None or age < 0 or age > 130:
+        return None
+    if age < 30:
+        return "under_29"
+    if age < 45:
+        return "30_44"
+    if age < 60:
+        return "45_59"
+    return "60_plus"
 # PNADC V2007 (sexo) → our dim_sex.code
 SEX_MAP = {"1": "M", "2": "F"}
 # VD4009 (posição) → our dim_formality.code, restricted to trabalhador doméstico
@@ -1158,6 +1172,87 @@ def build_family_rows(df: pd.DataFrame, period: str) -> list[dict]:
     return rows
 
 
+def build_age_rows(df: pd.DataFrame, period: str) -> list[dict]:
+    """Aggregate age bands (V2009) for trabalhadoras(es) domésticas(os).
+
+    The Theme 2 panel — "Onde estão as jovens?" — uses these rows. Bucket
+    breakpoints are DIEESE-aligned so the dashboard can triangulate against
+    the Apr/2026 Infográfico table:
+      - under_29 (DIEESE reports 12%)
+      - 30_44    (DIEESE reports 32%)
+      - 45_59    (DIEESE reports 43%)
+      - 60_plus  (DIEESE reports 13%)
+
+    Emits weighted count + % within race for:
+      - BR × sex='T' × race × age_band (5 races × 4 bands = 20)
+      - BR × sex='T' × preta_parda × age_band (4)
+      - BR × sex='T' × nao_negras × age_band (4)
+      - BR × sex='T' × race × age_band='total' (5 + 2 = 7)
+      - BR × sex='T' × race='total' × age_band (4)
+
+    Total: ~40 rows per quarter; ~2.2k rows over the 56-quarter backfill.
+
+    The cohort interpretation is implicit: with 56 quarters of (race, band)
+    data, the dashboard can reconstruct birth-cohort trajectories — a
+    1995-born worker enters the "under_29" band at all of 2012–2024 and
+    crosses into "30_44" in 2025. Pseudo-cohort reading is fine for the
+    story; true panel-based cohort tracking is left for a future iteration.
+    """
+    df = df.copy()
+    df["weight"] = pd.to_numeric(df["V1028"], errors="coerce")
+    if df["weight"].max() > 1e9:
+        df["weight"] = df["weight"] / 1e9
+    df["age_int"] = pd.to_numeric(df["V2009"], errors="coerce")
+
+    DOMESTIC_CODES = ["03", "04"]
+    dom = df[df["VD4009"].isin(DOMESTIC_CODES) & df["weight"].notna() & df["age_int"].notna()].copy()
+    dom["race_code"] = dom["V2010"].map(RACE_MAP)
+    dom["age_band"] = dom["age_int"].astype(int).apply(age_to_band)
+    dom = dom[dom["race_code"].notna() & dom["age_band"].notna()]
+
+    db_period = microdata_period_to_db_code(period)
+    rows: list[dict] = []
+
+    AGE_BUCKETS = ["under_29", "30_44", "45_59", "60_plus"]
+
+    def _row(geo, level, sex, race, age_band, w_sum, w_race_total, n):
+        if w_sum is None or w_sum == 0:
+            return None
+        pct = round(100 * w_sum / w_race_total, 2) if w_race_total else None
+        # workers_thousands in *thousands of people* — raw weight sum is in
+        # single people, divide by 1000 to match the project convention.
+        return {
+            "_period_code": db_period,
+            "_geo_code": geo, "_geo_level": level,
+            "_sex": sex, "_race": race, "_age_band": age_band,
+            "workers_thousands": round(float(w_sum) / 1000.0, 2),
+            "pct_within_race": pct,
+            "n_unweighted": int(n),
+        }
+
+    def emit_for_subset(race_label: str, subset: pd.DataFrame):
+        total_w = subset["weight"].sum()
+        for band in AGE_BUCKETS:
+            g = subset[subset["age_band"] == band]
+            r = _row("BR", "country", "T", race_label, band,
+                     g["weight"].sum(), total_w, len(g))
+            if r:
+                rows.append(r)
+        r = _row("BR", "country", "T", race_label, "total",
+                 total_w, total_w, len(subset))
+        if r:
+            rows.append(r)
+
+    for race, g in dom.groupby("race_code"):
+        emit_for_subset(race, g)
+
+    emit_for_subset("preta_parda", dom[dom["race_code"].isin(["preta", "parda"])])
+    emit_for_subset("nao_negras", dom[dom["race_code"].isin(["branca", "amarela", "indigena"])])
+    emit_for_subset("total", dom)
+
+    return rows
+
+
 def build_housing_rows(df: pd.DataFrame, period: str) -> list[dict]:
     """Aggregate housing tenure (V0212) for trabalhadoras(es) domésticas(os).
 
@@ -1523,6 +1618,46 @@ def upsert_family_to_supabase(rows: list[dict]) -> int:
     return inserted
 
 
+def upsert_age_to_supabase(rows: list[dict]) -> int:
+    """Push age-band rows into domestic_work.fact_age."""
+    sb = get_supabase_client()
+    if sb is None or not rows:
+        return 0
+    schema = sb.schema("domestic_work")
+    time_lookup = {r["period_code"]: r["time_id"] for r in schema.table("dim_time").select("period_code,time_id").execute().data}
+    geo_lookup = {(r["level"], r["code"]): r["geo_id"] for r in schema.table("dim_geo").select("level,code,geo_id").execute().data}
+    race_lookup = {r["code"]: r["race_id"] for r in schema.table("dim_race").select("code,race_id").execute().data}
+    sex_lookup = {r["code"]: r["sex_id"] for r in schema.table("dim_sex").select("code,sex_id").execute().data}
+    age_lookup = {r["code"]: r["age_band_id"] for r in schema.table("dim_age_band").select("code,age_band_id").execute().data}
+
+    payload = []
+    for r in rows:
+        try:
+            payload.append({
+                "time_id":     time_lookup[r["_period_code"]],
+                "geo_id":      geo_lookup[(r["_geo_level"], r["_geo_code"])],
+                "sex_id":      sex_lookup[r["_sex"]],
+                "race_id":     race_lookup[r["_race"]],
+                "age_band_id": age_lookup[r["_age_band"]],
+                "workers_thousands": r["workers_thousands"],
+                "pct_within_race":   r["pct_within_race"],
+                "n_unweighted":      r["n_unweighted"],
+                "source_table":      SOURCE_TABLE_TAG,
+            })
+        except KeyError as e:
+            log.warning("missing dim lookup for age row %s: %s", r, e)
+
+    inserted = 0
+    for i in range(0, len(payload), 250):
+        chunk = payload[i:i + 250]
+        res = schema.table("fact_age").upsert(
+            chunk,
+            on_conflict="time_id,geo_id,sex_id,race_id,age_band_id,source_table",
+        ).execute()
+        inserted += len(res.data or [])
+    return inserted
+
+
 def upsert_housing_to_supabase(rows: list[dict]) -> int:
     """Push housing-tenure rows into domestic_work.fact_housing."""
     sb = get_supabase_client()
@@ -1727,6 +1862,18 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
     if wage_chefe_negras and wage_chefe_nao_negras:
         chefe_wage_gap_pct = round(100 * wage_chefe_negras / wage_chefe_nao_negras, 1)
 
+    # ---- age cohorts (fact_age, Theme 2) ----
+    age_rows = build_age_rows(df, period)
+    # Diagnostic: % under_29 for the category overall — DIEESE Apr/2026 reports 12%.
+    age_total_under29 = next((r for r in age_rows
+                              if r["_geo_code"] == "BR" and r["_race"] == "total"
+                              and r["_age_band"] == "under_29"), None)
+    pct_under29_total = age_total_under29["pct_within_race"] if age_total_under29 else None
+    age_negra_under29 = next((r for r in age_rows
+                              if r["_geo_code"] == "BR" and r["_race"] == "preta_parda"
+                              and r["_age_band"] == "under_29"), None)
+    pct_under29_negras = age_negra_under29["pct_within_race"] if age_negra_under29 else None
+
     # NOTE: housing (D3) is NOT computed here — see etl/pnadc_annual_housing.py.
     # V0212 is in PNADC ANNUAL, not quarterly.
 
@@ -1747,29 +1894,34 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
         inserted_prev = upsert_prev_to_supabase(prev_rows)
         inserted_edu = upsert_education_to_supabase(edu_rows)
         inserted_fam = upsert_family_to_supabase(fam_rows)
-        log.info("[%s] upserted %d work + %d wage + %d hour + %d prev + %d edu + %d fam · "
+        inserted_age = upsert_age_to_supabase(age_rows)
+        log.info("[%s] upserted %d work + %d wage + %d hour + %d prev + %d edu + %d fam + %d age · "
                  "total %.0fk · pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · "
                  "wage gap %s%% · horas méd %s · %% previdência %s%% · "
                  "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%% · "
-                 "wage chefes negras R$%s vs n.negras R$%s (gap %s%%)",
+                 "wage chefes negras R$%s vs n.negras R$%s (gap %s%%) · "
+                 "%% under_29 (total/negras) %s%%/%s%%",
                  period, inserted_workers, inserted_wages, inserted_hours, inserted_prev,
-                 inserted_edu, inserted_fam,
+                 inserted_edu, inserted_fam, inserted_age,
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
                  mean_hours, pct_prev_total, pct_fund_inc_negras,
                  pct_chefe_total, pct_chefe_negras,
-                 wage_chefe_negras, wage_chefe_nao_negras, chefe_wage_gap_pct)
+                 wage_chefe_negras, wage_chefe_nao_negras, chefe_wage_gap_pct,
+                 pct_under29_total, pct_under29_negras)
     else:
-        log.info("[%s] (dry run) %d work + %d wage + %d hour + %d prev + %d edu + %d fam · "
+        log.info("[%s] (dry run) %d work + %d wage + %d hour + %d prev + %d edu + %d fam + %d age · "
                  "total %.0fk · pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · "
                  "wage gap %s%% · horas méd %s · %% previdência %s%% · "
                  "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%% · "
-                 "wage chefes negras R$%s vs n.negras R$%s (gap %s%%)",
+                 "wage chefes negras R$%s vs n.negras R$%s (gap %s%%) · "
+                 "%% under_29 (total/negras) %s%%/%s%%",
                  period, len(rows), len(wage_rows), len(hours_rows), len(prev_rows),
-                 len(edu_rows), len(fam_rows),
+                 len(edu_rows), len(fam_rows), len(age_rows),
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
                  mean_hours, pct_prev_total, pct_fund_inc_negras,
                  pct_chefe_total, pct_chefe_negras,
-                 wage_chefe_negras, wage_chefe_nao_negras, chefe_wage_gap_pct)
+                 wage_chefe_negras, wage_chefe_nao_negras, chefe_wage_gap_pct,
+                 pct_under29_total, pct_under29_negras)
 
     return {"period": period, "total_workers_k": n_dom, "pct_negras": pct_negras,
             "pct_negras_sp": pct_negras_sp, "pct_mulheres": pct_mulheres,
@@ -1780,7 +1932,9 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
             "pct_chefe_negras": pct_chefe_negras,
             "wage_chefe_negras": wage_chefe_negras,
             "wage_chefe_nao_negras": wage_chefe_nao_negras,
-            "chefe_wage_gap_pct": chefe_wage_gap_pct}
+            "chefe_wage_gap_pct": chefe_wage_gap_pct,
+            "pct_under29_total": pct_under29_total,
+            "pct_under29_negras": pct_under29_negras}
 
 
 # ----- main --------------------------------------------------------------------

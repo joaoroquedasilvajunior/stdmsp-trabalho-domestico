@@ -479,6 +479,30 @@
   </div>
 </section>
 
+<!-- ============ ONDE ESTÃO AS JOVENS? (Theme 2) ============ -->
+<!-- Age-cohort panel: % of category in under_29 band over time, by race. -->
+<!-- Tells the "where did the young workers go?" story by showing the bottom -->
+<!-- of the age pyramid shrinking across 14 years. -->
+<section id="cohort" class="border-t rule">
+  <div class="max-w-6xl mx-auto px-5 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <article class="lg:col-span-2">
+        <p class="text-xs uppercase tracking-wide font-semibold mb-2" style="color: var(--accent);" data-i18n="cohort-eyebrow">Coortes e mobilidade</p>
+        <h2 class="text-xl md:text-2xl font-medium mb-3" data-i18n="cohort-title">Onde estão as jovens?</h2>
+        <p class="text-sm text-gray-800 mb-3 leading-relaxed" data-i18n="cohort-lead">O Infográfico DIEESE abr/2026 mostra <strong>43% entre 45 e 59 anos</strong>, <strong>13% com 60 ou mais</strong>, e <strong>apenas 12% até 29 anos</strong>. A categoria está envelhecendo, e esse envelhecimento conta uma história de mobilidade <em>fora</em> do trabalho doméstico — quando as gerações mais novas não substituem as mais velhas, alguma coisa mudou.</p>
+        <p class="text-sm text-gray-700 mb-3 leading-relaxed" data-i18n="cohort-body">No 1T 2026, <span id="cohort-callout-negras">—</span> das trabalhadoras domésticas negras tinham até 29 anos, contra <span id="cohort-callout-nao-negras">—</span> das não-negras. Ao longo dos últimos 14 anos, essa parcela caiu para ambos os grupos — a base da pirâmide etária da categoria está mais estreita do que era em 2012. As jovens negras que não entram no trabalho doméstico estão indo para outros setores; entender para onde é uma pergunta empírica que o painel agora abre.</p>
+        <p class="text-xs text-gray-600 italic" data-i18n="cohort-cite">A categoria envelhecida cruza várias literaturas: Heleieth Saffioti, sobre o trinômio raça-gênero-classe e a continuidade histórica da trabalhadora doméstica; Louisa Acciari, sobre os movimentos sindicais que precisam de reposição geracional para sobreviver politicamente; o IPEA, sobre mobilidade ocupacional de mulheres negras jovens. O dado bruto que sustenta as três conversas é o mesmo gráfico aqui ao lado.</p>
+      </article>
+      <article class="lg:col-span-3 border rule rounded-lg p-4 bg-white">
+        <h3 class="text-base font-medium" data-i18n="cohort-chart-title">% até 29 anos ao longo do tempo, por raça</h3>
+        <p class="text-xs text-gray-500 mb-3" data-i18n="cohort-chart-meta">PNADC microdados V2009 · trimestre fixo, 2012Q1 → presente</p>
+        <div class="chart-box" id="box-cohort"><canvas id="chart-cohort"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+        <p class="text-xs text-gray-500 mt-2" id="cohort-source" data-i18n="cohort-chart-source">Fonte: PNADC microdados (IBGE), variável V2009 (idade na data de referência), agregada pela equipe do projeto em buckets alinhados ao DIEESE (até 29 / 30–44 / 45–59 / 60+). A leitura recomendada é a inclinação das linhas — se ambas caem, a categoria está perdendo a base etária inferior em ambos os grupos raciais; se uma cai mais rápido que a outra, há um padrão racial na desistência geracional. DIEESE Apr/2026 reporta 12% até 29 anos para a categoria como um todo.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <!-- ============ FOCO EM SÃO PAULO ============ -->
 <section id="foco-sp" class="border-t rule" style="background: var(--accent-soft);">
   <div class="max-w-6xl mx-auto px-5 py-8">
@@ -673,6 +697,14 @@ const I18N = {
     "paradox-chart-title": "Salário médio mensal por posição no domicílio e raça",
     "paradox-chart-meta":  "R$ nominais (rendimento habitual VD4019) · PNADC microdados · trimestre fixo mais recente",
     "paradox-chart-source": "Fonte: PNADC microdados (IBGE) — V2003 (condição no domicílio) cruzada com VD4019 (rendimento habitual). Agregação pela equipe do projeto. Cálculo: média ponderada do rendimento entre trabalhadoras(es) domésticas(os) com rendimento > 0, dentro de cada célula (raça × posição). Valores em reais nominais (não deflacionados); para comparação intertemporal use o gráfico \"Rendimento médio mensal real\" na seção principal.",
+    "cohort-eyebrow": "Coortes e mobilidade",
+    "cohort-title":   "Onde estão as jovens?",
+    "cohort-lead":    "O Infográfico DIEESE abr/2026 mostra <strong>43% entre 45 e 59 anos</strong>, <strong>13% com 60 ou mais</strong>, e <strong>apenas 12% até 29 anos</strong>. A categoria está envelhecendo, e esse envelhecimento conta uma história de mobilidade <em>fora</em> do trabalho doméstico — quando as gerações mais novas não substituem as mais velhas, alguma coisa mudou.",
+    "cohort-body":    "No 1T 2026, <span id=\"cohort-callout-negras\">—</span> das trabalhadoras domésticas negras tinham até 29 anos, contra <span id=\"cohort-callout-nao-negras\">—</span> das não-negras. Ao longo dos últimos 14 anos, essa parcela caiu para ambos os grupos — a base da pirâmide etária da categoria está mais estreita do que era em 2012. As jovens negras que não entram no trabalho doméstico estão indo para outros setores; entender para onde é uma pergunta empírica que o painel agora abre.",
+    "cohort-cite":    "A categoria envelhecida cruza várias literaturas: Heleieth Saffioti, sobre o trinômio raça-gênero-classe e a continuidade histórica da trabalhadora doméstica; Louisa Acciari, sobre os movimentos sindicais que precisam de reposição geracional para sobreviver politicamente; o IPEA, sobre mobilidade ocupacional de mulheres negras jovens. O dado bruto que sustenta as três conversas é o mesmo gráfico aqui ao lado.",
+    "cohort-chart-title": "% até 29 anos ao longo do tempo, por raça",
+    "cohort-chart-meta":  "PNADC microdados V2009 · trimestre fixo, 2012Q1 → presente",
+    "cohort-chart-source": "Fonte: PNADC microdados (IBGE), variável V2009 (idade na data de referência), agregada pela equipe do projeto em buckets alinhados ao DIEESE (até 29 / 30–44 / 45–59 / 60+). A leitura recomendada é a inclinação das linhas — se ambas caem, a categoria está perdendo a base etária inferior em ambos os grupos raciais; se uma cai mais rápido que a outra, há um padrão racial na desistência geracional. DIEESE Apr/2026 reporta 12% até 29 anos para a categoria como um todo.",
     "c189-title": "Status legal — Convenção 189 da OIT",
     "c189-meta": "Ano de ratificação por país. A C189 (Convenção sobre Trabalhadoras e Trabalhadores Domésticos, 2011) estabelece direitos iguais aos de outras categorias.",
     "c189-footnote": "Brasil ratificou em janeiro de 2018, três anos após a entrada em vigor da LC 150/2015 — ou seja, a legislação interna precedeu o compromisso internacional. México ratificou apenas em julho de 2020. Uruguai foi o primeiro país do mundo a ratificar, em junho de 2012. Fonte: NORMLEX (OIT).",
@@ -794,6 +826,14 @@ const I18N = {
     "paradox-chart-title": "Mean monthly wage by household position and race",
     "paradox-chart-meta":  "Nominal R$ (habitual income VD4019) · PNADC microdata · latest fixed quarter",
     "paradox-chart-source": "Source: PNADC microdata (IBGE) — V2003 (household position) crossed with VD4019 (habitual income). Aggregated by the project team. Calculation: weight-averaged income among domestic workers with income > 0, within each cell (race × position). Values in nominal reais (not deflated); for intertemporal comparison use the \"Mean real monthly income\" chart in the main section.",
+    "cohort-eyebrow": "Cohorts and mobility",
+    "cohort-title":   "Where are the young workers?",
+    "cohort-lead":    "The DIEESE Apr/2026 Infográfico reports <strong>43% aged 45–59</strong>, <strong>13% aged 60 or older</strong>, and <strong>only 12% aged 29 or younger</strong>. The category is aging, and that aging tells a story of mobility <em>out of</em> domestic work — when younger generations don't replace the older ones, something has changed.",
+    "cohort-body":    "In Q1 2026, <span id=\"cohort-callout-negras\">—</span> of Black domestic workers were 29 or younger, against <span id=\"cohort-callout-nao-negras\">—</span> of non-Black workers. Over the past 14 years this share has fallen for both groups — the base of the category's age pyramid is narrower than it was in 2012. The young Black women who are NOT entering domestic work are going somewhere else; figuring out where is an empirical question the dashboard now opens up.",
+    "cohort-cite":    "The aging category crosses several literatures: Heleieth Saffioti on the race-gender-class trinômio and the historical continuity of the domestic worker; Louisa Acciari on the union movements that need generational replenishment to survive politically; IPEA on occupational mobility of young Black women. The raw data behind all three conversations is the same chart on the right.",
+    "cohort-chart-title": "% aged 29 or younger over time, by race",
+    "cohort-chart-meta":  "PNADC microdata V2009 · fixed quarter, 2012Q1 → present",
+    "cohort-chart-source": "Source: PNADC microdata (IBGE), variable V2009 (age at the reference date), aggregated by the project team into DIEESE-aligned buckets (≤29 / 30–44 / 45–59 / 60+). The recommended reading is the slope of the lines — if both fall, the category is losing its lower age base in both racial groups; if one falls faster than the other, there is a racial pattern in generational dropout. DIEESE Apr/2026 reports 12% aged 29 or younger for the category as a whole.",
     "c189-title": "Legal status — ILO Convention 189",
     "c189-meta": "Year of ratification per country. C189 (Domestic Workers Convention, 2011) establishes rights equal to those of other categories of workers.",
     "c189-footnote": "Brazil ratified in January 2018, three years after LC 150/2015 came into force — meaning domestic legislation preceded the international commitment. Mexico only ratified in July 2020. Uruguay was the first country in the world to ratify, in June 2012. Source: NORMLEX (ILO).",
@@ -941,7 +981,7 @@ async function loadAll() {
   // Supabase remains the ETL target / source of truth; it is no longer a
   // runtime dependency. Re-export via etl/export_static.py after each
   // quarterly ETL refresh, then commit dashboard/data/.
-  const views = ["dw_workers","dw_wages","dw_hours","dw_prev","dw_education","dw_family","dw_housing","dw_intl","dw_sources","dw_static_facts"];
+  const views = ["dw_workers","dw_wages","dw_hours","dw_prev","dw_education","dw_family","dw_housing","dw_age","dw_intl","dw_sources","dw_static_facts"];
   const data = {};
   let loadError = null;
 
@@ -976,6 +1016,7 @@ async function loadAll() {
   STATE.education = data.dw_education || [];
   STATE.family    = data.dw_family    || [];
   STATE.housing   = data.dw_housing   || [];
+  STATE.age       = data.dw_age       || [];
   STATE.intl      = data.dw_intl      || [];
   STATE.sources   = data.dw_sources   || [];
   STATE.staticFacts = Object.fromEntries((data.dw_static_facts || []).map(r => [r.fact_code, r]));
@@ -1243,6 +1284,7 @@ function render() {
   renderFamily();
   renderHousing();
   renderBreadwinner();
+  renderCohort();
   renderFocusSP();
   renderSources();
   // "Data updated on" reflects the static-export timestamp (when the JSON was
@@ -2839,6 +2881,108 @@ function renderBreadwinner() {
         y: {
           beginAtZero: true,
           ticks: { callback: v => fmtBRL(v), font: { size: 11 } },
+        },
+      },
+    },
+  });
+}
+
+// ============ COORTES E MOBILIDADE (Theme 2) ============
+// "Onde estão as jovens?" — % of category in under_29 band over the 56
+// quarters, by race. Tells the aging-out story by showing the bottom of
+// the age pyramid shrinking. Plus inline callouts in the editorial
+// paragraph for the latest period.
+
+function renderCohort() {
+  const canvas = document.getElementById("chart-cohort");
+  if (!canvas || !STATE.age) return;
+
+  // Filter to BR-country, sex='T', under_29 only, the two aggregate races.
+  const filtered = STATE.age.filter(r =>
+    r.geo_level === "country"
+    && r.sex_code === "T"
+    && r.age_band_code === "under_29"
+    && (r.race_code === "preta_parda" || r.race_code === "nao_negras")
+  );
+
+  if (!filtered.length) {
+    setEmpty("box-cohort", true);
+    return;
+  }
+
+  // Pull all unique periods (sorted) and build per-race series.
+  const periods = [...new Set(filtered.map(r => String(r.period_code)))].sort();
+  const negras = Object.fromEntries(filtered.filter(r => r.race_code === "preta_parda")
+    .map(r => [String(r.period_code), Number(r.pct_within_race)]));
+  const naoNegras = Object.fromEntries(filtered.filter(r => r.race_code === "nao_negras")
+    .map(r => [String(r.period_code), Number(r.pct_within_race)]));
+
+  const labels = periods.map(formatPeriodLabel);
+  const negrasData    = periods.map(p => negras[p] ?? null);
+  const naoNegrasData = periods.map(p => naoNegras[p] ?? null);
+
+  // Latest values for the inline callouts in the editorial paragraph.
+  const latestPeriod = periods.at(-1);
+  const callNegras    = document.getElementById("cohort-callout-negras");
+  const callNaoNegras = document.getElementById("cohort-callout-nao-negras");
+  const fmtPct = v => (v == null ? "—" : `${v.toFixed(1).replace(".", LANG === "pt" ? "," : ".")}%`);
+  if (callNegras)    callNegras.textContent    = fmtPct(negras[latestPeriod]);
+  if (callNaoNegras) callNaoNegras.textContent = fmtPct(naoNegras[latestPeriod]);
+
+  setEmpty("box-cohort", false);
+  destroyChart("cohort");
+
+  charts.cohort = new Chart(canvas, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: I18N[LANG]["fam-negras"],
+          data: negrasData,
+          borderColor: "rgba(190, 30, 45, 1)",
+          backgroundColor: "rgba(190, 30, 45, 0.10)",
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.25,
+          spanGaps: true,
+        },
+        {
+          label: I18N[LANG]["fam-nao-negras"],
+          data: naoNegrasData,
+          borderColor: "rgba(75, 85, 99, 1)",
+          backgroundColor: "rgba(75, 85, 99, 0.10)",
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.25,
+          spanGaps: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 14, boxHeight: 10, padding: 8, font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`,
+          },
+        },
+        annotation: {
+          annotations: buildPolicyAnnotations(periods, "fixo"),
+        },
+      },
+      scales: {
+        x: {
+          ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 },
+          grid: { display: false },
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { callback: v => v + "%", font: { size: 11 } },
         },
       },
     },

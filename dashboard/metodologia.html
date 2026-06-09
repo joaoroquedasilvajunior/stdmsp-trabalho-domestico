@@ -330,6 +330,24 @@
   <li><strong>Limitação importante (cont.)</strong>: vale a mesma ressalva da §3.11 sobre o nível absoluto de % chefe. Enquanto o gap racial (~5 pp) é internamente consistente, o nível agregado (~57%) difere do reportado pelo DIEESE (46%) — provavelmente por diferença de denominador (mulheres só? corte etário?). Para uso publicável: o gap entre negras e não-negras é a contribuição segura; a calibragem absoluta precisa de confirmação com a nota técnica do DIEESE.</li>
 </ul>
 
+<h3>3.14 Coortes e mobilidade — onde estão as jovens? (Tema 2)</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-MICRODATA</code> · variável <code>V2009</code> (idade na data de referência), agregada pela equipe do projeto em buckets etários alinhados ao DIEESE.</li>
+  <li><strong>Buckets</strong>: 4 faixas etárias que correspondem diretamente à tabela do Infográfico DIEESE abr/2026, permitindo triangulação direta:
+    <ul>
+      <li><strong>Até 29 anos</strong> — DIEESE reporta 12% (categoria total)</li>
+      <li><strong>30 a 44 anos</strong> — DIEESE reporta 32%</li>
+      <li><strong>45 a 59 anos</strong> — DIEESE reporta 43%</li>
+      <li><strong>60 anos ou mais</strong> — DIEESE reporta 13%</li>
+    </ul>
+  </li>
+  <li><strong>Cortes emitidos pela pipeline</strong>: BR × sexo='T' × raça × faixa etária. As raças incluem as nativas (branca, preta, parda, amarela, indígena), os agregados <code>preta_parda</code> e <code>nao_negras</code>, e <code>total</code>. Idênticos aos buckets de D1/D2 para coerência entre seções.</li>
+  <li><strong>O que o gráfico mostra</strong>: % até 29 anos ao longo de 56 trimestres (2012Q1 a 2026Q1+), por raça. Duas linhas: negras (preta + parda) e não-negras (branca + amarela + indígena). A leitura é a <em>inclinação</em>: ambas em queda = envelhecimento da categoria; inclinações diferentes = padrão racial na desistência geracional.</li>
+  <li><strong>Por que essa pergunta importa</strong>: a categoria envelhecida não é só uma constatação demográfica — é um problema para o sindicato (reposição geracional), uma evidência de mobilidade ocupacional (mulheres negras jovens indo para outros setores), e uma fissura na continuidade histórica que Saffioti e Bernardino-Costa descreveram. Se as jovens não estão entrando, alguma coisa do paradigma "casa-grande/senzala atualizada" mudou — ou pelo menos o ponto de entrada se deslocou. O gráfico aqui é o início da conversa, não o fim.</li>
+  <li><strong>Coortes verdadeiras × pseudo-coortes</strong>: o gráfico é uma série temporal de proporções por faixa, não uma série de coortes de nascimento. Para uma análise de coorte verdadeira (rastrear quem nasceu em 1995, por exemplo, ao longo dos anos), seria necessário explorar a estrutura de painel da PNADC (visita 1 a 5 nos mesmos domicílios) — fora do escopo desta iteração. A leitura aqui é "pseudo-coorte": se a fração de jovens cai sistematicamente, é porque novas coortes entram menos do que coortes anteriores entraram quando eram jovens.</li>
+  <li><strong>Triangulação com DIEESE</strong>: a fração agregada até 29 anos (raça=total) no trimestre fixo mais recente deveria ficar próxima de 12% (DIEESE abr/2026 reporta esse valor para a categoria como um todo). Se aparecer fora da faixa 8–16%, vale checar a definição de "trabalhadora doméstica" (estamos filtrando por VD4009 ∈ {03,04}).</li>
+</ul>
+
 <h2>4. Notas metodológicas</h2>
 
 <h3>4.1 Trimestre móvel × trimestre fixo</h3>
@@ -662,6 +680,24 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>Nominal values, not deflated</strong>: for simplicity the wage here is in nominal reais (current to the displayed quarter). For intertemporal reading (trajectory 2012→present in constant reais), keep using the "Mean real monthly income" chart in the main section — that uses PNADC Table 6391 deflated by IBGE. The two cuts answer different questions: this cross-tab is strictly for the within-quarter reading of the paradox; the main-section trend chart remains the reference for movement over time.</li>
   <li><strong>Why this matters</strong>: the position × race × income cross-tab has never been published by DIEESE. The Apr/2026 Infográfico reports 46% household heads in aggregate without race disaggregation, and reports the wage gap without crossing with household position. This panel is the first official Brazilian source to publish the full cross-tab — empirically visualizing what Lélia Gonzalez, Sueli Carneiro, Joaze Bernardino-Costa, Adriana Lopes, and Yannet Lara have described qualitatively: the Black woman as economic pillar of the household, in the most precarious occupation, receiving the sharpest racial wage penalty. The editorial choice to call this "the breadwinner paradox" and to give the section a differentiated visual treatment is part of the dashboard's contribution — it isn't just data.</li>
   <li><strong>Limitation carried forward (cont.)</strong>: the same caveat from §3.11 applies regarding the absolute level of % heads. While the racial gap (~5 pp) is internally consistent, the aggregate level (~57%) differs from DIEESE's reported 46% — likely due to denominator differences (women only? age cutoff?). For publishable use: the gap between Black and non-Black women is the safe contribution; the absolute calibration needs confirmation against DIEESE's technical note.</li>
+</ul>
+
+<h3>3.14 Cohorts and mobility — where are the young workers? (Theme 2)</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-MICRODATA</code> · variable <code>V2009</code> (age at the reference date), aggregated by the project team into DIEESE-aligned age buckets.</li>
+  <li><strong>Buckets</strong>: 4 age bands matching the Apr/2026 DIEESE Infográfico table directly:
+    <ul>
+      <li><strong>Up to 29</strong> — DIEESE reports 12% (full category)</li>
+      <li><strong>30 to 44</strong> — DIEESE reports 32%</li>
+      <li><strong>45 to 59</strong> — DIEESE reports 43%</li>
+      <li><strong>60 or older</strong> — DIEESE reports 13%</li>
+    </ul>
+  </li>
+  <li><strong>Cuts emitted by the pipeline</strong>: BR × sex='T' × race × age band. Races include the native ones (branca, preta, parda, amarela, indígena), the aggregates <code>preta_parda</code> and <code>nao_negras</code>, and <code>total</code>. Identical to D1/D2 buckets for cross-section consistency.</li>
+  <li><strong>What the chart shows</strong>: % aged 29 or younger over 56 quarters (2012Q1 to 2026Q1+), by race. Two lines: Black (preta + parda) and non-Black (branca + amarela + indígena). The reading is the <em>slope</em>: both declining = category is aging; different slopes = racial pattern in generational dropout.</li>
+  <li><strong>Why the question matters</strong>: an aging category is not merely a demographic finding — it's a problem for the union (generational replenishment), an evidence of occupational mobility (young Black women going to other sectors), and a fracture in the historical continuity that Saffioti and Bernardino-Costa described. If young women aren't entering, something in the "atualização da casa-grande/senzala" paradigm has shifted — or at least the entry point has moved. The chart here is the start of the conversation, not the end of it.</li>
+  <li><strong>True cohorts vs. pseudo-cohorts</strong>: the chart is a time series of proportions by band, not a series of birth cohorts. True cohort analysis (tracking someone born in 1995 across the years) would require exploiting PNADC's panel structure (visits 1 to 5 of the same households) — out of scope for this iteration. The reading here is "pseudo-cohort": if the share of young workers falls systematically, it's because newer cohorts are entering less than earlier cohorts did at the same age.</li>
+  <li><strong>Triangulation with DIEESE</strong>: the aggregate share of under-29s (race=total) at the latest fixed quarter should land near 12% (DIEESE Apr/2026 reports that for the category as a whole). If outside the 8–16% band, worth checking the domestic-worker definition (we filter on VD4009 ∈ {03,04}).</li>
 </ul>
 
 <h2>4. Methodological notes</h2>

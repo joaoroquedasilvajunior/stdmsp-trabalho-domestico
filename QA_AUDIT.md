@@ -1409,6 +1409,120 @@ respective audiences.
 
 ---
 
+## 2026-06-08 — Theme 2: Cohort panel ("Onde estão as jovens?")
+
+**Scope.** Second second-order finding. Surfaces the aging-out story
+(DIEESE: 12% under 29 / 32% 30-44 / 43% 45-59 / 13% 60+) as a 14-year
+time series of "% under 29" by race, opening the question of where
+young Black women are going if not into domestic work.
+
+### Schema (applied via Supabase MCP migration `age_cohort_theme2`)
+
+- `domestic_work.dim_age_band` — 5 rows (`under_29`, `30_44`, `45_59`,
+  `60_plus`, `total`). DIEESE-aligned breakpoints so the dashboard can
+  triangulate against the Apr/2026 Infográfico table directly. Kept
+  separate from the legacy `dim_age_group` (which has different
+  bands and is still referenced by older fact_workers rows).
+- `domestic_work.fact_age` — keyed by
+  `(time_id, geo_id, sex_id, race_id, age_band_id, source_table)`.
+- `public.dw_age` — joined view, `security_invoker = true`.
+- RLS + `public_read` policy, grants for anon/authenticated.
+
+### Pipeline (`etl/pnadc_microdata.py`)
+
+- `V2009` added to `NEEDED_VARS`.
+- `age_to_band(age)` helper maps numeric age to one of the 4
+  DIEESE-aligned codes.
+- `build_age_rows()` emits BR × sex='T' × race × age_band rows + race
+  aggregates + total. Same shape as D1/D2 builders.
+- `upsert_age_to_supabase()` parallels the family/housing upserts.
+- `process_period()` now logs the new diagnostic line:
+  **`% under_29 (total/negras) X%/Y%`**, where the `total` value
+  should land near DIEESE's published 12% if the pipeline is honest.
+
+### Export (`etl/export_static.py`)
+
+- `dw_age` added to `VIEWS` between `dw_housing` and `dw_intl`.
+
+### Dashboard (`dashboard/index.html`)
+
+- New `<section id="cohort">` "Onde estão as jovens?" placed between
+  the Breadwinner Paradox section and Foco em São Paulo. Same
+  two-column editorial-hero pattern as Breadwinner (Theme 1).
+- `renderCohort()` reads `STATE.age`, filters to BR/sex='T'/under_29/
+  the two aggregate race tracks, builds a Chart.js line chart of
+  the full 14-year trajectory (56 quarters), and populates two
+  inline callouts in the editorial paragraph with the latest values.
+- Policy timeline annotations (`buildPolicyAnnotations(periods, "fixo")`)
+  are wired up so EC 72/LC 150/C189 ratifications/COVID land on the
+  cohort chart too — the line crossing those dates is the actual story.
+- Bilingual i18n; PT uses union voice; EN stays researcher-neutral.
+- Empty placeholder `dashboard/data/dw_age.json` shipped.
+
+### Methodology (`dashboard/metodologia.html`)
+
+- §3.14 added (PT + EN) — documents the variable, the bucket
+  alignment with DIEESE, the cohort/pseudo-cohort distinction
+  (we're showing pseudo-cohorts; true cohorts would need
+  PNADC panel structure exploitation), and the triangulation
+  target (~12% under 29 for the latest period).
+
+### Run sequence on Joao's Mac
+
+The single-quarter run only populates ONE point per line — the trajectory
+needs the historical backfill to show the actual aging story. Two paths:
+
+```bash
+cd ~/Documents/Claude/Domestic\ Work
+source etl/.venv/bin/activate
+
+# Path A — quick single quarter (gets latest data, but chart has only 1 point)
+python etl/pnadc_microdata.py 012026
+
+# Path B — full backfill (gets the 14-year trajectory; ~30–40 min)
+python etl/pnadc_microdata.py --all
+
+./etl/refresh.sh
+git add etl/pnadc_microdata.py etl/export_static.py \
+        schema/ \
+        dashboard/index.html dashboard/metodologia.html dashboard/data/ \
+        QA_AUDIT.md
+git commit -m "feat(Theme 2): age cohort panel — Onde estão as jovens?"
+git push origin main
+```
+
+**Strong recommendation: Path B.** The cohort chart with only one
+point shows nothing of value — it's a dot, not a trajectory.
+The aging-out story IS the slope of the line; you need all 56
+quarters of fact_age rows to see it. The full backfill on Joao's
+Mac took about 30 minutes last time and will produce ~2,200 fact_age
+rows in addition to the existing dimensions.
+
+### Sanity-check target (1T 2026)
+
+DIEESE Apr/2026 publishes 12% under 29 for the category overall.
+Plausibility bounds:
+
+- **% under_29 (total)** should land in the **8–16% range**. If far
+  outside, check the domestic-worker filter (VD4009 ∈ {03,04}).
+- **% under_29 (negras)** vs **% under_29 (nao_negras)** is the
+  substantive finding — the dashboard chart will show whether the
+  decline runs at the same rate or whether one group is dropping out
+  faster.
+
+### Why this matters editorially (Theme 2 specifically)
+
+The breadwinner paradox (Theme 1) shows a *static* intersectional
+finding — at any quarter, negras chefes are paid less. This panel
+(Theme 2) shows the *dynamic* dimension — over 14 years, the
+category itself is restructuring through generational withdrawal.
+For STDMSP this is existential (a shrinking-base union has to
+strategize differently); for Mayer this connects to the broader
+Latin American comparative-politics literature on care work and
+labor mobility. Same data substrate, different theoretical hook.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

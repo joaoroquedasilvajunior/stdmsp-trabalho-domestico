@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-09T12:54:57.586824+00:00",
+  "generated_at": "2026-06-09T19:39:24.260967+00:00",
   "views": {
     "dw_workers": 22431,
     "dw_wages": 1366,
@@ -9,6 +9,7 @@
     "dw_family": 2200,
     "dw_housing": 411,
     "dw_age": 2236,
+    "dw_contract": 3993,
     "dw_intl": 94,
     "dw_sources": 5,
     "dw_static_facts": 3

@@ -1,13 +1,14 @@
 {
-  "generated_at": "2026-06-08T22:56:53.023262+00:00",
+  "generated_at": "2026-06-09T02:00:25.557025+00:00",
   "views": {
     "dw_workers": 13364,
     "dw_wages": 1366,
     "dw_hours": 13642,
     "dw_prev": 12487,
-    "dw_education": 48,
-    "dw_family": 39,
+    "dw_education": 2597,
+    "dw_family": 2161,
     "dw_housing": 40,
+    "dw_age": 2196,
     "dw_intl": 94,
     "dw_sources": 5,
     "dw_static_facts": 3

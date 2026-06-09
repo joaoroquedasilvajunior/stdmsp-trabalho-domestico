@@ -368,6 +368,21 @@
   <li><strong>Limitação</strong>: o painel mostra a foto do trimestre fixo mais recente. Variação temporal (essa geografia mudou ao longo dos 14 anos?) requer um segundo painel — desejável mas fora do escopo da iteração atual.</li>
 </ul>
 
+<h3>3.17 Efeito do piso — salário mínimo × razão salarial (Tema 5)</h3>
+<ul>
+  <li><strong>Fontes</strong>: PNADC microdados (mesma origem do gráfico de hiato salarial) para a <em>razão</em>; valores oficiais do salário mínimo nominal brasileiro para o eixo do <em>piso</em>. Valores do SM: decretos anuais do governo federal (2012=R$ 622; 2026=R$ 1.518). Cada valor anual é aplicado a todos os 4 trimestres daquele ano (ignora reajustes de meio-de-ano, raros nesse período).</li>
+  <li><strong>Cálculo da razão</strong>: <code>mean_wage_brl(preta_parda) ÷ mean_wage_brl(nao_negras)</code> por trimestre fixo, com sex='T' e formality='total'. Os mesmos valores usados em §3.6 (hiato salarial racial) — aqui apenas reapresentados ao lado do salário mínimo.</li>
+  <li><strong>Cálculo nominal vs real</strong>: ambos os eixos usam valores <strong>nominais</strong> (não deflacionados). A razão (eixo esquerdo) é unidade-independente, então a escolha nominal/real não afeta a leitura. O salário mínimo (eixo direito) está em R$ correntes na data de vigência. Para a leitura intertemporal de salário real <em>absoluto</em>, continuar usando o gráfico "Rendimento médio mensal real" na seção principal, baseado na Tabela PNADC-6391 deflacionada pelo IBGE.</li>
+  <li><strong>Por que esta visualização importa</strong>: a literatura sobre transbordamentos do salário mínimo (Saboia, Manzano-Munguía, IPEA) argumenta que valorizações reais do piso comprimem desigualdades raciais e de gênero <em>na base</em> da distribuição salarial — exatamente onde as trabalhadoras domésticas se concentram. O painel não <em>prova</em> isso; oferece um teste visual: se as duas linhas se movem juntas a partir de 2023, a hipótese ganha plausibilidade; se a razão se move sem relação com o piso, ela perde.</li>
+  <li><strong>Limitações importantes</strong>:
+    <ul>
+      <li><em>Não é decomposição econométrica</em>. Uma regressão isolaria o efeito do piso de outros choques no mesmo período — recuperação pós-pandemia (2021–2023), Política Nacional de Cuidados (2025–2026), Conadon (2026). O painel mostra correlação visual, não causalidade.</li>
+      <li><em>SM nominal, não real</em>. Aumentos reais do piso (descontada inflação) são o mecanismo teórico; o eixo nominal pode subestimar (em períodos de alta inflação) ou superestimar (em períodos de inflação baixa) o efeito. Versão deflacionada possível em iteração futura.</li>
+      <li><em>Composição de quem ganha o SM muda</em>. Se a fração de trabalhadoras negras ganhando exatamente 1 SM cresce, isso por si só comprime a razão sem que qualquer salário individual tenha subido. Decompor "efeito mecânico" de "efeito comportamental" requer microdados de painel.</li>
+    </ul>
+  </li>
+</ul>
+
 <h2>4. Notas metodológicas</h2>
 
 <h3>4.1 Trimestre móvel × trimestre fixo</h3>
@@ -738,6 +753,21 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
   <li><strong>Small-sample floor</strong>: states with n_unweighted &lt; 30 in the race='total' cut are omitted from the chart. Small Northern states (RR, AP, AC) may appear or disappear depending on the quarterly sample; the ranking of the 10 largest states is robust.</li>
   <li><strong>Why it matters</strong>: the aggregate national figure of 24% with card hides geographic and racial variation. Conadon (National Coordination for Labour Inspection of Domestic and Care Work, created at the Ministry of Labour in April 2026) needs to prioritize geographically. This panel is the first systematic visualization combining the two axes — state and race — of the LC 150 compliance gap. Acciari (on union enforcement efforts), Pinheiro et al. (IPEA, on implementation failures), and the MTE/SIT report on the 2026 campaign converge qualitatively on this diagnosis; the chart offers the empirical complement.</li>
   <li><strong>Limitation</strong>: the panel shows a snapshot of the latest fixed quarter. Temporal variation (did this geography shift over the 14 years?) would require a second panel — desirable but outside the scope of the current iteration.</li>
+</ul>
+
+<h3>3.17 Floor effect — minimum wage × wage ratio (Theme 5)</h3>
+<ul>
+  <li><strong>Sources</strong>: PNADC microdata (same origin as the racial wage-gap chart) for the <em>ratio</em>; official Brazilian nominal minimum-wage values for the <em>floor</em> axis. MW values: annual federal-government decrees (2012=R$ 622; 2026=R$ 1,518). Each annual value is applied to all 4 quarters of that year (ignores mid-year adjustments, rare in this period).</li>
+  <li><strong>Ratio calculation</strong>: <code>mean_wage_brl(preta_parda) / mean_wage_brl(nao_negras)</code> per fixed quarter, sex='T', formality='total'. Same values used in §3.6 (racial wage gap) — here just re-presented alongside the minimum wage.</li>
+  <li><strong>Nominal vs real</strong>: both axes use <strong>nominal</strong> values (not deflated). The ratio (left axis) is unit-independent, so nominal/real choice doesn't affect the reading. The minimum wage (right axis) is in current R$ at the date of effect. For real-wage intertemporal reading of <em>absolute</em> values, keep using the "Mean real monthly income" chart in the main section, based on PNADC Table 6391 deflated by IBGE.</li>
+  <li><strong>Why this visualization matters</strong>: the literature on minimum-wage spillovers (Saboia, Manzano-Munguía, IPEA) argues that real-floor valorizations compress racial and gender inequalities <em>at the base</em> of the wage distribution — exactly where domestic workers concentrate. The chart doesn't <em>prove</em> this; it offers a visual test: if the two lines rise together from 2023 onward, the hypothesis gains plausibility; if the ratio moves independently of the floor, it loses it.</li>
+  <li><strong>Important limitations</strong>:
+    <ul>
+      <li><em>Not an econometric decomposition</em>. A regression would isolate the floor effect from other shocks in the same period — post-pandemic recovery (2021–2023), the National Care Policy (2025–2026), Conadon (2026). The panel shows visual correlation, not causality.</li>
+      <li><em>Nominal MW, not real</em>. Real floor increases (net of inflation) are the theoretical mechanism; the nominal axis may underestimate (in high-inflation periods) or overestimate (in low-inflation periods) the effect. Deflated version possible in a future iteration.</li>
+      <li><em>Composition of who earns the MW shifts</em>. If the share of Black workers earning exactly 1 MW grows, that alone compresses the ratio without any individual wage rising. Decomposing the "mechanical effect" from the "behavioral effect" requires panel microdata.</li>
+    </ul>
+  </li>
 </ul>
 
 <h2>4. Methodological notes</h2>

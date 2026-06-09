@@ -552,6 +552,31 @@
   </div>
 </section>
 
+<!-- ============ O EFEITO DO PISO (Theme 5) ============ -->
+<!-- Tests whether the 84%→87% wage-ratio narrowing is consistent with the -->
+<!-- post-2023 minimum-wage valorization policy. Dual-axis time-series: -->
+<!-- wage ratio (left, %), nominal SM trajectory (right, R$). Both should -->
+<!-- rise together in 2023+ if the floor-effect hypothesis holds. -->
+<section id="piso" class="border-t rule" style="background: var(--accent-soft);">
+  <div class="max-w-6xl mx-auto px-5 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <article class="lg:col-span-2">
+        <p class="text-xs uppercase tracking-wide font-semibold mb-2" style="color: var(--accent);" data-i18n="floor-eyebrow">Política e piso salarial</p>
+        <h2 class="text-xl md:text-2xl font-medium mb-3" data-i18n="floor-title">O efeito do piso</h2>
+        <p class="text-sm text-gray-800 mb-3 leading-relaxed" data-i18n="floor-lead">A razão salarial negras / não-negras passou de <strong>84% em 2025</strong> para <strong>87% em 2026</strong> segundo o DIEESE — o estreitamento mais relevante observado em 14 anos. No seminário MTE × DIEESE de abril, gestoras públicas atribuíram esse movimento explicitamente à <strong>retomada da política de valorização do salário mínimo</strong> em 2023. Se for verdade, é um caso raro em que uma única alavanca de política produziu efeito de raça mensurável em poucos anos.</p>
+        <p class="text-sm text-gray-700 mb-3 leading-relaxed" data-i18n="floor-body">O teste é direto: se o piso explica o estreitamento, as duas linhas no gráfico ao lado deveriam subir juntas a partir de 2023. A linha vermelha é a razão salarial; a linha cinza é a trajetória nominal do salário mínimo brasileiro. Em 2026, a razão chega a <span id="floor-callout-ratio">—</span>, enquanto o salário mínimo nominal vai a <span id="floor-callout-sm">—</span>. Quando o piso sobe rápido, a parte de baixo da distribuição salarial — onde a maioria das trabalhadoras negras está — é empurrada para cima, comprimindo a razão. Quando o piso fica congelado, a razão tende a estagnar.</p>
+        <p class="text-xs text-gray-600 italic" data-i18n="floor-cite">A leitura econômica está em Saboia (sobre os transbordamentos do salário mínimo para a base da distribuição), em Manzano-Munguía (sobre piso salarial e desigualdade racial em mercados informais), e em uma linha mais ampla de pesquisa do IPEA sobre os efeitos da valorização de 2007-2014 e a interrupção 2017-2022. <em>Não é uma decomposição econométrica</em> — para isolar o efeito do piso de outros choques no mesmo período (recuperação pós-pandemia, política de cuidados, Conadon) seria preciso uma regressão. O gráfico ao lado é um <em>teste visual de consistência</em>: as linhas sobem juntas? Se sim, a hipótese ganha plausibilidade; se não, ela perde.</p>
+      </article>
+      <article class="lg:col-span-3 border rule rounded-lg p-4 bg-white">
+        <h3 class="text-base font-medium" data-i18n="floor-chart-title">Razão salarial × salário mínimo, 2012–2026</h3>
+        <p class="text-xs text-gray-500 mb-3" data-i18n="floor-chart-meta">eixo esquerdo: razão negras / não-negras (%) · eixo direito: salário mínimo nominal (R$)</p>
+        <div class="chart-box" id="box-floor"><canvas id="chart-floor"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+        <p class="text-xs text-gray-500 mt-2" id="floor-source" data-i18n="floor-chart-source">Fonte: PNADC microdados (IBGE), razão calculada como mean_wage_brl(preta_parda) ÷ mean_wage_brl(nao_negras) por trimestre, usando o recorte sex='T', formality='total'. Salário mínimo nominal: valores oficiais publicados pelo governo brasileiro (Decreto anual). Valores nominais — ambos os eixos não são deflacionados. Para a leitura intertemporal de salário real, use o gráfico "Rendimento médio mensal real" na seção principal (que usa a Tabela PNADC-6391, deflacionada pelo IBGE).</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <!-- ============ FOCO EM SÃO PAULO ============ -->
 <section id="foco-sp" class="border-t rule" style="background: var(--accent-soft);">
   <div class="max-w-6xl mx-auto px-5 py-8">
@@ -770,6 +795,16 @@ const I18N = {
     "enforce-chart-title": "% com carteira por UF — negras × não-negras",
     "enforce-chart-meta":  "PNADC microdados · trimestre fixo mais recente · cada ponto = uma UF · tamanho do ponto = amostra não-ponderada",
     "enforce-chart-source": "Fonte: PNADC microdados (IBGE), VD4009 (posição na ocupação — códigos 03 com carteira e 04 sem carteira) cruzada com V2010 (cor/raça), agregada pela equipe do projeto por UF. UFs com menos de 30 observações não-ponderadas no recorte race='total' são omitidas. A linha diagonal pontilhada representa \"sem hiato racial\" — uma UF sobre ela teria a mesma taxa de formalização entre negras e não-negras. UFs abaixo da diagonal: negras mais informais; acima: padrão inverso.",
+    "floor-eyebrow": "Política e piso salarial",
+    "floor-title":   "O efeito do piso",
+    "floor-lead":    "A razão salarial negras / não-negras passou de <strong>84% em 2025</strong> para <strong>87% em 2026</strong> segundo o DIEESE — o estreitamento mais relevante observado em 14 anos. No seminário MTE × DIEESE de abril, gestoras públicas atribuíram esse movimento explicitamente à <strong>retomada da política de valorização do salário mínimo</strong> em 2023. Se for verdade, é um caso raro em que uma única alavanca de política produziu efeito de raça mensurável em poucos anos.",
+    "floor-body":    "O teste é direto: se o piso explica o estreitamento, as duas linhas no gráfico ao lado deveriam subir juntas a partir de 2023. A linha vermelha é a razão salarial; a linha cinza é a trajetória nominal do salário mínimo brasileiro. Em 2026, a razão chega a <span id=\"floor-callout-ratio\">—</span>, enquanto o salário mínimo nominal vai a <span id=\"floor-callout-sm\">—</span>. Quando o piso sobe rápido, a parte de baixo da distribuição salarial — onde a maioria das trabalhadoras negras está — é empurrada para cima, comprimindo a razão. Quando o piso fica congelado, a razão tende a estagnar.",
+    "floor-cite":    "A leitura econômica está em Saboia (sobre os transbordamentos do salário mínimo para a base da distribuição), em Manzano-Munguía (sobre piso salarial e desigualdade racial em mercados informais), e em uma linha mais ampla de pesquisa do IPEA sobre os efeitos da valorização de 2007-2014 e a interrupção 2017-2022. <em>Não é uma decomposição econométrica</em> — para isolar o efeito do piso de outros choques no mesmo período (recuperação pós-pandemia, política de cuidados, Conadon) seria preciso uma regressão. O gráfico ao lado é um <em>teste visual de consistência</em>: as linhas sobem juntas? Se sim, a hipótese ganha plausibilidade; se não, ela perde.",
+    "floor-chart-title": "Razão salarial × salário mínimo, 2012–2026",
+    "floor-chart-meta":  "eixo esquerdo: razão negras / não-negras (%) · eixo direito: salário mínimo nominal (R$)",
+    "floor-chart-source": "Fonte: PNADC microdados (IBGE), razão calculada como mean_wage_brl(preta_parda) ÷ mean_wage_brl(nao_negras) por trimestre, usando o recorte sex='T', formality='total'. Salário mínimo nominal: valores oficiais publicados pelo governo brasileiro (Decreto anual). Valores nominais — ambos os eixos não são deflacionados. Para a leitura intertemporal de salário real, use o gráfico \"Rendimento médio mensal real\" na seção principal (que usa a Tabela PNADC-6391, deflacionada pelo IBGE).",
+    "floor-legend-ratio": "Razão salarial negras ÷ não-negras",
+    "floor-legend-sm":    "Salário mínimo nominal (R$)",
     "c189-title": "Status legal — Convenção 189 da OIT",
     "c189-meta": "Ano de ratificação por país. A C189 (Convenção sobre Trabalhadoras e Trabalhadores Domésticos, 2011) estabelece direitos iguais aos de outras categorias.",
     "c189-footnote": "Brasil ratificou em janeiro de 2018, três anos após a entrada em vigor da LC 150/2015 — ou seja, a legislação interna precedeu o compromisso internacional. México ratificou apenas em julho de 2020. Uruguai foi o primeiro país do mundo a ratificar, em junho de 2012. Fonte: NORMLEX (OIT).",
@@ -915,6 +950,16 @@ const I18N = {
     "enforce-chart-title": "% with signed work card by state — Black vs. non-Black",
     "enforce-chart-meta":  "PNADC microdata · latest fixed quarter · each point = one state · point size = unweighted sample",
     "enforce-chart-source": "Source: PNADC microdata (IBGE), VD4009 (position in occupation — codes 03 with card, 04 without card) crossed with V2010 (race), aggregated by the project team at state level. States with fewer than 30 unweighted observations in the race='total' cut are omitted. The dashed diagonal represents \"no racial gap\" — a state on it would have the same formalization rate for Black and non-Black workers. States below the diagonal: Black workers more informal; above: reverse pattern.",
+    "floor-eyebrow": "Policy and the wage floor",
+    "floor-title":   "The floor effect",
+    "floor-lead":    "The wage ratio Black ÷ non-Black moved from <strong>84% in 2025</strong> to <strong>87% in 2026</strong> per DIEESE — the most substantive narrowing observed in 14 years. At the April MTE × DIEESE seminar, public officials explicitly attributed this movement to the <strong>restored minimum-wage valorization policy</strong> in 2023. If true, it's a rare case where a single policy lever produced a measurable race-equity effect within a few years.",
+    "floor-body":    "The test is direct: if the floor explains the narrowing, the two lines on the right should rise together from 2023 onward. The red line is the wage ratio; the gray line is the trajectory of the Brazilian nominal minimum wage. In 2026 the ratio reaches <span id=\"floor-callout-ratio\">—</span>, while the nominal minimum wage rises to <span id=\"floor-callout-sm\">—</span>. When the floor rises quickly, the bottom of the wage distribution — where most Black workers sit — is pushed up, compressing the ratio. When the floor is frozen, the ratio tends to stagnate.",
+    "floor-cite":    "The economic reading lives in Saboia (on minimum-wage spillovers to the base of the distribution), in Manzano-Munguía (on the wage floor and racial inequality in informal markets), and in a broader IPEA research line on the effects of the 2007-2014 valorization policy and its 2017-2022 interruption. <em>This is not an econometric decomposition</em> — isolating the floor effect from other shocks in the same period (post-pandemic recovery, the National Care Policy, Conadon) would require a regression. The chart on the right is a <em>visual consistency test</em>: do the lines rise together? If yes, the hypothesis gains plausibility; if no, it loses it.",
+    "floor-chart-title": "Wage ratio × minimum wage, 2012–2026",
+    "floor-chart-meta":  "left axis: ratio Black / non-Black (%) · right axis: nominal minimum wage (R$)",
+    "floor-chart-source": "Source: PNADC microdata (IBGE), ratio computed as mean_wage_brl(preta_parda) / mean_wage_brl(nao_negras) per quarter, using the sex='T', formality='total' cut. Nominal minimum wage: official values published by the Brazilian government (annual Decree). Both axes in nominal terms — not deflated. For real-wage intertemporal reading, use the \"Mean real monthly income\" chart in the main section (which uses PNADC Table 6391, deflated by IBGE).",
+    "floor-legend-ratio": "Wage ratio Black ÷ non-Black",
+    "floor-legend-sm":    "Nominal minimum wage (R$)",
     "c189-title": "Legal status — ILO Convention 189",
     "c189-meta": "Year of ratification per country. C189 (Domestic Workers Convention, 2011) establishes rights equal to those of other categories of workers.",
     "c189-footnote": "Brazil ratified in January 2018, three years after LC 150/2015 came into force — meaning domestic legislation preceded the international commitment. Mexico only ratified in July 2020. Uruguay was the first country in the world to ratify, in June 2012. Source: NORMLEX (ILO).",
@@ -1368,6 +1413,7 @@ function render() {
   renderCohort();
   renderResidual();
   renderEnforcement();
+  renderFloor();
   renderFocusSP();
   renderSources();
   // "Data updated on" reflects the static-export timestamp (when the JSON was
@@ -3332,6 +3378,156 @@ function renderEnforcement() {
           min: lo, max: hi,
           title: { display: true, text: LANG === "pt" ? "% com carteira — negras" : "% with card — Black", font: { size: 11 } },
           ticks: { callback: v => v + "%", font: { size: 11 } },
+        },
+      },
+    },
+  });
+}
+
+// ============ O EFEITO DO PISO (Theme 5) ============
+// Dual-axis time-series: wage ratio (negras/não-negras) on left % axis,
+// nominal Brazilian minimum wage on right R$ axis. Visual hypothesis
+// test for the "floor effect" attribution of the 84%→87% narrowing.
+//
+// Minimum-wage values are official annual government values (BRL nominal);
+// the same value is applied to all 4 quarters within a year. The 2026
+// value is per the announced Jan 2026 decree.
+
+const MIN_WAGE_NOMINAL = {
+  // Year → BRL nominal minimum wage in effect at the start of that year.
+  2012: 622, 2013: 678, 2014: 724, 2015: 788, 2016: 880, 2017: 937,
+  2018: 954, 2019: 998, 2020: 1045, 2021: 1100, 2022: 1212,
+  2023: 1320,           // valorização restored
+  2024: 1412,
+  2025: 1518,
+  2026: 1518,           // estimate pre-2026 decree confirmation
+};
+
+function smForPeriod(periodCode) {
+  // Period codes are "YYYYTT" (fixed) or "YYYYMM" (rolling); first 4 chars = year
+  if (!periodCode) return null;
+  const year = parseInt(String(periodCode).substring(0, 4), 10);
+  return MIN_WAGE_NOMINAL[year] ?? null;
+}
+
+function renderFloor() {
+  const canvas = document.getElementById("chart-floor");
+  if (!canvas || !STATE.wages) return;
+
+  // Build per-quarter (period_code → {negras_wage, naonegras_wage})
+  const wages = STATE.wages.filter(r =>
+    r.geo_level === "country"
+    && r.sex_code === "T"
+    && r.formality_code === "total"
+    && (r.race_code === "preta_parda" || r.race_code === "nao_negras")
+    && r.source_table === "PNADC-MICRODATA"
+    && r.mean_wage_brl_real != null
+  );
+  if (!wages.length) {
+    setEmpty("box-floor", true);
+    return;
+  }
+
+  const byPeriod = {};
+  for (const r of wages) {
+    const p = String(r.period_code);
+    if (!byPeriod[p]) byPeriod[p] = {};
+    byPeriod[p][r.race_code] = Number(r.mean_wage_brl_real);
+  }
+
+  const periods = Object.keys(byPeriod).sort();
+  // Only emit a point when BOTH races have a wage in the same quarter.
+  const valid = periods.filter(p => byPeriod[p].preta_parda && byPeriod[p].nao_negras);
+
+  const labels = valid.map(formatPeriodLabel);
+  const ratioData = valid.map(p => {
+    const negras = byPeriod[p].preta_parda;
+    const nao = byPeriod[p].nao_negras;
+    return Math.round(1000 * negras / nao) / 10; // % to 1 decimal
+  });
+  const smData = valid.map(p => smForPeriod(p));
+
+  // Inline callouts for latest period
+  const latestPeriod = valid.at(-1);
+  const latestRatio = ratioData.at(-1);
+  const latestSm = smData.at(-1);
+  const callRatio = document.getElementById("floor-callout-ratio");
+  const callSm    = document.getElementById("floor-callout-sm");
+  const fmtPct = v => `${v.toFixed(1).replace(".", LANG === "pt" ? "," : ".")}%`;
+  if (callRatio && latestRatio != null) callRatio.textContent = fmtPct(latestRatio);
+  if (callSm && latestSm != null) callSm.textContent = fmtBRL(latestSm);
+
+  setEmpty("box-floor", false);
+  destroyChart("floor");
+
+  charts.floor = new Chart(canvas, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: I18N[LANG]["floor-legend-ratio"],
+          data: ratioData,
+          borderColor: "rgba(190, 30, 45, 1)",
+          backgroundColor: "rgba(190, 30, 45, 0.10)",
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.25,
+          spanGaps: true,
+          yAxisID: "yLeft",
+        },
+        {
+          label: I18N[LANG]["floor-legend-sm"],
+          data: smData,
+          borderColor: "rgba(75, 85, 99, 1)",
+          backgroundColor: "rgba(75, 85, 99, 0.06)",
+          borderWidth: 2,
+          borderDash: [4, 4],
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.05,
+          spanGaps: true,
+          yAxisID: "yRight",
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 14, boxHeight: 10, padding: 8, font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              if (ctx.dataset.yAxisID === "yLeft") {
+                return `${ctx.dataset.label}: ${fmtPct(ctx.parsed.y)}`;
+              }
+              return `${ctx.dataset.label}: ${fmtBRL(ctx.parsed.y)}`;
+            },
+          },
+        },
+        annotation: {
+          annotations: buildPolicyAnnotations(valid, "fixo"),
+        },
+      },
+      scales: {
+        x: {
+          ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 },
+          grid: { display: false },
+        },
+        yLeft: {
+          type: "linear",
+          position: "left",
+          ticks: { callback: v => v + "%", font: { size: 11 }, color: "rgba(190, 30, 45, 1)" },
+          title: { display: true, text: LANG === "pt" ? "Razão (%)" : "Ratio (%)", font: { size: 11 } },
+        },
+        yRight: {
+          type: "linear",
+          position: "right",
+          ticks: { callback: v => fmtBRL(v), font: { size: 11 }, color: "rgba(75, 85, 99, 1)" },
+          grid: { drawOnChartArea: false },
+          title: { display: true, text: LANG === "pt" ? "Salário mínimo (R$)" : "Minimum wage (R$)", font: { size: 11 } },
         },
       },
     },

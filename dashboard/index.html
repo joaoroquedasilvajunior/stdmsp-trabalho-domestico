@@ -630,7 +630,18 @@
         <div class="chart-box" id="box-reform-informal"><canvas id="chart-reform-informal"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda. Aguardando backfill com V4024.</div></div>
       </article>
     </div>
-    <p class="text-xs text-gray-500 mt-3 max-w-3xl" data-i18n="reform-chart-source">Fonte: PNADC microdados (IBGE), variável V4024 (serviço doméstico em mais de 1 domicílio — diarista vs. mensalista) cruzada com VD4009 (posição na ocupação — com vs. sem carteira), agregada por raça pela equipe do projeto. População: trabalhadoras(es) domésticas(os) com VD4009 ∈ {03 = com carteira, 04 = sem carteira}. Pesos amostrais V1028 aplicados.</p>
+    <!-- Geographic sub-panel: where the formal-exit was steepest -->
+    <div class="mt-8 max-w-3xl">
+      <h3 class="text-lg font-medium mb-2" data-i18n="reform-geo-title">Onde a carteira desapareceu: o gradiente geográfico</h3>
+      <p class="text-sm text-gray-700 mb-3 leading-relaxed" data-i18n="reform-geo-body">A convergência ao piso não foi uniforme no território. O <strong>Rio de Janeiro</strong> tem o gradiente mais extremo: trabalhadoras não-negras saíram de 40% para 20% de carteira assinada — mais da metade da proteção perdida. Em <strong>São Paulo</strong>, o padrão racial nacional se inverte no ponto de partida: em 2012, trabalhadoras negras tinham <em>mais</em> mensalismo formal (43%) do que as não-negras (42%) — o mercado urbano paulista historicamente puxou trabalhadoras negras para o contrato protegido. Ambas as raças perdem ~14pp até 2026. <strong>Pernambuco</strong> mostra a convergência típica (perda maior entre não-negras, ~-12pp; menor entre negras, ~-6pp). <strong>Minas Gerais</strong> é a exceção — a reforma deixou ambas as raças quase intactas. Esta leitura conecta-se diretamente ao Tema 4 (geografia do cumprimento da LC 150): onde a fiscalização sempre foi mais forte, a desformalização também foi mais profunda.</p>
+    </div>
+    <div class="border rule rounded-lg p-4 bg-white">
+      <h4 class="text-base font-medium" data-i18n="reform-geo-chart-title">Mensalismo formal — perda em pontos percentuais, 2012Q1 → 2026Q1</h4>
+      <p class="text-xs text-gray-500 mb-3" data-i18n="reform-geo-chart-meta">% com carteira (proxy do mensalismo formal) · 4 estados · trimestre fixo</p>
+      <div class="chart-box" id="box-reform-geo"><canvas id="chart-reform-geo"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+      <p class="text-xs text-gray-500 mt-2" data-i18n="reform-geo-chart-source">Fonte: PNADC microdados (IBGE), agregação UF × raça × formalidade de <code>fact_workers</code> pela equipe do projeto. Nota metodológica: o recorte UF usa "% com carteira" como proxy de "% mensalismo formal" — a diferença é o pequeno bucket de diaristas com carteira (~3–4pp). O recorte preciso (via <code>fact_contract</code> com granularidade UF) está em fila como extensão futura do pipeline; ver §3.19 da metodologia.</p>
+    </div>
+    <p class="text-xs text-gray-500 mt-3 max-w-3xl" data-i18n="reform-chart-source">Fonte (painéis BR-wide acima): PNADC microdados (IBGE), variável V4024 (serviço doméstico em mais de 1 domicílio — diarista vs. mensalista) cruzada com VD4009 (posição na ocupação — com vs. sem carteira), agregada por raça pela equipe do projeto. População: trabalhadoras(es) domésticas(os) com VD4009 ∈ {03 = com carteira, 04 = sem carteira}. Pesos amostrais V1028 aplicados.</p>
     <p class="text-xs text-gray-600 italic mt-4 max-w-3xl" data-i18n="reform-cite">Este painel refina a hipótese DiD (difference-in-differences) do Prof. Jean-François Mayer. A leitura inicial — que a reforma teria empurrado trabalhadoras negras para o trabalho diarista informalizado — não se confirma visualmente no contrato em si: a transição para diarista ocorreu em ritmo similar nas duas raças. A história racializada vive no <em>contrato mensalista</em>: a reforma de 2017, junto com EC 72 e LC 150, contribuiu para a erosão do mensalismo formal — mas atingiu mais fortemente as trabalhadoras não-negras, que tinham mais proteção a perder. Para as trabalhadoras negras, o regime informal já era a regra estrutural antes da reforma — herança da casa-grande e do trabalho residente. A literatura sobre informalização racializada (Pinheiro et al., IPEA; Acciari; Hirata; Bernardino-Costa) prevê esse padrão estrutural; a inferência causal exige uma regressão DiD com janela 2015Q3–2019Q4 (excluindo COVID) — implementação no apêndice metodológico do capítulo em preparação.</p>
   </div>
 </section>
@@ -888,6 +899,12 @@ const I18N = {
     "reform-chart-source": "Fonte: PNADC microdados (IBGE), variável V4024 (serviço doméstico em mais de 1 domicílio — diarista vs. mensalista) cruzada com VD4009 (posição na ocupação — com vs. sem carteira), agregada por raça pela equipe do projeto. População: trabalhadoras(es) domésticas(os) com VD4009 ∈ {03 = com carteira, 04 = sem carteira}. Pesos amostrais V1028 aplicados.",
     "reform-legend-negras":     "Negras (pretas + pardas)",
     "reform-legend-nao-negras": "Não-negras",
+    "reform-geo-title": "Onde a carteira desapareceu: o gradiente geográfico",
+    "reform-geo-body":  "A convergência ao piso não foi uniforme no território. O <strong>Rio de Janeiro</strong> tem o gradiente mais extremo: trabalhadoras não-negras saíram de 40% para 20% de carteira assinada — mais da metade da proteção perdida. Em <strong>São Paulo</strong>, o padrão racial nacional se inverte no ponto de partida: em 2012, trabalhadoras negras tinham <em>mais</em> mensalismo formal (43%) do que as não-negras (42%) — o mercado urbano paulista historicamente puxou trabalhadoras negras para o contrato protegido. Ambas as raças perdem ~14pp até 2026. <strong>Pernambuco</strong> mostra a convergência típica (perda maior entre não-negras, ~-12pp; menor entre negras, ~-6pp). <strong>Minas Gerais</strong> é a exceção — a reforma deixou ambas as raças quase intactas. Esta leitura conecta-se diretamente ao Tema 4 (geografia do cumprimento da LC 150): onde a fiscalização sempre foi mais forte, a desformalização também foi mais profunda.",
+    "reform-geo-chart-title":  "Mensalismo formal — perda em pontos percentuais, 2012Q1 → 2026Q1",
+    "reform-geo-chart-meta":   "% com carteira (proxy do mensalismo formal) · 4 estados · trimestre fixo",
+    "reform-geo-chart-source": "Fonte: PNADC microdados (IBGE), agregação UF × raça × formalidade de <code>fact_workers</code> pela equipe do projeto. Nota metodológica: o recorte UF usa \"% com carteira\" como proxy de \"% mensalismo formal\" — a diferença é o pequeno bucket de diaristas com carteira (~3–4pp). O recorte preciso (via <code>fact_contract</code> com granularidade UF) está em fila como extensão futura do pipeline; ver §3.19 da metodologia.",
+    "reform-geo-y-title": "Pontos percentuais perdidos",
     "focus-sp-title": "Foco no estado de São Paulo",
     "focus-sp-subtitle": "Recorte específico do estado onde a STDMSP atua. Todos os números desta seção são agregados a partir dos microdados da PNAD Contínua, restritos à UF=SP. Itens fora deste recorte (cumprimento da LC 150 em SP, hiato salarial estadual, jornada e contribuição previdenciária) exigirão extensão da pipeline e ficam sinalizados ao final.",
     "focus-sp-kpi-total": "Trabalhadoras em SP",
@@ -1065,6 +1082,12 @@ const I18N = {
     "reform-chart-source": "Source: PNADC microdata (IBGE), variable V4024 (domestic service in more than one household — diarista vs. mensalista) crossed with VD4009 (occupational status — with vs. without signed card), aggregated by race by the project team. Population: domestic workers with VD4009 ∈ {03 = signed card, 04 = no card}. V1028 sample weights applied.",
     "reform-legend-negras":     "Black (pretas + pardas)",
     "reform-legend-nao-negras": "Non-Black",
+    "reform-geo-title": "Where the card disappeared: the geographic gradient",
+    "reform-geo-body":  "The convergence to the floor was not uniform across the territory. <strong>Rio de Janeiro</strong> has the most extreme gradient: non-Black workers moved from 40% to 20% signed-card — over half their starting protection lost. In <strong>São Paulo</strong>, the national racial pattern is inverted at the starting point: in 2012, Black workers had <em>more</em> formal monthly work (43%) than non-Black workers (42%) — the urban São Paulo labor market historically pulled Black workers into the protected contract. Both races lose ~14pp by 2026. <strong>Pernambuco</strong> shows the typical convergence (larger loss among non-Black, ~−12pp; smaller among Black, ~−6pp). <strong>Minas Gerais</strong> is the exception — the Reform left both races almost intact. This reading connects directly to Theme 4 (LC 150 compliance geography): where enforcement was always strongest, deformalization also went deepest.",
+    "reform-geo-chart-title":  "Formal monthly contract — percentage points lost, 2012Q1 → 2026Q1",
+    "reform-geo-chart-meta":   "% with signed card (proxy for formal mensalista) · 4 states · fixed quarter",
+    "reform-geo-chart-source": "Source: PNADC microdata (IBGE), UF × race × formality aggregation of <code>fact_workers</code> by the project team. Methodological note: the UF cut uses \"% with signed card\" as a proxy for \"% formal mensalista\" — the difference is the small bucket of signed-card diaristas (~3–4pp). The precise cut (via <code>fact_contract</code> with UF granularity) is queued as a future pipeline extension; see §3.19 of the methodology.",
+    "reform-geo-y-title": "Percentage points lost",
     "focus-sp-title": "Focus on São Paulo state",
     "focus-sp-subtitle": "Specific cut for the state where STDMSP operates. All numbers in this section are aggregated from PNAD Contínua microdata, restricted to UF=SP. Items outside this cut (LC 150 enforcement in SP, state-level wage gap, hours, retirement contributions) require pipeline extensions and are flagged at the end.",
     "focus-sp-kpi-total": "Domestic workers in SP",
@@ -1523,6 +1546,7 @@ function render() {
   renderFloor();
   renderHourly();
   renderReform();
+  renderReformGeo();
   renderFocusSP();
   renderSources();
   // "Data updated on" reflects the static-export timestamp (when the JSON was
@@ -3913,6 +3937,114 @@ function renderReform() {
       ],
     },
     options: commonOptions(informal.periods),
+  });
+}
+
+// ============ A REFORMA — GRADIENTE GEOGRÁFICO ============
+// Bar chart of "pp lost in % formal mensalista, 2012Q1 → 2026Q1" by UF × race.
+// 4 UFs: SP (35), RJ (33), MG (31), PE (26). BA (29) omitted: nao_negras
+// sample is too thin in BA (overwhelmingly Black-majority state) to give a
+// stable formality rate.
+//
+// Methodological note: this panel uses fact_workers' "% com_carteira"
+// (within race × UF × period) as a proxy for "% formal mensalista". The
+// approximation slips by the small formal-diarista bucket (~3–4pp).
+// Precise UF × race × contract × formality lives in fact_contract but
+// fact_contract is currently BR-only — UF extension is queued.
+
+function renderReformGeo() {
+  const canvas = document.getElementById("chart-reform-geo");
+  if (!canvas) return;
+  if (!STATE.workers || !STATE.workers.length) {
+    setEmpty("box-reform-geo", true);
+    return;
+  }
+
+  // 4 UFs, in a sensible reading order (Southeast → Northeast, by total loss)
+  const UFS = [
+    { code: "33", pt: "RJ", en: "RJ" },
+    { code: "35", pt: "SP", en: "SP" },
+    { code: "26", pt: "PE", en: "PE" },
+    { code: "31", pt: "MG", en: "MG" },
+  ];
+
+  // Compute % com_carteira within (UF, race, sex='T') at a given period.
+  // Sums across formality buckets in case multiple rows match.
+  function pctFormal(geoCode, raceCode, period) {
+    let formal = 0, total = 0;
+    for (const r of STATE.workers) {
+      if (r.geo_level !== "uf" || r.geo_code !== geoCode) continue;
+      if (r.race_code !== raceCode || r.sex_code !== "T") continue;
+      if (String(r.period_code) !== period) continue;
+      if (r.source_table !== "PNADC-MICRODATA") continue;
+      const w = Number(r.workers_thousands || 0);
+      if (r.formality_code === "com_carteira") formal += w;
+      if (r.formality_code === "total")        total  += w;
+    }
+    return total > 0 ? 100 * formal / total : null;
+  }
+
+  const labels = [];
+  const lossNN = [];
+  const lossPP = [];
+  for (const uf of UFS) {
+    const startNN = pctFormal(uf.code, "nao_negras",  "201201");
+    const endNN   = pctFormal(uf.code, "nao_negras",  "202601");
+    const startPP = pctFormal(uf.code, "preta_parda", "201201");
+    const endPP   = pctFormal(uf.code, "preta_parda", "202601");
+    labels.push(LANG === "pt" ? uf.pt : uf.en);
+    lossNN.push(startNN != null && endNN != null ? Math.round(10 * (startNN - endNN)) / 10 : null);
+    lossPP.push(startPP != null && endPP != null ? Math.round(10 * (startPP - endPP)) / 10 : null);
+  }
+
+  if (lossNN.every(v => v == null) && lossPP.every(v => v == null)) {
+    setEmpty("box-reform-geo", true);
+    return;
+  }
+
+  setEmpty("box-reform-geo", false);
+  destroyChart("reformGeo");
+
+  // Helper to format negative-zero edge case and render as "-Xpp"
+  const fmtPp = v => v == null ? "—" : `−${v.toFixed(1).replace(".", LANG === "pt" ? "," : ".")}pp`;
+
+  charts.reformGeo = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: I18N[LANG]["reform-legend-nao-negras"],
+          data: lossNN,
+          backgroundColor: "rgba(37, 99, 165, 0.85)",
+          borderColor: "rgba(37, 99, 165, 1)",
+          borderWidth: 1,
+        },
+        {
+          label: I18N[LANG]["reform-legend-negras"],
+          data: lossPP,
+          backgroundColor: "rgba(190, 30, 45, 0.85)",
+          borderColor: "rgba(190, 30, 45, 1)",
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 14, boxHeight: 10, padding: 8, font: { size: 11 } } },
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${fmtPp(ctx.parsed.y)}` } },
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 12 } } },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: I18N[LANG]["reform-geo-y-title"], font: { size: 11 } },
+          ticks: { callback: v => v + "pp", font: { size: 11 } },
+        },
+      },
+    },
   });
 }
 

@@ -602,27 +602,36 @@
   </div>
 </section>
 
-<!-- ============ A REFORMA E A TRANSIÇÃO PARA DIARISTA (Mayer DiD) ============ -->
-<!-- Tests Mayer's hypothesis: did the 2017 Labor Reform (Lei 13.467/2017) -->
-<!-- accelerate the mensalista → diarista shift, and was the shift -->
-<!-- race-differential? Visual hypothesis test ahead of the DiD regression. -->
+<!-- ============ A REFORMA VISTA PELO CONTRATO MENSALISTA (Mayer DiD, refined) ============ -->
+<!-- The original 2-line % diarista chart did not visually support Mayer's hypothesis -->
+<!-- in its first formulation. The race × contract × formality cut reveals where the -->
+<!-- racialized Reform story actually lives: in the disappearing FORMAL mensalista -->
+<!-- contract (non-Black workers lost more protection, faster) and the persistent -->
+<!-- INFORMAL mensalista floor that Black workers structurally inhabit. -->
 <section id="reforma" class="border-t rule" style="background: var(--accent-soft);">
   <div class="max-w-6xl mx-auto px-5 py-8">
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-      <article class="lg:col-span-2">
-        <p class="text-xs uppercase tracking-wide font-semibold mb-2" style="color: var(--accent);" data-i18n="reform-eyebrow">Reforma trabalhista e diarização</p>
-        <h2 class="text-xl md:text-2xl font-medium mb-3" data-i18n="reform-title">A reforma e a transição para diarista</h2>
-        <p class="text-sm text-gray-800 mb-3 leading-relaxed" data-i18n="reform-lead">A leitura usual da formalização trata o crescimento da carteira assinada como vetor de proteção. <strong>A hipótese de Mayer inverte parte dessa leitura</strong>: se o pacote EC 72/2013 + LC 150/2015 + Reforma Trabalhista de 2017 tornou o mensalista mais caro para o empregador, o resultado pode ter sido uma transição estrutural para o contrato diarista — formalmente "autônomo", efetivamente informalizado. E essa transição, se real, atingiu desproporcionalmente as trabalhadoras negras.</p>
-        <p class="text-sm text-gray-700 mb-3 leading-relaxed" data-i18n="reform-body">O gráfico ao lado é o teste visual da hipótese. Duas linhas: % de trabalhadoras domésticas atuando como diaristas, separadas por raça (negras e não-negras), ao longo de 56 trimestres. Marcas verticais nos pontos de inflexão: EC 72 (2013), LC 150 (2015), <strong>Reforma Trabalhista (4T 2017)</strong>, ratificação brasileira da C189 (1T 2018), pandemia (1T 2020). No último trimestre, <span id="reform-callout-negras">—</span> das negras e <span id="reform-callout-nao-negras">—</span> das não-negras trabalham como diaristas. Se a hipótese se confirma, a linha das negras deve subir mais rápido a partir de 2017Q4, e o hiato entre os dois grupos deve se alargar nesse período.</p>
-        <p class="text-xs text-gray-600 italic" data-i18n="reform-cite">Este painel é um teste visual de consistência para a hipótese DiD (difference-in-differences) do Prof. Jean-François Mayer, formulada em diálogo com Eliete Edwiges Barbosa: a expansão de direitos formais coexistiu com — e talvez tenha alimentado — uma reorganização contratual que descarregou o custo dos novos direitos sobre trabalhadoras agora classificadas como autônomas. A literatura sobre informalização racializada no Brasil (Pinheiro et al., IPEA; Acciari; Hirata) prevê o padrão; a inferência causal exige uma regressão DiD com janela 2015Q3–2019Q4 (excluindo COVID) — implementação no apêndice metodológico do capítulo em preparação.</p>
+    <!-- Editorial header (full-width, narrow column for readability) -->
+    <div class="max-w-3xl mb-6">
+      <p class="text-xs uppercase tracking-wide font-semibold mb-2" style="color: var(--accent);" data-i18n="reform-eyebrow">Reforma trabalhista e o mensalismo racializado</p>
+      <h2 class="text-xl md:text-2xl font-medium mb-3" data-i18n="reform-title">Quem perde a carteira: a reforma vista pelo contrato mensalista</h2>
+      <p class="text-sm text-gray-800 mb-3 leading-relaxed" data-i18n="reform-lead">A leitura usual da reforma trabalhista trata a formalização como vetor de proteção. Mas a história racializada nos dados do contrato mensalista é de <strong>convergência ao piso</strong>: a queda da carteira assinada atingiu mais rapidamente as trabalhadoras não-negras — que tinham mais proteção a perder — enquanto as trabalhadoras negras já vivenciavam o mensalismo informal antes da reforma. Em 2026, as duas raças têm a mesma taxa de formalização (~20%). Em 2012, as não-negras tinham 5 pontos a mais. O nivelamento ocorreu por baixo, não por cima.</p>
+      <p class="text-sm text-gray-700 mb-3 leading-relaxed" data-i18n="reform-body">Os dois gráficos abaixo decompõem o contrato mensalista em formal (com carteira) e informal (sem carteira), separados por raça, ao longo de 56 trimestres. À esquerda, o <strong>mensalismo formal desaparece</strong>: trabalhadoras não-negras saíram de cerca de 30% em 2012 para <span id="reform-callout-fnn">—</span> em 2026 — perda superior a 10 pontos percentuais de proteção. Trabalhadoras negras saíram de 25% para <span id="reform-callout-fn">—</span>, perdendo metade disso. As duas linhas convergem por baixo. À direita, o <strong>mensalismo informal persiste</strong>: cerca de metade das trabalhadoras negras (<span id="reform-callout-in">—</span>) trabalham nesse regime em 2026, exatamente como em 2012. Esse é o piso da informalidade — herdeiro direto das relações coloniais de trabalho doméstico (ver Tema 3) — e ele não se move. Marcas verticais nos dois gráficos: EC 72 (2013), LC 150 (2015), <strong>Reforma Trabalhista (4T 2017)</strong>, ratificação brasileira da C189 (1T 2018), pandemia (1T 2020).</p>
+    </div>
+    <!-- Two side-by-side charts, same Y axis for direct visual comparison -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <article class="border rule rounded-lg p-4 bg-white">
+        <h3 class="text-base font-medium" data-i18n="reform-formal-title">Mensalismo formal (com carteira), 2012–2026</h3>
+        <p class="text-xs text-gray-500 mb-3" data-i18n="reform-formal-meta">% das trabalhadoras domésticas em mensalismo formal · por raça · trimestre fixo</p>
+        <div class="chart-box" id="box-reform-formal"><canvas id="chart-reform-formal"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda. Aguardando backfill com V4024.</div></div>
       </article>
-      <article class="lg:col-span-3 border rule rounded-lg p-4 bg-white">
-        <h3 class="text-base font-medium" data-i18n="reform-chart-title">% diaristas por raça, 2012–2026</h3>
-        <p class="text-xs text-gray-500 mb-3" data-i18n="reform-chart-meta">PNADC microdados V4024 · trimestre fixo · diarista = serviço em mais de 1 domicílio</p>
-        <div class="chart-box" id="box-reform"><canvas id="chart-reform"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda. Aguardando backfill com V4024.</div></div>
-        <p class="text-xs text-gray-500 mt-2" id="reform-source" data-i18n="reform-chart-source">Fonte: PNADC microdados (IBGE), variável V4024 (serviço doméstico em mais de 1 domicílio — código 1 = sim → diarista, código 2 = não → mensalista), agregada por raça pela equipe do projeto. População: trabalhadoras(es) domésticas(os) com VD4009 ∈ {03, 04}. Pesos amostrais V1028 aplicados.</p>
+      <article class="border rule rounded-lg p-4 bg-white">
+        <h3 class="text-base font-medium" data-i18n="reform-informal-title">Mensalismo informal (sem carteira), 2012–2026</h3>
+        <p class="text-xs text-gray-500 mb-3" data-i18n="reform-informal-meta">% das trabalhadoras domésticas em mensalismo informal · por raça · trimestre fixo</p>
+        <div class="chart-box" id="box-reform-informal"><canvas id="chart-reform-informal"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda. Aguardando backfill com V4024.</div></div>
       </article>
     </div>
+    <p class="text-xs text-gray-500 mt-3 max-w-3xl" data-i18n="reform-chart-source">Fonte: PNADC microdados (IBGE), variável V4024 (serviço doméstico em mais de 1 domicílio — diarista vs. mensalista) cruzada com VD4009 (posição na ocupação — com vs. sem carteira), agregada por raça pela equipe do projeto. População: trabalhadoras(es) domésticas(os) com VD4009 ∈ {03 = com carteira, 04 = sem carteira}. Pesos amostrais V1028 aplicados.</p>
+    <p class="text-xs text-gray-600 italic mt-4 max-w-3xl" data-i18n="reform-cite">Este painel refina a hipótese DiD (difference-in-differences) do Prof. Jean-François Mayer. A leitura inicial — que a reforma teria empurrado trabalhadoras negras para o trabalho diarista informalizado — não se confirma visualmente no contrato em si: a transição para diarista ocorreu em ritmo similar nas duas raças. A história racializada vive no <em>contrato mensalista</em>: a reforma de 2017, junto com EC 72 e LC 150, contribuiu para a erosão do mensalismo formal — mas atingiu mais fortemente as trabalhadoras não-negras, que tinham mais proteção a perder. Para as trabalhadoras negras, o regime informal já era a regra estrutural antes da reforma — herança da casa-grande e do trabalho residente. A literatura sobre informalização racializada (Pinheiro et al., IPEA; Acciari; Hirata; Bernardino-Costa) prevê esse padrão estrutural; a inferência causal exige uma regressão DiD com janela 2015Q3–2019Q4 (excluindo COVID) — implementação no apêndice metodológico do capítulo em preparação.</p>
   </div>
 </section>
 
@@ -867,16 +876,18 @@ const I18N = {
     "c189-title": "Status legal — Convenção 189 da OIT",
     "c189-meta": "Ano de ratificação por país. A C189 (Convenção sobre Trabalhadoras e Trabalhadores Domésticos, 2011) estabelece direitos iguais aos de outras categorias.",
     "c189-footnote": "Brasil ratificou em janeiro de 2018, três anos após a entrada em vigor da LC 150/2015 — ou seja, a legislação interna precedeu o compromisso internacional. México ratificou apenas em julho de 2020. Uruguai foi o primeiro país do mundo a ratificar, em junho de 2012. Fonte: NORMLEX (OIT).",
-    "reform-eyebrow": "Reforma trabalhista e diarização",
-    "reform-title": "A reforma e a transição para diarista",
-    "reform-lead": "A leitura usual da formalização trata o crescimento da carteira assinada como vetor de proteção. <strong>A hipótese de Mayer inverte parte dessa leitura</strong>: se o pacote EC 72/2013 + LC 150/2015 + Reforma Trabalhista de 2017 tornou o mensalista mais caro para o empregador, o resultado pode ter sido uma transição estrutural para o contrato diarista — formalmente \"autônomo\", efetivamente informalizado. E essa transição, se real, atingiu desproporcionalmente as trabalhadoras negras.",
-    "reform-body": "O gráfico ao lado é o teste visual da hipótese. Duas linhas: % de trabalhadoras domésticas atuando como diaristas, separadas por raça (negras e não-negras), ao longo de 56 trimestres. Marcas verticais nos pontos de inflexão: EC 72 (2013), LC 150 (2015), <strong>Reforma Trabalhista (4T 2017)</strong>, ratificação brasileira da C189 (1T 2018), pandemia (1T 2020). No último trimestre, <span id=\"reform-callout-negras\">—</span> das negras e <span id=\"reform-callout-nao-negras\">—</span> das não-negras trabalham como diaristas. Se a hipótese se confirma, a linha das negras deve subir mais rápido a partir de 2017Q4, e o hiato entre os dois grupos deve se alargar nesse período.",
-    "reform-cite": "Este painel é um teste visual de consistência para a hipótese DiD (difference-in-differences) do Prof. Jean-François Mayer, formulada em diálogo com Eliete Edwiges Barbosa: a expansão de direitos formais coexistiu com — e talvez tenha alimentado — uma reorganização contratual que descarregou o custo dos novos direitos sobre trabalhadoras agora classificadas como autônomas. A literatura sobre informalização racializada no Brasil (Pinheiro et al., IPEA; Acciari; Hirata) prevê o padrão; a inferência causal exige uma regressão DiD com janela 2015Q3–2019Q4 (excluindo COVID) — implementação no apêndice metodológico do capítulo em preparação.",
-    "reform-chart-title": "% diaristas por raça, 2012–2026",
-    "reform-chart-meta": "PNADC microdados V4024 · trimestre fixo · diarista = serviço em mais de 1 domicílio",
-    "reform-chart-source": "Fonte: PNADC microdados (IBGE), variável V4024 (serviço doméstico em mais de 1 domicílio — código 1 = sim → diarista, código 2 = não → mensalista), agregada por raça pela equipe do projeto. População: trabalhadoras(es) domésticas(os) com VD4009 ∈ {03, 04}. Pesos amostrais V1028 aplicados.",
-    "reform-legend-negras":     "% diaristas — negras (pretas + pardas)",
-    "reform-legend-nao-negras": "% diaristas — não-negras",
+    "reform-eyebrow": "Reforma trabalhista e o mensalismo racializado",
+    "reform-title": "Quem perde a carteira: a reforma vista pelo contrato mensalista",
+    "reform-lead": "A leitura usual da reforma trabalhista trata a formalização como vetor de proteção. Mas a história racializada nos dados do contrato mensalista é de <strong>convergência ao piso</strong>: a queda da carteira assinada atingiu mais rapidamente as trabalhadoras não-negras — que tinham mais proteção a perder — enquanto as trabalhadoras negras já vivenciavam o mensalismo informal antes da reforma. Em 2026, as duas raças têm a mesma taxa de formalização (~20%). Em 2012, as não-negras tinham 5 pontos a mais. O nivelamento ocorreu por baixo, não por cima.",
+    "reform-body": "Os dois gráficos abaixo decompõem o contrato mensalista em formal (com carteira) e informal (sem carteira), separados por raça, ao longo de 56 trimestres. À esquerda, o <strong>mensalismo formal desaparece</strong>: trabalhadoras não-negras saíram de cerca de 30% em 2012 para <span id=\"reform-callout-fnn\">—</span> em 2026 — perda superior a 10 pontos percentuais de proteção. Trabalhadoras negras saíram de 25% para <span id=\"reform-callout-fn\">—</span>, perdendo metade disso. As duas linhas convergem por baixo. À direita, o <strong>mensalismo informal persiste</strong>: cerca de metade das trabalhadoras negras (<span id=\"reform-callout-in\">—</span>) trabalham nesse regime em 2026, exatamente como em 2012. Esse é o piso da informalidade — herdeiro direto das relações coloniais de trabalho doméstico (ver Tema 3) — e ele não se move. Marcas verticais nos dois gráficos: EC 72 (2013), LC 150 (2015), <strong>Reforma Trabalhista (4T 2017)</strong>, ratificação brasileira da C189 (1T 2018), pandemia (1T 2020).",
+    "reform-cite": "Este painel refina a hipótese DiD (difference-in-differences) do Prof. Jean-François Mayer. A leitura inicial — que a reforma teria empurrado trabalhadoras negras para o trabalho diarista informalizado — não se confirma visualmente no contrato em si: a transição para diarista ocorreu em ritmo similar nas duas raças. A história racializada vive no <em>contrato mensalista</em>: a reforma de 2017, junto com EC 72 e LC 150, contribuiu para a erosão do mensalismo formal — mas atingiu mais fortemente as trabalhadoras não-negras, que tinham mais proteção a perder. Para as trabalhadoras negras, o regime informal já era a regra estrutural antes da reforma — herança da casa-grande e do trabalho residente. A literatura sobre informalização racializada (Pinheiro et al., IPEA; Acciari; Hirata; Bernardino-Costa) prevê esse padrão estrutural; a inferência causal exige uma regressão DiD com janela 2015Q3–2019Q4 (excluindo COVID) — implementação no apêndice metodológico do capítulo em preparação.",
+    "reform-formal-title":   "Mensalismo formal (com carteira), 2012–2026",
+    "reform-formal-meta":    "% das trabalhadoras domésticas em mensalismo formal · por raça · trimestre fixo",
+    "reform-informal-title": "Mensalismo informal (sem carteira), 2012–2026",
+    "reform-informal-meta":  "% das trabalhadoras domésticas em mensalismo informal · por raça · trimestre fixo",
+    "reform-chart-source": "Fonte: PNADC microdados (IBGE), variável V4024 (serviço doméstico em mais de 1 domicílio — diarista vs. mensalista) cruzada com VD4009 (posição na ocupação — com vs. sem carteira), agregada por raça pela equipe do projeto. População: trabalhadoras(es) domésticas(os) com VD4009 ∈ {03 = com carteira, 04 = sem carteira}. Pesos amostrais V1028 aplicados.",
+    "reform-legend-negras":     "Negras (pretas + pardas)",
+    "reform-legend-nao-negras": "Não-negras",
     "focus-sp-title": "Foco no estado de São Paulo",
     "focus-sp-subtitle": "Recorte específico do estado onde a STDMSP atua. Todos os números desta seção são agregados a partir dos microdados da PNAD Contínua, restritos à UF=SP. Itens fora deste recorte (cumprimento da LC 150 em SP, hiato salarial estadual, jornada e contribuição previdenciária) exigirão extensão da pipeline e ficam sinalizados ao final.",
     "focus-sp-kpi-total": "Trabalhadoras em SP",
@@ -1042,16 +1053,18 @@ const I18N = {
     "c189-title": "Legal status — ILO Convention 189",
     "c189-meta": "Year of ratification per country. C189 (Domestic Workers Convention, 2011) establishes rights equal to those of other categories of workers.",
     "c189-footnote": "Brazil ratified in January 2018, three years after LC 150/2015 came into force — meaning domestic legislation preceded the international commitment. Mexico only ratified in July 2020. Uruguay was the first country in the world to ratify, in June 2012. Source: NORMLEX (ILO).",
-    "reform-eyebrow": "Labor reform and the shift to day-rate work",
-    "reform-title": "The reform and the transition to day-rate work",
-    "reform-lead": "The standard reading of formalization treats rising signed-card rates as a protection vector. <strong>Mayer's hypothesis partly inverts that reading</strong>: if the EC 72/2013 + LC 150/2015 + 2017 Labor Reform package made the live-out monthly contract (<em>mensalista</em>) more expensive for employers, the structural response may have been a shift to day-rate (<em>diarista</em>) work — formally \"self-employed\", effectively re-informalized. And if real, that shift fell disproportionately on Black women.",
-    "reform-body": "The chart on the right is the visual test of the hypothesis. Two lines: % of domestic workers working as <em>diaristas</em>, split by race (Black vs. non-Black), across 56 quarters. Vertical markers at the inflection points: EC 72 (2013), LC 150 (2015), <strong>Labor Reform (2017Q4)</strong>, Brazil's C189 ratification (2018Q1), pandemic (2020Q1). In the latest quarter, <span id=\"reform-callout-negras\">—</span> of Black workers and <span id=\"reform-callout-nao-negras\">—</span> of non-Black workers are <em>diaristas</em>. If the hypothesis holds, the Black line should rise faster from 2017Q4 onward, and the gap between the two should widen across that window.",
-    "reform-cite": "This panel is a visual consistency check for Prof. Jean-François Mayer's difference-in-differences hypothesis, formulated in dialogue with Eliete Edwiges Barbosa: the expansion of formal rights coexisted with — and perhaps fuelled — a contractual reorganization that pushed the cost of those new rights onto workers now reclassified as self-employed. The literature on racialized informalization in Brazil (Pinheiro et al., IPEA; Acciari; Hirata) predicts the pattern; causal inference requires a DiD regression over 2015Q3–2019Q4 (excluding COVID) — implemented in the methodological appendix of the chapter in preparation.",
-    "reform-chart-title": "% day-rate by race, 2012–2026",
-    "reform-chart-meta": "PNADC microdata V4024 · fixed quarter · diarista = services in more than one household",
-    "reform-chart-source": "Source: PNADC microdata (IBGE), variable V4024 (domestic service in more than one household — code 1 = yes → diarista, code 2 = no → mensalista), aggregated by race by the project team. Population: domestic workers with VD4009 ∈ {03, 04}. V1028 sample weights applied.",
-    "reform-legend-negras":     "% diarista — Black (pretas + pardas)",
-    "reform-legend-nao-negras": "% diarista — non-Black",
+    "reform-eyebrow": "Labor reform and the racialized monthly contract",
+    "reform-title": "Who loses their card: the Reform seen through the monthly contract",
+    "reform-lead": "The standard reading of the Labor Reform treats formalization as a protection vector. But the racialized story in the monthly-contract data is one of <strong>convergence to the floor</strong>: the loss of signed cards hit non-Black workers faster — because they had more protection to lose — while Black workers were already in informal monthly work before the Reform. In 2026, both races have the same formalization rate (~20%). In 2012, non-Black workers had a 5-point lead. The leveling happened from the top down, not from the bottom up.",
+    "reform-body": "The two charts below decompose the monthly contract into formal (signed card) and informal (no card), split by race, across 56 quarters. On the left, <strong>the formal monthly contract disappears</strong>: non-Black workers moved from about 30% in 2012 to <span id=\"reform-callout-fnn\">—</span> in 2026 — losing over 10 percentage points of protection. Black workers moved from 25% to <span id=\"reform-callout-fn\">—</span>, losing half as much. The two lines converge from above. On the right, <strong>the informal monthly contract persists</strong>: about half of Black workers (<span id=\"reform-callout-in\">—</span>) work in this regime in 2026, exactly as in 2012. This is the informality floor — a direct heir of the colonial labor relations of domestic work (see Theme 3) — and it does not move. Policy markers on both charts: EC 72 (2013), LC 150 (2015), <strong>Labor Reform (2017Q4)</strong>, Brazil's C189 ratification (2018Q1), pandemic (2020Q1).",
+    "reform-cite": "This panel refines Prof. Jean-François Mayer's difference-in-differences hypothesis. The initial reading — that the Reform pushed Black workers into informalized day-rate work — does not hold up visually in the contract itself: the shift to day-rate work proceeded at similar rates for both races. The racialized story lives in the <em>monthly contract</em>: the 2017 Reform, together with EC 72 and LC 150, contributed to the erosion of the formal monthly contract — but hit non-Black workers harder, because they had more protection to lose. For Black workers, the informal regime was already the structural rule before the Reform — a legacy of the <em>casa-grande</em> and resident-style labor. The literature on racialized informalization (Pinheiro et al., IPEA; Acciari; Hirata; Bernardino-Costa) predicts this structural pattern; causal inference requires a DiD regression over 2015Q3–2019Q4 (excluding COVID) — implemented in the methodological appendix of the chapter in preparation.",
+    "reform-formal-title":   "Formal monthly contract (signed card), 2012–2026",
+    "reform-formal-meta":    "% of domestic workers in formal monthly work · by race · fixed quarter",
+    "reform-informal-title": "Informal monthly contract (no card), 2012–2026",
+    "reform-informal-meta":  "% of domestic workers in informal monthly work · by race · fixed quarter",
+    "reform-chart-source": "Source: PNADC microdata (IBGE), variable V4024 (domestic service in more than one household — diarista vs. mensalista) crossed with VD4009 (occupational status — with vs. without signed card), aggregated by race by the project team. Population: domestic workers with VD4009 ∈ {03 = signed card, 04 = no card}. V1028 sample weights applied.",
+    "reform-legend-negras":     "Black (pretas + pardas)",
+    "reform-legend-nao-negras": "Non-Black",
     "focus-sp-title": "Focus on São Paulo state",
     "focus-sp-subtitle": "Specific cut for the state where STDMSP operates. All numbers in this section are aggregated from PNAD Contínua microdata, restricted to UF=SP. Items outside this cut (LC 150 enforcement in SP, state-level wage gap, hours, retirement contributions) require pipeline extensions and are flagged at the end.",
     "focus-sp-kpi-total": "Domestic workers in SP",
@@ -3754,108 +3767,101 @@ function renderHourly() {
   });
 }
 
-// ============ A REFORMA E A TRANSIÇÃO PARA DIARISTA (Mayer DiD) ============
-// Plots % diarista by race over time. Visual hypothesis test: did the
-// 2017 Labor Reform (Lei 13.467/2017) accelerate the mensalista → diarista
-// transition, and was that acceleration race-differential?
+// ============ A REFORMA VISTA PELO CONTRATO MENSALISTA (Mayer DiD, refined) ============
+// Renders two side-by-side line charts of % mensalista by race over 56 quarters:
+//   - LEFT  (box-reform-formal):   contract=mensalista × formality=com_carteira × race
+//   - RIGHT (box-reform-informal): contract=mensalista × formality=sem_carteira × race
+//
+// The original 2-line % diarista chart did not visually support Mayer's
+// hypothesis. The race × contract × formality cut shows where the
+// racialized Reform story actually lives: formal mensalista DISAPPEARS
+// (faster for non-Black workers — convergence to the floor), informal
+// mensalista PERSISTS (Black structural floor, unmoved since 2012).
+//
+// Both charts share the same Y axis (0% – common upper bound) so the
+// gap between protected and unprotected is visible at a glance.
 // Source: STATE.contract (dw_contract), V4024-derived.
-// Until the backfill runs, STATE.contract is [] and the overlay shows.
 
 function renderReform() {
-  const canvas = document.getElementById("chart-reform");
-  if (!canvas) return;
+  const canvasFormal   = document.getElementById("chart-reform-formal");
+  const canvasInformal = document.getElementById("chart-reform-informal");
+  if (!canvasFormal || !canvasInformal) return;
   if (!STATE.contract || !STATE.contract.length) {
-    setEmpty("box-reform", true);
+    setEmpty("box-reform-formal",   true);
+    setEmpty("box-reform-informal", true);
     return;
   }
 
-  // Filter to country BR / sex='T' / formality='total' / contract='diarista'
-  // / race in (preta_parda, nao_negras)
-  const rows = STATE.contract.filter(r =>
-    r.geo_level === "country"
-    && r.sex_code === "T"
-    && r.formality_code === "total"
-    && r.contract_code === "diarista"
-    && (r.race_code === "preta_parda" || r.race_code === "nao_negras")
-    && r.source_table === "PNADC-MICRODATA"
-  );
-  if (!rows.length) {
-    setEmpty("box-reform", true);
+  // Helper: filter STATE.contract for a given formality code, return
+  // {periods: [...], negras: [...], naoNegras: [...]}
+  function seriesForFormality(formality) {
+    const rows = STATE.contract.filter(r =>
+      r.geo_level === "country"
+      && r.sex_code === "T"
+      && r.contract_code === "mensalista"
+      && r.formality_code === formality
+      && (r.race_code === "preta_parda" || r.race_code === "nao_negras")
+      && r.source_table === "PNADC-MICRODATA"
+    );
+    const byPeriod = {};
+    for (const r of rows) {
+      const p = String(r.period_code);
+      if (!byPeriod[p]) byPeriod[p] = {};
+      byPeriod[p][r.race_code] = r.pct_within_race != null ? Number(r.pct_within_race) : null;
+    }
+    const periods = Object.keys(byPeriod).sort();
+    const valid = periods.filter(p =>
+      byPeriod[p].preta_parda != null && byPeriod[p].nao_negras != null
+    );
+    return {
+      periods: valid,
+      negras:    valid.map(p => byPeriod[p].preta_parda),
+      naoNegras: valid.map(p => byPeriod[p].nao_negras),
+    };
+  }
+
+  const formal   = seriesForFormality("com_carteira");
+  const informal = seriesForFormality("sem_carteira");
+
+  if (!formal.periods.length || !informal.periods.length) {
+    setEmpty("box-reform-formal",   formal.periods.length === 0);
+    setEmpty("box-reform-informal", informal.periods.length === 0);
     return;
   }
 
-  const byPeriod = {};
-  for (const r of rows) {
-    const p = String(r.period_code);
-    if (!byPeriod[p]) byPeriod[p] = {};
-    byPeriod[p][r.race_code] = r.pct_within_race != null ? Number(r.pct_within_race) : null;
-  }
-
-  const periods = Object.keys(byPeriod).sort();
-  const valid = periods.filter(p =>
-    byPeriod[p].preta_parda != null && byPeriod[p].nao_negras != null
-  );
-  if (!valid.length) {
-    setEmpty("box-reform", true);
-    return;
-  }
-
-  const labels = valid.map(formatPeriodLabel);
-  const seriesNegras    = valid.map(p => byPeriod[p].preta_parda);
-  const seriesNaoNegras = valid.map(p => byPeriod[p].nao_negras);
-
-  // Inline callouts: latest values
+  // Inline callouts in the editorial body — latest-quarter values
   const fmtPct = v => v == null
     ? "—"
     : `${v.toFixed(1).replace(".", LANG === "pt" ? "," : ".")}%`;
-  const callN = document.getElementById("reform-callout-negras");
-  const callNN = document.getElementById("reform-callout-nao-negras");
-  if (callN)  callN.textContent  = fmtPct(seriesNegras.at(-1));
-  if (callNN) callNN.textContent = fmtPct(seriesNaoNegras.at(-1));
+  const callFN  = document.getElementById("reform-callout-fn");   // formal, negras
+  const callFNN = document.getElementById("reform-callout-fnn");  // formal, não-negras
+  const callIN  = document.getElementById("reform-callout-in");   // informal, negras
+  if (callFN)  callFN.textContent  = fmtPct(formal.negras.at(-1));
+  if (callFNN) callFNN.textContent = fmtPct(formal.naoNegras.at(-1));
+  if (callIN)  callIN.textContent  = fmtPct(informal.negras.at(-1));
 
-  setEmpty("box-reform", false);
-  destroyChart("reform");
+  // Shared Y scale: round up to nearest 5 above the max across both charts,
+  // floor at 0. Keeps the relative magnitudes (informal ~50% vs formal
+  // ~20–30%) visually honest.
+  const maxAll = Math.max(
+    ...formal.negras, ...formal.naoNegras,
+    ...informal.negras, ...informal.naoNegras
+  );
+  const yMax = Math.ceil(maxAll / 5) * 5 + 5;
 
-  charts.reform = new Chart(canvas, {
-    type: "line",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: I18N[LANG]["reform-legend-negras"],
-          data: seriesNegras,
-          borderColor: "rgba(190, 30, 45, 1)",
-          backgroundColor: "rgba(190, 30, 45, 0.10)",
-          borderWidth: 2,
-          pointRadius: 0,
-          pointHoverRadius: 4,
-          tension: 0.25,
-          spanGaps: true,
-        },
-        {
-          label: I18N[LANG]["reform-legend-nao-negras"],
-          data: seriesNaoNegras,
-          borderColor: "rgba(37, 99, 165, 1)",
-          backgroundColor: "rgba(37, 99, 165, 0.10)",
-          borderWidth: 2,
-          pointRadius: 0,
-          pointHoverRadius: 4,
-          tension: 0.25,
-          spanGaps: true,
-        },
-      ],
-    },
-    options: {
+  setEmpty("box-reform-formal",   false);
+  setEmpty("box-reform-informal", false);
+  destroyChart("reformFormal");
+  destroyChart("reformInformal");
+
+  function commonOptions(periods) {
+    return {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: { position: "bottom", labels: { boxWidth: 14, boxHeight: 10, padding: 8, font: { size: 11 } } },
-        tooltip: {
-          callbacks: { label: ctx => `${ctx.dataset.label}: ${fmtPct(ctx.parsed.y)}` },
-        },
-        annotation: {
-          annotations: buildPolicyAnnotations(valid, "fixo"),
-        },
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${fmtPct(ctx.parsed.y)}` } },
+        annotation: { annotations: buildPolicyAnnotations(periods, "fixo") },
       },
       scales: {
         x: {
@@ -3863,12 +3869,50 @@ function renderReform() {
           grid: { display: false },
         },
         y: {
+          min: 0, max: yMax,
           ticks: { callback: v => v + "%", font: { size: 11 } },
-          title: { display: true, text: LANG === "pt" ? "% diaristas" : "% diarista", font: { size: 11 } },
-          beginAtZero: true,
+          title: { display: true, text: "%", font: { size: 11 } },
         },
       },
+    };
+  }
+
+  function dataset(label, data, color) {
+    return {
+      label,
+      data,
+      borderColor: color,
+      backgroundColor: color.replace("1)", "0.10)"),
+      borderWidth: 2,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      tension: 0.25,
+      spanGaps: true,
+    };
+  }
+
+  charts.reformFormal = new Chart(canvasFormal, {
+    type: "line",
+    data: {
+      labels: formal.periods.map(formatPeriodLabel),
+      datasets: [
+        dataset(I18N[LANG]["reform-legend-negras"],     formal.negras,    "rgba(190, 30, 45, 1)"),
+        dataset(I18N[LANG]["reform-legend-nao-negras"], formal.naoNegras, "rgba(37, 99, 165, 1)"),
+      ],
     },
+    options: commonOptions(formal.periods),
+  });
+
+  charts.reformInformal = new Chart(canvasInformal, {
+    type: "line",
+    data: {
+      labels: informal.periods.map(formatPeriodLabel),
+      datasets: [
+        dataset(I18N[LANG]["reform-legend-negras"],     informal.negras,    "rgba(190, 30, 45, 1)"),
+        dataset(I18N[LANG]["reform-legend-nao-negras"], informal.naoNegras, "rgba(37, 99, 165, 1)"),
+      ],
+    },
+    options: commonOptions(informal.periods),
   });
 }
 

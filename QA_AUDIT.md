@@ -2176,6 +2176,128 @@ When the backfill completes, expect:
 
 ---
 
+## 2026-06-09 — Reform panel pivot from `% diarista` to `% mensalista by formality`
+
+### Trigger
+
+Once the V4024 backfill landed and the first chart rendered, Joao
+saw that the % diarista by race time series did not visually
+support Mayer's hypothesis as it was originally formulated. The
+non-Black line sat above the Black line across all 56 quarters,
+the racial gap was stable at ~4pp, and there was no visible
+acceleration around 2017Q4. Editorial copy that primed the reader
+to expect Black > non-Black diarista was empirically misleading.
+
+### Investigation
+
+Ran a four-quadrant cut on `fact_contract`: race ×
+{mensalista, diarista} × {com_carteira, sem_carteira}, sex='T',
+country, all source_table='PNADC-MICRODATA'. Pulled a 13-period
+timeline (2012Q1, 2015Q1, 2015Q3, 2017Q1, 2017Q4, 2018Q1, 2019Q4,
+2020Q1, 2021Q1, 2022Q1, 2024Q1, 2025Q4, 2026Q1) to test for
+inflection points in any of the four buckets.
+
+### What the data showed
+
+**Formal mensalista (com carteira):**
+- Non-Black: 30.3% (2012Q1) → 27.7% (2017Q4) → 24.3% (2019Q4) → 20.0% (2026Q1) — lost 10.3pp.
+- Black: 25.4% (2012Q1) → 24.5% (2017Q4) → 24.0% (2019Q4) → 20.6% (2026Q1) — lost 4.8pp.
+- Convergence: starting gap of 5pp (non-Black advantage) closes to 0pp by 2026.
+
+**Informal mensalista (sem carteira):**
+- Non-Black: 41.6% (2012Q1) → 43.9% (2026Q1) — essentially flat at ~42%.
+- Black: 50.1% (2012Q1) → 47.2% (2026Q1) — essentially flat at ~48%.
+- Persistent ~5pp Black-higher gap, unmoved by the Reform.
+
+**Formal diarista (com carteira):**
+- Both groups roughly stable at 3–5% across all 56 quarters, small fraction.
+
+**Informal diarista (sem carteira):**
+- Non-Black: 22.8% → 32.1% — gained 9.3pp.
+- Black: 20.3% → 29.2% — gained 8.9pp.
+- Both groups drift into informal diarista at essentially identical rates. Not racially differential.
+
+### Refined hypothesis
+
+Mayer's original framing — "the Reform pushed Black workers into
+informalized day-rate work" — does not visually hold up at the
+contract level. The racialized story lives in the *internal
+composition of the monthly contract*: the Reform contributed to the
+erosion of the formal monthly contract, but hit non-Black workers
+harder because they had more protection to lose. For Black workers,
+the informal regime was structural and pre-existing — the
+casa-grande continuity already documented in Theme 3. The effect is
+**convergence to the informality floor**, not divergence.
+
+This refines Mayer's hypothesis rather than refuting it: the
+mechanism is plausibly DiD-shaped (the Reform did accelerate a
+pre-existing trend), but the racial dimension shows up in the exit
+*from* formal mensalista, not the entry *into* informal diarista.
+
+### Dashboard pivot
+
+Replaced the single-chart "% diaristas by race" panel with a
+two-chart "formal vs. informal mensalista by race" panel. Same
+section anchor (`#reforma`), same policy markers, same data source
+(`dw_contract`). Title pivoted to "Quem perde a carteira: a reforma
+vista pelo contrato mensalista" / "Who loses their card: the Reform
+seen through the monthly contract".
+
+Files changed:
+- `dashboard/index.html` — full HTML section rewrite (editorial
+  header on top + two side-by-side charts), updated `STATE.contract`
+  consumer `renderReform()` to render both charts with a shared
+  Y-axis, updated PT+EN i18n strings (new keys:
+  `reform-formal-title/meta`, `reform-informal-title/meta`,
+  callout IDs: `reform-callout-fn`, `reform-callout-fnn`,
+  `reform-callout-in`).
+- `dashboard/metodologia.html` — §3.19 rewritten in PT+EN to reflect
+  the formality cut, the convergence-to-floor finding, the explicit
+  connection to Theme 3 (casa-grande afterlife).
+- Old keys removed: `reform-chart-title`, `reform-chart-meta`,
+  `reform-callout-negras`, `reform-callout-nao-negras`, the binary
+  reform-legend texts have been redefined as generic race labels.
+
+### Sanity-check values (2026Q1, BR-wide)
+
+Latest-quarter callouts that should appear in the editorial body:
+- Formal mensalista, negras: 20.6%
+- Formal mensalista, não-negras: 20.0%
+- Informal mensalista, negras: 47.2%
+
+(Non-Black informal mensalista: 43.9%, displayed visually as the
+gap between the two right-panel lines.)
+
+Cross-check against DIEESE Boletim Especial 2024: aggregate
+informality rate around 70%+ → matches our 76% combined
+(sem carteira mensalista + sem carteira diarista). Black
+disaggregated informal mensalista ~48% is novel territory — DIEESE
+does not publish this cell, but the headline informality figures
+are consistent.
+
+### Editorial framing
+
+The new panel is the first place in the dashboard that *refines*
+rather than *confirms* a researcher hypothesis. This is a
+credibility win: the dashboard demonstrably shows what the data
+says, even when the data contradicts the prior. Mayer should be
+invited to use the refined framing in the chapter; Eliete's name
+remains in the project but no longer appears in the panel cite per
+Joao's request 2026-06-09.
+
+### Outstanding
+
+- After the static export refreshes (`python etl/export_static.py`
+  + commit + push), verify both charts render with the live data
+  and that the three callouts populate correctly.
+- Future cut: race × UF × formal mensalista — does the formal-exit
+  pattern have a geographic dimension? Hypothesis: stronger in
+  Southeast (where non-Black workers concentrate and formal
+  mensalista was high), weaker in Northeast (where formality was
+  always low).
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

@@ -602,6 +602,30 @@
   </div>
 </section>
 
+<!-- ============ A REFORMA E A TRANSIÇÃO PARA DIARISTA (Mayer DiD) ============ -->
+<!-- Tests Mayer's hypothesis: did the 2017 Labor Reform (Lei 13.467/2017) -->
+<!-- accelerate the mensalista → diarista shift, and was the shift -->
+<!-- race-differential? Visual hypothesis test ahead of the DiD regression. -->
+<section id="reforma" class="border-t rule" style="background: var(--accent-soft);">
+  <div class="max-w-6xl mx-auto px-5 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <article class="lg:col-span-2">
+        <p class="text-xs uppercase tracking-wide font-semibold mb-2" style="color: var(--accent);" data-i18n="reform-eyebrow">Reforma trabalhista e diarização</p>
+        <h2 class="text-xl md:text-2xl font-medium mb-3" data-i18n="reform-title">A reforma e a transição para diarista</h2>
+        <p class="text-sm text-gray-800 mb-3 leading-relaxed" data-i18n="reform-lead">A leitura usual da formalização trata o crescimento da carteira assinada como vetor de proteção. <strong>A hipótese de Mayer inverte parte dessa leitura</strong>: se o pacote EC 72/2013 + LC 150/2015 + Reforma Trabalhista de 2017 tornou o mensalista mais caro para o empregador, o resultado pode ter sido uma transição estrutural para o contrato diarista — formalmente "autônomo", efetivamente informalizado. E essa transição, se real, atingiu desproporcionalmente as trabalhadoras negras.</p>
+        <p class="text-sm text-gray-700 mb-3 leading-relaxed" data-i18n="reform-body">O gráfico ao lado é o teste visual da hipótese. Duas linhas: % de trabalhadoras domésticas atuando como diaristas, separadas por raça (negras e não-negras), ao longo de 56 trimestres. Marcas verticais nos pontos de inflexão: EC 72 (2013), LC 150 (2015), <strong>Reforma Trabalhista (4T 2017)</strong>, ratificação brasileira da C189 (1T 2018), pandemia (1T 2020). No último trimestre, <span id="reform-callout-negras">—</span> das negras e <span id="reform-callout-nao-negras">—</span> das não-negras trabalham como diaristas. Se a hipótese se confirma, a linha das negras deve subir mais rápido a partir de 2017Q4, e o hiato entre os dois grupos deve se alargar nesse período.</p>
+        <p class="text-xs text-gray-600 italic" data-i18n="reform-cite">Este painel é um teste visual de consistência para a hipótese DiD (difference-in-differences) do Prof. Jean-François Mayer, formulada em diálogo com Eliete Edwiges Barbosa: a expansão de direitos formais coexistiu com — e talvez tenha alimentado — uma reorganização contratual que descarregou o custo dos novos direitos sobre trabalhadoras agora classificadas como autônomas. A literatura sobre informalização racializada no Brasil (Pinheiro et al., IPEA; Acciari; Hirata) prevê o padrão; a inferência causal exige uma regressão DiD com janela 2015Q3–2019Q4 (excluindo COVID) — implementação no apêndice metodológico do capítulo em preparação.</p>
+      </article>
+      <article class="lg:col-span-3 border rule rounded-lg p-4 bg-white">
+        <h3 class="text-base font-medium" data-i18n="reform-chart-title">% diaristas por raça, 2012–2026</h3>
+        <p class="text-xs text-gray-500 mb-3" data-i18n="reform-chart-meta">PNADC microdados V4024 · trimestre fixo · diarista = serviço em mais de 1 domicílio</p>
+        <div class="chart-box" id="box-reform"><canvas id="chart-reform"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda. Aguardando backfill com V4024.</div></div>
+        <p class="text-xs text-gray-500 mt-2" id="reform-source" data-i18n="reform-chart-source">Fonte: PNADC microdados (IBGE), variável V4024 (serviço doméstico em mais de 1 domicílio — código 1 = sim → diarista, código 2 = não → mensalista), agregada por raça pela equipe do projeto. População: trabalhadoras(es) domésticas(os) com VD4009 ∈ {03, 04}. Pesos amostrais V1028 aplicados.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <!-- ============ FOCO EM SÃO PAULO ============ -->
 <section id="foco-sp" class="border-t rule" style="background: var(--accent-soft);">
   <div class="max-w-6xl mx-auto px-5 py-8">
@@ -843,6 +867,16 @@ const I18N = {
     "c189-title": "Status legal — Convenção 189 da OIT",
     "c189-meta": "Ano de ratificação por país. A C189 (Convenção sobre Trabalhadoras e Trabalhadores Domésticos, 2011) estabelece direitos iguais aos de outras categorias.",
     "c189-footnote": "Brasil ratificou em janeiro de 2018, três anos após a entrada em vigor da LC 150/2015 — ou seja, a legislação interna precedeu o compromisso internacional. México ratificou apenas em julho de 2020. Uruguai foi o primeiro país do mundo a ratificar, em junho de 2012. Fonte: NORMLEX (OIT).",
+    "reform-eyebrow": "Reforma trabalhista e diarização",
+    "reform-title": "A reforma e a transição para diarista",
+    "reform-lead": "A leitura usual da formalização trata o crescimento da carteira assinada como vetor de proteção. <strong>A hipótese de Mayer inverte parte dessa leitura</strong>: se o pacote EC 72/2013 + LC 150/2015 + Reforma Trabalhista de 2017 tornou o mensalista mais caro para o empregador, o resultado pode ter sido uma transição estrutural para o contrato diarista — formalmente \"autônomo\", efetivamente informalizado. E essa transição, se real, atingiu desproporcionalmente as trabalhadoras negras.",
+    "reform-body": "O gráfico ao lado é o teste visual da hipótese. Duas linhas: % de trabalhadoras domésticas atuando como diaristas, separadas por raça (negras e não-negras), ao longo de 56 trimestres. Marcas verticais nos pontos de inflexão: EC 72 (2013), LC 150 (2015), <strong>Reforma Trabalhista (4T 2017)</strong>, ratificação brasileira da C189 (1T 2018), pandemia (1T 2020). No último trimestre, <span id=\"reform-callout-negras\">—</span> das negras e <span id=\"reform-callout-nao-negras\">—</span> das não-negras trabalham como diaristas. Se a hipótese se confirma, a linha das negras deve subir mais rápido a partir de 2017Q4, e o hiato entre os dois grupos deve se alargar nesse período.",
+    "reform-cite": "Este painel é um teste visual de consistência para a hipótese DiD (difference-in-differences) do Prof. Jean-François Mayer, formulada em diálogo com Eliete Edwiges Barbosa: a expansão de direitos formais coexistiu com — e talvez tenha alimentado — uma reorganização contratual que descarregou o custo dos novos direitos sobre trabalhadoras agora classificadas como autônomas. A literatura sobre informalização racializada no Brasil (Pinheiro et al., IPEA; Acciari; Hirata) prevê o padrão; a inferência causal exige uma regressão DiD com janela 2015Q3–2019Q4 (excluindo COVID) — implementação no apêndice metodológico do capítulo em preparação.",
+    "reform-chart-title": "% diaristas por raça, 2012–2026",
+    "reform-chart-meta": "PNADC microdados V4024 · trimestre fixo · diarista = serviço em mais de 1 domicílio",
+    "reform-chart-source": "Fonte: PNADC microdados (IBGE), variável V4024 (serviço doméstico em mais de 1 domicílio — código 1 = sim → diarista, código 2 = não → mensalista), agregada por raça pela equipe do projeto. População: trabalhadoras(es) domésticas(os) com VD4009 ∈ {03, 04}. Pesos amostrais V1028 aplicados.",
+    "reform-legend-negras":     "% diaristas — negras (pretas + pardas)",
+    "reform-legend-nao-negras": "% diaristas — não-negras",
     "focus-sp-title": "Foco no estado de São Paulo",
     "focus-sp-subtitle": "Recorte específico do estado onde a STDMSP atua. Todos os números desta seção são agregados a partir dos microdados da PNAD Contínua, restritos à UF=SP. Itens fora deste recorte (cumprimento da LC 150 em SP, hiato salarial estadual, jornada e contribuição previdenciária) exigirão extensão da pipeline e ficam sinalizados ao final.",
     "focus-sp-kpi-total": "Trabalhadoras em SP",
@@ -1008,6 +1042,16 @@ const I18N = {
     "c189-title": "Legal status — ILO Convention 189",
     "c189-meta": "Year of ratification per country. C189 (Domestic Workers Convention, 2011) establishes rights equal to those of other categories of workers.",
     "c189-footnote": "Brazil ratified in January 2018, three years after LC 150/2015 came into force — meaning domestic legislation preceded the international commitment. Mexico only ratified in July 2020. Uruguay was the first country in the world to ratify, in June 2012. Source: NORMLEX (ILO).",
+    "reform-eyebrow": "Labor reform and the shift to day-rate work",
+    "reform-title": "The reform and the transition to day-rate work",
+    "reform-lead": "The standard reading of formalization treats rising signed-card rates as a protection vector. <strong>Mayer's hypothesis partly inverts that reading</strong>: if the EC 72/2013 + LC 150/2015 + 2017 Labor Reform package made the live-out monthly contract (<em>mensalista</em>) more expensive for employers, the structural response may have been a shift to day-rate (<em>diarista</em>) work — formally \"self-employed\", effectively re-informalized. And if real, that shift fell disproportionately on Black women.",
+    "reform-body": "The chart on the right is the visual test of the hypothesis. Two lines: % of domestic workers working as <em>diaristas</em>, split by race (Black vs. non-Black), across 56 quarters. Vertical markers at the inflection points: EC 72 (2013), LC 150 (2015), <strong>Labor Reform (2017Q4)</strong>, Brazil's C189 ratification (2018Q1), pandemic (2020Q1). In the latest quarter, <span id=\"reform-callout-negras\">—</span> of Black workers and <span id=\"reform-callout-nao-negras\">—</span> of non-Black workers are <em>diaristas</em>. If the hypothesis holds, the Black line should rise faster from 2017Q4 onward, and the gap between the two should widen across that window.",
+    "reform-cite": "This panel is a visual consistency check for Prof. Jean-François Mayer's difference-in-differences hypothesis, formulated in dialogue with Eliete Edwiges Barbosa: the expansion of formal rights coexisted with — and perhaps fuelled — a contractual reorganization that pushed the cost of those new rights onto workers now reclassified as self-employed. The literature on racialized informalization in Brazil (Pinheiro et al., IPEA; Acciari; Hirata) predicts the pattern; causal inference requires a DiD regression over 2015Q3–2019Q4 (excluding COVID) — implemented in the methodological appendix of the chapter in preparation.",
+    "reform-chart-title": "% day-rate by race, 2012–2026",
+    "reform-chart-meta": "PNADC microdata V4024 · fixed quarter · diarista = services in more than one household",
+    "reform-chart-source": "Source: PNADC microdata (IBGE), variable V4024 (domestic service in more than one household — code 1 = yes → diarista, code 2 = no → mensalista), aggregated by race by the project team. Population: domestic workers with VD4009 ∈ {03, 04}. V1028 sample weights applied.",
+    "reform-legend-negras":     "% diarista — Black (pretas + pardas)",
+    "reform-legend-nao-negras": "% diarista — non-Black",
     "focus-sp-title": "Focus on São Paulo state",
     "focus-sp-subtitle": "Specific cut for the state where STDMSP operates. All numbers in this section are aggregated from PNAD Contínua microdata, restricted to UF=SP. Items outside this cut (LC 150 enforcement in SP, state-level wage gap, hours, retirement contributions) require pipeline extensions and are flagged at the end.",
     "focus-sp-kpi-total": "Domestic workers in SP",
@@ -1119,7 +1163,7 @@ function showError(msg) {
   banner.innerHTML = `<div class="max-w-6xl mx-auto px-5 py-3 text-sm text-red-900"><strong>Erro:</strong> ${msg}</div>`;
 }
 
-const STATE = { workers: [], wages: [], hours: [], prev: [], intl: [], sources: [], staticFacts: {}, filters: { year: null, geo: "BR" } };
+const STATE = { workers: [], wages: [], hours: [], prev: [], contract: [], intl: [], sources: [], staticFacts: {}, filters: { year: null, geo: "BR" } };
 
 // Fetch ALL rows from a Supabase view, paging past the server's default
 // max-rows cap (often 1,000). Returns the concatenated array.
@@ -1152,7 +1196,7 @@ async function loadAll() {
   // Supabase remains the ETL target / source of truth; it is no longer a
   // runtime dependency. Re-export via etl/export_static.py after each
   // quarterly ETL refresh, then commit dashboard/data/.
-  const views = ["dw_workers","dw_wages","dw_hours","dw_prev","dw_education","dw_family","dw_housing","dw_age","dw_intl","dw_sources","dw_static_facts"];
+  const views = ["dw_workers","dw_wages","dw_hours","dw_prev","dw_education","dw_family","dw_housing","dw_age","dw_contract","dw_intl","dw_sources","dw_static_facts"];
   const data = {};
   let loadError = null;
 
@@ -1188,6 +1232,7 @@ async function loadAll() {
   STATE.family    = data.dw_family    || [];
   STATE.housing   = data.dw_housing   || [];
   STATE.age       = data.dw_age       || [];
+  STATE.contract  = data.dw_contract  || [];
   STATE.intl      = data.dw_intl      || [];
   STATE.sources   = data.dw_sources   || [];
   STATE.staticFacts = Object.fromEntries((data.dw_static_facts || []).map(r => [r.fact_code, r]));
@@ -1332,6 +1377,10 @@ const POLICY_EVENTS = [
     label_pt: "LC 150", label_en: "LC 150",
     note_pt: "Lei das Domésticas em vigor",
     note_en: "Domestic Workers' Law enters into force" },
+  { iso: "2017-11", code_movel: "201801", code_fixo: "201704",
+    label_pt: "Reforma Trabalhista", label_en: "Labor Reform",
+    note_pt: "Lei 13.467/2017 entra em vigor — flexibilização contratual ampla",
+    note_en: "Law 13.467/2017 enters into force — broad contract flexibilization" },
   { iso: "2018-01", code_movel: "201803", code_fixo: "201801",
     label_pt: "BR ratifica C189", label_en: "BR ratifies C189",
     note_pt: "Brasil ratifica a Convenção 189 da OIT",
@@ -1460,6 +1509,7 @@ function render() {
   renderEnforcement();
   renderFloor();
   renderHourly();
+  renderReform();
   renderFocusSP();
   renderSources();
   // "Data updated on" reflects the static-export timestamp (when the JSON was
@@ -3698,6 +3748,124 @@ function renderHourly() {
         y: {
           ticks: { callback: v => v + "%", font: { size: 11 } },
           title: { display: true, text: LANG === "pt" ? "Razão (%)" : "Ratio (%)", font: { size: 11 } },
+        },
+      },
+    },
+  });
+}
+
+// ============ A REFORMA E A TRANSIÇÃO PARA DIARISTA (Mayer DiD) ============
+// Plots % diarista by race over time. Visual hypothesis test: did the
+// 2017 Labor Reform (Lei 13.467/2017) accelerate the mensalista → diarista
+// transition, and was that acceleration race-differential?
+// Source: STATE.contract (dw_contract), V4024-derived.
+// Until the backfill runs, STATE.contract is [] and the overlay shows.
+
+function renderReform() {
+  const canvas = document.getElementById("chart-reform");
+  if (!canvas) return;
+  if (!STATE.contract || !STATE.contract.length) {
+    setEmpty("box-reform", true);
+    return;
+  }
+
+  // Filter to country BR / sex='T' / formality='total' / contract='diarista'
+  // / race in (preta_parda, nao_negras)
+  const rows = STATE.contract.filter(r =>
+    r.geo_level === "country"
+    && r.sex_code === "T"
+    && r.formality_code === "total"
+    && r.contract_code === "diarista"
+    && (r.race_code === "preta_parda" || r.race_code === "nao_negras")
+    && r.source_table === "PNADC-MICRODATA"
+  );
+  if (!rows.length) {
+    setEmpty("box-reform", true);
+    return;
+  }
+
+  const byPeriod = {};
+  for (const r of rows) {
+    const p = String(r.period_code);
+    if (!byPeriod[p]) byPeriod[p] = {};
+    byPeriod[p][r.race_code] = r.pct_within_race != null ? Number(r.pct_within_race) : null;
+  }
+
+  const periods = Object.keys(byPeriod).sort();
+  const valid = periods.filter(p =>
+    byPeriod[p].preta_parda != null && byPeriod[p].nao_negras != null
+  );
+  if (!valid.length) {
+    setEmpty("box-reform", true);
+    return;
+  }
+
+  const labels = valid.map(formatPeriodLabel);
+  const seriesNegras    = valid.map(p => byPeriod[p].preta_parda);
+  const seriesNaoNegras = valid.map(p => byPeriod[p].nao_negras);
+
+  // Inline callouts: latest values
+  const fmtPct = v => v == null
+    ? "—"
+    : `${v.toFixed(1).replace(".", LANG === "pt" ? "," : ".")}%`;
+  const callN = document.getElementById("reform-callout-negras");
+  const callNN = document.getElementById("reform-callout-nao-negras");
+  if (callN)  callN.textContent  = fmtPct(seriesNegras.at(-1));
+  if (callNN) callNN.textContent = fmtPct(seriesNaoNegras.at(-1));
+
+  setEmpty("box-reform", false);
+  destroyChart("reform");
+
+  charts.reform = new Chart(canvas, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: I18N[LANG]["reform-legend-negras"],
+          data: seriesNegras,
+          borderColor: "rgba(190, 30, 45, 1)",
+          backgroundColor: "rgba(190, 30, 45, 0.10)",
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.25,
+          spanGaps: true,
+        },
+        {
+          label: I18N[LANG]["reform-legend-nao-negras"],
+          data: seriesNaoNegras,
+          borderColor: "rgba(37, 99, 165, 1)",
+          backgroundColor: "rgba(37, 99, 165, 0.10)",
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.25,
+          spanGaps: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 14, boxHeight: 10, padding: 8, font: { size: 11 } } },
+        tooltip: {
+          callbacks: { label: ctx => `${ctx.dataset.label}: ${fmtPct(ctx.parsed.y)}` },
+        },
+        annotation: {
+          annotations: buildPolicyAnnotations(valid, "fixo"),
+        },
+      },
+      scales: {
+        x: {
+          ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 },
+          grid: { display: false },
+        },
+        y: {
+          ticks: { callback: v => v + "%", font: { size: 11 } },
+          title: { display: true, text: LANG === "pt" ? "% diaristas" : "% diarista", font: { size: 11 } },
+          beginAtZero: true,
         },
       },
     },

@@ -404,6 +404,21 @@
   </li>
 </ul>
 
+<h3>3.19 Reforma trabalhista e tipo de contrato (V4024, hipótese DiD)</h3>
+<ul>
+  <li><strong>Fonte</strong>: <code>PNADC-MICRODATA</code> — variável <code>V4024</code> ("Trabalha em serviço doméstico em mais de um domicílio?"). Mapeamento usado pelo projeto: <code>V4024 = 1</code> ("sim") → diarista; <code>V4024 = 2</code> ("não") → mensalista. Agregação por raça, sexo, formalidade, com pesos V1028; resultado materializado em <code>fact_contract</code> e exposto pela view <code>dw_contract</code>.</li>
+  <li><strong>O que o gráfico mostra</strong>: duas linhas trimestrais — % de trabalhadoras(es) domésticas(os) classificadas como diaristas dentro de cada grupo racial (negras = pretas + pardas; não-negras = brancas + amarelas + indígenas), 2012Q1 → trimestre mais recente. Marcações de política: EC 72/2013, LC 150/2015, <strong>Reforma Trabalhista (Lei 13.467/2017, em vigor 11/11/2017)</strong>, ratificação brasileira da C189 (jan/2018), pandemia (mar/2020).</li>
+  <li><strong>Hipótese sob teste</strong>: a hipótese DiD do Prof. Jean-François Mayer prevê que a Reforma Trabalhista de 2017 — ao flexibilizar contratos e reduzir o custo regulatório da informalidade — acelerou a substituição do contrato mensalista pelo contrato diarista, e que essa aceleração foi mais forte para trabalhadoras negras do que para trabalhadoras não-negras. O painel é um teste visual de consistência: se a hipótese for verdadeira, a linha das negras deve crescer mais rápido do que a das não-negras no período pós-2017Q4, alargando o hiato entre os dois grupos.</li>
+  <li><strong>Limites de identificação</strong>:
+    <ul>
+      <li><em>Não é DiD</em>: o painel mostra trajetórias paralelas, não estima um efeito causal. A inferência causal exige uma regressão DiD com janela restrita (2015Q3–2019Q4 para evitar contaminação COVID), grupo de controle apropriado (outras categorias informais comparáveis) e teste de tendências pré-tratamento. Esta análise vive no apêndice metodológico do capítulo em preparação, não neste painel.</li>
+      <li><em>V4024 não é equivalente formal de "diarista"</em>: a variável captura prestação em mais de um domicílio, que é a definição operacional da PNADC, mas pode misturar mensalistas que assumem horas em segunda residência. Tratar como proxy, não como medida exata.</li>
+      <li><em>Hiato pré-existente</em>: se as linhas já divergiam antes de 2017, a Reforma pode ter acelerado uma tendência prévia em vez de criá-la. A leitura editorial do painel reconhece isso.</li>
+    </ul>
+  </li>
+  <li><strong>Literatura</strong>: a previsão teórica do padrão vem de Pinheiro et al. (IPEA), Hirata, Acciari e Bernardino-Costa — informalização racializada como ajuste de baixa qualidade em mercados regulados.</li>
+</ul>
+
 <h2>4. Notas metodológicas</h2>
 
 <h3>4.1 Trimestre móvel × trimestre fixo</h3>
@@ -810,6 +825,21 @@ Mayer, J.-F., Roque, J., &amp; Sindicato das Trabalhadoras Domésticas do Munic�
       <li><em>The 4.33 conversion is approximate</em>. Months vary from 4 to 5 weeks; we use the average. For more precise analysis, multiply by specific months.</li>
     </ul>
   </li>
+</ul>
+
+<h3>3.19 Labor reform and contract type (V4024, DiD hypothesis)</h3>
+<ul>
+  <li><strong>Source</strong>: <code>PNADC-MICRODATA</code> — variable <code>V4024</code> ("Do you work in domestic service in more than one household?"). Project mapping: <code>V4024 = 1</code> ("yes") → diarista (day-rate); <code>V4024 = 2</code> ("no") → mensalista (live-out monthly). Aggregated by race, sex, formality, with V1028 weights; materialized in <code>fact_contract</code> and exposed through the <code>dw_contract</code> view.</li>
+  <li><strong>What the chart shows</strong>: two quarterly lines — % of domestic workers classified as diarista within each racial group (Black = pretas + pardas; non-Black = white + Asian + Indigenous), 2012Q1 → latest available quarter. Policy markers: EC 72/2013, LC 150/2015, <strong>Labor Reform (Law 13.467/2017, in force 2017-11-11)</strong>, Brazil's C189 ratification (Jan 2018), pandemic (Mar 2020).</li>
+  <li><strong>Hypothesis under test</strong>: Prof. Jean-François Mayer's DiD hypothesis predicts that the 2017 Labor Reform — by flexibilizing contracts and lowering the regulatory cost of informality — accelerated the substitution of mensalista contracts by diarista contracts, and that this acceleration was stronger for Black workers than for non-Black workers. The panel is a visual consistency check: if the hypothesis holds, the Black line should rise faster than the non-Black line in the post-2017Q4 window, widening the gap between the two groups.</li>
+  <li><strong>Identification limits</strong>:
+    <ul>
+      <li><em>This is not DiD</em>: the panel shows parallel trajectories, it does not estimate a causal effect. Causal inference requires a DiD regression with a restricted window (2015Q3–2019Q4 to avoid COVID contamination), an appropriate control group (other comparable informal categories), and a pre-trends test. That analysis lives in the methodological appendix of the chapter in preparation, not in this dashboard.</li>
+      <li><em>V4024 is not a formal equivalent of "diarista"</em>: the variable captures provision in more than one household, which is the PNADC's operational definition, but it can mix mensalistas who pick up hours in a second residence. Treat as proxy, not exact measure.</li>
+      <li><em>Pre-existing gap</em>: if the two lines were already diverging before 2017, the Reform may have accelerated a prior trend rather than created it. The editorial reading of the panel acknowledges this.</li>
+    </ul>
+  </li>
+  <li><strong>Literature</strong>: the theoretical prediction of this pattern comes from Pinheiro et al. (IPEA), Hirata, Acciari, and Bernardino-Costa — racialized informalization as low-quality adjustment in regulated markets.</li>
 </ul>
 
 <h2>4. Methodological notes</h2>

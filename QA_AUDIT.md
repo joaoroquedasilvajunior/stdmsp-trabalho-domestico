@@ -2586,6 +2586,69 @@ If the chart renders these, all good:
 
 ---
 
+## 2026-06-09 — Restored original diarista chart as section starting point
+
+### Trigger
+
+Joao noticed (screenshot) that the original V4024 % diarista by race
+time-series chart — the first chart we built when testing Mayer's
+hypothesis — had been removed from the dashboard during the pivot to
+the formal/informal mensalista panel. It was the literal starting
+point of the analysis, and removing it left the section reading like
+the convergence-to-the-floor finding came out of nowhere.
+
+### What changed
+
+Restored the diarista chart at the TOP of the Reform section, before
+the formal/informal mensalista pivot. New pedagogical flow inside
+`#reforma`:
+
+1. Section-level lead frames Mayer's hypothesis directly (the
+   prediction was a racially differential push to diarismo).
+2. Sub-section "Ponto de partida: a trajetória da diarização por raça"
+   shows the diarista chart — the direct hypothesis test. Two race
+   lines with the same policy markers as the other panels. Latest-quarter
+   callouts populate the editorial body ("32.2% das negras / 36.1%
+   das não-negras").
+3. Sub-section "Onde a história racializada vive: convergência ao
+   piso do mensalismo" opens with "Se a entrada em diarismo é
+   racialmente simétrica, onde está o efeito racializado da reforma?"
+   and proceeds into the existing two-chart pivot (formal/informal
+   mensalista).
+4. Geographic gradient and within-contract pricing follow as before.
+
+### Files changed
+
+- `dashboard/index.html` — new HTML for the diarista intro
+  sub-section + chart card, inserted between reform-lead and
+  reform-body. New `STATE.contract` consumer `renderReformDiarista()`
+  hooked into `render()` before `renderReform()`. New i18n keys
+  PT+EN: `reform-diarista-intro-title`,
+  `reform-diarista-intro-body`, `reform-diarista-chart-title`,
+  `reform-diarista-chart-meta`, `reform-pivot-title`.
+- Updated `reform-lead` PT+EN to frame Mayer's hypothesis directly
+  (used to lead into convergence-to-floor; now opens the test).
+- Updated `reform-body` PT+EN with a bridge sentence ("Se a entrada
+  em diarismo é racialmente simétrica, onde está o efeito racializado
+  da reforma?") so the formal/informal mensalista charts are framed
+  as the answer to the question the diarista chart raises.
+
+### Sanity-check expectations
+
+The restored chart should show:
+- Non-Black (blue) line above Black (red) line across all 56 quarters.
+- Both lines drifting upward (~22-25% in 2012Q1, ~32-36% in 2026Q1).
+- Sharp pandemic spike in 2020Q1-Q2.
+- ~4pp stable gap throughout.
+- Latest-quarter callouts in the intro: 32.2% (negras) / 36.1% (não-negras).
+- Policy markers visible: EC 72, LC 150, BR ratifies C189, MX ratifies C189.
+
+This is intentionally the chart that *does not* visually support
+Mayer's most direct prediction — that's the pedagogical point. The
+sub-panels below build the refined story from there.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

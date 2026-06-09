@@ -192,6 +192,7 @@ NEEDED_VARS = [
     "V2007",   # sex
     "V2009",   # idade na data de referência (Theme 2 — age cohorts)
     "V2010",   # cor/raça
+    "V4024",   # serviço doméstico em mais de 1 domicílio — mensalista (2) / diarista (1)
     "V4032",   # previdência contributor (1/2)
     "V4039",   # weekly hours (main job)
     "VD3004",  # nível de instrução mais elevado alcançado (D1 — education)
@@ -573,6 +574,18 @@ def age_to_band(age: int) -> str | None:
     if age < 60:
         return "45_59"
     return "60_plus"
+
+
+# V4024 — "Serviço doméstico em mais de 1 domicílio". The standard PNADC
+# operational definition of mensalista vs diarista. Used by Mayer's DiD
+# hypothesis to test whether the 2017 Labor Reform accelerated the
+# mensalista → diarista shift differentially by race.
+#   1 = sim (multiple homes) → diarista
+#   2 = não (single home)    → mensalista
+CONTRACT_MAP = {
+    "1": "diarista",
+    "2": "mensalista",
+}
 # PNADC V2007 (sexo) → our dim_sex.code
 SEX_MAP = {"1": "M", "2": "F"}
 # VD4009 (posição) → our dim_formality.code, restricted to trabalhador doméstico
@@ -1191,6 +1204,98 @@ def build_family_rows(df: pd.DataFrame, period: str) -> list[dict]:
     return rows
 
 
+def build_contract_rows(df: pd.DataFrame, period: str) -> list[dict]:
+    """Aggregate contract type (V4024: mensalista/diarista) for
+    trabalhadoras(es) domésticas(os) — Mayer DiD hypothesis support.
+
+    Emits per (race × contract_type × formality) cell:
+      - BR × sex='T' × race × contract × formality
+      - preta_parda × contract × formality
+      - nao_negras × contract × formality
+      - race='total' × contract × formality
+
+    Three contract values: mensalista, diarista, total
+    Three formality values: com_carteira, sem_carteira, total
+
+    Per quarter: ~5 races × 3 contracts × 3 formality + aggregates ≈ 80 rows.
+    Full backfill: ~4.5k rows.
+
+    Why include formality cross-tab: lets us test BOTH:
+      (a) Did the diarista share rise post-2017 differentially by race?
+      (b) Did the % com carteira within mensalistas fall post-2017?
+    These two are jointly informative about the Mayer hypothesis: if (a) is
+    positive but (b) is null, the racialized informalization works via
+    contract-type substitution; if (b) is also negative, employers shifted
+    even formal mensalistas toward informal arrangements.
+    """
+    df = df.copy()
+    df["weight"] = pd.to_numeric(df["V1028"], errors="coerce")
+    if df["weight"].max() > 1e9:
+        df["weight"] = df["weight"] / 1e9
+
+    DOMESTIC_CODES = ["03", "04"]
+    dom = df[df["VD4009"].isin(DOMESTIC_CODES) & df["weight"].notna()].copy()
+    dom["race_code"] = dom["V2010"].map(RACE_MAP)
+    dom["formality_code"] = dom["VD4009"].map(FORMALITY_MAP)
+    dom["v4024_raw"] = dom["V4024"].astype(str).str.strip()
+    dom["contract_code"] = dom["v4024_raw"].map(CONTRACT_MAP)
+    dom = dom[dom["race_code"].notna() & dom["formality_code"].notna() & dom["contract_code"].notna()]
+
+    db_period = microdata_period_to_db_code(period)
+    rows: list[dict] = []
+
+    CONTRACT_BUCKETS = ["mensalista", "diarista"]
+    FORMALITY_BUCKETS = ["com_carteira", "sem_carteira"]
+
+    def _row(race, contract, formality, w_sum, w_race_total, n):
+        if w_sum is None or w_sum == 0:
+            return None
+        pct = round(100 * w_sum / w_race_total, 2) if w_race_total else None
+        return {
+            "_period_code": db_period,
+            "_geo_code": "BR", "_geo_level": "country",
+            "_sex": "T", "_race": race, "_contract": contract, "_formality": formality,
+            "workers_thousands": round(float(w_sum) / 1000.0, 2),
+            "pct_within_race": pct,
+            "n_unweighted": int(n),
+        }
+
+    def emit_for_subset(race_label: str, subset: pd.DataFrame):
+        total_w = subset["weight"].sum()
+        # contract × formality cells
+        for ct in CONTRACT_BUCKETS:
+            for fm in FORMALITY_BUCKETS:
+                g = subset[(subset["contract_code"] == ct) & (subset["formality_code"] == fm)]
+                r = _row(race_label, ct, fm, g["weight"].sum(), total_w, len(g))
+                if r:
+                    rows.append(r)
+        # contract × formality='total'
+        for ct in CONTRACT_BUCKETS:
+            g = subset[subset["contract_code"] == ct]
+            r = _row(race_label, ct, "total", g["weight"].sum(), total_w, len(g))
+            if r:
+                rows.append(r)
+        # contract='total' × formality
+        for fm in FORMALITY_BUCKETS:
+            g = subset[subset["formality_code"] == fm]
+            r = _row(race_label, "total", fm, g["weight"].sum(), total_w, len(g))
+            if r:
+                rows.append(r)
+        # contract='total' × formality='total' — race totals
+        r = _row(race_label, "total", "total", total_w, total_w, len(subset))
+        if r:
+            rows.append(r)
+
+    for race, g in dom.groupby("race_code"):
+        emit_for_subset(race, g)
+
+    emit_for_subset("preta_parda", dom[dom["race_code"].isin(["preta", "parda"])])
+    emit_for_subset("nao_negras", dom[dom["race_code"].isin(["branca", "amarela", "indigena"])])
+    emit_for_subset("total", dom)
+
+    return rows
+
+
 def build_age_rows(df: pd.DataFrame, period: str) -> list[dict]:
     """Aggregate age bands (V2009) for trabalhadoras(es) domésticas(os).
 
@@ -1662,6 +1767,48 @@ def upsert_family_to_supabase(rows: list[dict]) -> int:
     return inserted
 
 
+def upsert_contract_to_supabase(rows: list[dict]) -> int:
+    """Push contract-type rows into domestic_work.fact_contract."""
+    sb = get_supabase_client()
+    if sb is None or not rows:
+        return 0
+    schema = sb.schema("domestic_work")
+    time_lookup = {r["period_code"]: r["time_id"] for r in schema.table("dim_time").select("period_code,time_id").execute().data}
+    geo_lookup = {(r["level"], r["code"]): r["geo_id"] for r in schema.table("dim_geo").select("level,code,geo_id").execute().data}
+    race_lookup = {r["code"]: r["race_id"] for r in schema.table("dim_race").select("code,race_id").execute().data}
+    sex_lookup = {r["code"]: r["sex_id"] for r in schema.table("dim_sex").select("code,sex_id").execute().data}
+    formality_lookup = {r["code"]: r["formality_id"] for r in schema.table("dim_formality").select("code,formality_id").execute().data}
+    contract_lookup = {r["code"]: r["contract_id"] for r in schema.table("dim_contract").select("code,contract_id").execute().data}
+
+    payload = []
+    for r in rows:
+        try:
+            payload.append({
+                "time_id":     time_lookup[r["_period_code"]],
+                "geo_id":      geo_lookup[(r["_geo_level"], r["_geo_code"])],
+                "sex_id":      sex_lookup[r["_sex"]],
+                "race_id":     race_lookup[r["_race"]],
+                "contract_id": contract_lookup[r["_contract"]],
+                "formality_id": formality_lookup[r["_formality"]],
+                "workers_thousands": r["workers_thousands"],
+                "pct_within_race":   r["pct_within_race"],
+                "n_unweighted":      r["n_unweighted"],
+                "source_table":      SOURCE_TABLE_TAG,
+            })
+        except KeyError as e:
+            log.warning("missing dim lookup for contract row %s: %s", r, e)
+
+    inserted = 0
+    for i in range(0, len(payload), 250):
+        chunk = payload[i:i + 250]
+        res = schema.table("fact_contract").upsert(
+            chunk,
+            on_conflict="time_id,geo_id,sex_id,race_id,contract_id,formality_id,source_table",
+        ).execute()
+        inserted += len(res.data or [])
+    return inserted
+
+
 def upsert_age_to_supabase(rows: list[dict]) -> int:
     """Push age-band rows into domestic_work.fact_age."""
     sb = get_supabase_client()
@@ -1918,6 +2065,18 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
                               and r["_age_band"] == "under_29"), None)
     pct_under29_negras = age_negra_under29["pct_within_race"] if age_negra_under29 else None
 
+    # ---- contract type (fact_contract, Mayer DiD hypothesis) ----
+    contract_rows = build_contract_rows(df, period)
+    # Diagnostic: % diarista for total race and for negras (both)
+    ct_total_dia = next((r for r in contract_rows
+                         if r["_geo_code"] == "BR" and r["_race"] == "total"
+                         and r["_contract"] == "diarista" and r["_formality"] == "total"), None)
+    pct_diarista_total = ct_total_dia["pct_within_race"] if ct_total_dia else None
+    ct_negra_dia = next((r for r in contract_rows
+                         if r["_geo_code"] == "BR" and r["_race"] == "preta_parda"
+                         and r["_contract"] == "diarista" and r["_formality"] == "total"), None)
+    pct_diarista_negras = ct_negra_dia["pct_within_race"] if ct_negra_dia else None
+
     # NOTE: housing (D3) is NOT computed here — see etl/pnadc_annual_housing.py.
     # V0212 is in PNADC ANNUAL, not quarterly.
 
@@ -1939,33 +2098,38 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
         inserted_edu = upsert_education_to_supabase(edu_rows)
         inserted_fam = upsert_family_to_supabase(fam_rows)
         inserted_age = upsert_age_to_supabase(age_rows)
-        log.info("[%s] upserted %d work + %d wage + %d hour + %d prev + %d edu + %d fam + %d age · "
+        inserted_ct = upsert_contract_to_supabase(contract_rows)
+        log.info("[%s] upserted %d work + %d wage + %d hour + %d prev + %d edu + %d fam + %d age + %d ct · "
                  "total %.0fk · pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · "
                  "wage gap %s%% · horas méd %s · %% previdência %s%% · "
                  "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%% · "
                  "wage chefes negras R$%s vs n.negras R$%s (gap %s%%) · "
-                 "%% under_29 (total/negras) %s%%/%s%%",
+                 "%% under_29 (total/negras) %s%%/%s%% · "
+                 "%% diarista (total/negras) %s%%/%s%%",
                  period, inserted_workers, inserted_wages, inserted_hours, inserted_prev,
-                 inserted_edu, inserted_fam, inserted_age,
+                 inserted_edu, inserted_fam, inserted_age, inserted_ct,
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
                  mean_hours, pct_prev_total, pct_fund_inc_negras,
                  pct_chefe_total, pct_chefe_negras,
                  wage_chefe_negras, wage_chefe_nao_negras, chefe_wage_gap_pct,
-                 pct_under29_total, pct_under29_negras)
+                 pct_under29_total, pct_under29_negras,
+                 pct_diarista_total, pct_diarista_negras)
     else:
-        log.info("[%s] (dry run) %d work + %d wage + %d hour + %d prev + %d edu + %d fam + %d age · "
+        log.info("[%s] (dry run) %d work + %d wage + %d hour + %d prev + %d edu + %d fam + %d age + %d ct · "
                  "total %.0fk · pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · "
                  "wage gap %s%% · horas méd %s · %% previdência %s%% · "
                  "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%% · "
                  "wage chefes negras R$%s vs n.negras R$%s (gap %s%%) · "
-                 "%% under_29 (total/negras) %s%%/%s%%",
+                 "%% under_29 (total/negras) %s%%/%s%% · "
+                 "%% diarista (total/negras) %s%%/%s%%",
                  period, len(rows), len(wage_rows), len(hours_rows), len(prev_rows),
-                 len(edu_rows), len(fam_rows), len(age_rows),
+                 len(edu_rows), len(fam_rows), len(age_rows), len(contract_rows),
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
                  mean_hours, pct_prev_total, pct_fund_inc_negras,
                  pct_chefe_total, pct_chefe_negras,
                  wage_chefe_negras, wage_chefe_nao_negras, chefe_wage_gap_pct,
-                 pct_under29_total, pct_under29_negras)
+                 pct_under29_total, pct_under29_negras,
+                 pct_diarista_total, pct_diarista_negras)
 
     return {"period": period, "total_workers_k": n_dom, "pct_negras": pct_negras,
             "pct_negras_sp": pct_negras_sp, "pct_mulheres": pct_mulheres,
@@ -1978,7 +2142,9 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
             "wage_chefe_nao_negras": wage_chefe_nao_negras,
             "chefe_wage_gap_pct": chefe_wage_gap_pct,
             "pct_under29_total": pct_under29_total,
-            "pct_under29_negras": pct_under29_negras}
+            "pct_under29_negras": pct_under29_negras,
+            "pct_diarista_total": pct_diarista_total,
+            "pct_diarista_negras": pct_diarista_negras}
 
 
 # ----- main --------------------------------------------------------------------

@@ -2045,6 +2045,137 @@ makes that choice empirically visible.
 
 ---
 
+## 2026-06-09 — V4024 / contract-type pipeline + "A reforma e a transição para diarista" panel
+
+### Trigger
+
+Conversation with Jean-François Mayer about the paper with Eliete Edwiges Barbosa
+surfaced a sharper version of the formalization narrative: the 2017 Labor
+Reform (Lei 13.467/2017), paired with the LC 150/2015 cost increase on the
+mensalista contract, may have *accelerated* the substitution of mensalista
+by diarista work — and that acceleration may have hit Black workers harder.
+The dashboard had no contract-type series to visualize this; the only
+mensalista/diarista signal lived in SIDRA Table 6383, which is too coarse
+for a 56-quarter race × contract panel.
+
+### Schema (applied via Supabase MCP migration `contract_type_mayer_did`)
+
+- New dim: `domestic_work.dim_contract` with codes `mensalista`, `diarista`,
+  `total`.
+- New fact: `domestic_work.fact_contract` with columns
+  `workers_thousands`, `pct_within_race`, `n_unweighted`; unique key
+  `(time_id, geo_id, sex_id, race_id, contract_id, formality_id, source_table)`.
+- New view: `public.dw_contract` (security_invoker=true) + RLS + public_read
+  policy + standard grants.
+
+### Pipeline (`etl/pnadc_microdata.py`)
+
+- `V4024` added to `NEEDED_VARS` (serviço doméstico em mais de 1 domicílio).
+- `CONTRACT_MAP` constant: `V4024=1` → diarista; `V4024=2` → mensalista.
+- New `build_contract_rows()` emits BR × sex='T' × race × contract ×
+  formality cells, with aggregates for `preta_parda`, `nao_negras`, `total`.
+  ~80 rows per quarter.
+- New `upsert_contract_to_supabase()` — chunked upserts of 250 to
+  `fact_contract` with dim lookups for time/geo/race/sex/formality/contract.
+- Wired into `process_period()` with diagnostic: `% diarista (total/negras)`.
+
+### Export (`etl/export_static.py`)
+
+- `dw_contract` added to `VIEWS` list, between `dw_age` and `dw_intl`.
+
+### Dashboard (`dashboard/index.html`)
+
+- New `STATE.contract` slot in the global state object; loaded from
+  `data/dw_contract.json`.
+- Empty placeholder JSON `dashboard/data/dw_contract.json = []` shipped
+  so the dashboard build doesn't 404 before the backfill lands.
+- New section "A reforma e a transição para diarista" inserted between
+  the Hourly section and Foco em SP. Two-column layout: editorial copy
+  on the left (eyebrow + title + lead + body + scholarly cite),
+  chart on the right (`canvas#chart-reform` inside `#box-reform`).
+- New i18n entries (PT + EN) for: `reform-eyebrow`, `reform-title`,
+  `reform-lead`, `reform-body`, `reform-cite`, `reform-chart-title`,
+  `reform-chart-meta`, `reform-chart-source`, `reform-legend-negras`,
+  `reform-legend-nao-negras`.
+- New `renderReform()` function: filters
+  `STATE.contract` to `country / sex=T / formality=total / contract=diarista
+  / race in (preta_parda, nao_negras) / source_table=PNADC-MICRODATA`,
+  builds a 2-line time series (% diaristas by race), reuses
+  `buildPolicyAnnotations(periods, "fixo")` so the 2017 Labor Reform marker
+  appears in context with EC 72, LC 150, C189 ratification, COVID.
+- New `POLICY_EVENTS` entry: `code_fixo "201704"` for the Labor Reform
+  (Lei 13.467/2017, in force 2017-11-11).
+- Inline callouts in the editorial body (`#reform-callout-negras`,
+  `#reform-callout-nao-negras`) populated by `renderReform()` once data
+  is loaded; show "—" until backfill.
+
+### Methodology (`dashboard/metodologia.html`)
+
+- New §3.19 added in both PT and EN: "Reforma trabalhista e tipo de
+  contrato (V4024, hipótese DiD)". Documents:
+  - Source (V4024) and mapping (1 → diarista, 2 → mensalista).
+  - What the chart shows (two race lines over 56 quarters with policy
+    markers).
+  - The DiD hypothesis being visually tested.
+  - Three identification limits: not DiD (panel is visual only), V4024
+    proxy nature, and pre-existing trend risk.
+  - Literature anchors (Pinheiro, Hirata, Acciari, Bernardino-Costa).
+
+### Why the panel ships empty for now
+
+The pipeline writes to `fact_contract` from `process_period()`, but
+the backfill runs on Joao's Mac and takes ~1 day for all 56 quarters
+(2012Q1 → 2026Q1). Until that runs, the chart shows the standard
+"Sem dados ainda. Aguardando backfill com V4024." overlay. The
+editorial copy is intentionally complete so the section is reviewable
+by Mayer and Eliete as soon as the V4024 data lands — no second pass
+on copy needed.
+
+### Editorial framing
+
+The PT/EN copy is careful to call the panel a "visual consistency
+check" (in PT: "teste visual de consistência"), not a causal claim.
+The scholarly cite paragraph explicitly says causal inference lives
+in the chapter's methodological appendix, not the dashboard. This
+matches the "researcher voice for academic claims, union voice for
+STDMSP-facing claims" split that the rest of the dashboard already
+maintains.
+
+### Run sequence on Joao's Mac
+
+```bash
+cd ~/Documents/Claude/Domestic\ Work
+python etl/pnadc_microdata.py --all     # ~1 day, writes to fact_contract
+python etl/export_static.py             # regenerates data/dw_contract.json
+bash etl/refresh.sh                     # convenience wrapper if it exists
+git add etl/pnadc_microdata.py etl/export_static.py dashboard/
+git commit -m "feat(reform): V4024 contract-type pipeline + Mayer DiD panel"
+git push
+```
+
+### Sanity-check expectations
+
+When the backfill completes, expect:
+- `% diarista (total)` around 30–34 % at 4T 2025 (consistent with audit
+  item D above: DIEESE says 30–32 %; our PNADC-microdata estimate at
+  4T 2025 was 33.66 %).
+- `% diarista (preta_parda)` slightly higher than `% diarista (nao_negras)`
+  in the 2017Q4–2019Q4 window if Mayer's hypothesis has the predicted sign.
+- Series should show visible breaks around 2017Q4 (Reform), 2020Q1 (COVID
+  pulled many mensalistas into diarista or out of category entirely), and
+  a partial recovery from 2022 onward.
+
+### Outstanding
+
+- DiD regression for the academic paper (out of dashboard scope — lives
+  in the chapter's methodological appendix).
+- Future cross-tab: hourly wage × contract type × race. Mayer will
+  probably want this for the regression appendix. Schema already supports
+  it (`fact_wages` has hourly; `fact_contract` has the contract dim);
+  needs an aggregation pass over the joined cell.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

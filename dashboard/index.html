@@ -641,6 +641,17 @@
       <div class="chart-box" id="box-reform-geo"><canvas id="chart-reform-geo"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
       <p class="text-xs text-gray-500 mt-2" data-i18n="reform-geo-chart-source">Fonte: PNADC microdados (IBGE), agregação UF × raça × formalidade de <code>fact_workers</code> pela equipe do projeto. Nota metodológica: o recorte UF usa "% com carteira" como proxy de "% mensalismo formal" — a diferença é o pequeno bucket de diaristas com carteira (~3–4pp). O recorte preciso (via <code>fact_contract</code> com granularidade UF) está em fila como extensão futura do pipeline; ver §3.19 da metodologia.</p>
     </div>
+    <!-- Wage sub-panel: where pricing racializes within the same contract -->
+    <div class="mt-8 max-w-3xl">
+      <h3 class="text-lg font-medium mb-2" data-i18n="reform-wage-title">Onde o preço da hora racializa: dentro do contrato diarista</h3>
+      <p class="text-sm text-gray-700 mb-3 leading-relaxed" data-i18n="reform-wage-body">A última peça do quebra-cabeça é o preço da hora. Quando comparamos o que uma trabalhadora negra ganha por hora <em>dentro do mesmo tipo de contrato</em>, descobrimos algo crucial: <strong>o mensalismo equipara salários por hora; o diarismo racializa</strong>. Dentro do contrato mensalista (que cobre ~75% da categoria), trabalhadoras negras recebem 96,6% do que recebem trabalhadoras não-negras por hora — um hiato praticamente fechado. Dentro do contrato diarista (~25% da categoria), elas recebem apenas 84,3% — um desconto racial de cerca de 16% por hora pelo mesmo tipo de serviço. Isso reformula o que a expansão do diarismo pós-reforma significou: para trabalhadoras não-negras, o diarismo paga R$ 14,12 por hora contra R$ 10,68 do mensalismo — um prêmio limpo. Para trabalhadoras negras, paga R$ 11,90 contra R$ 10,32 — um prêmio apenas marginal. A discriminação racial não está em quem se torna diarista (as taxas são similares por raça), mas em quanto se paga a cada uma pela mesma hora.</p>
+    </div>
+    <div class="border rule rounded-lg p-4 bg-white">
+      <h4 class="text-base font-medium" data-i18n="reform-wage-chart-title">Hiato salarial por hora dentro do contrato — 1T 2026</h4>
+      <p class="text-xs text-gray-500 mb-3" data-i18n="reform-wage-chart-meta">% da remuneração por hora · trabalhadora negra ÷ trabalhadora não-negra × 100 · snapshot do último trimestre disponível</p>
+      <div class="chart-box" id="box-reform-wage" style="height: 200px;"><canvas id="chart-reform-wage"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+      <p class="text-xs text-gray-500 mt-2" data-i18n="reform-wage-chart-source">Fonte: PNADC microdados 1T 2026, agregação BR-wide (sexo='T', V4024 × VD4009 × V2010) pelo script <code>etl/probe_wage_contract.py</code>. Snapshot trimestral único; extensão para série temporal completa (fact_wages com dimensão contrato) está na fila como tarefa #70. Amostras: mensalismo n=5.254 (negras) + 1.917 (não-negras); diarismo n=2.158 (negras) + 954 (não-negras). Ver §3.20 da metodologia.</p>
+    </div>
     <p class="text-xs text-gray-500 mt-3 max-w-3xl" data-i18n="reform-chart-source">Fonte (painéis BR-wide acima): PNADC microdados (IBGE), variável V4024 (serviço doméstico em mais de 1 domicílio — diarista vs. mensalista) cruzada com VD4009 (posição na ocupação — com vs. sem carteira), agregada por raça pela equipe do projeto. População: trabalhadoras(es) domésticas(os) com VD4009 ∈ {03 = com carteira, 04 = sem carteira}. Pesos amostrais V1028 aplicados.</p>
     <p class="text-xs text-gray-600 italic mt-4 max-w-3xl" data-i18n="reform-cite">Este painel refina a hipótese DiD (difference-in-differences) do Prof. Jean-François Mayer. A leitura inicial — que a reforma teria empurrado trabalhadoras negras para o trabalho diarista informalizado — não se confirma visualmente no contrato em si: a transição para diarista ocorreu em ritmo similar nas duas raças. A história racializada vive no <em>contrato mensalista</em>: a reforma de 2017, junto com EC 72 e LC 150, contribuiu para a erosão do mensalismo formal — mas atingiu mais fortemente as trabalhadoras não-negras, que tinham mais proteção a perder. Para as trabalhadoras negras, o regime informal já era a regra estrutural antes da reforma — herança da casa-grande e do trabalho residente. A literatura sobre informalização racializada (Pinheiro et al., IPEA; Acciari; Hirata; Bernardino-Costa) prevê esse padrão estrutural; a inferência causal exige uma regressão DiD com janela 2015Q3–2019Q4 (excluindo COVID) — implementação no apêndice metodológico do capítulo em preparação.</p>
   </div>
@@ -905,6 +916,15 @@ const I18N = {
     "reform-geo-chart-meta":   "% com carteira (proxy do mensalismo formal) · 4 estados · trimestre fixo",
     "reform-geo-chart-source": "Fonte: PNADC microdados (IBGE), agregação UF × raça × formalidade de <code>fact_workers</code> pela equipe do projeto. Nota metodológica: o recorte UF usa \"% com carteira\" como proxy de \"% mensalismo formal\" — a diferença é o pequeno bucket de diaristas com carteira (~3–4pp). O recorte preciso (via <code>fact_contract</code> com granularidade UF) está em fila como extensão futura do pipeline; ver §3.19 da metodologia.",
     "reform-geo-y-title": "Pontos percentuais perdidos",
+    "reform-wage-title": "Onde o preço da hora racializa: dentro do contrato diarista",
+    "reform-wage-body":  "A última peça do quebra-cabeça é o preço da hora. Quando comparamos o que uma trabalhadora negra ganha por hora <em>dentro do mesmo tipo de contrato</em>, descobrimos algo crucial: <strong>o mensalismo equipara salários por hora; o diarismo racializa</strong>. Dentro do contrato mensalista (que cobre ~75% da categoria), trabalhadoras negras recebem 96,6% do que recebem trabalhadoras não-negras por hora — um hiato praticamente fechado. Dentro do contrato diarista (~25% da categoria), elas recebem apenas 84,3% — um desconto racial de cerca de 16% por hora pelo mesmo tipo de serviço. Isso reformula o que a expansão do diarismo pós-reforma significou: para trabalhadoras não-negras, o diarismo paga R$ 14,12 por hora contra R$ 10,68 do mensalismo — um prêmio limpo. Para trabalhadoras negras, paga R$ 11,90 contra R$ 10,32 — um prêmio apenas marginal. A discriminação racial não está em quem se torna diarista (as taxas são similares por raça), mas em quanto se paga a cada uma pela mesma hora.",
+    "reform-wage-chart-title":  "Hiato salarial por hora dentro do contrato — 1T 2026",
+    "reform-wage-chart-meta":   "% da remuneração por hora · trabalhadora negra ÷ trabalhadora não-negra × 100 · snapshot do último trimestre disponível",
+    "reform-wage-chart-source": "Fonte: PNADC microdados 1T 2026, agregação BR-wide (sexo='T', V4024 × VD4009 × V2010) pelo script <code>etl/probe_wage_contract.py</code>. Snapshot trimestral único; extensão para série temporal completa (fact_wages com dimensão contrato) está na fila como tarefa #70. Amostras: mensalismo n=5.254 (negras) + 1.917 (não-negras); diarismo n=2.158 (negras) + 954 (não-negras). Ver §3.20 da metodologia.",
+    "reform-wage-cat-mensalista": "Mensalismo",
+    "reform-wage-cat-diarista":   "Diarismo",
+    "reform-wage-x-title": "% paridade salarial por hora",
+    "reform-wage-parity-label": "Paridade (100%)",
     "focus-sp-title": "Foco no estado de São Paulo",
     "focus-sp-subtitle": "Recorte específico do estado onde a STDMSP atua. Todos os números desta seção são agregados a partir dos microdados da PNAD Contínua, restritos à UF=SP. Itens fora deste recorte (cumprimento da LC 150 em SP, hiato salarial estadual, jornada e contribuição previdenciária) exigirão extensão da pipeline e ficam sinalizados ao final.",
     "focus-sp-kpi-total": "Trabalhadoras em SP",
@@ -1088,6 +1108,15 @@ const I18N = {
     "reform-geo-chart-meta":   "% with signed card (proxy for formal mensalista) · 4 states · fixed quarter",
     "reform-geo-chart-source": "Source: PNADC microdata (IBGE), UF × race × formality aggregation of <code>fact_workers</code> by the project team. Methodological note: the UF cut uses \"% with signed card\" as a proxy for \"% formal mensalista\" — the difference is the small bucket of signed-card diaristas (~3–4pp). The precise cut (via <code>fact_contract</code> with UF granularity) is queued as a future pipeline extension; see §3.19 of the methodology.",
     "reform-geo-y-title": "Percentage points lost",
+    "reform-wage-title": "Where hourly pricing racializes: inside the diarista contract",
+    "reform-wage-body":  "The final piece of the puzzle is the price per hour. When we compare what a Black worker earns per hour <em>within the same contract type</em>, we find something crucial: <strong>monthly contracts equalize hourly pay; day-rate contracts racialize it</strong>. Within the monthly contract (which covers ~75% of the category), Black workers receive 96.6% of what non-Black workers receive per hour — a nearly closed gap. Within the day-rate contract (~25% of the category), they receive only 84.3% — a racial discount of about 16% per hour for the same type of service. This reframes what the post-Reform expansion of day-rate work meant: for non-Black workers, day-rate pays R$ 14.12 per hour versus R$ 10.68 for monthly — a clean premium. For Black workers, it pays R$ 11.90 versus R$ 10.32 — only a marginal premium. Racial discrimination is not in who becomes a diarista (rates are similar by race), but in how much each is paid for the same hour.",
+    "reform-wage-chart-title":  "Hourly wage gap within contract — 2026Q1",
+    "reform-wage-chart-meta":   "% of hourly pay · Black ÷ non-Black × 100 · latest available quarter snapshot",
+    "reform-wage-chart-source": "Source: PNADC microdata 2026Q1, BR-wide aggregation (sex='T', V4024 × VD4009 × V2010) by the <code>etl/probe_wage_contract.py</code> script. Single-quarter snapshot; full time-series extension (fact_wages with contract dimension) is queued as task #70. Samples: monthly n=5,254 (Black) + 1,917 (non-Black); day-rate n=2,158 (Black) + 954 (non-Black). See §3.20 of the methodology.",
+    "reform-wage-cat-mensalista": "Monthly contract",
+    "reform-wage-cat-diarista":   "Day-rate contract",
+    "reform-wage-x-title": "% hourly pay parity",
+    "reform-wage-parity-label": "Parity (100%)",
     "focus-sp-title": "Focus on São Paulo state",
     "focus-sp-subtitle": "Specific cut for the state where STDMSP operates. All numbers in this section are aggregated from PNAD Contínua microdata, restricted to UF=SP. Items outside this cut (LC 150 enforcement in SP, state-level wage gap, hours, retirement contributions) require pipeline extensions and are flagged at the end.",
     "focus-sp-kpi-total": "Domestic workers in SP",
@@ -1199,7 +1228,7 @@ function showError(msg) {
   banner.innerHTML = `<div class="max-w-6xl mx-auto px-5 py-3 text-sm text-red-900"><strong>Erro:</strong> ${msg}</div>`;
 }
 
-const STATE = { workers: [], wages: [], hours: [], prev: [], contract: [], intl: [], sources: [], staticFacts: {}, filters: { year: null, geo: "BR" } };
+const STATE = { workers: [], wages: [], hours: [], prev: [], contract: [], intl: [], sources: [], staticFacts: {}, wageContractSnapshot: null, filters: { year: null, geo: "BR" } };
 
 // Fetch ALL rows from a Supabase view, paging past the server's default
 // max-rows cap (often 1,000). Returns the concatenated array.
@@ -1269,6 +1298,14 @@ async function loadAll() {
   STATE.housing   = data.dw_housing   || [];
   STATE.age       = data.dw_age       || [];
   STATE.contract  = data.dw_contract  || [];
+  // Single-quarter wage × contract × formality snapshot (manually probed)
+  try {
+    const snapResp = await fetch('./data/wage_contract_snapshot.json');
+    STATE.wageContractSnapshot = snapResp.ok ? await snapResp.json() : null;
+  } catch (e) {
+    console.warn('wage_contract_snapshot.json fetch failed:', e.message);
+    STATE.wageContractSnapshot = null;
+  }
   STATE.intl      = data.dw_intl      || [];
   STATE.sources   = data.dw_sources   || [];
   STATE.staticFacts = Object.fromEntries((data.dw_static_facts || []).map(r => [r.fact_code, r]));
@@ -1547,6 +1584,7 @@ function render() {
   renderHourly();
   renderReform();
   renderReformGeo();
+  renderReformWage();
   renderFocusSP();
   renderSources();
   // "Data updated on" reflects the static-export timestamp (when the JSON was
@@ -4042,6 +4080,109 @@ function renderReformGeo() {
           beginAtZero: true,
           title: { display: true, text: I18N[LANG]["reform-geo-y-title"], font: { size: 11 } },
           ticks: { callback: v => v + "pp", font: { size: 11 } },
+        },
+      },
+    },
+  });
+}
+
+// ============ A REFORMA — HIATO POR HORA DENTRO DO CONTRATO ============
+// Single-quarter (2026Q1) snapshot of the hourly racial wage gap within
+// each contract type. The headline finding from the probe:
+//   - Within mensalismo (75% of category): 96.6% — nearly closed
+//   - Within diarismo  (25% of category): 84.3% — 15.7pp racial discount
+// The Reform's expansion of diarismo lifted wages for both races but with
+// a racial price discount applied — composition is symmetric, pricing
+// is not. Sourced from dashboard/data/wage_contract_snapshot.json,
+// generated by etl/probe_wage_contract.py 012026.
+
+function renderReformWage() {
+  const canvas = document.getElementById("chart-reform-wage");
+  if (!canvas) return;
+  const snap = STATE.wageContractSnapshot;
+  if (!snap || !snap.by_contract) {
+    setEmpty("box-reform-wage", true);
+    return;
+  }
+
+  const M = snap.by_contract.mensalista;
+  const D = snap.by_contract.diarista;
+  if (M == null || D == null) {
+    setEmpty("box-reform-wage", true);
+    return;
+  }
+
+  const fmtPct = v => v == null
+    ? "—"
+    : `${v.toFixed(1).replace(".", LANG === "pt" ? "," : ".")}%`;
+  const fmtBRL = v => v == null
+    ? "—"
+    : `R$ ${v.toFixed(2).replace(".", LANG === "pt" ? "," : ".")}`;
+  const fmtNum = v => v.toLocaleString(LANG === "pt" ? "pt-BR" : "en-CA");
+
+  setEmpty("box-reform-wage", false);
+  destroyChart("reformWage");
+
+  charts.reformWage = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels: [I18N[LANG]["reform-wage-cat-mensalista"], I18N[LANG]["reform-wage-cat-diarista"]],
+      datasets: [{
+        label: I18N[LANG]["reform-wage-x-title"],
+        data: [M.hourly_gap_pct, D.hourly_gap_pct],
+        backgroundColor: ["rgba(190, 30, 45, 0.85)", "rgba(190, 30, 45, 0.85)"],
+        borderColor: "rgba(190, 30, 45, 1)",
+        borderWidth: 1,
+      }],
+    },
+    options: {
+      indexAxis: 'y', // horizontal bars — value axis is x
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const k = ctx.dataIndex === 0 ? M : D;
+              return [
+                `${fmtPct(ctx.parsed.x)} (paridade = 100%)`,
+                `${fmtBRL(k.hourly_negras)}/h (negras) vs ${fmtBRL(k.hourly_nao_negras)}/h (não-negras)`,
+                `n = ${fmtNum(k.n_negras)} (negras) + ${fmtNum(k.n_nao_negras)} (não-negras)`,
+              ];
+            },
+          },
+        },
+        annotation: {
+          annotations: {
+            parity: {
+              type: 'line',
+              xMin: 100, xMax: 100,
+              borderColor: 'rgba(0,0,0,0.5)',
+              borderWidth: 1,
+              borderDash: [4, 4],
+              label: {
+                display: true,
+                content: I18N[LANG]["reform-wage-parity-label"],
+                position: 'end',
+                backgroundColor: 'rgba(255,255,255,0.85)',
+                color: 'rgba(0,0,0,0.7)',
+                font: { size: 10 },
+                padding: 4,
+              },
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          min: 70, max: 105,
+          title: { display: true, text: I18N[LANG]["reform-wage-x-title"], font: { size: 11 } },
+          ticks: { callback: v => v + "%", font: { size: 11 } },
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 13 } },
         },
       },
     },

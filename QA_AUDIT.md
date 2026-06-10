@@ -2649,6 +2649,124 @@ sub-panels below build the refined story from there.
 
 ---
 
+## 2026-06-09 — General-population baseline + overrepresentation index
+
+### Trigger
+
+Joao flagged that the UF choropleth ("Mapa: composição racial por
+UF") and other "% pretas+pardas" displays are missing a population
+baseline, which leads to misreading. The SC paradox: Santa Catarina
+reads as "low racialization" on the raw map (~25% Black domestic
+workers) but its general-population baseline is ~23% Black, meaning
+Black women are at near-parity overrepresentation in SC — same as
+Bahia — while states like Paraná (35% sector / ~35% general pop →
+~1.9×) and São Paulo (60% sector / 43% general pop → ~1.4×) are
+*more* racialized in relative terms. Without the baseline, the
+state-by-state ranking inverts.
+
+### Approach
+
+Wrote a new probe `etl/probe_general_pop_race.py` that streams the
+same cached PNADC microdata in chunks, applies NO domestic-worker
+filter (VD4009 filter removed), keeps all rows with valid race
+(V2010 ∈ {1..5}), and computes V1028-weighted % pretas+pardas
+BR-wide and per UF. Ran on 2026Q1; output saved to
+`dashboard/data/general_pop_race.json`. Run time ~25 seconds on the
+1.7GB extracted txt.
+
+### What the probe showed (2026Q1)
+
+BR baseline: 59.14% pretas + pardas in the general population.
+
+UF baselines (% pretas + pardas, sorted by surprise factor):
+
+| UF | general pop. | domestic workers | overrep ratio |
+|----|-------------:|-----------------:|--------------:|
+| BR | 59.1% | ~67.5% | ~1.14× |
+| BA | 80.2% | ~90% (existing map) | ~1.12× |
+| PE | 66.0% | ~67% | ~1.02× |
+| RJ | 56.3% | ~55% | ~0.98× |
+| MG | 59.9% | ~67% | ~1.13× |
+| SP | 42.8% | ~60% | ~1.40× |
+| PR | 35.4% | ~70% (typical) | ~1.97× |
+| SC | 22.6% | ~25% | ~1.11× |
+| RS | (similar to SC) | — | high |
+
+The state ranking by absolute share suggests BA/PE most racialized
+and SC least. The state ranking by overrepresentation suggests
+PR/SP/SC most racialized in *relative* terms.
+
+### Dashboard changes
+
+Files changed:
+- `etl/probe_general_pop_race.py` — new probe script (analogous to
+  `probe_wage_contract.py` in design, chunked streaming for memory
+  efficiency). Computes baselines BR + per-UF.
+- `dashboard/data/general_pop_race.json` — new static reference
+  data file. BR baseline + 27 UF baselines + period metadata.
+- `dashboard/index.html`:
+  - `STATE.generalPopRace` slot, fetched alongside dw_* views.
+  - New `MAP_BUCKETS_OVERREP` (6 buckets from <1.00 to ≥1.80).
+  - `computeMapData()` now attaches `pct_negras_baseline` and
+    `overrep_ratio` to each UF data cell.
+  - Map tooltip enhanced with three new lines: % Black in
+    general population, overrepresentation index (color-coded),
+    and the existing % Black in sector + CI + sample size.
+  - Third map dimension toggle button: "Sobrerrepresentação" /
+    "Overrepresentation". `renderMapUF()` dispatches color
+    bucket choice on the new dim.
+  - `renderMapLegend()` handles the new dim with a translated
+    legend label.
+  - KPI tile "% Black (pretas+pardas)" meta line now appends
+    " · pop. geral BR: 59.1% · sobrerrep.: <strong>1.14×</strong>"
+    when on BR view (innerHTML; safe because values are
+    project-computed numerics).
+  - Race-composition-over-time chart meta text now states the
+    BR general-pop baseline (parda 45.3%, branca 43.5%, preta
+    10.2%) so readers can compare lines against population.
+  - Map source paragraph PT+EN now leads with the population
+    baseline caveat + the SC example.
+- `dashboard/metodologia.html`:
+  - New §4.5 PT+EN, "Linha de base populacional e índice de
+    sobrerrepresentação" / "Population baseline and
+    overrepresentation index". Four paragraphs: the problem
+    (with the SC paradox worked example), the index definition,
+    the baseline data source, where this appears in the dashboard,
+    plus a limitation note on race-only baseline (vs. race × sex).
+
+### Sanity-check expectations
+
+After deploy:
+- Open the UF map, hover SC. Tooltip should show: "% pretas + pardas
+  (no setor): ~25%", "% pretas + pardas (pop. geral): 22.6%",
+  "Índice de sobrerrepresentação: ~1,11×" (color-coded muted gray
+  since it's <1.30).
+- Hover SP. Tooltip should show ~60% sector, 42.8% general pop, ~1.40×
+  (color-coded amber since 1.30-1.50).
+- Hover PR. Tooltip should show ~70% sector, 35.4% general pop, ~1.97×
+  (color-coded deep red since ≥1.80).
+- Click "Sobrerrepresentação" button. Map recolors with the new
+  buckets — SC/SP/PR turn into orange/red while BA cools to the
+  middle range.
+- KPI tile for BR: "% Negras (pretas + pardas)" shows ~67.5%, meta
+  line adds "· pop. geral BR: 59,1% · sobrerrep.: 1,14×".
+
+### Outstanding
+
+- Reform geographic sub-panel (`#chart-reform-geo`) bars do not
+  yet have baseline tooltips. The bar chart shows "pp lost in
+  formal mensalista by UF × race" which is a different metric
+  from racial composition, but the same UFs appear, so a follow-up
+  pass could add baselines to its tooltips for completeness.
+- The baseline is by race but NOT by race × sex. Since ~92% of
+  domestic workers are women, the ideal denominator would be the
+  female-only general-population baseline. The §4.5 limitations
+  paragraph flags this; refinement queued informally.
+- When PNADC 2T 2026 lands, re-run `probe_general_pop_race.py
+  022026` and regenerate `general_pop_race.json`.
+
+---
+
 ## Sources
 
 - [PNAD Contínua — IBGE](https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html)

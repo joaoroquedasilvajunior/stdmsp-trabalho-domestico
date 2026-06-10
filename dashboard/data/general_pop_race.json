@@ -1,0 +1,214 @@
+{
+  "period_code": "202601",
+  "period_label_pt": "1T 2026",
+  "period_label_en": "2026Q1",
+  "generated_by": "etl/probe_general_pop_race.py 012026",
+  "source": "PNADC-MICRODATA",
+  "notes": "General-population race composition (NOT restricted to domestic workers). Used as baseline for overrepresentation calculations. Re-run when a new PNADC quarter is ingested.",
+  "br_baseline": {
+    "pct_negras": 59.14,
+    "pct_nao_negras": 40.86,
+    "n": 414809,
+    "weighted_total_thousands": 180503.4
+  },
+  "uf_baselines": [
+    {
+      "uf_code": "11",
+      "uf_name_pt": "Rondônia",
+      "uf_name_en": "Rondônia",
+      "pct_negras": 68.07,
+      "pct_nao_negras": 31.93,
+      "n": 9111,
+      "weighted_total_thousands": 1744.7
+    },
+    {
+      "uf_code": "12",
+      "uf_name_pt": "Acre",
+      "uf_name_en": "Acre",
+      "pct_negras": 78.7,
+      "pct_nao_negras": 21.3,
+      "n": 9416,
+      "weighted_total_thousands": 866.8
+    },
+    {
+      "uf_code": "13",
+      "uf_name_pt": "Amazonas",
+      "uf_name_en": "Amazonas",
+      "pct_negras": 79.82,
+      "pct_nao_negras": 20.18,
+      "n": 14907,
+      "weighted_total_thousands": 4187.0
+    },
+    {
+      "uf_code": "14",
+      "uf_name_pt": "Roraima",
+      "uf_name_en": "Roraima",
+      "pct_negras": 73.81,
+      "pct_nao_negras": 26.19,
+      "n": 5950,
+      "weighted_total_thousands": 660.8
+    },
+    {
+      "uf_code": "15",
+      "uf_name_pt": "Pará",
+      "uf_name_en": "Pará",
+      "pct_negras": 80.64,
+      "pct_nao_negras": 19.36,
+      "n": 20345,
+      "weighted_total_thousands": 8695.8
+    },
+    {
+      "uf_code": "16",
+      "uf_name_pt": "Amapá",
+      "uf_name_en": "Amapá",
+      "pct_negras": 75.21,
+      "pct_nao_negras": 24.79,
+      "n": 5334,
+      "weighted_total_thousands": 801.5
+    },
+    {
+      "uf_code": "17",
+      "uf_name_pt": "Tocantins",
+      "uf_name_en": "Tocantins",
+      "pct_negras": 76.72,
+      "pct_nao_negras": 23.28,
+      "n": 7728,
+      "weighted_total_thousands": 1576.7
+    },
+    {
+      "uf_code": "21",
+      "uf_name_pt": "Maranhão",
+      "uf_name_en": "Maranhão",
+      "pct_negras": 81.25,
+      "pct_nao_negras": 18.75,
+      "n": 31843,
+      "weighted_total_thousands": 6984.9
+    },
+    {
+      "uf_code": "22",
+      "uf_name_pt": "Piauí",
+      "uf_name_en": "Piauí",
+      "pct_negras": 79.46,
+      "pct_nao_negras": 20.54,
+      "n": 12337,
+      "weighted_total_thousands": 3388.9
+    },
+    {
+      "uf_code": "23",
+      "uf_name_pt": "Ceará",
+      "uf_name_en": "Ceará",
+      "pct_negras": 73.38,
+      "pct_nao_negras": 26.62,
+      "n": 23734,
+      "weighted_total_thousands": 9275.1
+    },
+    {
+      "uf_code": "24",
+      "uf_name_pt": "Rio Grande do Norte",
+      "uf_name_en": "Rio Grande do Norte",
+      "pct_negras": 60.8,
+      "pct_nao_negras": 39.2,
+      "n": 10197,
+      "weighted_total_thousands": 3464.2
+    },
+    {
+      "uf_code": "25",
+      "uf_name_pt": "Paraíba",
+      "uf_name_en": "Paraíba",
+      "pct_negras": 65.42,
+      "pct_nao_negras": 34.58,
+      "n": 15917,
+      "weighted_total_thousands": 4149.1
+    },
+    {
+      "uf_code": "26",
+      "uf_name_pt": "Pernambuco",
+      "uf_name_en": "Pernambuco",
+      "pct_negras": 66.0,
+      "pct_nao_negras": 34.0,
+      "n": 19479,
+      "weighted_total_thousands": 9523.5
+    },
+    {
+      "uf_code": "27",
+      "uf_name_pt": "Alagoas",
+      "uf_name_en": "Alagoas",
+      "pct_negras": 72.06,
+      "pct_nao_negras": 27.94,
+      "n": 19750,
+      "weighted_total_thousands": 3213.8
+    },
+    {
+      "uf_code": "28",
+      "uf_name_pt": "Sergipe",
+      "uf_name_en": "Sergipe",
+      "pct_negras": 74.94,
+      "pct_nao_negras": 25.06,
+      "n": 9318,
+      "weighted_total_thousands": 2305.9
+    },
+    {
+      "uf_code": "29",
+      "uf_name_pt": "Bahia",
+      "uf_name_en": "Bahia",
+      "pct_negras": 80.22,
+      "pct_nao_negras": 19.78,
+      "n": 24235,
+      "weighted_total_thousands": 14866.2
+    },
+    {
+      "uf_code": "31",
+      "uf_name_pt": "Minas Gerais",
+      "uf_name_en": "Minas Gerais",
+      "pct_negras": 59.85,
+      "pct_nao_negras": 40.15,
+      "n": 38914,
+      "weighted_total_thousands": 21430.0
+    },
+    {
+      "uf_code": "32",
+      "uf_name_pt": "Espírito Santo",
+      "uf_name_en": "Espírito Santo",
+      "pct_negras": 62.83,
+      "pct_nao_negras": 37.17,
+      "n": 18156,
+      "weighted_total_thousands": 4139.7
+    },
+    {
+      "uf_code": "33",
+      "uf_name_pt": "Rio de Janeiro",
+      "uf_name_en": "Rio de Janeiro",
+      "pct_negras": 56.26,
+      "pct_nao_negras": 43.74,
+      "n": 33681,
+      "weighted_total_thousands": 17248.5
+    },
+    {
+      "uf_code": "35",
+      "uf_name_pt": "São Paulo",
+      "uf_name_en": "São Paulo",
+      "pct_negras": 42.78,
+      "pct_nao_negras": 57.22,
+      "n": 39519,
+      "weighted_total_thousands": 46184.7
+    },
+    {
+      "uf_code": "41",
+      "uf_name_pt": "Paraná",
+      "uf_name_en": "Paraná",
+      "pct_negras": 35.4,
+      "pct_nao_negras": 64.6,
+      "n": 29855,
+      "weighted_total_thousands": 11914.2
+    },
+    {
+      "uf_code": "42",
+      "uf_name_pt": "Santa Catarina",
+      "uf_name_en": "Santa Catarina",
+      "pct_negras": 22.6,
+      "pct_nao_negras": 77.4,
+      "n": 15083,
+      "weighted_total_thousands": 3881.4
+    }
+  ]
+}

@@ -383,7 +383,8 @@
 
     <div class="map-controls">
       <div class="map-toggle" role="group" aria-label="Map dimension">
-        <button data-map-dim="pct_negras" aria-pressed="true" data-i18n="map-dim-negras">% Negras</button>
+        <button data-map-dim="pct_negras" aria-pressed="true" data-i18n="map-dim-negras">% Negras (setor)</button>
+        <button data-map-dim="overrep" aria-pressed="false" data-i18n="map-dim-overrep">Sobrerrepresentação</button>
         <button data-map-dim="total" aria-pressed="false" data-i18n="map-dim-total">Total (milhares)</button>
       </div>
       <span class="text-xs text-gray-500" data-i18n="map-period-hint">Período: <span id="map-period-label">—</span> · use o filtro de Ano acima para mudar</span>
@@ -396,7 +397,7 @@
     </div>
     <div class="map-legend" id="map-legend" aria-hidden="true"></div>
 
-    <p class="text-xs text-gray-500 mt-3" data-i18n="chart-map-source">Fonte: PNAD Contínua microdados (IBGE), agregado pela equipe do projeto. UFs com população amostral pequena (e.g., RR, AP) podem ter estimativas mais ruidosas.</p>
+    <p class="text-xs text-gray-500 mt-3" data-i18n="chart-map-source">Fonte: PNAD Contínua microdados (IBGE), agregado pela equipe do projeto. <strong>Linha de base populacional:</strong> o tooltip mostra também a % pretas + pardas na população geral de cada estado (computada da mesma PNADC, sem filtro de categoria) e o índice de sobrerrepresentação (% no setor ÷ % na população geral). Um estado pode ter baixa % no setor e ainda assim apresentar alta sobrerrepresentação se sua população geral tiver poucas pretas + pardas — é o caso de Santa Catarina (~25% no setor / ~23% na população geral). Ver §4.5 da metodologia. UFs com amostra pequena (e.g., RR, AP) podem ter estimativas mais ruidosas.</p>
   </article>
 
   <article class="border rule rounded-lg p-4 bg-white md:col-span-2">
@@ -804,7 +805,7 @@ const I18N = {
     "chart-mensalista": "Mensalistas vs. diaristas",
     "chart-mensalista-meta": "% diaristas (mais de 1 domicílio) · proteção mais fraca sob LC 150/2015",
     "chart-race": "Composição por cor/raça ao longo do tempo",
-    "chart-race-meta": "% do total · PNAD Contínua microdados · computado, não atribuído",
+    "chart-race-meta": "% do total · PNAD Contínua microdados · computado · linha de base populacional BR (1T 2026): pardas 45,3%, brancas 43,5%, pretas 10,2% — domésticas são mais pretas+pardas que a população geral",
     "chart-wage-gap": "Hiato salarial racial ao longo do tempo",
     "chart-wage-gap-meta": "% que negras recebem em relação a não-negras · PNAD Contínua microdados · computado",
     "wage-gap-narrative": "Para cada R$ 100 recebidos por uma trabalhadora doméstica não-negra, uma trabalhadora doméstica negra recebe R$ 76.",
@@ -814,8 +815,9 @@ const I18N = {
     "chart-br-prev-meta": "% de trabalhadoras domésticas que contribuíram para a previdência na semana de referência · PNADC microdados V4032 · por raça",
     "chart-map": "Mapa: composição racial por UF",
     "chart-map-meta": "% pretas + pardas entre trabalhadoras(es) domésticas(os), por estado · PNADC microdados · computado",
-    "chart-map-source": "Fonte: PNAD Contínua microdados (IBGE), agregado pela equipe do projeto. UFs com população amostral pequena (e.g., RR, AP) podem ter estimativas mais ruidosas.",
-    "map-dim-negras": "% Negras",
+    "chart-map-source": "Fonte: PNAD Contínua microdados (IBGE), agregado pela equipe do projeto. <strong>Linha de base populacional:</strong> o tooltip mostra também a % pretas + pardas na população geral de cada estado (computada da mesma PNADC, sem filtro de categoria) e o índice de sobrerrepresentação (% no setor ÷ % na população geral). Um estado pode ter baixa % no setor e ainda assim apresentar alta sobrerrepresentação se sua população geral tiver poucas pretas + pardas — é o caso de Santa Catarina (~25% no setor / ~23% na população geral). Ver §4.5 da metodologia. UFs com amostra pequena (e.g., RR, AP) podem ter estimativas mais ruidosas.",
+    "map-dim-negras": "% Negras (no setor)",
+    "map-dim-overrep": "Sobrerrepresentação",
     "map-dim-total": "Total (milhares)",
     "map-period-hint-pre": "Período:",
     "map-period-hint-post": "· use o filtro de Ano acima para mudar",
@@ -1001,7 +1003,7 @@ const I18N = {
     "chart-mensalista": "Monthly workers vs. day-rate workers",
     "chart-mensalista-meta": "% day-rate (multiple households) · weaker protection under LC 150/2015",
     "chart-race": "Race composition over time",
-    "chart-race-meta": "% of total · PNADC microdata · computed, not attributed",
+    "chart-race-meta": "% of total · PNADC microdata · computed · BR population baseline (2026Q1): brown 45.3%, white 43.5%, black 10.2% — domestic workers are more Black+brown than the general population",
     "chart-wage-gap": "Racial wage gap over time",
     "chart-wage-gap-meta": "% Black workers earn vs. non-Black · PNADC microdata · computed",
     "wage-gap-narrative": "For every R$ 100 earned by a non-Black domestic worker, a Black domestic worker earns R$ 76.",
@@ -1011,8 +1013,9 @@ const I18N = {
     "chart-br-prev-meta": "% of domestic workers contributing to previdência in the reference week · PNADC microdata V4032 · by race",
     "chart-map": "Map: race composition by state",
     "chart-map-meta": "% pretas + pardas (Black) among domestic workers, by state · PNADC microdata · computed",
-    "chart-map-source": "Source: PNAD Contínua microdata (IBGE), aggregated by the project team. States with small sample sizes (e.g., RR, AP) may have noisier estimates.",
-    "map-dim-negras": "% Black",
+    "chart-map-source": "Source: PNAD Contínua microdata (IBGE), aggregated by the project team. <strong>Population baseline:</strong> the tooltip also shows the % Black in each state's general population (computed from the same PNADC, no category filter) and the overrepresentation index (% in domestic work ÷ % in general population). A state can have a low % in the sector and still show high overrepresentation if its general population has few Black residents — that's the case for Santa Catarina (~25% in the sector / ~23% in general population). See §4.5 of the methodology. States with small sample sizes (e.g., RR, AP) may have noisier estimates.",
+    "map-dim-negras": "% Black (in domestic work)",
+    "map-dim-overrep": "Overrepresentation",
     "map-dim-total": "Headcount (thousands)",
     "map-period-hint-pre": "Period:",
     "map-period-hint-post": "· use the Year filter above to change",
@@ -1252,7 +1255,7 @@ function showError(msg) {
   banner.innerHTML = `<div class="max-w-6xl mx-auto px-5 py-3 text-sm text-red-900"><strong>Erro:</strong> ${msg}</div>`;
 }
 
-const STATE = { workers: [], wages: [], hours: [], prev: [], contract: [], intl: [], sources: [], staticFacts: {}, wageContractSnapshot: null, filters: { year: null, geo: "BR" } };
+const STATE = { workers: [], wages: [], hours: [], prev: [], contract: [], intl: [], sources: [], staticFacts: {}, wageContractSnapshot: null, generalPopRace: null, filters: { year: null, geo: "BR" } };
 
 // Fetch ALL rows from a Supabase view, paging past the server's default
 // max-rows cap (often 1,000). Returns the concatenated array.
@@ -1329,6 +1332,17 @@ async function loadAll() {
   } catch (e) {
     console.warn('wage_contract_snapshot.json fetch failed:', e.message);
     STATE.wageContractSnapshot = null;
+  }
+  // General-population race composition baseline (BR + by UF) — used to
+  // contextualize all "% pretas+pardas among domestic workers" displays with
+  // the corresponding population denominator. Computed from the same PNADC
+  // microdata, no VD4009 filter. Generated by etl/probe_general_pop_race.py.
+  try {
+    const baselineResp = await fetch('./data/general_pop_race.json');
+    STATE.generalPopRace = baselineResp.ok ? await baselineResp.json() : null;
+  } catch (e) {
+    console.warn('general_pop_race.json fetch failed:', e.message);
+    STATE.generalPopRace = null;
   }
   STATE.intl      = data.dw_intl      || [];
   STATE.sources   = data.dw_sources   || [];
@@ -1703,9 +1717,27 @@ function renderKpis() {
   const dieeseTag   = LANG === "pt" ? "fonte: DIEESE · BR" : "source: DIEESE · BR";
   const onlyBR      = LANG === "pt" ? "disponível só para Brasil" : "available for Brazil only";
   const womenMeta  = !isBR ? onlyBR : (computedWomen  != null ? computedTag : dieeseTag);
-  const negrasMeta = !isBR ? onlyBR : (computedNegras != null ? computedTag : dieeseTag);
+  let negrasMeta = !isBR ? onlyBR : (computedNegras != null ? computedTag : dieeseTag);
+  // Append the general-population baseline + overrepresentation ratio when
+  // available (BR view only). This is the context Joao flagged: without it,
+  // the "% pretas + pardas" reads as the headline racial fact without a
+  // denominator. Baseline source: dashboard/data/general_pop_race.json.
+  if (isBR && STATE.generalPopRace && STATE.generalPopRace.br_baseline && negrasPct != null) {
+    const baseline = STATE.generalPopRace.br_baseline.pct_negras;
+    const overrep = baseline > 0 ? negrasPct / baseline : null;
+    const fmtPct = v => fmt(v, 1) + "%";
+    const decSep = LANG === "pt" ? "," : ".";
+    const ratioStr = overrep != null ? overrep.toFixed(2).replace(".", decSep) + "×" : "—";
+    const baselineFrag = LANG === "pt"
+      ? ` · pop. geral BR: ${fmtPct(baseline)} · sobrerrep.: <strong>${ratioStr}</strong>`
+      : ` · BR general pop.: ${fmtPct(baseline)} · overrep.: <strong>${ratioStr}</strong>`;
+    negrasMeta = negrasMeta + baselineFrag;
+  }
   setText("kpi-women-meta", womenMeta);
-  setText("kpi-black-meta", negrasMeta);
+  // KPI meta line uses innerHTML now (to render the bold ratio); setText would
+  // escape. Safe because the values are project-computed numerics, not user input.
+  const negrasMetaEl = document.getElementById("kpi-black-meta");
+  if (negrasMetaEl) negrasMetaEl.innerHTML = negrasMeta;
 }
 
 function renderTrend() {
@@ -2205,6 +2237,19 @@ const MAP_BUCKETS_TOTAL = [
   { upper: 800,  color: "#dc2626", label: "400–800" },
   { upper: 9e9,  color: "#7f1d1d", label: "≥800k" },
 ];
+// Overrepresentation index = (% pretas+pardas in domestic work) ÷
+// (% pretas+pardas in general population, same UF). Reads as: how
+// much more concentrated Black women are in domestic work, relative
+// to the local population baseline. 1.0 = parity; > 1 = overrepresented;
+// < 1 = underrepresented.
+const MAP_BUCKETS_OVERREP = [
+  { upper: 1.00, color: "#dbeafe", label: "<1,00 (sub)" },
+  { upper: 1.15, color: "#fef3c7", label: "1,00–1,15" },
+  { upper: 1.30, color: "#fde68a", label: "1,15–1,30" },
+  { upper: 1.50, color: "#fbbf24", label: "1,30–1,50" },
+  { upper: 1.80, color: "#f97316", label: "1,50–1,80" },
+  { upper: 99,   color: "#7f1d1d", label: "≥1,80" },
+];
 
 function colorForValue(v, buckets) {
   if (v == null || isNaN(v)) return "#e5e7eb";   // muted grey for missing
@@ -2266,6 +2311,19 @@ function computeMapData(periodCode) {
     byUf[code].name_pt = r.geo_name_pt;
     byUf[code].name_en = r.geo_name_en;
   }
+  // Attach general-population baseline + overrepresentation ratio for each UF.
+  // Baseline source: dashboard/data/general_pop_race.json (computed from PNADC
+  // microdata at the latest available quarter, no VD4009 filter). The
+  // overrepresentation ratio is the central insight this map is now built
+  // around: a state's absolute % Black domestic workers can read as "low
+  // racialization" when in fact Black women are heavily overrepresented
+  // relative to the state's general-population baseline (the SC paradox).
+  const baselinesByUf = {};
+  if (STATE.generalPopRace && Array.isArray(STATE.generalPopRace.uf_baselines)) {
+    for (const b of STATE.generalPopRace.uf_baselines) {
+      baselinesByUf[String(b.uf_code).padStart(2, "0")] = b;
+    }
+  }
   for (const code of Object.keys(byUf)) {
     const d = byUf[code];
     d.pct_negras = (d.total_k && d.negras_k != null)
@@ -2280,6 +2338,17 @@ function computeMapData(periodCode) {
       d.precision_flag = d.n_total < 30 ? "suppress"
                        : d.n_total < 100 ? "low"
                        : null;
+    }
+    // General-population baseline (% Black) + overrepresentation ratio.
+    const baseline = baselinesByUf[code];
+    if (baseline && baseline.pct_negras > 0) {
+      d.pct_negras_baseline = baseline.pct_negras;
+      d.overrep_ratio = d.pct_negras != null
+        ? d.pct_negras / baseline.pct_negras
+        : null;
+    } else {
+      d.pct_negras_baseline = null;
+      d.overrep_ratio = null;
     }
   }
   return byUf;
@@ -2318,9 +2387,14 @@ function pickMapPeriod() {
 function renderMapLegend(buckets, dimension) {
   const host = document.getElementById("map-legend");
   if (!host) return;
-  const lblPre = LANG === "pt"
-    ? (dimension === "pct_negras" ? "% Negras:" : "Total (mil):")
-    : (dimension === "pct_negras" ? "% Black:"  : "Headcount (k):");
+  let lblPre;
+  if (dimension === "pct_negras") {
+    lblPre = LANG === "pt" ? "% Negras (setor):" : "% Black (sector):";
+  } else if (dimension === "overrep") {
+    lblPre = LANG === "pt" ? "Sobrerrep. (setor ÷ pop. geral):" : "Overrep. (sector ÷ general pop.):";
+  } else {
+    lblPre = LANG === "pt" ? "Total (mil):" : "Headcount (k):";
+  }
   let html = `<span class="lbl">${lblPre}</span>`;
   for (const b of buckets) {
     html += `<span class="swatch" style="background:${b.color}"></span><span class="lbl">${b.label}</span>`;
@@ -2348,7 +2422,7 @@ function onMapHover(ev) {
   const total = data.total_k != null ? fmt(data.total_k, 1) : "—";
 
   const totalLabel = LANG === "pt" ? "Total trabalhadoras(es) domésticas" : "Total domestic workers";
-  const negrasLabel = LANG === "pt" ? "% pretas + pardas" : "% Black (pretas + pardas)";
+  const negrasLabel = LANG === "pt" ? "% pretas + pardas (no setor)" : "% Black (in domestic work)";
 
   // 95% confidence interval line (only when n_unweighted is available)
   let ciLine = "";
@@ -2370,9 +2444,32 @@ function onMapHover(ev) {
     precisionLine = `<div class="sub" style="color: #6b7280;">n = ${data.n_total}</div>`;
   }
 
+  // Baseline + overrepresentation lines — the methodological context Joao
+  // flagged. Without these, a state like SC reads as "low racialization"
+  // (~25% Black domestic workers) when it is actually heavily racialized
+  // (overrep ratio ~1.7× against the ~15% Black general-population baseline).
+  const baselineLabel = LANG === "pt" ? "% pretas + pardas (pop. geral)" : "% Black (general pop.)";
+  const overrepLabel  = LANG === "pt" ? "Índice de sobrerrepresentação" : "Overrepresentation index";
+  let baselineLine = "", overrepLine = "";
+  if (data.pct_negras_baseline != null) {
+    baselineLine = `<div class="num sub">${baselineLabel}: ${data.pct_negras_baseline.toFixed(1)}%</div>`;
+  }
+  if (data.overrep_ratio != null) {
+    const decimalSep = LANG === "pt" ? "," : ".";
+    const ratioStr = data.overrep_ratio.toFixed(2).replace(".", decimalSep) + "×";
+    // Color-code the ratio: muted under-/at-parity, accent for substantial overrep.
+    const ratioColor = data.overrep_ratio >= 1.30 ? "#b91c1c"
+                     : data.overrep_ratio >= 1.10 ? "#ca8a04"
+                     : data.overrep_ratio >= 1.00 ? "#374151"
+                     : "#2563eb"; // underrep — rare but informative
+    overrepLine = `<div class="num"><span style="color:${ratioColor};font-weight:600;">${overrepLabel}: ${ratioStr}</span></div>`;
+  }
+
   tooltip.innerHTML = `
     <div class="ttl">${name} <span class="sub">(${sigla})</span></div>
     <div class="num">${negrasLabel}: <b>${pct}</b></div>
+    ${baselineLine}
+    ${overrepLine}
     ${ciLine}
     <div class="num sub">${totalLabel}: ${total} ${LANG === "pt" ? "mil" : "thousand"}</div>
     ${precisionLine}
@@ -2409,7 +2506,9 @@ async function renderMapUF() {
   _mapTooltipDataCache = byUf;
 
   const dim = MAP_STATE.dimension;
-  const buckets = (dim === "pct_negras") ? MAP_BUCKETS_PCT_NEGRAS : MAP_BUCKETS_TOTAL;
+  const buckets = (dim === "pct_negras") ? MAP_BUCKETS_PCT_NEGRAS
+                : (dim === "overrep")    ? MAP_BUCKETS_OVERREP
+                                         : MAP_BUCKETS_TOTAL;
 
   // Color all paths
   const svg = document.querySelector("#map-svg-host svg");
@@ -2418,7 +2517,9 @@ async function renderMapUF() {
     const code = path.id.replace(/^uf-/, "");
     const d = byUf[code];
     let v = null;
-    if (d) v = (dim === "pct_negras") ? d.pct_negras : d.total_k;
+    if (d) v = (dim === "pct_negras") ? d.pct_negras
+            : (dim === "overrep")    ? d.overrep_ratio
+                                     : d.total_k;
     // Suppress very-small-sample cells visually so readers don't anchor on
     // unreliable estimates. The tooltip still shows the value + the warning.
     if (d && d.precision_flag === "suppress") {

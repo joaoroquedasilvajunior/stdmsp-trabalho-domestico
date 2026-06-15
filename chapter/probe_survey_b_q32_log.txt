@@ -1,0 +1,44 @@
+16:09:15  INFO     loading Survey B from /Users/joaoroque/Documents/Claude/Domestic Work/Final version May_2023.xlsx
+16:09:15  INFO     loaded 241 rows × 115 columns
+16:09:15  INFO     persisted normalized filiação column → /Users/joaoroque/Documents/Claude/Domestic Work/chapter/survey_harmonized/survey_b_q32_union.csv
+
+## Pesquisa B — Colunas com palavras-chave sindical/filiação
+
+| # | Coluna | Keyword |
+|---|---|---|
+| 1 | 32 - Você pertence a um sindicato?  | `sindic` |
+
+## Distribuição de respostas por coluna candidata
+
+### `32 - Você pertence a um sindicato? `
+
+  n válidas: 231 de 241 (95.9%)
+
+  | Resposta | n |
+  |---|---:|
+  | Não | 159 |
+  | Sim | 72 |
+
+
+## Headline — coluna escolhida (mais respostas válidas):
+
+`32 - Você pertence a um sindicato? `
+
+n válidas: 231 de 241
+
+- Filiadas (Sim): **72** (31.2%)
+- Não filiadas (Não): 159 (68.8%)
+
+### Filiação × raça (grupo)
+
+| Grupo | n válidas | n filiadas | % filiadas |
+|---|---:|---:|---:|
+| negras | 157 | 44 | 28.0% |
+| nao_negras | 69 | 26 | 37.7% |
+
+### Filiação × tem carteira (Q13)
+
+| Carteira | n válidas | n filiadas | % filiadas |
+|---|---:|---:|---:|
+| com_carteira | 114 | 46 | 40.4% |
+| sem_carteira | 114 | 24 | 21.1% |

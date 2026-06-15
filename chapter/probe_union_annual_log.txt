@@ -1,0 +1,52 @@
+15:55:02  INFO     cached data year detected: 2024
+15:55:02  INFO     Step 1: download/load PNADC-A Visita 1 dictionary
+15:55:02  INFO     listing https://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Anual/Microdados/Visita/Visita_1/Documentacao/
+15:55:03  INFO     found 11 data/doc files in folder:
+15:55:03  INFO       • Observacoes_PNADC_2015_2016_visita1.pdf
+15:55:03  INFO       • dicionario_PNADC_microdados_2012_a_2014_visita1_20220224.xls
+15:55:03  INFO       • dicionario_PNADC_microdados_2015_visita1_20220224.xls
+15:55:03  INFO       • dicionario_PNADC_microdados_2016_visita1_20220224.xls
+15:55:03  INFO       • dicionario_PNADC_microdados_2017_visita1_20220224.xls
+15:55:03  INFO       • dicionario_PNADC_microdados_2018_visita1_20220224.xls
+15:55:03  INFO       • dicionario_PNADC_microdados_2019_visita1_20230811.xls
+15:55:03  INFO       • dicionario_PNADC_microdados_2022_visita1_20231129.xls
+15:55:03  INFO       • dicionario_PNADC_microdados_2023_visita1_20241220.xls
+15:55:03  INFO       • dicionario_PNADC_microdados_2024_visita1_20251119.xls
+15:55:03  INFO       • dicionario_PNADC_microdados_2025_visita1_20260508.xls
+15:55:03  INFO     dictionary candidate (year-matched 2024): dicionario_PNADC_microdados_2024_visita1_20251119.xls
+15:55:03  INFO     downloading year-matched https://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Anual/Microdados/Visita/Visita_1/Documentacao/dicionario_PNADC_microdados_2024_visita1_20251119.xls → /Users/joaoroque/Documents/Claude/Domestic Work/etl/raw/pnadc_annual/dicionario_PNADC_microdados_2024_visita1_20251119.xls
+15:55:04  INFO     downloaded 0.3 MB
+15:55:04  INFO     Step 2: search dictionary for sindical-related variables
+15:55:04  INFO       magic-byte sniff: real_xls=True xlsx=False html=False (head=b'\xd0\xcf\x11\xe0')
+15:55:04  INFO     dictionary loaded directly: dicionario_PNADC_microdados_2024_visita1_20251119.xls (1327 rows)
+15:55:04  INFO     extracting PNADC_2024_visita1.txt → /Users/joaoroque/Documents/Claude/Domestic Work/etl/raw/pnadc_annual/PNADC_2024_visita1.txt
+15:55:07  INFO     union variable specs: V4097 = position (387, 387)
+15:55:07  INFO     streaming annual data in chunks (filtering to domestic workers)…
+15:55:09  INFO     filtered to 10795 domestic-worker rows
+
+## Variáveis relacionadas a sindicato/filiação no dicionário PNADC-A Visita 1
+
+| Variável | Posição (start, width) | Descrição | Linha no XLS |
+|---|---|---|---:|
+| `V4030` | (185, 1) | Nesse trabalho, ... era associado a cooperativa de trabalho ou de produção, ou ainda, era membro de associação ou grupo de produção ? | 370 |
+| `V4072A` | (370, 1) | No período de ... a ... (período de referência de 30 dias), qual foi a principal providência que ... tomou para conseguir trabalho? | 657 |
+| `V4097` | (387, 1) | Na semana de referência era associado a algum sindicato | 711 |
+
+## Step 3: probing the cached 2024 annual data with `V4097`
+
+
+## Filiação sindical — PNADC Anual Visita 1 (variável V4097)
+
+Total domésticas no ano: 10,795
+Com resposta válida (V4097 Sim/Não): 10,795
+  Filiadas: 376
+  Não filiadas: 10,419
+  Sem resposta: 0
+
+### Por raça (BR-wide, ponderado)
+
+| Grupo | n (resp. válida) | n filiadas | % filiadas |
+|---|---:|---:|---:|
+| negras | 7,487 | 278 | 2.54% |
+| nao_negras | 3,307 | 98 | 2.74% |
+| **total** | **10,795** | **376** | **2.60%** |

@@ -1,0 +1,57 @@
+{
+  "generated_at": "2026-06-15T20:32:37.089921+00:00",
+  "source": "PNADC Anual Visita 1, variável V4097 (associação a sindicato), 2012-2024 (anos 2020-2021 indisponíveis na PNADC-A V1 por interrupção de campo COVID). Cálculos ponderados por V1032.",
+  "n_years": 11,
+  "years": [
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2022,
+    2023,
+    2024
+  ],
+  "headline": {
+    "pct_baseline_2024": 2.6,
+    "pct_floor_2023": 2.0,
+    "pct_peak_2016": 3.56,
+    "pct_floor_absolute": 1.31,
+    "pct_stdmsp_entorno": 31.2,
+    "ratio_entorno_floor": 23.7,
+    "ratio_entorno_baseline": 12.0
+  },
+  "survey_b_q32": {
+    "n_valid": 231,
+    "n_filiadas": 72,
+    "pct_filiadas": 31.2,
+    "by_race": {
+      "negras": {
+        "n": 157,
+        "n_filiadas": 44,
+        "pct": 28.0
+      },
+      "nao_negras": {
+        "n": 69,
+        "n_filiadas": 26,
+        "pct": 37.7
+      }
+    },
+    "by_carteira": {
+      "com_carteira": {
+        "n": 114,
+        "n_filiadas": 46,
+        "pct": 40.4
+      },
+      "sem_carteira": {
+        "n": 114,
+        "n_filiadas": 24,
+        "pct": 21.1
+      }
+    },
+    "source": "Pesquisa B (STDMSP, 2021-23, n=241)"
+  }
+}

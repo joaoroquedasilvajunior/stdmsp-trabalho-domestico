@@ -672,6 +672,56 @@
   </div>
 </section>
 
+<!-- ============ FILIAÇÃO SINDICAL ============ -->
+<!-- Time-series of % filiadas to a union 2012-2024 (PNADC-A V4097), -->
+<!-- decomposed by race × formality. Three findings highlighted: -->
+<!--   (1) inverted formality gradient (sem_carteira ≥ com_carteira) -->
+<!--   (2) Black workers WITH carteira are the absolute floor -->
+<!--   (3) STDMSP entorno (Pesquisa B Q32) is ~24× the national floor -->
+<section id="filiacao" class="border-t rule">
+  <div class="max-w-6xl mx-auto px-5 py-8">
+    <div class="max-w-3xl mb-6">
+      <p class="text-xs uppercase tracking-wide font-semibold mb-2" style="color: var(--accent);" data-i18n="union-eyebrow">Organização sindical</p>
+      <h2 class="text-xl md:text-2xl font-medium mb-3" data-i18n="union-title">Quem se filia ao sindicato — e por quê</h2>
+      <p class="text-sm text-gray-800 mb-3 leading-relaxed" data-i18n="union-lead">A categoria doméstica tem sindicato constitucionalmente reconhecido, mas a filiação efetiva é entre as mais baixas do trabalho brasileiro. A trajetória 2012–2024 da PNADC Anual (variável V4097) revela três achados que desafiam o senso comum sobre formalidade e sindicalização: (i) o gradiente formalidade-filiação se inverte — trabalhadoras sem carteira filiam-se em taxas mais altas que as com carteira; (ii) o subgrupo mais isolado da estrutura sindical é o de mulheres negras com carteira; (iii) o entorno da STDMSP filia em 31,2% (Pesquisa B Q32, n=231) — cerca de 24× o piso absoluto da categoria.</p>
+    </div>
+
+    <!-- KPI row: the three scales -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-7">
+      <div class="border rule rounded-lg p-4 bg-white">
+        <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="union-kpi-baseline">Baseline nacional (2024)</div>
+        <div class="text-3xl font-medium num mt-1" id="union-kpi-baseline">—</div>
+        <div class="text-xs text-gray-500 mt-1" data-i18n="union-kpi-baseline-meta">domésticas filiadas a sindicato</div>
+      </div>
+      <div class="border rule rounded-lg p-4 bg-white">
+        <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="union-kpi-floor">Piso absoluto (2024)</div>
+        <div class="text-3xl font-medium num mt-1" id="union-kpi-floor">—</div>
+        <div class="text-xs text-gray-500 mt-1" data-i18n="union-kpi-floor-meta">negras com carteira (subgrupo mais isolado)</div>
+      </div>
+      <div class="border rule rounded-lg p-4 bg-white">
+        <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="union-kpi-entorno">Entorno STDMSP</div>
+        <div class="text-3xl font-medium num mt-1" id="union-kpi-entorno">—</div>
+        <div class="text-xs text-gray-500 mt-1" data-i18n="union-kpi-entorno-meta">Pesquisa B Q32 · n=231</div>
+      </div>
+      <div class="border rule rounded-lg p-4" style="background: var(--accent-soft);">
+        <div class="text-xs uppercase tracking-wide" style="color: var(--accent);" data-i18n="union-kpi-ratio">Razão piso → teto</div>
+        <div class="text-3xl font-medium num mt-1 accent" id="union-kpi-ratio">—</div>
+        <div class="text-xs mt-1" style="color: var(--accent);" data-i18n="union-kpi-ratio-meta">proximidade física × baseline estrutural</div>
+      </div>
+    </div>
+
+    <!-- Main chart: 4-series race × formality time series -->
+    <article class="border rule rounded-lg p-4 bg-white relative">
+      <h3 class="text-base font-medium" data-i18n="union-chart-title">Filiação sindical 2012–2024 · por raça e formalidade</h3>
+      <p class="text-xs text-gray-500 mb-3" data-i18n="union-chart-meta">% filiadas a sindicato · PNADC Anual Visita 1 · variável V4097 · ponderado por V1032</p>
+      <div class="chart-box" id="box-union-rxf" style="height: 360px;"><canvas id="chart-union-rxf"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
+      <p class="text-xs text-gray-600 italic mt-3 leading-relaxed" data-i18n="union-chart-note">Marcas verticais: PEC 72 (2013), LC 150 (2015), Reforma Trabalhista (2017). Banda cinza 2020–2021: PNADC Anual interrompida durante a pandemia. Pico em 2016 (3,56%) coincide com o ápice da formalização constitucional; piso histórico em 2023 (2,00%) seguido de recuperação parcial em 2024 (2,60%). Note que <strong>negras × sem carteira</strong> (linha contínua escura) está consistentemente acima de <strong>negras × com carteira</strong> (linha tracejada escura): para mulheres negras, formalidade não converte em filiação, ela <em>reduz</em> a probabilidade. Para não-negras o efeito da formalidade é o esperado (positivo) apenas nos anos mais recentes.</p>
+    </article>
+
+    <p class="text-xs text-gray-500 mt-4 max-w-3xl leading-relaxed" data-i18n="union-source">Fonte: PNADC Anual Visita 1, variável V4097 ("Na semana de referência era associado a algum sindicato?"). Anos 2020 e 2021 indisponíveis na PNADC-A V1 por interrupção de campo COVID. Cifra do entorno STDMSP a partir da Pesquisa B (2021–23, entrevistas presenciais, n=241; Q32 com 95,9% de cobertura). Processamento: <code>etl/union_annual_timeseries.py</code> e <code>etl/probe_survey_b_union.py</code>.</p>
+  </div>
+</section>
+
 <!-- ============ FOCO EM SÃO PAULO ============ -->
 <section id="foco-sp" class="border-t rule" style="background: var(--accent-soft);">
   <div class="max-w-6xl mx-auto px-5 py-8">
@@ -947,6 +997,21 @@ const I18N = {
     "reform-wage-cat-diarista":   "Diarismo",
     "reform-wage-x-title": "% paridade salarial por hora",
     "reform-wage-parity-label": "Paridade (100%)",
+    "union-eyebrow": "Organização sindical",
+    "union-title": "Quem se filia ao sindicato — e por quê",
+    "union-lead": "A categoria doméstica tem sindicato constitucionalmente reconhecido, mas a filiação efetiva é entre as mais baixas do trabalho brasileiro. A trajetória 2012–2024 da PNADC Anual (variável V4097) revela três achados que desafiam o senso comum sobre formalidade e sindicalização: (i) o gradiente formalidade-filiação se inverte — trabalhadoras sem carteira filiam-se em taxas mais altas que as com carteira; (ii) o subgrupo mais isolado da estrutura sindical é o de mulheres negras com carteira; (iii) o entorno da STDMSP filia em 31,2% (Pesquisa B Q32, n=231) — cerca de 24× o piso absoluto da categoria.",
+    "union-kpi-baseline": "Baseline nacional (2024)",
+    "union-kpi-baseline-meta": "domésticas filiadas a sindicato",
+    "union-kpi-floor": "Piso absoluto (2024)",
+    "union-kpi-floor-meta": "negras com carteira (subgrupo mais isolado)",
+    "union-kpi-entorno": "Entorno STDMSP",
+    "union-kpi-entorno-meta": "Pesquisa B Q32 · n=231",
+    "union-kpi-ratio": "Razão piso → teto",
+    "union-kpi-ratio-meta": "proximidade física × baseline estrutural",
+    "union-chart-title": "Filiação sindical 2012–2024 · por raça e formalidade",
+    "union-chart-meta": "% filiadas a sindicato · PNADC Anual Visita 1 · variável V4097 · ponderado por V1032",
+    "union-chart-note": "Marcas verticais: PEC 72 (2013), LC 150 (2015), Reforma Trabalhista (2017). Banda cinza 2020–2021: PNADC Anual interrompida durante a pandemia. Pico em 2016 (3,56%) coincide com o ápice da formalização constitucional; piso histórico em 2023 (2,00%) seguido de recuperação parcial em 2024 (2,60%). Note que <strong>negras × sem carteira</strong> (linha contínua escura) está consistentemente acima de <strong>negras × com carteira</strong> (linha tracejada escura): para mulheres negras, formalidade não converte em filiação, ela <em>reduz</em> a probabilidade. Para não-negras o efeito da formalidade é o esperado (positivo) apenas nos anos mais recentes.",
+    "union-source": "Fonte: PNADC Anual Visita 1, variável V4097 (\"Na semana de referência era associado a algum sindicato?\"). Anos 2020 e 2021 indisponíveis na PNADC-A V1 por interrupção de campo COVID. Cifra do entorno STDMSP a partir da Pesquisa B (2021–23, entrevistas presenciais, n=241; Q32 com 95,9% de cobertura). Processamento: <code>etl/union_annual_timeseries.py</code> e <code>etl/probe_survey_b_union.py</code>.",
     "focus-sp-title": "Foco no estado de São Paulo",
     "focus-sp-subtitle": "Recorte específico do estado onde a STDMSP atua. Todos os números desta seção são agregados a partir dos microdados da PNAD Contínua, restritos à UF=SP. Itens fora deste recorte (cumprimento da LC 150 em SP, hiato salarial estadual, jornada e contribuição previdenciária) exigirão extensão da pipeline e ficam sinalizados ao final.",
     "focus-sp-kpi-total": "Trabalhadoras em SP",
@@ -1146,6 +1211,21 @@ const I18N = {
     "reform-wage-cat-diarista":   "Day-rate contract",
     "reform-wage-x-title": "% hourly pay parity",
     "reform-wage-parity-label": "Parity (100%)",
+    "union-eyebrow": "Union organizing",
+    "union-title": "Who joins the union — and why",
+    "union-lead": "Brazil's domestic-worker sindicato has full constitutional recognition, but actual membership ranks among the lowest in the formal labor force. The 2012–2024 trajectory from PNADC Anual (variable V4097) reveals three findings that overturn the conventional wisdom on formality and unionization: (i) the formality-membership gradient inverts — workers without a signed card join at higher rates than those with one; (ii) the most isolated subgroup is Black women with a signed card; (iii) STDMSP's organizing radius reaches 31.2% membership (Survey B Q32, n=231) — about 24× the absolute national floor.",
+    "union-kpi-baseline": "National baseline (2024)",
+    "union-kpi-baseline-meta": "domestic workers with union membership",
+    "union-kpi-floor": "Absolute floor (2024)",
+    "union-kpi-floor-meta": "Black women with signed card (most isolated subgroup)",
+    "union-kpi-entorno": "STDMSP outreach",
+    "union-kpi-entorno-meta": "Survey B Q32 · n=231",
+    "union-kpi-ratio": "Floor → ceiling ratio",
+    "union-kpi-ratio-meta": "physical proximity × structural baseline",
+    "union-chart-title": "Union membership 2012–2024 · by race and formality",
+    "union-chart-meta": "% union members · PNADC Annual Visit 1 · variable V4097 · weighted by V1032",
+    "union-chart-note": "Vertical markers: EC 72 (2013), LC 150 (2015), 2017 Labor Reform. Grey band 2020–2021: PNADC Annual interrupted during the pandemic. The 2016 peak (3.56%) coincides with the constitutional formalization apex; the 2023 historic low (2.00%) is followed by partial recovery in 2024 (2.60%). Note that <strong>Black × no signed card</strong> (solid dark line) sits consistently above <strong>Black × signed card</strong> (dashed dark line): for Black women, formality does not convert into membership, it actually <em>reduces</em> the probability. For non-Black workers the formality effect is the expected (positive) direction only in the most recent years.",
+    "union-source": "Source: PNADC Annual Visit 1, variable V4097 (\"In the reference week, were you affiliated with a union?\"). Years 2020 and 2021 unavailable in PNADC-A V1 due to COVID field interruption. STDMSP outreach figure from Survey B (2021–23, in-person interviews, n=241; Q32 with 95.9% coverage). Processing: <code>etl/union_annual_timeseries.py</code> and <code>etl/probe_survey_b_union.py</code>.",
     "focus-sp-title": "Focus on São Paulo state",
     "focus-sp-subtitle": "Specific cut for the state where STDMSP operates. All numbers in this section are aggregated from PNAD Contínua microdata, restricted to UF=SP. Items outside this cut (LC 150 enforcement in SP, state-level wage gap, hours, retirement contributions) require pipeline extensions and are flagged at the end.",
     "focus-sp-kpi-total": "Domestic workers in SP",
@@ -1291,7 +1371,7 @@ async function loadAll() {
   // Supabase remains the ETL target / source of truth; it is no longer a
   // runtime dependency. Re-export via etl/export_static.py after each
   // quarterly ETL refresh, then commit dashboard/data/.
-  const views = ["dw_workers","dw_wages","dw_hours","dw_prev","dw_education","dw_family","dw_housing","dw_age","dw_contract","dw_intl","dw_sources","dw_static_facts"];
+  const views = ["dw_workers","dw_wages","dw_hours","dw_prev","dw_education","dw_family","dw_housing","dw_age","dw_contract","dw_intl","dw_sources","dw_static_facts","dw_union"];
   const data = {};
   let loadError = null;
 
@@ -1328,6 +1408,16 @@ async function loadAll() {
   STATE.housing   = data.dw_housing   || [];
   STATE.age       = data.dw_age       || [];
   STATE.contract  = data.dw_contract  || [];
+  STATE.union     = data.dw_union     || [];
+  // Union extras (headline + Survey B Q32) — fetched alongside the snapshot
+  // pattern; non-fatal if missing.
+  try {
+    const unionExtrasResp = await fetch('./data/union_extras.json');
+    STATE.unionExtras = unionExtrasResp.ok ? await unionExtrasResp.json() : null;
+  } catch (e) {
+    console.warn('union_extras.json fetch failed:', e.message);
+    STATE.unionExtras = null;
+  }
   // Single-quarter wage × contract × formality snapshot (manually probed)
   try {
     const snapResp = await fetch('./data/wage_contract_snapshot.json');
@@ -1627,6 +1717,7 @@ function render() {
   renderReform();
   renderReformGeo();
   renderReformWage();
+  renderUnion();
   renderFocusSP();
   renderSources();
   // "Data updated on" reflects the static-export timestamp (when the JSON was
@@ -4468,6 +4559,194 @@ function brTotalRowsByPeriod() {
     byPeriod[p] = (byPeriod[p] || 0) + Number(r.workers_thousands);
   }
   return byPeriod;
+}
+
+// ============ FILIAÇÃO SINDICAL ============
+// Time-series 2012-2024 of % filiadas to a union by race × formality.
+// Headline KPIs computed off STATE.unionExtras (or from STATE.union as
+// a fallback). Chart shows 4 race×formality series with policy lines.
+// Source: STATE.union (records from dw_union.json) + STATE.unionExtras.
+
+function renderUnion() {
+  console.log("[renderUnion] start — STATE.union rows:", (STATE.union || []).length,
+              "STATE.unionExtras:", STATE.unionExtras ? "present" : "missing");
+  const canvas = document.getElementById("chart-union-rxf");
+  if (!canvas) { console.warn("[renderUnion] canvas chart-union-rxf NOT FOUND in DOM"); return; }
+  if (!STATE.union || !STATE.union.length) {
+    console.warn("[renderUnion] STATE.union is empty — showing overlay");
+    setEmpty("box-union-rxf", true);
+    return;
+  }
+
+  // ---- KPI tiles ----
+  const fmtPct = v => v == null
+    ? "—"
+    : `${v.toFixed(1).replace(".", LANG === "pt" ? "," : ".")}%`;
+  const headline = (STATE.unionExtras && STATE.unionExtras.headline) || null;
+  const survey = (STATE.unionExtras && STATE.unionExtras.survey_b_q32) || null;
+  if (headline) {
+    setText("union-kpi-baseline", fmtPct(headline.pct_baseline_2024));
+    setText("union-kpi-floor",    fmtPct(headline.pct_floor_absolute));
+    setText("union-kpi-entorno",  fmtPct(headline.pct_stdmsp_entorno));
+    setText("union-kpi-ratio",    (headline.ratio_entorno_floor != null)
+      ? `${String(headline.ratio_entorno_floor).replace(".", LANG === "pt" ? "," : ".")}×`
+      : "—");
+  } else {
+    // Fallback: compute headlines directly from STATE.union
+    const get = (cut, group, year) => {
+      const r = STATE.union.find(x => x.cut === cut && x.group === group && x.year === year);
+      return r ? r.pct_filiadas : null;
+    };
+    const baseline = get("overall", "all", 2024);
+    const floor = get("race_x_formality", "negras_com_carteira", 2024);
+    const entorno = 31.2;  // Survey B Q32 fallback
+    setText("union-kpi-baseline", fmtPct(baseline));
+    setText("union-kpi-floor",    fmtPct(floor));
+    setText("union-kpi-entorno",  fmtPct(entorno));
+    if (floor && floor > 0) {
+      const ratio = (entorno / floor).toFixed(1).replace(".", LANG === "pt" ? "," : ".");
+      setText("union-kpi-ratio", `${ratio}×`);
+    } else {
+      setText("union-kpi-ratio", "—");
+    }
+  }
+
+  // ---- Build the 4-series chart ----
+  const rxf = STATE.union.filter(r => r.cut === "race_x_formality");
+  const years = [...new Set(rxf.map(r => r.year))].sort((a, b) => a - b);
+
+  const seriesDefs = [
+    { group: "negras_sem_carteira",
+      color: "rgba(26, 37, 47, 1)", dash: [],
+      labelPt: "Negras × sem carteira", labelEn: "Black × no signed card" },
+    { group: "negras_com_carteira",
+      color: "rgba(26, 37, 47, 1)", dash: [6, 4],
+      labelPt: "Negras × com carteira", labelEn: "Black × signed card" },
+    { group: "nao_negras_sem_carteira",
+      color: "rgba(107, 114, 128, 1)", dash: [],
+      labelPt: "Não-negras × sem carteira", labelEn: "Non-Black × no signed card" },
+    { group: "nao_negras_com_carteira",
+      color: "rgba(107, 114, 128, 1)", dash: [6, 4],
+      labelPt: "Não-negras × com carteira", labelEn: "Non-Black × signed card" },
+  ];
+  const datasets = seriesDefs.map(def => {
+    const byYear = Object.fromEntries(
+      rxf.filter(r => r.group === def.group).map(r => [r.year, r.pct_filiadas])
+    );
+    return {
+      label: LANG === "pt" ? def.labelPt : def.labelEn,
+      data: years.map(y => byYear[y] != null ? byYear[y] : null),
+      borderColor: def.color,
+      backgroundColor: def.color.replace("1)", "0.10)"),
+      borderWidth: 2,
+      borderDash: def.dash,
+      pointRadius: 3,
+      pointHoverRadius: 5,
+      tension: 0.20,
+      spanGaps: true,
+    };
+  });
+
+  // ---- Policy annotations: vertical lines at the x-index nearest each year
+  const policyEvents = [
+    { year: 2013, labelPt: "PEC 72",          labelEn: "EC 72" },
+    { year: 2015, labelPt: "LC 150",          labelEn: "LC 150" },
+    { year: 2017, labelPt: "Reforma 2017",    labelEn: "2017 Reform" },
+  ];
+  const policyAnnotations = {};
+  for (const ev of policyEvents) {
+    const idx = years.indexOf(ev.year);
+    // If the exact year isn't in the data, find the nearest one >= target
+    const useIdx = idx >= 0 ? idx : years.findIndex(y => y >= ev.year);
+    if (useIdx < 0) continue;
+    policyAnnotations[`policy_${ev.year}`] = {
+      type: "line",
+      scaleID: "x",
+      value: useIdx,
+      borderColor: "rgba(75, 85, 99, 0.45)",
+      borderWidth: 1,
+      borderDash: [4, 4],
+      label: {
+        display: true,
+        content: LANG === "pt" ? ev.labelPt : ev.labelEn,
+        position: "start",
+        color: "#374151",
+        backgroundColor: "rgba(255, 255, 255, 0.92)",
+        font: { size: 9, weight: "500" },
+        padding: { top: 2, bottom: 2, left: 4, right: 4 },
+        borderColor: "rgba(75, 85, 99, 0.45)",
+        borderWidth: 1,
+        borderRadius: 3,
+      },
+    };
+  }
+
+  // COVID gap shading (2020-2021 absent from PNADC-A V1) — shaded box between
+  // 2019 (last pre-COVID) and 2022 (first post-COVID) on the x-axis.
+  // Simplified — no label on the box (label syntax differs across plugin
+  // versions; the section's note text already explains the gap).
+  const idx2019 = years.indexOf(2019);
+  const idx2022 = years.indexOf(2022);
+  if (idx2019 >= 0 && idx2022 >= 0) {
+    policyAnnotations["covid_gap"] = {
+      type: "box",
+      xScaleID: "x",
+      xMin: idx2019 + 0.05,
+      xMax: idx2022 - 0.05,
+      backgroundColor: "rgba(120, 113, 108, 0.10)",
+      borderWidth: 0,
+    };
+  }
+
+  console.log("[renderUnion] building chart — years:", years.length,
+              "datasets:", datasets.length,
+              "annotations:", Object.keys(policyAnnotations).length);
+  setEmpty("box-union-rxf", false);
+  destroyChart("union");
+
+  try {
+    charts.union = new Chart(canvas, {
+    type: "line",
+    data: { labels: years.map(String), datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: { boxWidth: 24, boxHeight: 2, padding: 10, font: { size: 11 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${fmtPct(ctx.parsed.y)}`,
+          },
+        },
+        annotation: { annotations: policyAnnotations },
+      },
+      scales: {
+        x: {
+          ticks: { font: { size: 10 }, maxRotation: 0 },
+          grid: { display: false },
+        },
+        y: {
+          min: 0,
+          max: 5,
+          ticks: { callback: v => v + "%", font: { size: 11 } },
+          title: {
+            display: true,
+            text: LANG === "pt" ? "% filiadas" : "% union members",
+            font: { size: 11 }
+          },
+          grid: { color: "rgba(0,0,0,0.06)" },
+        },
+      },
+    },
+  });
+    console.log("[renderUnion] chart created successfully");
+  } catch (e) {
+    console.error("[renderUnion] Chart.js threw:", e);
+    setEmpty("box-union-rxf", true);
+  }
 }
 
 function renderFocusSP() {

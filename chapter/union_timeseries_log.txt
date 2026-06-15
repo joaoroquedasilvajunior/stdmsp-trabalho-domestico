@@ -1,0 +1,35 @@
+16:21:06  INFO     PNADC-A V4097 time series — 11 years to process
+16:21:06  INFO     resuming — 9 years already in fact_union_timeseries.csv: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2024]
+16:21:06  INFO     [2012] skipping — already in CSV
+16:21:06  INFO     [2013] skipping — already in CSV
+16:21:06  INFO     [2014] skipping — already in CSV
+16:21:06  INFO     [2015] skipping — already in CSV
+16:21:06  INFO     [2016] skipping — already in CSV
+16:21:06  INFO     [2017] skipping — already in CSV
+16:21:06  INFO     [2018] skipping — already in CSV
+16:21:06  INFO     [2019] skipping — already in CSV
+16:21:06  INFO     ============================================================
+16:21:06  INFO     YEAR 2022
+16:21:06  INFO     ============================================================
+16:21:06  INFO     [2022] listing https://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Anual/Microdados/Visita/Visita_1/Documentacao/
+16:21:08  INFO     [2022] downloading dict https://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Anual/Microdados/Visita/Visita_1/Documentacao/dicionario_PNADC_microdados_2022_visita1_20231129.xls → /Users/joaoroque/Documents/Claude/Domestic Work/etl/raw/pnadc_annual/dicionario_PNADC_microdados_2022_visita1_20231129.xls
+16:21:10  INFO     [2022] downloaded 0.2 MB
+16:21:10  INFO     [2022] var positions: {'V4097': (387, 1), 'V2010': (106, 1), 'V1032': (58, 15), 'VD4009': (540, 2)}
+16:21:10  INFO     [2022] data cache hit: PNADC_2022_visita1_20250822.zip
+16:21:10  INFO     streaming PNADC_2022_visita1.txt from PNADC_2022_visita1_20250822.zip (no disk extraction)
+16:21:13  INFO     [2022] filtered 10497 domestic-worker rows
+16:21:13  INFO     [2022] appended 9 rows to fact_union_timeseries.csv
+16:21:13  INFO     ============================================================
+16:21:13  INFO     YEAR 2023
+16:21:13  INFO     ============================================================
+16:21:13  INFO     [2023] listing https://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Anual/Microdados/Visita/Visita_1/Documentacao/
+16:21:14  INFO     [2023] downloading dict https://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Anual/Microdados/Visita/Visita_1/Documentacao/dicionario_PNADC_microdados_2023_visita1_20241220.xls → /Users/joaoroque/Documents/Claude/Domestic Work/etl/raw/pnadc_annual/dicionario_PNADC_microdados_2023_visita1_20241220.xls
+16:21:16  INFO     [2023] downloaded 0.2 MB
+16:21:16  INFO     [2023] var positions: {'V4097': (387, 1), 'V2010': (106, 1), 'V1032': (58, 15), 'VD4009': (540, 2)}
+16:21:16  INFO     [2023] data cache hit: PNADC_2023_visita1_20250822.zip
+16:21:16  INFO     streaming PNADC_2023_visita1.txt from PNADC_2023_visita1_20250822.zip (no disk extraction)
+16:21:19  INFO     [2023] filtered 10771 domestic-worker rows
+16:21:19  INFO     [2023] appended 9 rows to fact_union_timeseries.csv
+16:21:19  INFO     [2024] skipping — already in CSV
+16:21:19  INFO     final CSV has 99 rows across 11 years
+16:21:19  INFO     wrote summary → /Users/joaoroque/Documents/Claude/Domestic Work/chapter/fact_union_summary.md

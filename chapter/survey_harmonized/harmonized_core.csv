@@ -1,0 +1,485 @@
+respondent_anon_id,survey_id,survey_year,data_resposta,idade_anos,faixa_etaria_5b,genero,raca_etnia,raca_grupo,tipo_contrato,tem_carteira,carteira_fonte,tempo_dom_categoria,salario_base_brl,bairro_sp,cep,moradia_texto
+A-001,A,2024-25,2024-07-03 14:28:46.736,,50-59,Feminino,parda,negras,,,,Entre 10 e 20 anos,1476.75,Jardim Paulistano,02812-020,"Rua José Francisco Chaves, 1013"
+A-002,A,2024-25,2024-07-03 14:37:35.930,,40-49,Feminino,parda,negras,,,,Entre 10 e 20 anos,1476.75,Jardim Camargo Novo,08141-530,"R. Mixira, 15 "
+A-003,A,2024-25,2024-07-03 14:42:49.275,,60+,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 1 e 2 anos,1476.75,Jardim Miriam,08141-000,"R. Manuel Álvares Pimentel, 1150 "
+A-004,A,2024-25,2024-07-03 14:53:30.575,,18-29,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 1 e 2 anos,1476.75,Jardim Peri,02649-000,"R. Cachoeira dos Antunes, 204 "
+A-005,A,2024-25,2024-07-03 14:58:35.134,,50-59,Feminino,parda,negras,,,,Entre 10 e 20 anos,1476.75,Vila Zat,02977-090,"R. Barra do Jacaré, 320 "
+A-006,A,2024-25,2024-07-03 15:03:46.913,,60+,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,1476.75,Parque Regina,05775-130,"R. Antônio Morais, 6 "
+A-007,A,2024-25,2024-07-03 15:08:04.547,,40-49,Feminino,parda,negras,,,,Mais de 20 anos,2000.0,Limão,02720-200,"Av. Dep. Emílio Carlos, 2744 "
+A-008,A,2024-25,2024-07-03 16:34:30.896,,50-59,Feminino,parda,negras,,,,Mais de 20 anos,1476.75,Jardim Nakamura,04941-175,"Rua Miguel Dionísio Valle, 639"
+A-009,A,2024-25,2024-07-03 16:41:39.076,,50-59,Feminino,preta,negras,,,,Mais de 20 anos,2000.0,Figueira Grande,,
+A-010,A,2024-25,2024-07-03 16:45:50.750,,50-59,Feminino,parda,negras,,,,Entre 3 e 5 anos,1476.75,Novo Osasco,06045-170,"R. dos Desbravadores, 250 "
+A-011,A,2024-25,2024-07-03 16:49:59.110,,40-49,Feminino,parda,negras,,,,Mais de 20 anos,3500.0,Jardim Amalia,05890-220,"R. Serra da Canastra, 10 "
+A-012,A,2024-25,2024-07-03 16:54:50.908,,40-49,Feminino,parda,negras,,,,Mais de 20 anos,1476.75,Americanópolis,04337-020,"R. Cap. Brasílio Carneiro, 10 "
+A-013,A,2024-25,2024-07-03 16:58:39.690,,60+,Feminino,parda,negras,,,,Mais de 20 anos,3500.0,Jardim Miriam,04426-000,"Av. Santo Afonso, 827 "
+A-014,A,2024-25,2024-07-04 13:27:34.823,,50-59,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Jardim Umarizal,05756-220,"R. Caranapatuba, 330 "
+A-015,A,2024-25,2024-07-04 13:34:22.065,,50-59,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,1476.75,Parque Peruche,02533-011,"R. Santa Eudóxia, 976"
+A-016,A,2024-25,2024-07-04 13:42:04.984,,60+,Feminino,parda,negras,,,,Mais de 20 anos,1476.75,Parque Independência,05880-210,"Rua antónio furtado, 46 "
+A-017,A,2024-25,2024-07-04 13:52:01.866,,,Feminino,parda,negras,,,,Entre 10 e 20 anos,2000.0,Jabaquara,04309-010,"Av. Eng. Armando de Arruda Pereira, 441"
+A-018,A,2024-25,2024-07-04 13:55:41.431,,50-59,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,1476.75,Parque Maria Helena,07261-000,"R. Jardim Repouso São Francisco, 384 "
+A-019,A,2024-25,2024-07-04 14:02:20.593,,40-49,Feminino,preta,negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,2000.0,Francisco Morato,07950-010,"R. Antonio Teofilo Bento, 41"
+A-020,A,2024-25,2024-07-04 14:05:59.575,,30-39,Masculino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 1 e 2 anos,1476.75,Parque Anhangüera,05267-060,"R. Dom Agnelo Rossi, 171 "
+A-021,A,2024-25,2024-07-04 14:11:32.578,,,Feminino,parda,negras,,,,Entre 5 e 10 anos,1476.75,Casa Verde,02519-200,"Av. Casa Verde, 1111 "
+A-022,A,2024-25,2024-07-04 14:20:48.581,,,Feminino,parda,negras,,,,Entre 5 e 10 anos,1476.75,Higienópolis,02327-135,"R. Piauí, 32 "
+A-023,A,2024-25,2024-07-04 14:28:55.912,,,Feminino,parda,negras,,,,Mais de 20 anos,2000.0,Jardim Vergueiro (Sacoma),04166-003,"Av. Padre Arlindo Vieira, 2270 "
+A-024,A,2024-25,2024-07-04 14:34:57.935,,40-49,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,2000.0,Baronesa,06266-020,"R. Renato Marchionno, 19 "
+A-025,A,2024-25,2024-07-04 15:43:12.896,,50-59,,parda,negras,,,,Entre 1 e 2 anos,1476.75,Perdizes,01258-900,Rua Apinajés
+A-026,A,2024-25,2024-07-04 15:46:51.049,,60+,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Vila Mariana,04110-000,"Rua Carlos Petit, 307 "
+A-027,A,2024-25,2024-07-04 15:55:24.079,,50-59,Feminino,parda,negras,,,,Entre 10 e 20 anos,3500.0,Parque Peruche,02533-000,"R. Dr. Gabriel Covelli, 1154 "
+A-028,A,2024-25,2024-07-04 15:59:40.312,,,Feminino,indigena,nao_negras,mensalista,Sim,inferido_de_Q6,Mais de 20 anos,2000.0,Casa Verde,02513-000,"R. Marambaia, 397 "
+A-029,A,2024-25,2024-07-04 16:05:17.401,,50-59,Feminino,preta,negras,,,,Mais de 20 anos,2000.0,,,
+A-030,A,2024-25,2024-07-04 16:09:15.312,,60+,,branca,nao_negras,,,,Entre 10 e 20 anos,1476.75,Jardim Valo Velho,06856-700,"Av. Soldado-Polícia Militar Gilberto Augustinho, 20"
+A-031,A,2024-25,2024-07-04 16:14:10.942,,40-49,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,2000.0,Cidade Miguel Badra,08690-071,"R. José dos Santos, 80 "
+A-032,A,2024-25,2024-07-04 16:17:41.092,,60+,Feminino,preta,negras,mensalista,Sim,inferido_de_Q6,Mais de 20 anos,1476.75,Jardim Lideranca,08240-080,"R. Logina, 273 "
+A-033,A,2024-25,2024-07-04 16:27:24.686,,30-39,Feminino,parda,negras,,,,Entre 1 e 2 anos,1476.75,Parque Albina,06764-390,"R. José Copazi, 21 "
+A-034,A,2024-25,2024-07-04 16:31:56.979,,50-59,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 1 e 2 anos,1476.75,Vila Sônia,05626-060,"Rua Doutor Willian Carlos Cassab, 67 "
+A-035,A,2024-25,2024-07-04 16:35:18.590,,50-59,Feminino,preta,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,,,
+A-036,A,2024-25,2024-07-04 19:59:09.838,,40-49,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 1 e 2 anos,2000.0,Vila Prel,,"Rua Dr. Osvaldo Mellone, 105 "
+A-037,A,2024-25,2024-07-04 20:02:45.816,,40-49,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 1 e 2 anos,2000.0,Vila Prel,05780-300,"Rua Dr. Osvaldo Mellone, 105 "
+A-038,A,2024-25,2024-07-04 20:11:18.028,,30-39,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,,Liberdade,01532-010,"R. Safira, 275 "
+A-039,A,2024-25,2024-07-04 20:31:14.527,,50-59,Feminino,parda,negras,,,,Mais de 20 anos,,Vila Itaim,08190-420,"R. Abacatuaja, 944 "
+A-040,A,2024-25,2024-07-04 20:35:19.038,,50-59,Feminino,parda,negras,,,,Mais de 20 anos,1476.75,Jardim da Conquista,08344-460,"Tv. Favo de Mel, 25 "
+A-041,A,2024-25,2024-07-04 20:42:16.747,,50-59,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 10 e 20 anos,1476.75,,,
+A-042,A,2024-25,2024-07-04 20:45:37.784,,40-49,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,,Parque Res. Cocaia,04849-160,"R. Manuel Plá, 15"
+A-043,A,2024-25,2024-07-04 20:48:01.194,,60+,Feminino,preta,negras,,,,Mais de 20 anos,,Terra Prometida,08595-852,"R. Salomão, 85 "
+A-044,A,2024-25,2024-07-04 20:53:06.591,,40-49,Feminino,parda,negras,,,,Entre 1 e 2 anos,1476.75,Vila Nova Mazzei,02312-160,"Rua Pedro Sebastião Vinciguera, 2 "
+A-045,A,2024-25,2024-07-04 21:02:04.198,,60+,Feminino,branca,nao_negras,,,,Mais de 20 anos,1476.75,Eldorado,09971-330,"R. Bureva, 50 "
+A-046,A,2024-25,2024-07-05 13:38:33.389,,30-39,Feminino,branca,nao_negras,,,,Entre 5 e 10 anos,2000.0,Vila Nova Uniao,08071-067,"R. Alarico Ribeiro, 37 "
+A-047,A,2024-25,2024-07-05 13:44:26.561,,50-59,Feminino,preta,negras,,,,Mais de 20 anos,2000.0,Vila Andrade,05664-015,"R. Independência, 300 "
+A-048,A,2024-25,2024-07-05 13:50:30.192,,60+,Feminino,parda,negras,,,,Mais de 20 anos,1476.75,Vila Maria Baixa,02114-000,"R. Dias da Silva, 148 "
+A-049,A,2024-25,2024-07-05 13:55:48.505,,50-59,Feminino,parda,negras,,,,Entre 10 e 20 anos,1476.75,Jardim Santo Alberto,02358-000,"R. Bernardo Fonseca Lobo, 54"
+A-050,A,2024-25,2024-07-05 13:59:23.152,,60+,Feminino,parda,negras,,,,Mais de 20 anos,1476.75,,,
+A-051,A,2024-25,2024-07-05 14:01:17.208,,30-39,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 1 e 2 anos,1476.75,,,
+A-052,A,2024-25,2024-07-05 14:14:46.135,,50-59,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,,1476.75,Jardim da Rainha,06656-390,"R. Alceste Silicani, 62 "
+A-053,A,2024-25,2024-07-05 14:20:57.562,,18-29,Feminino,branca,nao_negras,,,,Entre 5 e 10 anos,,Anhanguera,05267-100,Rua Luiz Domingues de Castro 
+A-054,A,2024-25,2024-07-05 14:24:56.926,,60+,Feminino,branca,nao_negras,,,,Entre 3 e 5 anos,1476.75,Freguesia do Ó,02831-000,"R. Parapuã, 778 "
+A-055,A,2024-25,2024-07-05 14:50:16.704,,60+,Feminino,parda,negras,,,,Mais de 20 anos,,Parque Edu Chaves,02230-050,Rua Augusto Montenegro
+A-056,A,2024-25,2024-07-05 14:55:26.011,,50-59,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,2000.0,Vila Progredior,05615-020,"Rua João Scaciotti, 159 "
+A-057,A,2024-25,2024-07-05 15:04:30.901,,60+,Feminino,branca,nao_negras,,,,Mais de 20 anos,1476.75,Vila Prado,02559-000,"R. Prof. Dário Ribeiro, 1270 "
+A-058,A,2024-25,2024-07-08 11:46:40.268,,50-59,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 3 e 5 anos,,,,
+A-059,A,2024-25,2024-07-08 11:52:31.563,,50-59,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,2000.0,,,
+A-060,A,2024-25,2024-07-08 11:55:28.246,,40-49,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 3 e 5 anos,1476.75,,,
+A-061,A,2024-25,2024-07-08 11:59:54.260,,30-39,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Mooca,,
+A-062,A,2024-25,2024-07-08 12:03:46.178,,30-39,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Mooca,,
+A-063,A,2024-25,2024-07-08 12:07:38.016,,30-39,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Tiradentes,,
+A-064,A,2024-25,2024-07-08 12:12:33.724,,30-39,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,São Mateus,,
+A-065,A,2024-25,2024-07-08 12:15:40.129,,30-39,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Santo Amaro,,
+A-066,A,2024-25,2024-07-08 12:20:21.476,,50-59,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,São Mateus,,
+A-067,A,2024-25,2024-07-08 12:36:52.654,,30-39,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Vila Medeiro,,
+A-068,A,2024-25,2024-07-08 12:41:27.922,,30-39,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Voluntários da Pátria,,
+A-069,A,2024-25,2024-07-08 12:44:48.298,,40-49,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,1476.75,Vila Brasilina,,
+A-070,A,2024-25,2024-07-08 12:47:17.917,,50-59,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,1476.75,Clube Paulistano,,
+A-071,A,2024-25,2024-07-08 12:50:00.275,,30-39,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Jardim Jasy,,
+A-072,A,2024-25,2024-07-08 12:53:02.000,,60+,Feminino,preta,negras,mensalista,Sim,inferido_de_Q6,Mais de 20 anos,1476.75,Jardim Aricanduva,,
+A-073,A,2024-25,2024-07-08 12:56:55.500,,40-49,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,1476.75,Jardim Brasilia,,
+A-074,A,2024-25,2024-07-08 13:02:26.220,,60+,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,1476.75,Jardim Guanhembu,,
+A-075,A,2024-25,2024-07-08 13:06:35.774,,50-59,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,1476.75,Jardim Emperador,,
+A-076,A,2024-25,2024-07-09 14:19:48.849,,40-49,Feminino,preta,negras,diarista,Nao,inferido_de_Q6,Entre 10 e 20 anos,1476.75,Embu das Artes,,
+A-077,A,2024-25,2024-07-09 14:23:35.261,,60+,,branca,nao_negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,1476.75,Vila Constança,,
+A-078,A,2024-25,2024-07-09 14:31:10.402,,50-59,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,1476.75,Vila Brasilina,,
+A-079,A,2024-25,2024-07-09 14:43:13.712,,30-39,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,1476.75,Cursino,,
+A-080,A,2024-25,2024-07-09 14:46:38.690,,50-59,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,1476.75,,,
+A-081,A,2024-25,2024-07-09 14:49:12.541,,30-39,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,,,
+A-082,A,2024-25,2024-07-09 14:52:13.474,,40-49,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,1476.75,,,
+A-083,A,2024-25,2024-07-09 14:54:29.338,,40-49,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Santo Amaro,,
+A-084,A,2024-25,2024-07-09 15:31:55.219,,40-49,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Belém,,
+A-085,A,2024-25,2024-07-09 15:37:57.622,,40-49,Masculino,preta,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,2000.0,Guarulhos,,
+A-086,A,2024-25,2024-07-09 15:46:17.029,,50-59,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 10 e 20 anos,1476.75,Belém,,
+A-087,A,2024-25,2024-07-09 15:52:26.456,,50-59,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Mais de 20 anos,2000.0,Jardim Celeste,,
+A-088,A,2024-25,2024-07-09 15:55:58.474,,50-59,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,2000.0,Brás,,
+A-089,A,2024-25,2024-07-09 15:59:31.040,,30-39,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,1476.75,Pinheiros,,
+A-090,A,2024-25,2024-07-09 16:04:47.487,,40-49,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,1476.75,São Mateus,,
+A-091,A,2024-25,2024-07-09 16:10:15.824,,40-49,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Butantã,,
+A-092,A,2024-25,2024-07-09 16:13:28.040,,30-39,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Consolação,,
+A-093,A,2024-25,2024-07-09 16:16:55.687,,40-49,Masculino,preta,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Penha,,
+A-094,A,2024-25,2024-07-09 16:20:22.706,,40-49,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Freguesia do Ó,,
+A-095,A,2024-25,2024-07-09 16:24:51.098,,30-39,Feminino,preta,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Higienópolis,,
+A-096,A,2024-25,2024-07-09 16:28:34.011,,30-39,Feminino,preta,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Pinheiros,,
+A-097,A,2024-25,2024-07-09 16:31:04.401,,40-49,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Paulista,,
+A-098,A,2024-25,2024-07-09 16:33:49.083,,40-49,Masculino,preta,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,São Mateus,,
+A-099,A,2024-25,2024-07-09 16:36:19.481,,40-49,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Freguesia da Vila Jorie,,
+A-100,A,2024-25,2024-07-09 16:39:51.863,,30-39,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,1476.75,Cidade São Francisco,,
+A-101,A,2024-25,2024-07-09 16:42:57.735,,30-39,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Cursino,,
+A-102,A,2024-25,2024-07-09 23:25:21.381,,50-59,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,1476.75,Santo Amaro,,
+A-103,A,2024-25,2024-07-09 23:31:45.013,,40-49,Feminino,preta,negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,São Mateus,,
+A-104,A,2024-25,2024-07-09 23:37:17.432,,30-39,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Ferraz de Vasconcelos,,
+A-105,A,2024-25,2024-07-09 23:39:51.954,,30-39,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Vilas Brasilina,,
+A-106,A,2024-25,2024-07-09 23:46:55.876,,40-49,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,2000.0,Parque Residencial Cocaia,,
+A-107,A,2024-25,2024-07-10 09:25:49.904,,30-39,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,1476.75,Água Funda,,
+A-108,A,2024-25,2024-07-10 09:33:31.443,,40-49,Feminino,branca,nao_negras,,,,Entre 5 e 10 anos,3500.0,Americanópolis,04409-080,"R. Delfino Facchina, 551 "
+A-109,A,2024-25,2024-07-10 09:38:24.914,,60+,Feminino,branca,nao_negras,,,,Mais de 20 anos,1476.75,Vila Maria Baixa,02114-000,"R. Dias da Silva, 148 "
+A-110,A,2024-25,2024-07-10 09:45:03.638,,50-59,Feminino,branca,nao_negras,,,,Entre 10 e 20 anos,1476.75,Campos Elíseos,01203-000,"R. Conselheiro Nébias, 664 "
+A-111,A,2024-25,2024-07-10 11:26:08.145,,60+,,branca,nao_negras,,,,Mais de 20 anos,2000.0,Sítio do Morro,02553-040,"R. Diogo de Oliveira, 304 "
+A-112,A,2024-25,2024-07-10 11:31:03.075,,40-49,Feminino,parda,negras,,,,Entre 10 e 20 anos,1476.75,Jardim Europa,01453-010,"R. Dr. Mário Ferraz, 220 "
+A-113,A,2024-25,2024-07-10 11:37:22.871,,60+,Feminino,branca,nao_negras,,,,Mais de 20 anos,1476.75,Pirituba,02921-030,Tv. Daniel Mason 
+A-114,A,2024-25,2024-07-10 11:50:49.377,,40-49,Feminino,parda,negras,,,,Entre 5 e 10 anos,2000.0,Real Parque,05684-010,"Rua São Paulo Antigo, 339 "
+A-115,A,2024-25,2024-07-10 11:56:36.984,,40-49,Feminino,parda,negras,,,,Entre 10 e 20 anos,2000.0,Jardim Novo Santo Amaro,05820-120,"Rua Capitanias Hereditárias, 815"
+A-116,A,2024-25,2024-07-10 12:03:59.386,,60+,Feminino,parda,negras,,,,Mais de 20 anos,1476.75,Santo Amaro,,
+A-117,A,2024-25,2024-07-10 12:06:32.351,,60+,Feminino,,,,,,Entre 10 e 20 anos,2000.0,Vila Alpina,03211-000,"R. Gaspar Barreto, 273 "
+A-118,A,2024-25,2024-07-10 12:08:43.656,,60+,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Mais de 20 anos,,Parada XV de Novembro,08246-058,"R. Damásio Pinto, 2051 "
+A-119,A,2024-25,2024-07-10 12:12:42.084,,50-59,Feminino,preta,negras,,,,Entre 10 e 20 anos,1476.75,Vila Maria Alta,,
+A-120,A,2024-25,2024-07-10 12:37:33.587,,40-49,Feminino,parda,negras,,,,Entre 5 e 10 anos,1476.75,Jardim Marilu,08371-370,"R. Gáspar Becerra, 100 "
+A-121,A,2024-25,2024-07-10 16:28:38.827,,30-39,Feminino,parda,negras,,,,Entre 1 e 2 anos,2000.0,Imirim,02543-090,"R. Nicola Nicodemo, 232 "
+A-122,A,2024-25,2024-07-10 16:34:12.453,,60+,Feminino,branca,nao_negras,,,,Mais de 20 anos,1476.75,Vila Maria Alta,02133-040,"R. Dr. Afrodísio Vidigal, 622 "
+A-123,A,2024-25,2024-07-10 16:42:14.709,,40-49,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Jardim Japao,02123-010,"R. Cecília Meireles, 51"
+A-124,A,2024-25,2024-07-10 17:05:02.753,,60+,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Centro,60110-001,"R. Rocha Lima, 18 "
+A-125,A,2024-25,2024-07-10 17:35:35.610,,30-39,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,,Regiões de Planejamento,09321-422,"Viela Waldemar Pereira Rocha, 65 "
+A-126,A,2024-25,2024-07-10 17:40:03.076,,40-49,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Vila Giordano,08020-350,"R. Gabriel de Castro Lobo, 78 "
+A-127,A,2024-25,2024-07-10 18:18:42.485,,40-49,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Jardim Zaira,,"R. Moacir Campos do Nascimento, 256 "
+A-128,A,2024-25,2024-07-10 18:25:31.106,,60+,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,1476.75,Sítio do Morro,02553-040,"R. Diogo de Oliveira, 426 "
+A-129,A,2024-25,2024-07-10 18:34:04.976,,60+,Feminino,parda,negras,,,,Entre 5 e 10 anos,,ardim Bela Vista,06656-210,"R. Doze de Setembro, 271 "
+A-130,A,2024-25,2024-07-10 18:38:47.438,,50-59,Feminino,branca,nao_negras,,,,Entre 3 e 5 anos,1476.75,Camaquã,91910-350,"R. Afonso Arinos, 185 "
+A-131,A,2024-25,2024-07-10 18:46:16.644,,60+,Feminino,branca,nao_negras,,,,Mais de 20 anos,1476.75,Regiões de Planejamento,09321-358,R. Caminho do Sol 
+A-132,A,2024-25,2024-07-10 18:50:21.338,,40-49,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,2000.0,Recanto Silvestre (Fazendinha),06530-201,"R. Lopo Dias, 59 "
+A-133,A,2024-25,2024-12-17 19:26:49.204,,30-39,Feminino,branca,nao_negras,,,,Entre 3 e 5 anos,2000.0,- Liberdade,01526-000,"R. Bueno de Andrade, 137 
+"
+A-134,A,2024-25,2024-12-17 19:32:36.977,,40-49,Feminino,parda,negras,,,,Entre 10 e 20 anos,2000.0,Jardim Soares,08460-110,"R. Domingos Maciel, 4213"
+A-135,A,2024-25,2024-12-17 19:37:13.180,,40-49,Feminino,,,,,,Entre 5 e 10 anos,1476.75,Gangaíba,03733-160,"R. Franklin Rodrigues Silveira, 301"
+A-136,A,2024-25,2024-12-17 19:47:24.825,,60+,Feminino,preta,negras,,,,Mais de 20 anos,2000.0,Vila Buarque,01223-001,"R. Marquês de Itu, 411"
+A-137,A,2024-25,2024-12-17 19:51:29.813,,40-49,Feminino,branca,nao_negras,,,,Entre 5 e 10 anos,1476.75,Vila Arapua,04258-035,"R. Carnaúba, 205"
+A-138,A,2024-25,2024-12-17 20:01:21.526,,40-49,Feminino,parda,negras,,,,Entre 10 e 20 anos,1476.75,São Luiz,,"Travessa Hum, 45 "
+A-139,A,2024-25,2024-12-17 20:08:03.150,,40-49,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,2000.0,Jardim Santa Rita,06660-340,"R. Egito, 231"
+A-140,A,2024-25,2024-12-17 20:37:58.553,,40-49,Feminino,branca,nao_negras,,,,Entre 3 e 5 anos,3500.0,São Paulo,02010-300,R. Voluntários da Pátria
+A-141,A,2024-25,2024-12-17 20:42:42.659,,40-49,Feminino,,,,,,Entre 5 e 10 anos,1476.75,Jardim Daysy,02358-040,"R. Boiçucanga, 340"
+A-142,A,2024-25,2024-12-17 20:46:52.816,,18-29,Feminino,branca,nao_negras,,,,Entre 10 e 20 anos,2000.0,Jardim Umuarama,05783-180,"R. Odemis, 244"
+A-143,A,2024-25,2024-12-17 20:50:02.837,,50-59,Feminino,parda,negras,,,,Entre 5 e 10 anos,2000.0,Americanópolis,04409-000,"R. Berta Morena, 84"
+A-144,A,2024-25,2024-12-17 20:54:03.742,,40-49,Feminino,branca,nao_negras,,,,Entre 5 e 10 anos,1476.75,Jardim Japao,02123-010,"R. Cecília Meireles, 51"
+A-145,A,2024-25,2024-12-17 20:58:39.437,,30-39,Feminino,,,,,,Entre 10 e 20 anos,2000.0,Alto de Pinheiros,05459-002,"R. Alberto Faria, 2044"
+A-146,A,2024-25,2024-12-17 21:04:53.154,,50-59,Feminino,parda,negras,,,,Entre 5 e 10 anos,2000.0,Jardim Artur Alvim,03685-030,"Rua Raimundo Lúlio, 311"
+A-147,A,2024-25,2024-12-17 21:08:06.900,,30-39,Feminino,parda,negras,,,,Entre 10 e 20 anos,,Jardim Remo,,"Rua São Vicente Carducho, 35"
+A-148,A,2024-25,2024-12-17 21:13:23.163,,50-59,Feminino,preta,negras,,,,Entre 10 e 20 anos,3500.0,freguesia freguesia do ó,,rua Arroio de Moraes 312
+A-149,A,2024-25,2024-12-17 21:19:53.033,,30-39,Feminino,branca,nao_negras,,,,Entre 5 e 10 anos,3500.0,Barra Funda,01151-000,"R. Brg. Galvão, 710"
+A-150,A,2024-25,2024-12-17 21:24:09.551,,,Feminino,parda,negras,,,,Entre 5 e 10 anos,2000.0,Vila Talarico,03534-010,"Rua Bento Quirino, 230"
+A-151,A,2024-25,2024-12-17 21:31:07.545,,30-39,Feminino,parda,negras,,,,Entre 3 e 5 anos,1476.75,Brasilândia,,"Rua João Cosme dos Santos, 19"
+A-152,A,2024-25,2024-12-17 21:35:42.456,,30-39,Feminino,parda,negras,,,,Entre 3 e 5 anos,2000.0,Vila Santo Antonio,08534-170,"R. Xingu, 401"
+A-153,A,2024-25,2024-12-17 21:38:56.566,,50-59,Feminino,parda,negras,,,,Entre 5 e 10 anos,1476.75,Lajeado,," Avenida Nordestina, 5883"
+A-154,A,2024-25,2024-12-17 21:42:05.528,,50-59,Feminino,parda,negras,,,,Entre 10 e 20 anos,2000.0,Vila Fátima,,"Rua da Conquista, 155"
+A-155,A,2024-25,2024-12-17 21:46:20.618,,50-59,Feminino,preta,negras,,,,Mais de 20 anos,2000.0,Vila Sônia,05662-070,"R. das Goiabeiras, 62"
+A-156,A,2024-25,2024-12-17 21:50:05.273,,40-49,Feminino,parda,negras,,,,Entre 3 e 5 anos,1476.75,Vila Pierina,03733-160,"R. Franklin Rodrigues Silveira, 131"
+A-157,A,2024-25,2024-12-17 21:52:42.036,,60+,Feminino,preta,negras,,,,Entre 10 e 20 anos,2000.0,Piraporinha,,"Rua Estrada do Rio Pinheiros, 23"
+A-158,A,2024-25,2024-12-18 12:37:25.339,,50-59,Feminino,preta,negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,1476.75,Conj. Hab. Jardim Sao Bento,05885-440,"R. Cultura Popular, 74"
+A-159,A,2024-25,2024-12-18 12:42:25.959,,50-59,Feminino,preta,negras,,,,Entre 10 e 20 anos,,Conj. Hab. Instituto Adventista,05868-000,"Rua Cachoeira Acará, 138"
+A-160,A,2024-25,2024-12-18 12:46:08.766,,60+,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,,Osasco,,
+A-161,A,2024-25,2024-12-18 12:49:10.507,,30-39,Feminino,preta,negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,1476.75,Cipava,,
+A-162,A,2024-25,2024-12-18 12:53:24.355,,50-59,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 1 e 2 anos,2000.0,,,
+A-163,A,2024-25,2024-12-18 12:57:07.332,,30-39,Feminino,branca,nao_negras,,,,,,Grajaú,,
+A-164,A,2024-25,2024-12-18 12:59:44.052,,40-49,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Mais de 20 anos,1476.75,Parelheiros,,
+A-165,A,2024-25,2024-12-18 13:03:43.143,,18-29,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,,,
+A-166,A,2024-25,2024-12-18 13:06:43.008,,40-49,Feminino,parda,negras,,,,Entre 3 e 5 anos,1476.75,,,
+A-167,A,2024-25,2024-12-18 13:08:05.303,,40-49,Feminino,branca,nao_negras,,,,,,,,
+A-168,A,2024-25,2024-12-18 13:10:39.264,,40-49,Feminino,branca,nao_negras,,,,,,,,
+A-169,A,2024-25,2024-12-18 13:13:10.683,,50-59,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 10 e 20 anos,1476.75,Vargem Grande,,
+A-170,A,2024-25,2024-12-18 13:16:37.363,,50-59,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Jardim Marilu,06343-190,"R. Vista Alegre do Alto, 3"
+A-171,A,2024-25,2024-12-18 13:46:54.211,,40-49,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,,,Vargem Grande,,
+A-172,A,2024-25,2024-12-18 13:51:35.751,,50-59,Feminino,preta,negras,,,,Entre 10 e 20 anos,1476.75,,,Jardim Angela
+A-173,A,2024-25,2024-12-18 14:03:02.587,,60+,Feminino,preta,negras,mensalista,Sim,inferido_de_Q6,Entre 1 e 2 anos,1476.75,Osasco,,
+A-174,A,2024-25,2024-12-18 14:06:32.492,,40-49,Masculino,parda,negras,,,,Entre 3 e 5 anos,3500.0,Jardim Angela,,
+A-175,A,2024-25,2024-12-18 14:09:04.240,,50-59,,parda,negras,mensalista,Sim,inferido_de_Q6,Mais de 20 anos,2000.0,Heleno Mário Covas,,
+A-176,A,2024-25,2024-12-18 14:14:26.280,,60+,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Cipava,06075-040,R. Luíz Villar
+A-177,A,2024-25,2024-12-18 14:18:16.172,,60+,Feminino,preta,negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,1476.75,,,
+A-178,A,2024-25,2024-12-18 14:19:25.131,,50-59,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,2000.0,Recanto do Campo Belo,,
+A-179,A,2024-25,2024-12-18 14:20:54.016,,,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 3 e 5 anos,1476.75,Parelheiros,,
+A-180,A,2024-25,2024-12-18 14:23:28.192,,40-49,Feminino,,,,,,,,,,
+A-181,A,2024-25,2024-12-18 14:26:29.767,,40-49,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 3 e 5 anos,,Parelheiros,,"Av. Noel Nutels, 12"
+A-182,A,2024-25,2024-12-18 15:14:56.994,,40-49,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 1 e 2 anos,1476.75,,,Rua Olavo Rodrigues
+A-183,A,2024-25,2024-12-18 15:19:39.040,,50-59,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 10 e 20 anos,1476.75,Bussocaba,06056-130,R. Santa Maria
+A-184,A,2024-25,2024-12-18 15:23:23.703,,40-49,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,1476.75,Santo Amaro,,
+A-185,A,2024-25,2024-12-18 15:25:35.917,,40-49,Feminino,,,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,1476.75,Guaianazes,,
+A-186,A,2024-25,2024-12-18 15:27:26.871,,30-39,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Penha,,
+A-187,A,2024-25,2024-12-18 15:29:26.252,,30-39,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Butantã,,
+A-188,A,2024-25,2024-12-18 15:31:42.190,,40-49,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,2000.0,Pari,,
+A-189,A,2024-25,2024-12-18 15:33:32.649,,50-59,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,1476.75,Itaquera,,
+A-190,A,2024-25,2024-12-18 15:36:11.530,,50-59,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 10 e 20 anos,1476.75,Idenpendência,,
+A-191,A,2024-25,2024-12-18 15:39:30.697,,30-39,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,,,Independência
+A-192,A,2024-25,2024-12-19 12:31:42.386,,60+,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 1 e 2 anos,1476.75,Jardim Piratininga,03717-040,"R. Adelina Linhares, 263"
+A-193,A,2024-25,2024-12-19 12:36:52.123,,50-59,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 10 e 20 anos,1476.75,Cangaiba,03717-010,"Tv. Geraldo Guedes de Souza, 5"
+A-194,A,2024-25,2024-12-19 12:41:55.570,,50-59,Masculino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,2000.0,Jardim Colombo,05659-000,"Rua Clementine Brenne, 229"
+A-195,A,2024-25,2024-12-19 12:46:02.458,,50-59,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,,Guaianazes,,
+A-196,A,2024-25,2024-12-19 12:50:49.272,,40-49,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,2000.0,Itaquaquecetuba,,
+A-197,A,2024-25,2024-12-19 12:58:35.723,,50-59,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Mais de 20 anos,2000.0,Vila Nova Curuca,08030-590,"R. Osório Franco Vilhena, 1099"
+A-198,A,2024-25,2024-12-19 13:03:02.561,,50-59,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Conj. Hab. Inacio Monteiro,08472-330,"R. Igarapé Torre da Lua, 1"
+A-199,A,2024-25,2024-12-19 13:09:00.716,,30-39,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,,Jardim Campos,08161-165,"R. Alto Munim, 25"
+A-200,A,2024-25,2024-12-19 13:29:58.452,,50-59,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 10 e 20 anos,1476.75,Sacomã,04181-065,"Travessa Giovanni Bardi, 08"
+A-201,A,2024-25,2024-12-19 16:03:17.154,,40-49,Feminino,preta,negras,diarista,Nao,inferido_de_Q6,Entre 10 e 20 anos,1476.75,Embu das Artes,,
+A-202,A,2024-25,2024-12-19 16:09:11.832,,50-59,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 3 e 5 anos,2000.0,Praça da Arvore,04140-000,"Rua Itagiba,365"
+A-203,A,2024-25,2024-12-19 16:17:05.578,,50-59,Feminino,parda,negras,,,,Entre 1 e 2 anos,1476.75,Vila Mariana,,
+A-204,A,2024-25,2024-12-19 16:22:22.325,,50-59,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,2000.0,Jardim Santa Luiza,08555-020,Rua Voluntarios da Patria
+A-205,A,2024-25,2024-12-20 11:26:58.017,,60+,Feminino,preta,negras,mensalista,Sim,inferido_de_Q6,Mais de 20 anos,3500.0,Grajaú,04846-000,"Av. Dona Belmira Marin, 1000"
+A-206,A,2024-25,2024-12-20 11:30:45.973,,40-49,Feminino,,,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,2000.0,Jardim Celeste,05527-170,"R. Lauro Freire, 15"
+A-207,A,2024-25,2024-12-20 11:35:14.686,,60+,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 1 e 2 anos,2000.0,Vila da Saúde,04143-050,"R. Gravi, 79"
+A-208,A,2024-25,2024-12-20 11:39:32.155,,50-59,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,3500.0,Vila Maria Baixa,02111-030,"R. Itaúna, 87"
+A-209,A,2024-25,2024-12-20 11:45:46.552,,30-39,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,1476.75,Jardim Belem,03813-100,"R. Cap. Américo Duarte, 100"
+A-210,A,2024-25,2024-12-20 11:54:45.634,,30-39,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,2000.0,03324-070,03324-070,"R. Adrianópolis, 10"
+A-211,A,2024-25,2024-12-20 11:58:41.187,,30-39,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 3 e 5 anos,2000.0,Conj. Hab. Aguia de Haia,08223-570,"R. Encontros e Despedidas, 696"
+A-212,A,2024-25,2024-12-20 12:02:11.723,,40-49,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Mais de 20 anos,1476.75,Vila Verde,08235-050,"Tv. Hilda Gonçalves de Oliveira, 14"
+A-213,A,2024-25,2024-12-20 13:30:13.549,,40-49,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 10 e 20 anos,1476.75,,,
+A-214,A,2024-25,2024-12-20 13:46:33.687,,50-59,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 1 e 2 anos,1476.75,Parque da Mooca,03122-040,"R. Des. Paulo Costa, 142"
+A-215,A,2024-25,2024-12-20 13:52:50.135,,50-59,Feminino,preta,negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,1476.75,Jardim da Conquista,08343-000,"Tv. Somos Todos Iguais, 55"
+A-216,A,2024-25,2024-12-20 14:02:17.373,,60+,Feminino,preta,negras,mensalista,Sim,inferido_de_Q6,Mais de 20 anos,2000.0,Parque Santo Amaro,04932-160,"R. Ribeirão Ponte Baixa, 17"
+A-217,A,2024-25,2025-01-02 11:28:52.753,,60+,Feminino,preta,negras,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,1476.75,Ipiranga,04218-003,R. Pinheiro de Lemos
+A-218,A,2024-25,2025-01-02 12:02:29.247,,40-49,Feminino,preta,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Vila Heliopolis,04230-000,"Av. Almirante Delamare, 195"
+A-219,A,2024-25,2025-01-02 12:07:55.773,,18-29,Masculino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,1476.75,,,
+A-220,A,2024-25,2025-01-02 12:29:00.205,,30-39,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,,,"Rua Jorge Bem, 276"
+A-221,A,2024-25,2025-01-02 13:29:33.673,,50-59,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,3500.0,Vila Maria Alta,02133-010,"R. Santa Fé do Sul, 370"
+A-222,A,2024-25,2025-01-02 13:40:54.237,,50-59,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,2000.0,02114-000,02114-000,"R. Dias da Silva, 180"
+A-223,A,2024-25,2025-01-02 14:12:14.261,,30-39,Feminino,preta,negras,diarista,Nao,inferido_de_Q6,Entre 3 e 5 anos,1476.75,Vila Maria Alta,,"Rua Jorgem Bem, 101"
+A-224,A,2024-25,2025-01-02 15:30:52.161,,50-59,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Mais de 20 anos,1476.75,Conj. Hab. Inacio Monteiro,08472-373,"R. Cachoeira Aurora, 55"
+A-225,A,2024-25,2025-01-02 15:35:33.582,,60+,Feminino,amarela,nao_negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,2000.0,Vila Maria Alta,02133-010,"R. Santa Fé do Sul, 141"
+A-226,A,2024-25,2025-01-02 15:40:48.147,,60+,Feminino,parda,negras,mensalista,Sim,inferido_de_Q6,Mais de 20 anos,1476.75,Vila Maria Baixa,02114-000,"R. Dias da Silva, 148"
+A-227,A,2024-25,2025-01-02 15:45:45.819,,40-49,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 10 e 20 anos,1476.75,Vila da Saúde,04143-050,"R. Gravi, 163 "
+A-228,A,2024-25,2025-01-02 15:51:00.372,,40-49,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Vila da Saúde,04143-050,"R. Gravi, 163 "
+A-229,A,2024-25,2025-01-02 15:56:46.414,,50-59,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Cursino,04195-140,"R. Antônio Guarmerino, 69"
+A-230,A,2024-25,2025-01-02 16:02:14.773,,50-59,Masculino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,1476.75,Jardim Celeste,04195-150,"R. Aquiles Jovane, 31"
+A-231,A,2024-25,2025-01-02 16:05:40.148,,60+,Feminino,preta,negras,mensalista,Sim,inferido_de_Q6,Mais de 20 anos,2000.0,Jardim Sao Saverio,04194-280,"R. Memorial de Aires, 240"
+A-232,A,2024-25,2025-01-02 16:09:56.377,,50-59,Feminino,preta,negras,mensalista,Sim,inferido_de_Q6,Entre 10 e 20 anos,2000.0,Jardim Sao Saverio,04194-280,"R. Memorial de Aires, 449"
+A-233,A,2024-25,2025-01-02 19:18:40.327,,40-49,Feminino,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Três Marias,76812-676,"R. Quincas Borba, 134"
+A-234,A,2024-25,2025-01-03 15:18:06.408,,50-59,Feminino,preta,negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,2000.0,Parque Bristol,04194-260,"Av. dos Ourives, 94 "
+A-235,A,2024-25,2025-01-03 15:22:02.110,,40-49,Feminino,preta,negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Parque Bristol,04194-260,"Av. dos Ourives, 123"
+A-236,A,2024-25,2025-01-03 17:10:40.014,,40-49,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,2000.0,Jardim Vergueiro (Sacoma),04166-003,"Av. Padre Arlindo Vieira, 2300"
+A-237,A,2024-25,2025-01-03 17:14:48.284,,30-39,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Jardim Pres. Dutra,07171-170,"R. Macarani, 118"
+A-238,A,2024-25,2025-01-03 17:18:49.036,,30-39,Feminino,branca,nao_negras,diarista,Nao,inferido_de_Q6,Entre 10 e 20 anos,2000.0,Vila Santo Estefano,04152-050,"Rua Otto de Barros, 440"
+A-239,A,2024-25,2025-01-03 17:23:02.491,,40-49,Feminino,preta,negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,1476.75,,04132-000,"Av. do Cursino, 6200"
+A-240,A,2024-25,2025-01-03 17:27:47.884,,30-39,Feminino,preta,negras,diarista,Nao,inferido_de_Q6,Entre 5 e 10 anos,1476.75,Itaim Bibi,04534-040,"Rua Brasília, 61"
+A-241,A,2024-25,2025-01-03 17:33:40.798,,30-39,,branca,nao_negras,mensalista,Sim,inferido_de_Q6,Entre 5 e 10 anos,2000.0,Saúde,04142-091,"Vila da Saúde, 710"
+A-242,A,2024-25,2025-01-03 17:39:14.829,,50-59,Feminino,parda,negras,diarista,Nao,inferido_de_Q6,Mais de 20 anos,2000.0,,,
+B-001,B,2021-23,2023-03-23 14:08:01.255,66.0,60+,Feminino_presumido,preta,negras,,Sim,direto_Q13,46,,,04932-160,"R. Ribeirão Ponte Baixa, 17 - Parque Santo Amaro"
+B-002,B,2021-23,2022-11-30 11:43:31.855,49.0,40-49,Feminino_presumido,parda,negras,,Sim,direto_Q13,36,,,14400-740,Não respondeu [STDMF]
+B-003,B,2021-23,2023-01-04 13:54:00.307,41.0,40-49,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,30,,,01330-000,"R. Rocha, 73 - Bela Vista"
+B-004,B,2021-23,2023-03-22 10:37:11.960,48.0,40-49,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,30,,,05767-510,Jardim Catanduva
+B-005,B,2021-23,2023-03-28 13:50:31.756,41.0,40-49,Feminino_presumido,indigena,nao_negras,,Nao,direto_Q13,,,,,
+B-006,B,2021-23,2023-01-04 14:28:23.696,53.0,50-59,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,40,,,02847-060,"R. do Outono, 851 - Vila Itaberaba"
+B-007,B,2021-23,2023-01-04 13:19:11.005,38.0,30-39,Feminino_presumido,preta,negras,,Nao,direto_Q13,6,,,02845-130,Brasilândia 
+B-008,B,2021-23,2023-03-27 18:05:10.561,38.0,30-39,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,10,,,,
+B-009,B,2021-23,2022-12-16 22:10:51.834,61.0,60+,Feminino_presumido,parda,negras,,Nao,direto_Q13,40,,,02230-050,"R. Augusto Montenegro, 35 - Parque Edu ChavesR. Augusto Montenegro, 35 - Parque Edu Chaves"
+B-010,B,2021-23,2023-03-29 18:08:27.017,35.0,30-39,Feminino_presumido,preta,negras,,Nao,direto_Q13,17,,,04320-000,Rua General Manuel Vargas - Cidade Vargas
+B-011,B,2021-23,2023-03-31 09:15:07.862,31.0,30-39,Feminino_presumido,preta,negras,,Nao,direto_Q13,12,,,,Vila Ema - SP
+B-012,B,2021-23,2023-01-17 11:58:01.309,43.0,40-49,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,25,,,08341-070,"R. Antônio Pavão, 185 - Parque Boa Esperança"
+B-013,B,2021-23,2022-11-30 18:14:01.697,68.0,60+,Feminino_presumido,,,,,,20,,,01216-000,"Alameda Dino Bueno, 504 - Campos Elíseos"
+B-014,B,2021-23,2023-03-31 08:57:29.260,43.0,40-49,Feminino_presumido,preta,negras,,Sim,direto_Q13,26,,,,Ipiranga
+B-015,B,2021-23,2023-03-25 14:01:30.981,36.0,30-39,Feminino_presumido,preta,negras,,Sim,direto_Q13,15,,,13106-054,R. Treze de Maio - Nova Sousas (Sousas)
+B-016,B,2021-23,2022-12-22 19:48:36.882,45.0,40-49,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,5,,,13321-220,"R. Joseano Costa Pinto, 557 - Vila Progresso"
+B-017,B,2021-23,2022-12-22 19:19:43.805,52.0,50-59,Feminino_presumido,parda,negras,,Nao,direto_Q13,15,,,13321-220,"R. Joseano Costa Pinto, 481 - Vila Progresso"
+B-018,B,2021-23,2023-03-21 15:57:24.730,44.0,40-49,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,,,,,
+B-019,B,2021-23,2023-04-01 22:15:31.607,28.0,18-29,Feminino_presumido,preta,negras,,Sim,direto_Q13,8,,,,Vargem Grande-Parelheiros
+B-020,B,2021-23,2023-03-24 16:38:46.194,59.0,50-59,Feminino_presumido,parda,negras,,Sim,direto_Q13,47,,,13058-300,"R. Romeu dos Santos, 174 - Lot. Res. Novo Mundo"
+B-021,B,2021-23,2023-03-31 21:34:44.515,50.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,35,,,,Agua Rasa-SP
+B-022,B,2021-23,2023-04-01 19:55:16.434,30.0,30-39,Feminino_presumido,parda,negras,,Nao,direto_Q13,8,,,,Grajaú-SP
+B-023,B,2021-23,2023-03-28 10:39:21.952,52.0,50-59,Feminino_presumido,indigena,nao_negras,,Sim,direto_Q13,,,,,
+B-024,B,2021-23,2023-03-20 17:26:22.840,63.0,60+,Feminino_presumido,preta,negras,,Sim,direto_Q13,30,,,,
+B-025,B,2021-23,2023-03-22 16:41:37.383,58.0,50-59,Feminino_presumido,indigena,nao_negras,,Nao,direto_Q13,48,,,,
+B-026,B,2021-23,2022-12-12 17:45:18.631,38.0,30-39,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,15,,,14400-740,Não respondeu [STDMSP]
+B-027,B,2021-23,2023-03-27 17:49:42.635,60.0,60+,Feminino_presumido,indigena,nao_negras,,Nao,direto_Q13,45,,,,
+B-028,B,2021-23,2023-01-17 14:02:49.501,62.0,60+,Feminino_presumido,preta,negras,,Sim,direto_Q13,45,,,07159-610,"R. Calendula, 365 - Parque Res. Bambi"
+B-029,B,2021-23,2022-12-29 17:07:05.001,68.0,60+,Feminino_presumido,preta,negras,,Nao,direto_Q13,32,,,01226-002,"R. Martim Francisco, 420 - Vila Buarque"
+B-030,B,2021-23,2022-12-31 16:17:47.890,34.0,30-39,Feminino_presumido,parda,negras,,Sim,direto_Q13,Não respondeu,,,02537-080,Não respondeu [STDMSP]
+B-031,B,2021-23,2023-04-01 15:20:44.613,46.0,40-49,Feminino_presumido,parda,negras,,Nao,direto_Q13,11,,,,Jardim Santo André-SP
+B-032,B,2021-23,2023-03-29 11:41:41.334,32.0,30-39,Feminino_presumido,parda,negras,,Sim,direto_Q13,10,,,08320-395,Parque São Rafael- São Mateus
+B-033,B,2021-23,2023-04-01 09:58:25.242,35.0,30-39,Feminino_presumido,preta,negras,,Nao,direto_Q13,10,,,,Guaianazes-SP
+B-034,B,2021-23,2022-12-13 16:27:15.137,38.0,30-39,Feminino_presumido,parda,negras,,Sim,direto_Q13,1,,,03928-090,"Rua Giovanni Nasco, 905 - Conj. Hab. Teotonio Vilela"
+B-035,B,2021-23,2022-12-19 17:52:09.290,48.0,40-49,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,15,,,02541-120,"Tv. Américo Bologna, 42 - Vila Gouveia"
+B-036,B,2021-23,2023-01-12 23:59:32.082,41.0,40-49,Feminino_presumido,preta,negras,,Nao,direto_Q13,30,,,04929-250,"Rua Sergio de Azevedo Valentini, 121"
+B-037,B,2021-23,2022-12-31 16:06:29.880,40.0,40-49,Feminino_presumido,parda,negras,,Sim,direto_Q13,Não respondeu,,,14409-409,"Av. Heitor Villa Lobos, n. 401, ap. 22, bloco 29, Recreio Campo Belo, Franca, São Paulo"
+B-038,B,2021-23,2023-04-01 13:56:49.814,35.0,30-39,Feminino_presumido,parda,negras,,Nao,direto_Q13,18,,,,Cidade Tiradentes-SP
+B-039,B,2021-23,2023-01-17 11:33:50.371,30.0,30-39,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,8,,,08253-710,"Rua Domingos Rubino, 287 - Conj. Res. José Bonifácio"
+B-040,B,2021-23,2023-03-30 13:48:22.052,29.0,18-29,Feminino_presumido,preta,negras,,,,,,,,Heliópolis-SP
+B-041,B,2021-23,2023-03-27 16:30:59.272,55.0,50-59,Feminino_presumido,parda,negras,,Sim,direto_Q13,40,,,,
+B-042,B,2021-23,2023-03-21 20:40:58.859,67.0,60+,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,12,,,02252-000,"R. Mata Redonda, 481 - Vila Nivi"
+B-043,B,2021-23,2023-03-28 12:21:56.028,54.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,1,,,03583-090,R. Figueira da Barbária - Jardim Brasilia
+B-044,B,2021-23,2022-12-30 13:35:01.816,27.0,18-29,Feminino_presumido,parda,negras,,Nao,direto_Q13,1,,,05815-000,"Rua Albano Joaquim de Miranda, Jardim São Francisco de Assis, São Paulo"
+B-045,B,2021-23,2023-01-03 14:23:06.724,64.0,60+,Feminino_presumido,preta,negras,,Nao,direto_Q13,53,,,01215-001,"Alameda Glete, 1003 - Campos Elíseos"
+B-046,B,2021-23,2022-12-05 15:02:24.648,82.0,60+,Feminino_presumido,parda,negras,,Sim,direto_Q13,60,,,01301-100,"R. da Consolação, 1301 - Higienópolis"
+B-047,B,2021-23,2023-03-23 15:47:25.141,53.0,50-59,Feminino_presumido,parda,negras,,Nao,direto_Q13,,,,04875-070,chácara santo Amaro 
+B-048,B,2021-23,2023-03-29 17:46:33.940,40.0,40-49,Feminino_presumido,preta,negras,,Nao,direto_Q13,13,,,04236-220,Heliópolis 
+B-049,B,2021-23,2023-01-16 11:27:01.440,38.0,30-39,Feminino_presumido,parda,negras,,Sim,direto_Q13,,,,06462-000,"R. Adoniran Barbosa, 1337 - Parque Imperial"
+B-050,B,2021-23,2023-03-31 09:36:29.258,55.0,50-59,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,20,,,,Jardim Santo André- SP
+B-051,B,2021-23,2023-04-01 09:37:47.143,44.0,40-49,Feminino_presumido,parda,negras,,Nao,direto_Q13,,,,,"Vargem Grande, Parelheiros"
+B-052,B,2021-23,2023-03-31 21:11:14.947,43.0,40-49,Feminino_presumido,preta,negras,,Nao,direto_Q13,,,,,Vargem Grande
+B-053,B,2021-23,2023-01-17 12:43:59.593,57.0,50-59,Feminino_presumido,parda,negras,,Sim,direto_Q13,13,,,08465-140,"R. Festa Chinesa, 196 - Conj. Hab. Juscelino Kubitschek"
+B-054,B,2021-23,2023-03-29 11:11:21.782,54.0,50-59,Feminino_presumido,parda,negras,,Nao,direto_Q13,39,,,04316-060,R. Bicudo de Brito - Vila Guarani
+B-055,B,2021-23,2022-12-29 15:58:35.914,51.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,,,,02330-000,"Avenida Nova Cantareira, n. 16-17, Tucuruvi"
+B-056,B,2021-23,2023-03-24 16:59:31.640,50.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,20,,,13060-518,Jardim Santa Lúcia
+B-057,B,2021-23,2023-03-30 12:48:38.056,45.0,40-49,Feminino_presumido,preta,negras,,Nao,direto_Q13,15,,,,Santana-SP
+B-058,B,2021-23,2023-04-01 16:11:04.231,32.0,30-39,Feminino_presumido,preta,negras,,Nao,direto_Q13,14,,,,Jabaquara-SP
+B-059,B,2021-23,2023-03-30 18:31:38.636,26.0,18-29,Feminino_presumido,parda,negras,,Nao,direto_Q13,8,,,,Jabaquara-SP
+B-060,B,2021-23,2023-01-04 15:48:46.611,46.0,40-49,Feminino_presumido,preta,negras,,Sim,direto_Q13,30,,,05594-120,"Rua Doutor Levindo de Paiva Duque, 52"
+B-061,B,2021-23,2023-03-20 16:07:36.631,60.0,60+,Feminino_presumido,indigena,nao_negras,,Nao,direto_Q13,,,,03449-005,"R. Boa Estrela, 12 - Vila Carrao"
+B-062,B,2021-23,2023-01-18 13:04:55.520,55.0,50-59,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,15,,,02543-150,"R. Dr. Almeida Nobre, 40 - Vila Celeste"
+B-063,B,2021-23,2022-12-19 14:37:31.953,45.0,40-49,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,30,,,05594-120,"Rua Dr. Levindo de Paiva Duque, 52 - Jardim Bonfiglioli"
+B-064,B,2021-23,2023-01-04 16:24:03.117,50.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,37,,,06826-170,"R. Boa Viagem, 242 - Jardim Sao Vicente"
+B-065,B,2021-23,2023-03-25 12:06:06.044,35.0,30-39,Feminino_presumido,preta,negras,,Sim,direto_Q13,13,,,13059-696,"R. Rosa Balão, 121 - Cidade Satélite Íris"
+B-066,B,2021-23,2023-01-14 16:08:16.809,53.0,50-59,Feminino_presumido,parda,negras,,Nao,direto_Q13,20,,,03943-000,"Travessa Franz Tuma, 119 - Jardim Sapopemba"
+B-067,B,2021-23,2023-03-22 17:11:51.512,75.0,60+,Feminino_presumido,preta,negras,,Sim,direto_Q13,64,,,07159-600,Gerional Bambi
+B-068,B,2021-23,2022-12-22 20:18:16.355,52.0,50-59,Feminino_presumido,parda,negras,,Nao,direto_Q13,10,,,02302-120,"Rua Imperatriz, 127 - Vila Pauliceia"
+B-069,B,2021-23,2022-12-31 13:21:56.049,30.0,30-39,Feminino_presumido,parda,negras,,Nao,direto_Q13,,,,14404-247,"Rua Carolina Piacezzi Tardivo,  n. 1849, Jardim Aeroporto III, Franca, São Paulo"
+B-070,B,2021-23,2023-03-22 16:23:32.156,55.0,50-59,Feminino_presumido,branca,nao_negras,,,,,,,,
+B-071,B,2021-23,2023-03-27 16:53:27.792,70.0,60+,Feminino_presumido,preta,negras,,Sim,direto_Q13,50,,,,
+B-072,B,2021-23,2023-03-23 14:30:10.325,57.0,50-59,Feminino_presumido,parda,negras,,Nao,direto_Q13,30,,,06817-210,"R. Ilha Porchat, 123 - Parque Esplanada"
+B-073,B,2021-23,2023-03-24 17:14:48.210,40.0,40-49,Feminino_presumido,preta,negras,,Sim,direto_Q13,15,,,13060-262,Jardim Campos Eliseos
+B-074,B,2021-23,2022-11-28 12:12:52.464,41.0,40-49,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,18,,,05758-090,"R. Eliane Araújo Neves, 78 - Jardim Catanduva"
+B-075,B,2021-23,2023-03-30 15:30:47.535,34.0,30-39,Feminino_presumido,parda,negras,,Nao,direto_Q13,14,,,,Vila Ema- SP
+B-076,B,2021-23,2023-01-09 15:50:01.646,54.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,42,,,05858-003,Bairro Capão Redondo
+B-077,B,2021-23,2023-03-25 14:41:02.391,54.0,50-59,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,10,,,13050-575,Jardim Novo Campos Elíseos
+B-078,B,2021-23,2023-01-18 15:02:35.924,61.0,60+,Feminino_presumido,,,,Sim,direto_Q13,48,,,05215-000,Perus
+B-079,B,2021-23,2023-03-27 18:33:26.820,43.0,40-49,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,,,,,
+B-080,B,2021-23,2023-01-19 22:33:27.969,51.0,50-59,Feminino_presumido,parda,negras,,Nao,direto_Q13,40,,,02537-080,Não respondeu [STDMSP]
+B-081,B,2021-23,2022-12-12 15:46:33.530,58.0,50-59,Feminino_presumido,parda,negras,,Sim,direto_Q13,20,,,14403-652,"R. José Zuanazzi, 3324 - Vila Scarabucci"
+B-082,B,2021-23,2023-01-12 23:13:51.168,76.0,60+,Feminino_presumido,preta,negras,,Sim,direto_Q13,58,,,04166-970,Jardim Vergueiro
+B-083,B,2021-23,2023-04-01 21:47:43.613,51.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,,,,,Vargem Grande -Parelheiros
+B-084,B,2021-23,2022-12-14 16:34:39.791,63.0,60+,Feminino_presumido,parda,negras,,Sim,direto_Q13,30,,,14401-362,"R. Dr. Clemente Segundo Pinho, 1666"
+B-085,B,2021-23,2022-12-31 14:03:27.955,46.0,40-49,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,,,,14404-275,"Rua João Ribeiro da Silva, n. 2039, Santa Bárbara, São Paulo"
+B-086,B,2021-23,2023-03-23 14:57:48.199,33.0,30-39,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,3,,,05351-005,"Rua Dr. José Benedito Viana de Moraes, 20 - Rio Pequeno"
+B-087,B,2021-23,2022-12-19 12:30:30.414,54.0,50-59,Feminino_presumido,parda,negras,,Sim,direto_Q13,16,,,02016-001,"R. Salete, 520 - Santana"
+B-088,B,2021-23,2023-03-21 20:15:02.130,52.0,50-59,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,40,,,07739-070,"R. Olegário Mariano, 32 - Laranjeiras"
+B-089,B,2021-23,2022-12-30 14:09:27.552,43.0,40-49,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,23,,,08260-030,"R. Agrimensor Sugaya, 930 - Colônia "
+B-090,B,2021-23,2023-03-30 11:04:44.948,28.0,18-29,Feminino_presumido,parda,negras,,Sim,direto_Q13,8,,,,Vila Ema - SP
+B-091,B,2021-23,2022-12-29 14:39:06.104,59.0,50-59,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,Não respondeu,,,04387-050,"Rua Antônio da Silva Lobo Júnior, n. 75, Cidade Domitila, Jabaquara."
+B-092,B,2021-23,2023-03-27 13:42:13.620,40.0,40-49,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,,,,02363-030,"R. Azaléia, 100 - Jardim Flor de Maio"
+B-093,B,2021-23,2023-01-09 16:45:15.795,42.0,40-49,Feminino_presumido,,,,Nao,direto_Q13,15,,,09090-060,"R. das Goiabeiras, 285 - Jardim"
+B-094,B,2021-23,2023-03-29 14:35:45.080,35.0,30-39,Feminino_presumido,parda,negras,,Sim,direto_Q13,10,,,,Jardim Santo André - São Mateus
+B-095,B,2021-23,2022-12-31 16:20:55.692,54.0,50-59,Feminino_presumido,preta,negras,,Nao,direto_Q13,20,,,04287-100,"Av. Pres. Tancredo Neves, 351 - Vila Nancy"
+B-096,B,2021-23,2023-03-22 12:06:25.078,55.0,50-59,Feminino_presumido,parda,negras,,Nao,direto_Q13,45,,,,
+B-097,B,2021-23,2023-04-01 08:37:48.021,28.0,18-29,Feminino_presumido,parda,negras,,Nao,direto_Q13,5,,,,Casa dos Patrões
+B-098,B,2021-23,2022-12-30 16:01:22.136,55.0,50-59,Feminino_presumido,parda,negras,,Sim,direto_Q13,1,,,02537-080,Não respondeu [STDMSP]
+B-099,B,2021-23,2023-03-24 10:11:20.822,38.0,30-39,Feminino_presumido,parda,negras,,Sim,direto_Q13,10,,,05272-030,"R. Pedra de Bendengo, 230 - Jardim Monte Belo"
+B-100,B,2021-23,2023-03-21 18:30:06.793,39.0,30-39,Feminino_presumido,parda,negras,,Nao,direto_Q13,15,,,07145-060,"R. dos Estagiários, 84 - Parque Primavera"
+B-101,B,2021-23,2022-11-28 13:07:23.984,38.0,30-39,Feminino_presumido,,,,Nao,direto_Q13,5,,,04570-100,Brooklin
+B-102,B,2021-23,2023-03-29 10:41:38.204,53.0,50-59,Feminino_presumido,preta,negras,,Nao,direto_Q13,35,,,04316-060,R. Bicudo de Brito - Vila Guarani
+B-103,B,2021-23,2023-03-29 18:41:08.803,28.0,18-29,Feminino_presumido,preta,negras,,Nao,direto_Q13,5,,,04320-000,Rua General Manuel Vargas - Cidade Vargas
+B-104,B,2021-23,2023-03-21 21:08:48.253,45.0,40-49,Feminino_presumido,preta,negras,,Sim,direto_Q13,23,,,02131-080,"R. Moreira de Vasconcelos, 2 - Vila Maria Alta"
+B-105,B,2021-23,2023-03-28 10:13:10.617,53.0,50-59,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,40,,,,
+B-106,B,2021-23,2022-11-28 12:35:31.987,43.0,40-49,Feminino_presumido,preta,negras,,Sim,direto_Q13,18,,,02537-080,Não respondeu [STDMSP]
+B-107,B,2021-23,2022-12-22 22:21:40.178,36.0,30-39,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,15,,,05853-330,"R. Jules Bordet, 408 - Jardim Duprat"
+B-108,B,2021-23,2023-01-17 10:44:25.981,53.0,50-59,Feminino_presumido,parda,negras,,Sim,direto_Q13,40,,,06140-007,"Via Transversal Sul, 100 - Novo Osasco"
+B-109,B,2021-23,2023-03-20 15:32:30.597,40.0,40-49,Feminino_presumido,parda,negras,,Sim,direto_Q13,19,,,07432-470,R. das Mangueiras - Jardim Cerejeiras
+B-110,B,2021-23,2023-03-30 14:57:31.594,27.0,18-29,Feminino_presumido,parda,negras,,Nao,direto_Q13,5,,,,Jardim Alvarenga
+B-111,B,2021-23,2023-03-30 14:31:35.534,30.0,30-39,Feminino_presumido,preta,negras,,Sim,direto_Q13,11,,,,Jardim Alvarenga-SP
+B-112,B,2021-23,2022-12-01 23:04:01.856,54.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,30,,,05820-120,"Rua Capitanias Hereditárias, 815 - Jardim Novo Santo Amaro"
+B-113,B,2021-23,2022-12-31 14:23:55.175,40.0,40-49,Feminino_presumido,parda,negras,,Sim,direto_Q13,20 anos,,,14404-275,"Rua João Ribeiro da Silva, n. 2108, Jardim Santa Bárbara, Franca, São Paulo"
+B-114,B,2021-23,2023-03-22 12:24:02.084,22.0,18-29,Feminino_presumido,parda,negras,,Nao,direto_Q13,,,,,
+B-115,B,2021-23,2023-03-30 12:14:43.884,53.0,50-59,Feminino_presumido,parda,negras,,Sim,direto_Q13,37,,,,Ipiranga-SP 
+B-116,B,2021-23,2023-03-20 19:21:58.478,44.0,40-49,Feminino_presumido,indigena,nao_negras,,Nao,direto_Q13,,,,03182-020,"R. Pires de Campos, 30 - Água Rasa"
+B-117,B,2021-23,2023-04-01 15:02:26.130,32.0,30-39,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,9,,,,São Mateus-SP
+B-118,B,2021-23,2023-01-12 13:10:28.214,42.0,40-49,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,27,,,02844-070,Brasilândia - comunidade
+B-119,B,2021-23,2023-03-28 12:32:22.368,64.0,60+,Feminino_presumido,,,,Nao,direto_Q13,,,,04331-000,"R. Camilo Carrera, 202 - Vila Campestre"
+B-120,B,2021-23,2023-03-28 12:06:10.676,40.0,40-49,Feminino_presumido,preta,negras,,Sim,direto_Q13,16,,,,
+B-121,B,2021-23,2022-12-14 17:30:07.108,37.0,30-39,Feminino_presumido,indigena,nao_negras,,Sim,direto_Q13,5,,,14402-414,"R. Clodomiro Ferreira da Silva, 471 - Jardim Paulistano"
+B-122,B,2021-23,2023-03-31 11:20:21.837,39.0,30-39,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,14,,,,Jardim da Conquista- São Mateus
+B-123,B,2021-23,2023-01-12 12:20:46.237,44.0,40-49,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,31,,,01219-010,"Av. Duque de Caxias, 20 - Santa Cecilia, São Paulo"
+B-124,B,2021-23,2023-04-01 20:57:31.995,,,Feminino_presumido,preta,negras,,Nao,direto_Q13,,,,,Vargem Grande- Parelheiros 
+B-125,B,2021-23,2023-03-29 12:01:32.105,39.0,30-39,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,20,,,09132-410,Jardim Santo André - São Mateus
+B-126,B,2021-23,2022-12-30 14:16:24.409,53.0,50-59,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,41,,,01315-000,"Rua Santo Amaro, n. 341, ap. 810, Bela Vista, São Paulo"
+B-127,B,2021-23,2023-01-19 22:10:11.915,43.0,40-49,Feminino_presumido,parda,negras,,Sim,direto_Q13,12,,,02325-560,Taboão da Serra 
+B-128,B,2021-23,2023-04-01 09:19:10.359,40.0,40-49,Feminino_presumido,parda,negras,,Nao,direto_Q13,8,,,,Jardim São Francisco-São Mateus
+B-129,B,2021-23,2022-12-13 18:07:51.836,49.0,40-49,Feminino_presumido,preta,negras,,Sim,direto_Q13,40,,,13466-450,"Rua Domingos Sávio, 470"
+B-130,B,2021-23,2023-03-28 11:30:38.280,70.0,60+,Feminino_presumido,preta,negras,,Nao,direto_Q13,60,,,,
+B-131,B,2021-23,2023-04-01 21:09:28.896,42.0,40-49,Feminino_presumido,preta,negras,,Sim,direto_Q13,,,,,Vargem Grande- Parelheiros
+B-132,B,2021-23,2023-03-27 15:47:52.613,38.0,30-39,Feminino_presumido,preta,negras,,Nao,direto_Q13,30,,,,
+B-133,B,2021-23,2023-04-01 22:02:56.350,48.0,40-49,Feminino_presumido,parda,negras,,Nao,direto_Q13,,,,,Vargem Grande - Parelheiros
+B-134,B,2021-23,2023-03-24 18:52:23.300,62.0,60+,Feminino_presumido,preta,negras,,Sim,direto_Q13,38,,,08670-020,Jardim Monte Cristo
+B-135,B,2021-23,2023-01-19 21:50:23.438,57.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,2,,,05029-020,"R. Rifaina, 437 - Vila Anglo Brasileira"
+B-136,B,2021-23,2023-01-09 18:39:32.216,48.0,40-49,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,30,,,06852-310,"R. Agatino de Esparta, 2 - Jardim Horizonte Azul"
+B-137,B,2021-23,2023-04-01 22:22:16.995,50.0,50-59,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,1,,,,
+B-138,B,2021-23,2022-12-30 13:27:29.083,71.0,60+,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,50,,,02222-060,"R. Arisuel, 53 - Vila Medeiros"
+B-139,B,2021-23,2023-03-21 17:22:50.259,71.0,60+,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,26,,,02124-002,"Av. das Cerejeiras, 2338 - Jardim Japao"
+B-140,B,2021-23,2022-12-05 11:38:48.185,63.0,60+,Feminino_presumido,parda,negras,,Sim,direto_Q13,25,,,09321-410,"R. Adílson Dias de Souza, 412 - Jardim Zaira"
+B-141,B,2021-23,2023-04-01 21:23:07.451,53.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,20,,,,Vargem Brande-Parelheiros.
+B-142,B,2021-23,2023-03-23 12:41:27.037,42.0,40-49,Feminino_presumido,parda,negras,,Sim,direto_Q13,36,,,07260-400,"R. José Caetano da Cruz, 249 - Jardim Angelica"
+B-143,B,2021-23,2023-03-24 15:05:17.022,59.0,50-59,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,25,,,13045-047,"R. Jesus Sales da Silva, 515 - Vila Formosa"
+B-144,B,2021-23,2022-12-12 22:01:52.564,38.0,30-39,Feminino_presumido,parda,negras,,Sim,direto_Q13,20,,,14409-356,"R. José Mafás, 868 - Parque do Horto"
+B-145,B,2021-23,2023-03-27 14:03:48.805,20.0,18-29,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,8,,,,
+B-146,B,2021-23,2023-03-25 16:59:20.732,47.0,40-49,Feminino_presumido,preta,negras,,Sim,direto_Q13,34,,,13058-716,"R. Helena Teodoro Ferreira, 147 - Jardim Santa Rosa"
+B-147,B,2021-23,2023-03-25 17:41:29.306,45.0,40-49,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,20,,,13051-027,"R. Alceri Maria Gomes da Silva, 49 - Jardim do Lago Continuacao"
+B-148,B,2021-23,2023-03-21 19:02:44.655,47.0,40-49,Feminino_presumido,parda,negras,,Sim,direto_Q13,14,,,04728-080,"R. Dalva de Oliveira, 75 - Jardim Caravelas"
+B-149,B,2021-23,2023-03-28 11:00:20.425,60.0,60+,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,10,,,,
+B-150,B,2021-23,2023-03-28 15:26:45.212,60.0,60+,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,45,,,,
+B-151,B,2021-23,2023-03-22 18:08:08.019,53.0,50-59,Feminino_presumido,parda,negras,,Nao,direto_Q13,35,,,06075-040,"R. Luíz Villar, 118 - Cipava"
+B-152,B,2021-23,2023-03-24 17:39:22.078,62.0,60+,Feminino_presumido,preta,negras,,Sim,direto_Q13,42,,,13026-285,"R. Dom Luiz Antônio de Souza, 700 - Jardim Proença"
+B-153,B,2021-23,2023-03-25 15:48:55.083,58.0,50-59,Feminino_presumido,preta,negras,,Nao,direto_Q13,41,,,13059-664,"R. Profa. Carolina de Oliveira, 19 - Cidade Satélite Íris"
+B-154,B,2021-23,2022-12-14 23:28:04.640,53.0,50-59,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,5,,,14404-117,"R. Dom Bernardo José Bueno Miéle, 1675 - Jardim Aeroporto IIIFranca - SP, 14404-261, Brazil"
+B-155,B,2021-23,2023-01-02 16:05:59.091,56.0,50-59,Feminino_presumido,preta,negras,,Nao,direto_Q13,15,,,08395-325,R. Flores da Primavera - Jardim Rodolfo Pirani
+B-156,B,2021-23,2022-12-02 13:36:28.958,65.0,60+,Feminino_presumido,parda,negras,,Nao,direto_Q13,45,,,02258-010,"R. Bassi, 170 - Jaçanã"
+B-157,B,2021-23,2023-03-23 11:36:06.796,47.0,40-49,Feminino_presumido,parda,negras,,Sim,direto_Q13,30,,,08372-205,"R. Júlio de Grazia, 80 - Jardim das Rosas (Iguatemi)"
+B-158,B,2021-23,2022-12-30 17:28:08.668,57.0,50-59,Feminino_presumido,parda,negras,,Sim,direto_Q13,Não respondeu,,,14403-331,"Rua Antônio Contini, n. 951, Recanto Elimar III, Franca, São Paulo"
+B-159,B,2021-23,2023-03-27 16:02:22.338,62.0,60+,Feminino_presumido,preta,negras,,Nao,direto_Q13,47,,,,
+B-160,B,2021-23,2023-03-21 14:50:14.428,59.0,50-59,Feminino_presumido,preta,negras,,Nao,direto_Q13,25,,,,
+B-161,B,2021-23,2023-03-31 18:13:44.048,55.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,34,,,,Jardim Santo André-SP
+B-162,B,2021-23,2023-03-28 13:00:05.532,58.0,50-59,Feminino_presumido,preta,negras,,Nao,direto_Q13,,,,05872-050,"R. Diego de Siloe, 26 - Jardim São Bento Novo"
+B-163,B,2021-23,2022-12-31 13:39:03.282,50.0,50-59,Feminino_presumido,parda,negras,,Sim,direto_Q13,Não respondeu,,,14404-247,"Rua Carolina Piacezzi Tardivo, n. 1840, Bairro Jardim Aeroporto III, Franca, São Paulo"
+B-164,B,2021-23,2023-03-24 16:01:41.094,55.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,21,,,13060-123,"R. São Francisco, 721 - Jardim Novo Campos Eliseos"
+B-165,B,2021-23,2023-03-24 10:39:05.042,41.0,40-49,Feminino_presumido,preta,negras,,Nao,direto_Q13,29,,,13060-053,"R. da Paz, 15 - Jardim Campos Eliseos"
+B-166,B,2021-23,2022-12-31 14:38:40.520,53.0,50-59,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,30,,,08577-060,"Rua Itapuí, Jardim Santa Helena"
+B-167,B,2021-23,2022-12-12 22:36:05.417,51.0,50-59,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,25,,,02675-031,"R. José Eduardo Pereira II, 229 - Brasilândia"
+B-168,B,2021-23,2022-11-25 16:28:39.866,53.0,50-59,Feminino_presumido,parda,negras,,Sim,direto_Q13,30,,,02537-080,Não Informou [STDMSP]
+B-169,B,2021-23,2023-03-25 16:11:55.641,51.0,50-59,Feminino_presumido,parda,negras,,Nao,direto_Q13,40,,,13186-175,Jardim Campos Verdes
+B-170,B,2021-23,2023-01-12 22:32:31.094,65.0,60+,Feminino_presumido,amarela,nao_negras,,Sim,direto_Q13,30,,,14400-740,Não respondeu [STDMSP]
+B-171,B,2021-23,2022-12-30 15:42:59.239,55.0,50-59,Feminino_presumido,parda,negras,,Nao,direto_Q13,8,,,08579-100,"Rod. Alberto Hinoto, 2174 - Jardim Itapua"
+B-172,B,2021-23,2022-12-19 12:11:43.224,65.0,60+,Feminino_presumido,preta,negras,,Sim,direto_Q13,49,,,04814-555,"R. Marlene Dietrich, 113 - Jardim Guanhembu"
+B-173,B,2021-23,2023-03-25 15:03:51.727,48.0,40-49,Feminino_presumido,parda,negras,,Sim,direto_Q13,30,,,13075-380,"R. Camilo Castelo Branco, 23 - Jardim Nossa Sra. Auxiliadora"
+B-174,B,2021-23,2023-03-21 22:10:46.253,29.0,18-29,Feminino_presumido,parda,negras,,Nao,direto_Q13,3,,,05815-085,"R. Bento Barroso Pereira, 11 - Jardim Sao Francisco de Assis"
+B-175,B,2021-23,2022-12-29 14:25:53.215,51.0,50-59,Feminino_presumido,parda,negras,,Nao,direto_Q13,15,,,05351-005,"Rua Dr. José Benedito Viana de Moraes, 10 - Rio Pequeno"
+B-176,B,2021-23,2023-03-27 17:02:47.244,25.0,18-29,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,1,,,,
+B-177,B,2021-23,2023-03-21 17:52:45.318,58.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,28,,,02190-060,"R. José Barbosa de Lima, 137 - Parque Novo Mundo"
+B-178,B,2021-23,2022-12-19 22:06:45.873,52.0,50-59,Feminino_presumido,parda,negras,,Nao,direto_Q13,,,,04891-250,"Estr. do Sumaré, 72 - Eng. Marsilac"
+B-179,B,2021-23,2023-03-28 10:25:32.146,60.0,60+,Feminino_presumido,indigena,nao_negras,,Nao,direto_Q13,1,,,,
+B-180,B,2021-23,2023-01-19 20:25:20.255,50.0,50-59,Feminino_presumido,parda,negras,,Sim,direto_Q13,30,,,08270-001,Centro Itaquera 
+B-181,B,2021-23,2023-01-03 13:15:12.635,55.0,50-59,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,9,,,06226-210,"R. São Luís, 442 - Rochdale"
+B-182,B,2021-23,2023-01-02 16:33:46.391,53.0,50-59,Feminino_presumido,parda,negras,,Sim,direto_Q13,,,,03365-110,"R. Medeiros Furtado, 357 - Vila Formosa"
+B-183,B,2021-23,2023-03-25 17:59:10.652,54.0,50-59,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,,,,13057-180,"Rua Oswaldo Ceara Barbosa, 266"
+B-184,B,2021-23,2023-03-22 11:19:47.002,45.0,40-49,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,32,,,,
+B-185,B,2021-23,2023-03-20 18:00:55.837,45.0,40-49,Feminino_presumido,parda,negras,,Nao,direto_Q13,30,,,,
+B-186,B,2021-23,2023-01-09 13:56:19.171,60.0,60+,Feminino_presumido,preta,negras,,Nao,direto_Q13,46,,,07990-093,"Travessa Francisco Frizzo Belém Capela, 7, Francisco Morato - SP"
+B-187,B,2021-23,2023-03-30 10:46:35.472,31.0,30-39,Feminino_presumido,preta,negras,,Sim,direto_Q13,6,,,,Jabaquara- SP
+B-188,B,2021-23,2023-03-25 13:45:29.118,69.0,60+,Feminino_presumido,preta,negras,,Sim,direto_Q13,38,,,13061-320,"Rua Paturi, Vila Padre Manoel de Nóbrega, Campinas, SP"
+B-189,B,2021-23,2022-12-22 21:09:50.349,55.0,50-59,Feminino_presumido,parda,negras,,Sim,direto_Q13,2,,,02378-290,"R. São Damiao, 23 - Vila Irmaos Arnoni"
+B-190,B,2021-23,2023-03-20 14:51:47.995,30.0,30-39,Feminino_presumido,parda,negras,,Sim,direto_Q13,,,,05273-230,Av. da Solidariedade - Jardim Jaragua
+B-191,B,2021-23,2023-03-27 15:28:52.717,50.0,50-59,Feminino_presumido,preta,negras,,Nao,direto_Q13,33,,,,
+B-192,B,2021-23,2022-12-22 22:59:57.869,62.0,60+,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,48,,,06550-000,Pirapora do Bom Jesus 
+B-193,B,2021-23,2023-03-27 18:24:20.835,33.0,30-39,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,,,,,
+B-194,B,2021-23,2023-04-01 20:28:55.746,48.0,40-49,Feminino_presumido,preta,negras,,Nao,direto_Q13,31,,,,Santo Amaro-SP
+B-195,B,2021-23,2023-03-25 12:42:19.789,54.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,,,,13052-570,"R. Manoella Marcolino Silva Derigo, 396 - Jardim San Diego"
+B-196,B,2021-23,2022-12-12 22:55:32.699,51.0,50-59,Feminino_presumido,,,,Sim,direto_Q13,15,,,08472-373,"R. Cachoeira Aurora, 41 - Conj. Hab. Inacio Monteiro"
+B-197,B,2021-23,2022-12-13 17:02:13.472,64.0,60+,Feminino_presumido,preta,negras,,Sim,direto_Q13,40,,,02334-001,"R. Altinópolis, 593 - Água Fria"
+B-198,B,2021-23,2023-03-21 16:28:53.696,57.0,50-59,Feminino_presumido,parda,negras,,Sim,direto_Q13,20,,,02258-020,"R. Albano Cássio, 75 - Vila Constança"
+B-199,B,2021-23,2023-01-17 13:44:06.492,83.0,60+,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,77,,,01155-040,"Alameda Olga, 400 - Barra Funda, São Paulo "
+B-200,B,2021-23,2023-01-19 20:47:34.338,49.0,40-49,Feminino_presumido,preta,negras,,Sim,direto_Q13,38,,,03978-340,Diadema
+B-201,B,2021-23,2023-03-23 16:49:48.726,55.0,50-59,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,2,,,07242-225,"R. Jutaí, 1527 - Cidade Parque Alvorada"
+B-202,B,2021-23,2023-03-30 14:06:04.503,41.0,40-49,Feminino_presumido,indigena,nao_negras,,Sim,direto_Q13,21,,,,Jabaquara-SP
+B-203,B,2021-23,2022-12-30 12:15:26.331,59.0,50-59,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,,,,04915-020,"Rua Pedro da Costa Faleiro, 633 - Jardim Figueira Grande"
+B-204,B,2021-23,2023-03-30 20:56:25.580,37.0,30-39,Feminino_presumido,parda,negras,,,,20,,,,Sacomã-SP
+B-205,B,2021-23,2023-03-27 18:46:57.538,45.0,40-49,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,,,,,Jaraguá 
+B-206,B,2021-23,2023-03-28 15:14:23.903,23.0,18-29,Feminino_presumido,preta,negras,,Sim,direto_Q13,,,,,
+B-207,B,2021-23,2023-03-30 18:19:31.345,45.0,40-49,Feminino_presumido,preta,negras,,Nao,direto_Q13,25,,,,Vila Campestre- Jabaquara
+B-208,B,2021-23,2023-03-20 20:46:51.909,56.0,50-59,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,30,,,,
+B-209,B,2021-23,2023-03-22 10:52:30.749,29.0,18-29,Feminino_presumido,preta,negras,,Nao,direto_Q13,12,,,05874-070,R. Coelho Lousada - Jardim Angela
+B-210,B,2021-23,2022-12-19 22:55:48.759,51.0,50-59,Feminino_presumido,parda,negras,,Nao,direto_Q13,38,,,02911-130,"Rua Oscar Carmilo, 249 - Freguesia do Ó"
+B-211,B,2021-23,2022-12-14 23:57:24.000,21.0,18-29,Feminino_presumido,parda,negras,,Sim,direto_Q13,1,,,14403-105,"R. Alberto Schirato, 686 - Jardim Lima"
+B-212,B,2021-23,2022-12-31 15:51:00.563,62.0,60+,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,30,,,02738-110,"R. Mário Maldonado, 69 - Freguesia do Ó"
+B-213,B,2021-23,2023-03-29 15:50:51.038,45.0,40-49,Feminino_presumido,parda,negras,,Nao,direto_Q13,25,,,04218-000,R. Comandante Taylor - Ipiranga
+B-214,B,2021-23,2022-12-29 13:45:15.424,45.0,40-49,Feminino_presumido,parda,negras,,Sim,direto_Q13,28,,,08391-240,"Rua Orquídeas, n. 305, Parque das Flores, São Paulo - SP"
+B-215,B,2021-23,2023-03-23 16:20:59.039,41.0,40-49,Feminino_presumido,preta,negras,,Nao,direto_Q13,16,,,,
+B-216,B,2021-23,2023-03-30 11:39:11.189,47.0,40-49,Feminino_presumido,preta,negras,,Nao,direto_Q13,15,,,,Heli[opolis - SP 
+B-217,B,2021-23,2023-03-28 11:47:20.661,50.0,50-59,Feminino_presumido,preta,negras,,Nao,direto_Q13,20,,,,
+B-218,B,2021-23,2022-12-16 16:15:49.022,53.0,50-59,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,10,,,14403-286,"R. José Antônio Santos, 1721 - Recanto Elimar"
+B-219,B,2021-23,2023-04-01 15:43:14.833,40.0,40-49,Feminino_presumido,preta,negras,,Sim,direto_Q13,20,,,,Jardim Míriam
+B-220,B,2021-23,2023-01-14 15:38:34.105,52.0,50-59,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,,,,04195-150,"R. Aquiles Jovane, 31 - Jardim Celeste"
+B-221,B,2021-23,2022-12-29 15:07:00.965,61.0,60+,Feminino_presumido,parda,negras,,Nao,direto_Q13,15,,,04937-000,"Estr. do Guavirutuba, 687 - Vila Bom Jardim"
+B-222,B,2021-23,2023-03-30 20:20:06.233,49.0,40-49,Feminino_presumido,preta,negras,,Nao,direto_Q13,30,,,,Ipiranga-SP
+B-223,B,2021-23,2022-12-29 17:02:02.171,63.0,60+,Feminino_presumido,branca,nao_negras,,Nao,direto_Q13,Não respondeu,,,01526-000,"Rua Bueno de Andrade, n. 891, ap. 45, Aclimação"
+B-224,B,2021-23,2022-12-31 14:59:26.644,53.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,Não respondeu,,,14409-409,"Av. Heitor Villa Lobos, n. 401, ap. 21, bloco 29, Recreio Campo Belo, Franca, São Paulo"
+B-225,B,2021-23,2023-03-30 20:00:31.532,29.0,18-29,Feminino_presumido,preta,negras,,Nao,direto_Q13,10,,,,Jabaquara-SP
+B-226,B,2021-23,2023-03-22 12:47:31.216,70.0,60+,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,,,,,
+B-227,B,2021-23,2023-03-20 20:17:17.519,50.0,50-59,Feminino_presumido,parda,negras,,Nao,direto_Q13,32,,,,
+B-228,B,2021-23,2023-03-28 15:01:16.874,35.0,30-39,Feminino_presumido,preta,negras,,Nao,direto_Q13,14,,,,
+B-229,B,2021-23,2023-01-02 16:57:40.806,36.0,30-39,Feminino_presumido,preta,negras,,Sim,direto_Q13,10,,,06618-010,"R. Manoel Alves García, 185 - Jardim Sao Paulo"
+B-230,B,2021-23,2023-03-24 15:42:29.008,54.0,50-59,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,,,,04627-015,Campo Belo I 
+B-231,B,2021-23,2023-01-18 12:03:05.925,53.0,50-59,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,30,,,08050-460,"R. Lírio da Serra, 239 - Parque Guarani"
+B-232,B,2021-23,2023-03-28 13:38:57.259,44.0,40-49,Feminino_presumido,,,,,,4,,,,Franco da Rocha
+B-233,B,2021-23,2023-03-23 17:38:04.732,52.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,5,,,05844-020,R. Aribugu - Jardim Sao Luis
+B-234,B,2021-23,2023-03-29 15:32:12.161,52.0,50-59,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,35,,,01414-002,R. do Grito - Ipiranga
+B-235,B,2021-23,2023-03-27 16:21:19.661,65.0,60+,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,47,,,,
+B-236,B,2021-23,2023-03-23 15:32:23.045,30.0,30-39,Feminino_presumido,parda,negras,,Nao,direto_Q13,2,,,05351-005,"Rua Dr. José Benedito Viana de Moraes, 11 - Rio Pequeno"
+B-237,B,2021-23,2023-01-12 13:43:36.342,62.0,60+,Feminino_presumido,parda,negras,,Sim,direto_Q13,51,,,05422-010,"R. dos Pinheiros, 11 - Pinheiros"
+B-238,B,2021-23,2023-03-27 14:38:37.762,45.0,40-49,Feminino_presumido,branca,nao_negras,,Sim,direto_Q13,30,,,,
+B-239,B,2021-23,2023-03-21 15:19:23.859,23.0,18-29,Feminino_presumido,preta,negras,,Nao,direto_Q13,,,,,Mora no Cocaia
+B-240,B,2021-23,2023-01-03 13:43:40.061,56.0,50-59,Feminino_presumido,preta,negras,,Sim,direto_Q13,43,,,08460-360,"R. Cristóvão Mendes, 108 - Jardim Sao Paulo"
+B-241,B,2021-23,2022-12-22 20:47:14.319,61.0,60+,Feminino_presumido,parda,negras,,Sim,direto_Q13,25,,,04916-000,"Est. da Riviera, 23 - Jardim Figueira Grande"

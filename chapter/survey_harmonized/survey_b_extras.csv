@@ -1,0 +1,242 @@
+respondent_anon_id,estado_civil,possui_filho,n_filhos,nivel_educacao,escolaridade_mae,escolaridade_pai,ocupacao_pais,estado_origem,pais_origem,estado_saude,modalidade_jornada,trabalha_atualmente
+B-001,divorciada,Sim,3.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,,Bahia,Brasil,Ruim,Completo,Sim
+B-002,solteira,Sim,3.0,Ensino Médio Incompleto,Ensino médio incompleto,Ensino médio incompleto,Pai é pedreiro e a mãe é dona doméstica,São Paulo,Brasil,Boa,Completo,Nao
+B-003,solteira,Não,0.0,Ensino Fundamental completo,,,O pai e a mãe são agricultores,Minas Gerais,Brasil,Mais ou menos,Completo,Sim
+B-004,união estável,Sim,1.0,Ensino Fundamental incompleto,Ensino fundamental incompleto,Ensino fundamental incompleto,A mãe trabalha como doméstica,Piauí,Brasil,Ruim,Completo,Sim
+B-005,casada,Sim,4.0,Ensino Fundamental completo,,,Falecidos,,Paraguai,Boa,Parcial,Sim
+B-006,solteira,Não,0.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,O pai e a mãe são caseiros,São Paulo,Brasil,Boa,,Nao
+B-007,união estável,Sim,2.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,Pai é mecânico e mãe é dona de casa,São Paulo,Brasil,Excelente,,
+B-008,solteira,Não,0.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Falecidos,,Bolívia,Mais ou menos,Parcial,Sim
+B-009,viúva,Não,0.0,Ensino Fundamental completo,Ensino fundamental completo,Ensino fundamental completo,Pai é trabalhador rural e a mãe é auxiliar de enfermagem ,Bahia,Brasil,Mais ou menos,Completo,Sim
+B-010,solteira,Não,0.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai é trabalhador rural e a mãe é costureira,Bahia,Brasil,Boa,Completo,Sim
+B-011,solteira,Não,0.0,Ensino Fundamental incompleto,Ensino Médio,Ensino Médio,Os pais são enfermeiros,Ceará,Brasil,Boa,Parcial,Sim
+B-012,divorciada,Não,0.0,Ensino Médio Incompleto,Ensino Médio,Ensino Médio,O pai é motorista e a mãe é diarista aposentada. ,São Paulo,Brasil,Mais ou menos,Completo,Sim
+B-013,viúva,Sim,3.0,Ensino Médio Completo,Ensino fundamental completo,Nunca estudou,Mãe é enfermeira e pai é cozinheiro de navio,Bahia,Brasil,Mais ou menos,Parcial,Sim
+B-014,viúva,Não,0.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Trabalhadores rurais ,Paraíba,Brasil,Boa,Completo,Sim
+B-015,casada,Sim,2.0,,,,,São Paulo,Brasil,Excelente,Completo,Sim
+B-016,divorciada,Sim,4.0,Ensino Médio Completo,Ensino Médio,Ensino Médio,Pai é vidraceiro e mãe é funcionária pública. ,São Paulo,Brasil,Boa,Parcial,Sim
+B-017,casada,Sim,4.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,O pai é vigia e a mãe é emprega doméstica ,São Paulo,Brasil,Boa,Completo,Sim
+B-018,divorciada,Sim,3.0,Ensino Fundamental completo,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai é motorista e a mãe é doméstica,São Paulo,Brasil,Boa,Completo,Sim
+B-019,solteira,Sim,2.0,,Ensino Médio,,Falecidos ,Bahia,Brasil,Excelente,Completo,Sim
+B-020,divorciada,Não,0.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai é eletricista e a mãe é doméstica,Pernambuco,Brasil,Mais ou menos,Parcial,Sim
+B-021,viúva,Sim,1.0,Analfabeta,Nunca estudou,Nunca estudou,Trabalhadores rurais,Rio Grande de Norte,Brasil,Boa,Completo,Sim
+B-022,solteira,Não,0.0,Ensino Fundamental completo,Ensino fundamental incompleto,Ensino fundamental incompleto,Trabalhadores rurais,Alagoas,Brasil,Boa,Parcial,Sim
+B-023,solteira,Sim,2.0,Ensino Superior,,,,,Venezuela,Boa,Parcial,Sim
+B-024,divorciada,Sim,1.0,Ensino Fundamental incompleto,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai trabalha na roça e a mãe é faxineira,Minas Gerais,Brasil,Boa,Completo,Sim
+B-025,solteira,Não,0.0,Ensino Fundamental incompleto,Ensino fundamental incompleto,Ensino fundamental incompleto,Os pais são trabalhadores rurais,,Bolívia,Péssima,Parcial,Sim
+B-026,solteira,Sim,2.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,O pai é trabalhador rural e a mãe é dona de casa,,Venezuela,Mais ou menos,Parcial,Sim
+B-027,viúva,Não,0.0,Ensino Fundamental completo,,,Falecido,,Argentina,Boa,Parcial,Sim
+B-028,solteira,Sim,1.0,Ensino Fundamental incompleto,Ensino fundamental incompleto,Nunca estudou,,São Paulo,Brasil,Boa,Parcial,Sim
+B-029,solteira,Sim,1.0,Ensino Fundamental completo,,,Não lembro,São Paulo,Brasil,Boa,,Sim
+B-030,casada,Sim,3.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,Pensionistas.,São Paulo,Brasil,Boa,,Nao
+B-031,divorciada,Sim,1.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,O pai é trabalhador rural e a mãe é dona de casa. ,Bahia,Brasil,Boa,Completo,Sim
+B-032,solteira,Não,0.0,Ensino Médio Completo,Ensino fundamental completo,Ensino fundamental incompleto,Pai faz servios gerais e a mãe é costureira,Pernambuco,Brasil,Boa,Completo,Sim
+B-033,solteira,Não,0.0,Ensino Médio Completo,Ensino fundamental incompleto,Nunca estudou,O pai é mecânico e a mãe é dona de casa,Pernambuco,Brasil,Boa,Completo,Sim
+B-034,casada,Sim,2.0,Ensino Médio Completo,Ensino Médio,Ensino Médio,A mãe é dona de cada e o pai é metalúrgico. ,São Paulo,Brasil,Boa,Completo,Sim
+B-035,casada,Sim,1.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental completo,,São Paulo,Brasil,Ruim,Parcial,Sim
+B-036,casada,Sim,1.0,Ensino Fundamental completo,Ensino Médio,Ensino Médio,O pai e a mão são trabalhadores rurais. ,Minas Gerais,Brasil,Boa,Completo,Sim
+B-037,divorciada,Sim,4.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Mãe é dona de casa. Pai é pedreiro.,São Paulo,Brasil,,Completo,Sim
+B-038,solteira,Sim,2.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,O pai é mascate e a mãe é dona de casa. ,Bahia,Brasil,Boa,Parcial,Sim
+B-039,solteira,Sim,1.0,Ensino Superior,Nunca estudou,Nunca estudou,O pai e a mãe eram auxiliar de limpeza ,São Paulo,Brasil,Excelente,Completo,
+B-040,solteira,Não,0.0,Ensino Médio Completo,,,,,,Boa,,
+B-041,solteira,Sim,1.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,A mãe é doméstica e o pai é falecido.,São Paulo,Brasil,,Completo,Sim
+B-042,solteira,Sim,2.0,Ensino Fundamental completo,Nunca estudou,Ensino fundamental incompleto,A mãe era cozinheira e o pai era funcionário da sabesp,São Paulo,Brasil,Ruim,Parcial,Sim
+B-043,casada,Sim,0.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,,São Paulo,Brasil,Boa,Parcial,Sim
+B-044,solteira,Sim,1.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,Desempregados,São Paulo,Brasil,Boa,,Nao
+B-045,solteira,Não,0.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,O pai e a mãe era agricultores. ,Minas Gerais,Brasil,Ruim,,Nao
+B-046,divorciada,Sim,1.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,,Goiás,Brasil,Mais ou menos,Completo,Sim
+B-047,casada,Sim,2.0,Ensino Médio Completo,,,A mãe é do lar e o pai era mecânico,Bahia,Brasil,Boa,Parcial,Sim
+B-048,solteira,Não,0.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Trabalhadores rurais,São Paulo,Brasil,Boa,Parcial,Sim
+B-049,casada,Sim,1.0,Ensino Fundamental completo,Ensino fundamental completo,Ensino fundamental completo,Falecidos,Bahia,Brasil,Boa,Completo,Sim
+B-050,casada,Sim,2.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Trabalhadores Rurais,São Paulo,Brasil,Boa,Completo,Sim
+B-051,casada,Sim,2.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,,Bahia,Brasil,Boa,Completo,Sim
+B-052,casada,Sim,2.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Agricultores,Bahia,Brasil,Boa,,Nao
+B-053,solteira,Sim,1.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,O pai é ajudante geral e a mãe é doméstica,Pernambuco,Brasil,Mais ou menos,Completo,Sim
+B-054,casada,Sim,3.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,A mãe é dona de casa e o pai é pedreiro,Ceará,Brasil,Boa,Parcial,Sim
+B-055,solteira,Sim,1.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,Ambos são lavradores.,Minas Gerais,Brasil,Boa,,Nao
+B-056,solteira,Não,0.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Os pais são agricultores,Minas Gerais,Brasil,Mais ou menos,Completo,Sim
+B-057,viúva,Sim,1.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Trabalhadores Rurais,Paraná,Brasil,Boa,Parcial,Sim
+B-058,solteira,Não,0.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Trabalhadores rurais,,,Boa,,Sim
+B-059,solteira,Não,0.0,Ensino Fundamental completo,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai é funileiro e a mãe é dona de casa,São Paulo,Brasil,Boa,,
+B-060,solteira,Não,0.0,Ensino Técnico,Ensino fundamental completo,Ensino fundamental completo,O pai é pintor e a mãe é trabalhadora doméstica,São Paulo,Brasil,Boa,,
+B-061,viúva,Sim,4.0,Ensino Fundamental completo,Ensino fundamental completo,Ensino fundamental completo,A mãe era é dona de casa e o pai é cabeleireiro,,Bolívia,Boa,Completo,Sim
+B-062,divorciada,Sim,2.0,,Ensino fundamental completo,Ensino fundamental completo,O pai é zelador e a mãe é auxiliar de limpeza. ,São Paulo,Brasil,Excelente,,Nao
+B-063,solteira,Sim,2.0,Ensino Fundamental completo,,,O pai era armador de prédio e a mãe era lavadeira de roupa.,São Paulo,Brasil,Ruim,,Nao
+B-064,solteira,Não,0.0,Ensino Superior,Nunca estudou,Nunca estudou,O pai e mãe são agricultores. ,São Paulo,Brasil,Ruim,Parcial,Sim
+B-065,solteira,Sim,2.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Trabalhadores rurais,Maranhão,Brasil,Excelente,Completo,Sim
+B-066,casada,Sim,1.0,Ensino Médio Completo,Ensino fundamental completo,Ensino fundamental completo,O pai é pedreiro e mãe é trabalhadora da limpeza. ,Bahia,Brasil,Mais ou menos,Parcial,Sim
+B-067,solteira,Não,0.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,,São Paulo,Brasil,Boa,,Nao
+B-068,solteira,Sim,3.0,Ensino Fundamental completo,Nunca estudou,Ensino superior,Pai era professor e mãe é dona de casa ,Bahia,Brasil,Mais ou menos,Parcial,Sim
+B-069,casada,Sim,1.0,Ensino Médio Incompleto,Ensino Médio,Ensino Médio,Pai faleceu. Mãe é doméstica.,São Paulo,Brasil,,,Nao
+B-070,solteira,Sim,2.0,,,,Trabalhadores rurais,,Bolívia,Boa,,
+B-071,solteira,Não,0.0,Ensino Fundamental completo,,,,Bahia,Brasil,Mais ou menos,Completo,Sim
+B-072,solteira,Sim,2.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,,Bahia,Brasil,Mais ou menos,Completo,Sim
+B-073,casada,Sim,1.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Ajudante geral,Paraná,Brasil,Excelente,Completo,Sim
+B-074,união estável,Não,0.0,Ensino Médio Incompleto,,,Pai e mãe são agricultores,Piauí,Brasil,Boa,Completo,
+B-075,casada,Não,0.0,Ensino Médio Completo,Ensino fundamental completo,Ensino fundamental completo,A mãe é constureira,São Paulo,Brasil,Boa,Completo,Sim
+B-076,solteira,Não,0.0,Analfabeta,,,Não conheci os meus pais.,Paraná,Brasil,Mais ou menos,Completo,Sim
+B-077,solteira,Sim,3.0,Ensino Fundamental completo,Nunca estudou,,,Mato Grosso,Brasil,Boa,Completo,Sim
+B-078,viúva,Não,0.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,O pai era trabalhador rural e a mãe cuidadora de idoso.,Piauí,Brasil,Ruim,Completo,Sim
+B-079,solteira,Sim,1.0,Ensino Superior,Ensino Médio,Ensino Médio,Os são médicos já falecidos,,Venezuela,Excelente,,Sim
+B-080,casada,Sim,3.0,Ensino Médio Incompleto,,,O pai é falecido e a mãe é aposentada ,Maranhão,Brasil,Boa,,
+B-081,divorciada,Sim,3.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Mãe era dona de cada e pai era motorista de ônibus,Goiás,Brasil,Boa,Completo,Sim
+B-082,,Sim,6.0,Ensino Fundamental incompleto,Nunca estudou,,O pai e a mãe eram trabalhadores rurais. ,Bahia,Brasil,Mais ou menos,,Nao
+B-083,solteira,Sim,2.0,,Nunca estudou,Nunca estudou,Lavradores,Bahia,Brasil,Boa,,Nao
+B-084,divorciada,Sim,4.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Pai e mãe era trabalhadores rurais.,São Paulo,Brasil,Boa,Completo,Sim
+B-085,solteira,Sim,3.0,Ensino Fundamental incompleto,Ensino fundamental incompleto,Ensino fundamental incompleto,Mãe é doméstica. Pai é servente de pedreiro.,Minas Gerais,Brasil,Boa,Parcial,Nao
+B-086,solteira,Sim,3.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,,São Paulo,Brasil,Boa,,Nao
+B-087,solteira,Sim,3.0,Ensino Fundamental incompleto,Nunca estudou,Ensino fundamental completo,Mãe falecida. O pai era segurança. ,Pernambuco,Brasil,Boa,Completo,Nao
+B-088,casada,Sim,2.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,O pai é ferroviário e a mãe é dona de casa,São Paulo,Brasil,Boa,Completo,Sim
+B-089,solteira,Sim,2.0,Ensino Médio Completo,Ensino fundamental completo,Ensino fundamental completo,O pai e a mãe eram agricultores. ,Bahia,Brasil,Boa,Parcial,Sim
+B-090,solteira,Não,0.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai é mestre de obra e a mãe é dona de casa ,São Paulo,Brasil,Boa,Completo,Sim
+B-091,casada,Sim,2.0,Ensino Fundamental incompleto,Ensino fundamental incompleto,Ensino fundamental incompleto,Pai é barbeiro. Mãe é doméstica.,Pernambuco,Brasil,Boa,,Nao
+B-092,casada,Sim,4.0,Ensino Fundamental incompleto,,,,Bahia,Brasil,Boa,Completo,Sim
+B-093,casada,Não,0.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,O pai e a mãe são agricultores.,,,Ruim,,Nao
+B-094,solteira,Não,0.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,O pai é pedreiro e a mãe é dona de casa,São Paulo,Brasil,Boa,Parcial,Sim
+B-095,divorciada,Sim,4.0,Ensino Fundamental completo,Ensino fundamental completo,Ensino fundamental completo,O pai é trabalhador rural e a mãe é costureira,Bahia,Brasil,Péssima,,Nao
+B-096,solteira,Não,0.0,Analfabeta,Nunca estudou,Nunca estudou,,,Bolívia,Ruim,,Nao
+B-097,solteira,,,Ensino Fundamental completo,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai é pescador e a mãe é dona de casa,São Paulo,Brasil,Boa,Completo,Sim
+B-098,casada,Sim,3.0,Ensino Fundamental incompleto,Ensino fundamental incompleto,Ensino fundamental incompleto,Pai é pedreiro. Mãe é dona de casa.,Minas Gerais,Brasil,Boa,,Sim
+B-099,solteira,Sim,1.0,Ensino Superior,Ensino fundamental incompleto,Ensino fundamental incompleto,Os pais são trabalhadores rurais,Piauí,Brasil,Boa,Completo,Sim
+B-100,solteira,Sim,2.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,A mãe é do lar e o pai é pescador,Bahia,Brasil,Boa,Completo,Sim
+B-101,casada,Sim,1.0,Ensino Médio Completo,,,,São Paulo,Brasil,,Completo,Sim
+B-102,viúva,Não,0.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Trabalhadores rurais,Goiás,Brasil,Boa,Parcial,Sim
+B-103,solteira,Não,0.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,A mãe é costureira,Bahia,Brasil,Boa,,
+B-104,solteira,Sim,1.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,O pai e a mãe são trabalhadores rurais. ,Piauí,Brasil,Mais ou menos,Completo,Sim
+B-105,casada,Não,0.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Falecidos,,,Boa,Completo,Sim
+B-106,união estável,Sim,2.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Pai e mãe agricultores.,Paraíba,Brasil,Mais ou menos,Completo,Sim
+B-107,união estável,Sim,3.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Pai e mãe trabalhavam na agricultura. ,Paraíba,Brasil,Boa,,Nao
+B-108,viúva,Sim,2.0,Analfabeta,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai e a mãe eram agricultores,Sergipe,Brasil,Péssima,Completo,Sim
+B-109,casada,Não,0.0,Ensino Fundamental completo,,,,São Paulo,Brasil,Excelente,Completo,Sim
+B-110,solteira,Sim,1.0,Ensino Fundamental completo,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai é pedreiro e a mãe é dona de casa ,São Paulo,Brasil,Boa,Parcial,Sim
+B-111,solteira,Não,0.0,Ensino Fundamental completo,Ensino fundamental incompleto,Ensino fundamental incompleto,Trabalhadores rurais,Rio de Janeiro,Brasil,Boa,Completo,Sim
+B-112,solteira,Sim,2.0,Ensino Médio Completo,Ensino fundamental completo,Ensino fundamental completo,Mãe é costureira e pai é ferroviário.,Bahia,Brasil,Boa,Completo,Sim
+B-113,divorciada,Sim,2.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Mãe faleceu. Pai é trabalhador rural.,Minas Gerais,Brasil,Mais ou menos,Completo,Sim
+B-114,solteira,Não,0.0,Ensino Médio Completo,Ensino Médio,Ensino Médio,O pai trabalha na fábrica de vassouras e a mãe faz limpeza na escola.,,Venezuela,Boa,,Sim
+B-115,solteira,Não,0.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Pai é pedreiro e a mãe dona da casa,São Paulo,Brasil,Boa,Completo,Sim
+B-116,divorciada,Sim,3.0,Ensino Técnico,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai é aposentado e a mãe é dona de casa,,Bolívia,Boa,Completo,Sim
+B-117,solteira,Não,0.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,Trabalhadores rurais,Bahia,Brasil,Boa,Completo,Sim
+B-118,solteira,Sim,3.0,Ensino Médio Completo,,,O pai é pintor,São Paulo,Brasil,Boa,Parcial,Sim
+B-119,solteira,Sim,1.0,Ensino Fundamental completo,Ensino fundamental incompleto,Ensino fundamental incompleto,,Minas Gerais,Brasil,Boa,,Nao
+B-120,divorciada,Sim,1.0,Ensino Fundamental incompleto,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai é pedreiro e a mãe é domestica.,Santa Caterina,Brasil,Boa,Parcial,Sim
+B-121,solteira,Não,0.0,Ensino Superior,Ensino fundamental completo,Ensino fundamental completo,O pai é comerciante a mãe é dona de casa,São Paulo,Brasil,Mais ou menos,Completo,Sim
+B-122,casada,Sim,3.0,Ensino Médio Completo,,Ensino fundamental incompleto,O pai é pedreiro e a mãe é desconhecida,São Paulo,Brasil,Boa,Parcial,Sim
+B-123,casada,Sim,1.0,Ensino Médio Completo,,,O pai é pintor e mãe é trabalhadora doméstica,Minas Gerais,Brasil,Boa,Completo,Sim
+B-124,solteira,Sim,2.0,Ensino Fundamental incompleto,Nunca estudou,Ensino fundamental incompleto,Oposentados,Minas Gerais,Brasil,Boa,Parcial,Sim
+B-125,divorciada,Sim,1.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,O pai é funileiro e a mãe é dona de casa,São Paulo,Brasil,Boa,Completo,Sim
+B-126,solteira,Sim,1.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Aposentados.,Paraíba,Brasil,Boa,,Sim
+B-127,casada,Sim,1.0,Ensino Superior,Ensino médio incompleto,Ensino médio incompleto,A mãe é doméstica e o pai é carpinteiro ,Bahia,Brasil,Boa,Parcial,Sim
+B-128,divorciada,Não,0.0,Ensino Fundamental completo,,,A mãe é dona de casa,São Paulo,Brasil,,Parcial,Sim
+B-129,união estável,Não,0.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Pai e mãe trabalhavam na roça,Minas Gerais,Brasil,Ruim,,Nao
+B-130,divorciada,Sim,2.0,Ensino Fundamental incompleto,,,,Paraná,Brasil,Mais ou menos,Completo,Sim
+B-131,casada,Não,0.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Lavrador,Bahia,Brasil,Excelente,,Nao
+B-132,solteira,Não,0.0,Ensino Fundamental incompleto,,,,Mato Grosso do Sul,Brasil,Mais ou menos,Completo,Sim
+B-133,casada,Sim,2.0,,Nunca estudou,Nunca estudou,Lavradores,Bahia,Brasil,Boa,,Nao
+B-134,solteira,Sim,3.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Os pais são trabalhadores rurais,São Paulo,Brasil,Excelente,Completo,Sim
+B-135,solteira,Sim,2.0,Ensino Médio Incompleto,,,Aposentados,,,Boa,,
+B-136,divorciada,,,Ensino Médio Completo,Nunca estudou,Nunca estudou,O pai é pedreiro e a mãe é doméstica,Pernambuco,Brasil,Ruim,,Nao
+B-137,divorciada,Sim,0.0,Ensino Técnico,Nunca estudou,Nunca estudou,Falecidos,,Venezuela,Mais ou menos,Completo,Sim
+B-138,casada,Sim,3.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,A pai morreu muito jovem e a mãe era lavadora de roupas para famílias. ,Ceará,Brasil,Ruim,,Nao
+B-139,casada,Sim,3.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,A mãe é do lar e o pai faleceu. ,Ceará,Brasil,Mais ou menos,Completo,Sim
+B-140,solteira,Sim,2.0,Ensino Fundamental completo,Ensino fundamental completo,Ensino fundamental completo,Falecidos.,Bahia,Brasil,Boa,Completo,Sim
+B-141,solteira,Não,0.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Lavradores,Bahia,Brasil,Ruim,,Nao
+B-142,união estável,Sim,2.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,O pai e a mãe são trabalhadores rurais,Pernambuco,Brasil,Boa,Completo,
+B-143,casada,Sim,3.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Os pais são trabalhadores rurais,Paraná,Brasil,Excelente,Parcial,Sim
+B-144,união estável,Sim,3.0,Ensino Fundamental completo,Ensino fundamental completo,Ensino fundamental incompleto,O pai era administrador de fazendo a a mãe era doméstica,São Paulo,Brasil,Boa,Completo,Sim
+B-145,solteira,Não,0.0,Ensino Fundamental completo,Ensino fundamental incompleto,Ensino fundamental incompleto,Os pais são trabalhadores rurais,Paraná,Brasil,Boa,Completo,Sim
+B-146,casada,Sim,2.0,Ensino Fundamental incompleto,Ensino fundamental incompleto,Ensino fundamental incompleto,São trabalhadores rurais,São Paulo,Brasil,Ruim,Completo,Sim
+B-147,,Sim,3.0,Ensino Fundamental incompleto,Ensino fundamental incompleto,Ensino fundamental incompleto,Os pais são trabalhadores rurais,Minas Gerais,Brasil,Excelente,Parcial,Sim
+B-148,solteira,Sim,2.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,O pai é carpinteiro e a mãe é doméstica,Bahia,Brasil,Boa,Completo,Sim
+B-149,viúva,Não,0.0,Analfabeta,,,Os pais são agricultores,Pernambuco,Brasil,Mais ou menos,Completo,Sim
+B-150,solteira,Não,0.0,Ensino Fundamental completo,,,,Paraná,Brasil,Boa,Completo,Sim
+B-151,casada,Sim,2.0,Ensino Fundamental incompleto,Ensino fundamental incompleto,Ensino fundamental incompleto,Os pais são agricultores,Sergipe,Brasil,Boa,,Nao
+B-152,divorciada,Sim,2.0,Ensino Fundamental incompleto,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai é operador de máquinas pesadas,Minas Gerais,Brasil,Boa,Completo,Sim
+B-153,solteira,Não,0.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Trabalhafores rurais,Maranhão,Brasil,Mais ou menos,Completo,Sim
+B-154,casada,Sim,2.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,O pai era armador e a mãe era dona de casa,São Paulo,Brasil,Boa,Completo,Sim
+B-155,união estável,Sim,1.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,O pai e a mãe são trabalhadores rurais,Piauí,Brasil,Péssima,Completo,Sim
+B-156,solteira,Sim,2.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Falecidos.,Minas Gerais,Brasil,,Completo,Nao
+B-157,solteira,Sim,2.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Os pais eram trabalhadores rurais,Pernambuco,Brasil,Mais ou menos,Completo,Sim
+B-158,divorciada,Sim,4.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Trabalhadores rurais.,Minas Gerais,Brasil,Boa,Completo,Sim
+B-159,divorciada,Sim,3.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,São trabalhadores rurais,Amazonas,Brasil,Boa,Completo,Sim
+B-160,viúva,Sim,2.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai é cozinheiro e a mãe é doméstica,Minas Gerais,Brasil,Boa,Parcial,Nao
+B-161,viúva,Não,0.0,Ensino Fundamental incompleto,Ensino fundamental incompleto,Ensino fundamental incompleto,Trabalhadores Rurais,Bahia,Brasil,Boa,Completo,Sim
+B-162,casada,Sim,2.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,Pai é falecido e a mãe é do lar. ,Minas Gerais,Brasil,Excelente,Parcial,Sim
+B-163,casada,Sim,2.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Pai é jardineiro. Mãe é dona de casa.,Paraná,Brasil,,Completo,Sim
+B-164,solteira,Não,0.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Ajudade geral,Minas Gerais,Brasil,Boa,Completo,Nao
+B-165,solteira,Sim,3.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Os pais são agricultores,Alagoas,Brasil,Excelente,Completo,Sim
+B-166,solteira,Sim,2.0,Ensino Fundamental completo,,,O pai é falecido e a mãe é dona de casa.,Bahia,Brasil,Péssima,Parcial,Sim
+B-167,casada,Sim,1.0,Ensino Médio Completo,Ensino Médio,Ensino Médio,Pai é agricultor e mãe é professora,Piauí,Brasil,Boa,Parcial,Sim
+B-168,solteira,Sim,1.0,Ensino Fundamental completo,Ensino fundamental incompleto,Ensino fundamental incompleto,A mãe era do lar e o pai era feitor de carpinteiro,Mato Grosso do Sul,Brasil,Excelente,Completo,Sim
+B-169,divorciada,Sim,3.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Trabalhadores rurais,Bahia,Brasil,Mais ou menos,,Nao
+B-170,viúva,Sim,4.0,Ensino Médio Completo,Ensino médio incompleto,Ensino médio incompleto,Pai e mãe são agricultores.,Pernambuco,Brasil,Mais ou menos,Parcial,Sim
+B-171,viúva,Sim,2.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,,Pernambuco,Brasil,Ruim,,Nao
+B-172,solteira,Sim,2.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Os dois aram lavradores. ,São Paulo,Brasil,Boa,Parcial,Sim
+B-173,solteira,,2.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Serviços gerais,São Paulo,Brasil,Boa,,Sim
+B-174,solteira,Sim,1.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Falecidos,São Paulo,Brasil,Mais ou menos,,Nao
+B-175,solteira,Sim,2.0,Ensino Fundamental incompleto,Ensino fundamental incompleto,Ensino fundamental incompleto,Falecidos,Minas Gerais,Brasil,Boa,Completo,Sim
+B-176,solteira,Não,0.0,Analfabeta,,,Falecidos,São Paulo,Brasil,Mais ou menos,Parcial,Sim
+B-177,,Sim,1.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,O pai e a mão são trabalhadores rurais. ,Bahia,Brasil,Péssima,Completo,Sim
+B-178,divorciada,Não,0.0,Ensino Médio Completo,Nunca estudou,Ensino fundamental incompleto,O pai era mecânico e a mãe era lavadeira. ,Bahia,Brasil,Boa,,Nao
+B-179,casada,Sim,2.0,Ensino Superior,Ensino Médio,Ensino Médio,Vivem no Chile,,Chile,Mais ou menos,Completo,Sim
+B-180,união estável,Não,0.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,,Bahia,Brasil,Mais ou menos,Completo,Sim
+B-181,casada,Sim,2.0,Ensino Médio Incompleto,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai era é agricultor e a mãe é do lar. ,São Paulo,Brasil,Mais ou menos,,
+B-182,viúva,Sim,3.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,O pai e a mãe são agricultores. ,São Paulo,Brasil,Ruim,Completo,Sim
+B-183,solteira,Sim,2.0,Ensino Superior,Ensino superior,Ensino superior,Falecidos,,Perú,Excelente,Parcial,Nao
+B-184,divorciada,Não,0.0,Ensino Fundamental incompleto,Ensino fundamental incompleto,Ensino fundamental incompleto,Falecidos,,Chile,Boa,Parcial,Sim
+B-185,divorciada,Sim,2.0,Ensino Fundamental completo,Ensino fundamental incompleto,Ensino fundamental incompleto,Os dois trabalham na roça,,Bolívia,Mais ou menos,Completo,Sim
+B-186,divorciada,Sim,6.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,O pai era marceneiro e a mãe era dona de casa,Bahia,Brasil,Boa,Parcial,Sim
+B-187,solteira,Não,0.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Trabalhadores rurais,Maranhão,Brasil,Boa,Completo,Sim
+B-188,divorciada,Sim,3.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,a mãe era cozinheira e o pai fazia serviços gerais,São Paulo,Brasil,Boa,,Nao
+B-189,divorciada,Sim,3.0,Ensino Fundamental incompleto,Ensino fundamental completo,Ensino Médio,Pai era policial e a mãe era cozinheira.,São Paulo,Brasil,Boa,Completo,Sim
+B-190,solteira,Não,0.0,Ensino Médio Completo,,,,São Paulo,Brasil,Boa,Completo,Nao
+B-191,divorciada,Não,0.0,Ensino Fundamental incompleto,,,,Bahia,Brasil,Mais ou menos,Completo,Sim
+B-192,casada,Sim,2.0,Ensino Fundamental completo,Ensino fundamental completo,Ensino fundamental completo,O pai era serralheiro e a mãe era dona de casa,Paraná,Brasil,Boa,Parcial,Sim
+B-193,casada,Sim,3.0,Ensino Fundamental completo,Ensino fundamental incompleto,Ensino fundamental incompleto,,,Bolívia,Boa,Completo,Sim
+B-194,viúva,Sim,1.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Trabalhos rurais,Bahia,Brasil,Boa,Parcial,Sim
+B-195,casada,Sim,1.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Trabalhadores rurais,Paraná,Brasil,Excelente,Completo,Sim
+B-196,casada,Sim,5.0,Ensino Médio Incompleto,Ensino fundamental completo,Ensino fundamental completo,,São Paulo,Brasil,Mais ou menos,Completo,Sim
+B-197,solteira,Sim,3.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,O pai trabalhava na lavoura e mãe trabalhadora doméstica. ,São Paulo,Brasil,Excelente,Completo,Sim
+B-198,viúva,Sim,3.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,A mãe é dona de casa e o pai é ferroviário,São Paulo,Brasil,Boa,Completo,Sim
+B-199,solteira,Não,0.0,Ensino Fundamental completo,,,Não sabe informar. ,Espírito Santo,Brasil,Mais ou menos,,Nao
+B-200,solteira,Sim,1.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Aposentados,Bahia,Brasil,Boa,,Nao
+B-201,casada,Não,0.0,Ensino Médio Completo,Ensino fundamental incompleto,Nunca estudou,O pai é falecido e a mãe é aposentada,Paraíba,Brasil,Boa,,Nao
+B-202,casada,Sim,0.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Trabalhadores Rurais,Pará,Brasil,Boa,Completo,Sim
+B-203,solteira,Sim,1.0,Ensino Médio Completo,Ensino fundamental completo,Ensino fundamental completo,A mãe era professora e o pai era comerciante,Pernambuco,Brasil,Péssima,,
+B-204,solteira,Não,0.0,Ensino Fundamental completo,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai é vendedor e a mãe é dona de casa,São Paulo,Brasil,Boa,Parcial,Sim
+B-205,solteira,Sim,2.0,,,,,Pernambuco,Brasil,Ruim,,Sim
+B-206,solteira,Não,0.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Trabalhadores rurais,Ceará,Brasil,Mais ou menos,Completo,Sim
+B-207,divorciada,Sim,1.0,Ensino Fundamental completo,,,Pais desconhecidos,São Paulo,Brasil,Boa,Completo,Sim
+B-208,viúva,Sim,2.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Mãe é aponsentada e pai é falescido ,São Paulo,Brasil,Boa,Completo,Sim
+B-209,solteira,Não,0.0,Ensino Médio Completo,,,,Bahia,Brasil,Boa,,Nao
+B-210,divorciada,Sim,4.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,,Minas Gerais,Brasil,Mais ou menos,Parcial,Sim
+B-211,casada,Não,0.0,Ensino Médio Completo,Ensino fundamental completo,Ensino fundamental completo,Pai é funcionário público e a mãe é auxiliar de cozinha. ,São Paulo,Brasil,Mais ou menos,Completo,Sim
+B-212,divorciada,Sim,3.0,Ensino Médio Completo,Ensino fundamental completo,Ensino fundamental completo,O pai era comerciante e a mãe era dona de casa,Bahia,Brasil,Excelente,,Nao
+B-213,divorciada,Não,0.0,Ensino Fundamental completo,Nunca estudou,Ensino fundamental incompleto,O pai é pedreiro e a mãe é dona de casa,São Paulo,Brasil,Boa,Completo,Sim
+B-214,união estável,Não,0.0,Ensino Médio Completo,Ensino fundamental completo,Ensino fundamental completo,Mãe fabrica bexiga e pai é segurança.,Bahia,Brasil,Mais ou menos,,Nao
+B-215,casada,Sim,2.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Os pais são agricultores,Minas Gerais,Brasil,Mais ou menos,Completo,
+B-216,solteira,Sim,2.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Trabalhadores Rurais,Ceará,Brasil,Boa,Parcial,Sim
+B-217,casada,Sim,0.0,Ensino Fundamental completo,,,A mãe é aposentada e o pai é falecido.,São Paulo,Brasil,Boa,Parcial,Sim
+B-218,solteira,Sim,1.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai construtor e a mãe era lavadeira.,Rio de Janeiro,Brasil,Boa,Completo,Sim
+B-219,casada,Não,0.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Trabalhadores Rurais,Piauí,Brasil,Boa,Completo,Sim
+B-220,união estável,Não,0.0,Ensino Superior,Ensino superior,Ensino Médio,Falecidos ,São Paulo,Brasil,Boa,Parcial,Sim
+B-221,casada,Sim,2.0,Ensino Médio Completo,Ensino fundamental completo,Ensino fundamental completo,A mãe era professora e o pai era comerciante,Pernambuco,Brasil,Ruim,,
+B-222,viúva,Não,0.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Trabalhadores rurais,Pernambuco,Brasil,Boa,Parcial,Sim
+B-223,casada,Não,0.0,Ensino Médio Completo,Ensino fundamental completo,Ensino fundamental completo,O pai é fiscal. A mãe é doméstica.,São Paulo,Brasil,Boa,Completo,Sim
+B-224,casada,Sim,5.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Pai é pedreiro. Mãe é lavradora.,São Paulo,Brasil,,Completo,Sim
+B-225,solteira,Sim,1.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Trabalhadores rurais,Alagoas,Brasil,Boa,Parcial,Sim
+B-226,solteira,Não,0.0,Ensino Fundamental incompleto,Nunca estudou,Nunca estudou,Falecidos,São Paulo,Brasil,Mais ou menos,,Nao
+B-227,solteira,Sim,3.0,Ensino Médio Completo,Ensino médio incompleto,Ensino médio incompleto,A mãe é doméstica e o pai falecido,São Paulo,Brasil,Boa,Parcial,Sim
+B-228,solteira,Sim,0.0,Analfabeta,,,Pais falecidos,,,Boa,Parcial,Sim
+B-229,solteira,Não,0.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,Mãe é trabalhadora doméstica.,Mato Grosso,Brasil,Boa,,Nao
+B-230,,Sim,0.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Pais falecidos,São Paulo,Brasil,Mais ou menos,Completo,Sim
+B-231,divorciada,Sim,2.0,,Nunca estudou,Ensino fundamental completo,Mãe foi doméstica e o pai era funcionário público,São Paulo,Brasil,Mais ou menos,Completo,
+B-232,divorciada,Sim,2.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,Aposentados,São Paulo,Brasil,Boa,,Sim
+B-233,casada,Sim,4.0,Ensino Médio Completo,Ensino fundamental incompleto,Ensino fundamental incompleto,A mãe é doméstica e o pai é funileiro,São Paulo,Brasil,Boa,,Nao
+B-234,casada,Não,0.0,Ensino Médio Completo,Nunca estudou,Nunca estudou,Pai pedreiro e mãe dona de casa,São Paulo,Brasil,Boa,Completo,Sim
+B-235,viúva,Sim,4.0,Ensino Fundamental incompleto,,,Falecidos,,,Mais ou menos,Completo,Sim
+B-236,solteira,Não,0.0,Ensino Fundamental completo,Ensino fundamental incompleto,Ensino fundamental incompleto,O pai é auxiliar de serviços gerais e a mãe está desempregada,São Paulo,Brasil,Boa,Completo,Sim
+B-237,viúva,Sim,2.0,Ensino Médio Completo,,,Não sabe.,São Paulo,Brasil,Ruim,,Nao
+B-238,casada,Sim,5.0,Ensino Fundamental completo,Nunca estudou,Nunca estudou,Os pais são trabalhadores rurais,Rio de Janeiro,Brasil,Boa,Completo,Sim
+B-239,solteira,Não,0.0,Ensino Médio Completo,Ensino Médio,,,,,Boa,,Nao
+B-240,viúva,Sim,3.0,Ensino Fundamental completo,,,O pai e a mãe era agricultores.,Paraná,Brasil,Boa,,
+B-241,solteira,Sim,1.0,Ensino Médio Incompleto,Ensino fundamental completo,Ensino fundamental completo,O pai era caminhoneiro e a mãe era enfermeira,Bahia,Brasil,Mais ou menos,Completo,Sim

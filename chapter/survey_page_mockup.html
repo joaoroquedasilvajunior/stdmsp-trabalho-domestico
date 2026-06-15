@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pesquisas da categoria — STDMSP (mockup)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,300..700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #b91c1c;
+      --accent-soft: #fdf2f2;
+      --negras: #b91c1c;
+      --nao-negras: #2563eb;
+      --neutral: #2c3e50;
+      --bg-cream: #faf9f5;
+      --text-dark: #1a252f;
+      --text-muted: #6b7280;
+    }
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      background: var(--bg-cream);
+      color: var(--text-dark);
+    }
+    .ui-font { font-family: 'Inter', system-ui, sans-serif; }
+    .accent { color: var(--accent); }
+    .border-rule { border-color: #e5e7eb; }
+    .chart-box { position: relative; height: 280px; }
+    @media (min-width: 768px) { .chart-box { height: 320px; } }
+    .pill { display: inline-block; padding: 2px 8px; background: var(--accent-soft); color: var(--accent); border-radius: 999px; font-size: 11px; font-weight: 600; }
+    .quote { font-style: italic; color: var(--text-muted); border-left: 3px solid var(--accent); padding-left: 16px; }
+    .bridge-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: white; border: 1px solid #e5e7eb;
+      padding: 6px 12px; border-radius: 999px;
+      font-size: 12px; color: var(--accent);
+      transition: all 0.15s;
+    }
+    .bridge-link:hover { border-color: var(--accent); background: var(--accent-soft); }
+  </style>
+</head>
+<body>
+
+<header class="border-b border-rule bg-white sticky top-0 z-10">
+  <div class="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <span class="pill ui-font">MOCKUP</span>
+      <span class="ui-font text-sm text-gray-600">Página adicional · Pesquisas STDMSP</span>
+    </div>
+    <a href="../dashboard/index.html" class="ui-font text-xs text-gray-500 hover:text-red-700">← Voltar ao painel principal</a>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-5 py-10">
+
+  <!-- ========== HERO ========== -->
+  <section class="mb-12 max-w-3xl">
+    <p class="ui-font text-xs uppercase tracking-wide font-semibold mb-2 accent">Pesquisas da categoria</p>
+    <h1 class="text-3xl md:text-4xl font-medium mb-4" style="font-family: 'Source Serif 4', serif;">O que nossas pesquisas revelam</h1>
+    <p class="text-lg text-gray-700 leading-relaxed mb-3">
+      Duas pesquisas que aplicamos com trabalhadoras domésticas da cidade de São Paulo. Uma em
+      profundidade, em entrevistas conduzidas presencialmente em 2021–23 (n=241). Outra em
+      formulário auto-aplicado em 2024–25, com foco em conhecimento da Convenção Coletiva (n=242).
+    </p>
+    <p class="text-base text-gray-600 leading-relaxed">
+      <strong>Não são amostras representativas.</strong> São quem chegou ao Sindicato durante o
+      trabalho de campo. Mas elas dizem coisas que a PNAD Contínua do IBGE não diz —
+      e em vários pontos, confirmam o que os dados oficiais já mostravam para São Paulo.
+    </p>
+  </section>
+
+  <!-- ========== KPI TILES ========== -->
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+    <div class="bg-white border border-rule rounded-lg p-4">
+      <div class="ui-font text-xs uppercase tracking-wide text-gray-500">Pesquisa B</div>
+      <div class="text-3xl font-medium mt-1">241</div>
+      <div class="ui-font text-xs text-gray-500 mt-1">entrevistas · 2021–23</div>
+    </div>
+    <div class="bg-white border border-rule rounded-lg p-4">
+      <div class="ui-font text-xs uppercase tracking-wide text-gray-500">Pesquisa A</div>
+      <div class="text-3xl font-medium mt-1">242</div>
+      <div class="ui-font text-xs text-gray-500 mt-1">formulários · 2024–25</div>
+    </div>
+    <div class="bg-white border border-rule rounded-lg p-4">
+      <div class="ui-font text-xs uppercase tracking-wide text-gray-500">Total combinado</div>
+      <div class="text-3xl font-medium mt-1">483</div>
+      <div class="ui-font text-xs text-gray-500 mt-1">trabalhadoras escutadas</div>
+    </div>
+    <div class="bg-white border border-rule rounded-lg p-4">
+      <div class="ui-font text-xs uppercase tracking-wide text-gray-500">Pretas + pardas</div>
+      <div class="text-3xl font-medium mt-1 accent">63,8%</div>
+      <div class="ui-font text-xs text-gray-500 mt-1">vs. ~43% da pop. geral SP</div>
+    </div>
+  </section>
+
+  <!-- ========== PANEL 2: CARTEIRA EM SP ========== -->
+  <section class="mb-16">
+    <div class="max-w-3xl mb-5">
+      <p class="ui-font text-xs uppercase tracking-wide font-semibold mb-2 accent">A carteira em São Paulo</p>
+      <h2 class="text-2xl md:text-3xl font-medium mb-3">Em São Paulo, somos mais formais que a média do país — e somos mais negras</h2>
+      <p class="text-base text-gray-700 leading-relaxed mb-3">
+        Quando perguntamos às trabalhadoras se possuem carteira assinada, encontramos um padrão que
+        contraria a leitura nacional usual: <strong>trabalhadoras negras em São Paulo reportam
+        carteira assinada com mais frequência que as não-negras</strong>. Entre as respondentes
+        negras, 54,8% têm carteira; entre as não-negras, 41,9%. Um hiato de quase 13 pontos
+        percentuais — invertido em relação ao padrão BR-wide da PNADC, mas alinhado com o que os
+        dados oficiais já mostravam para o estado de São Paulo.
+      </p>
+      <p class="text-sm text-gray-600 italic">
+        Pesquisa B · 2021–23 · entrevista presencial · n=231 respondentes com raça e carteira válidas
+      </p>
+    </div>
+    <div class="border border-rule rounded-lg p-5 bg-white">
+      <div class="chart-box"><canvas id="chart-carteira"></canvas></div>
+      <div class="mt-4 pt-4 border-t border-rule">
+        <a href="../dashboard/index.html#reforma" class="bridge-link ui-font">
+          → Veja o mesmo padrão na PNADC para SP no painel "A reforma e o mensalismo"
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PANEL 3: O PISO QUE NOS PRENDE ========== -->
+  <section class="mb-16">
+    <div class="max-w-3xl mb-5">
+      <p class="ui-font text-xs uppercase tracking-wide font-semibold mb-2 accent">O piso que nos prende</p>
+      <h2 class="text-2xl md:text-3xl font-medium mb-3">A maioria de nós recebe exatamente o piso do CCT</h2>
+      <p class="text-base text-gray-700 leading-relaxed mb-3">
+        De 221 trabalhadoras que informaram o salário base, <strong>149 (67%) reportaram
+        exatamente o piso de R$ 1.477</strong> — o valor determinado pela Convenção Coletiva da
+        categoria. Nenhuma reportou valor abaixo. O restante (72, ou 33%) distribuiu-se em três
+        patamares acima: cerca de R$ 2.000–2.500 (61 trabalhadoras), e algumas poucas acima de
+        R$ 3.000 (11). O piso da CCT não é uma referência abstrata — para a maioria, é
+        literalmente o que recebe no fim do mês.
+      </p>
+      <p class="text-sm text-gray-600 italic">
+        Pesquisa A · 2024–25 · formulário auto-aplicado · n=221 respondentes com valor de salário válido
+      </p>
+    </div>
+    <div class="border border-rule rounded-lg p-5 bg-white">
+      <div class="chart-box"><canvas id="chart-salario"></canvas></div>
+      <div class="mt-4 pt-4 border-t border-rule">
+        <a href="../dashboard/index.html" class="bridge-link ui-font">
+          → Veja o efeito do piso no hiato salarial racial no Tema 5 do painel
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PANEL 4: DE ONDE VIEMOS ========== -->
+  <section class="mb-16">
+    <div class="max-w-3xl mb-5">
+      <p class="ui-font text-xs uppercase tracking-wide font-semibold mb-2 accent">De onde viemos</p>
+      <h2 class="text-2xl md:text-3xl font-medium mb-3">Mais de dois terços de nós migraram para São Paulo</h2>
+      <p class="text-base text-gray-700 leading-relaxed mb-3">
+        Apenas 36% das entrevistadas nasceram em São Paulo. <strong>Quase 64% migraram</strong> —
+        a maior parte do Nordeste, principalmente Bahia (44), Pernambuco (16), Piauí (8), Ceará (6),
+        Paraíba (5) e Maranhão (4). Minas Gerais (23) e Paraná (11) completam os principais
+        estados emissores. Esses números materializam, em rostos e cidades específicas, a
+        continuidade colonial do trabalho doméstico brasileiro — o eixo Nordeste-Sudeste que a
+        literatura identifica como a herança contratual da casa-grande.
+      </p>
+      <p class="text-sm text-gray-600 italic">
+        Pesquisa B · 2021–23 · entrevista presencial · n=215 respondentes com estado de origem informado
+      </p>
+    </div>
+    <div class="border border-rule rounded-lg p-5 bg-white">
+      <div class="chart-box"><canvas id="chart-origem"></canvas></div>
+      <div class="mt-4 pt-4 border-t border-rule">
+        <a href="../dashboard/index.html" class="bridge-link ui-font">
+          → Veja a continuidade colonial no Tema 3 (resíduo da casa-grande)
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PANEL 5: CCT KNOWLEDGE ========== -->
+  <section class="mb-16">
+    <div class="max-w-3xl mb-5">
+      <p class="ui-font text-xs uppercase tracking-wide font-semibold mb-2 accent">O que conhecemos da nossa CCT</p>
+      <h2 class="text-2xl md:text-3xl font-medium mb-3">Conhecemos pouco a CCT que nos protege — mas quando perguntadas, valorizamos</h2>
+      <p class="text-base text-gray-700 leading-relaxed mb-3">
+        A maior parte das respondentes não sabe que a Convenção Coletiva existe (67%), e ainda mais
+        não sabe explicar o que é uma CCT (76%). Quando explicada, <strong>85% consideram a CCT
+        importante</strong> — mas apenas 36% relatam ter visto benefícios concretos no seu
+        dia-a-dia. O hiato entre direitos formalizados e direitos vividos é mensurável.
+        Para o Sindicato, é uma agenda direta de comunicação e fiscalização — o que está
+        escrito não chega automaticamente até quem deveria se beneficiar.
+      </p>
+      <p class="text-sm text-gray-600 italic">
+        Pesquisa A · 2024–25 · formulário auto-aplicado · n=225–232 conforme a pergunta
+      </p>
+    </div>
+    <div class="border border-rule rounded-lg p-5 bg-white">
+      <div class="chart-box" style="height: 360px;"><canvas id="chart-cct"></canvas></div>
+      <div class="mt-4 pt-4 border-t border-rule">
+        <p class="text-xs text-gray-500 italic">
+          Esta é a única seção do painel sem espelho na PNADC do IBGE — é diretamente nossa voz sobre nosso próprio instrumento.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="border-t border-rule pt-8 mt-16 max-w-3xl">
+    <h3 class="text-lg font-medium mb-3">Notas metodológicas</h3>
+    <p class="text-sm text-gray-700 leading-relaxed mb-3">
+      As duas pesquisas foram aplicadas pela equipe do Sindicato em parceria com pesquisadores
+      acadêmicos. Não são amostras probabilísticas — são amostras de conveniência da rede do
+      STDMSP em São Paulo. Os números aqui apresentados refletem o que essas amostras dizem; sua
+      generalização para o universo das trabalhadoras domésticas exige cautela. Para a perspectiva
+      representativa, veja o painel principal (dados da PNADC do IBGE).
+    </p>
+    <p class="text-sm text-gray-700 leading-relaxed">
+      <strong>Privacidade.</strong> Nenhum dado individual identificável é exposto neste painel.
+      Os arquivos brutos das pesquisas, que contêm informações pessoais, permanecem com a
+      coordenação do projeto e não são publicados.
+    </p>
+    <p class="ui-font text-xs text-gray-500 mt-6">
+      Mockup gerado em 2026-06-12 · Dashboard STDMSP · Trabalho Doméstico
+    </p>
+  </footer>
+
+</main>
+
+<script>
+// =====================================================================
+// PANEL 2: CARTEIRA × RACE (Survey B)
+// =====================================================================
+new Chart(document.getElementById('chart-carteira'), {
+  type: 'bar',
+  data: {
+    labels: ['Trabalhadoras negras\n(pretas + pardas)', 'Trabalhadoras não-negras'],
+    datasets: [
+      {
+        label: '% Com carteira',
+        data: [54.8, 41.9],
+        backgroundColor: 'rgba(190, 30, 45, 0.85)',
+        borderColor: 'rgba(190, 30, 45, 1)',
+        borderWidth: 1,
+      },
+      {
+        label: '% Sem carteira',
+        data: [45.2, 58.1],
+        backgroundColor: 'rgba(180, 180, 180, 0.6)',
+        borderColor: 'rgba(150, 150, 150, 1)',
+        borderWidth: 1,
+      }
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12 } } },
+      tooltip: {
+        callbacks: {
+          label: function(ctx) {
+            const labels = ctx.dataIndex === 0
+              ? ['n = 86 com carteira (54,8%)', 'n = 71 sem carteira']
+              : ['n = 31 com carteira (41,9%)', 'n = 43 sem carteira'];
+            return labels[ctx.datasetIndex];
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        stacked: true,
+        max: 100,
+        ticks: { callback: v => v + '%', font: { family: 'Inter', size: 11 } }
+      },
+      y: { stacked: true, ticks: { font: { family: 'Inter', size: 12 } } }
+    }
+  }
+});
+
+// =====================================================================
+// PANEL 3: SALÁRIO BASE histogram (Survey A)
+// =====================================================================
+new Chart(document.getElementById('chart-salario'), {
+  type: 'bar',
+  data: {
+    labels: ['Abaixo do\npiso', 'No piso\n(R$ 1.477)', 'R$ 1.500–\nR$ 2.000', 'R$ 2.000–\nR$ 2.500', 'R$ 2.500–\nR$ 3.000', 'Acima de\nR$ 3.000'],
+    datasets: [{
+      label: 'Trabalhadoras (n)',
+      data: [0, 149, 0, 61, 0, 11],
+      backgroundColor: ['#94a3b8', 'rgba(190, 30, 45, 0.9)', '#94a3b8', 'rgba(190, 30, 45, 0.5)', '#94a3b8', 'rgba(190, 30, 45, 0.3)'],
+      borderColor: '#1a252f',
+      borderWidth: 1,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => `${ctx.parsed.y} trabalhadora${ctx.parsed.y !== 1 ? 's' : ''}` } },
+      annotation: {
+        annotations: {
+          piso: {
+            type: 'line',
+            xMin: 0.5, xMax: 0.5,
+            yMin: 0, yMax: 160,
+            borderColor: '#1a252f',
+            borderWidth: 0,
+          }
+        }
+      }
+    },
+    scales: {
+      x: { ticks: { font: { family: 'Inter', size: 11 } }, grid: { display: false } },
+      y: {
+        ticks: { font: { family: 'Inter', size: 11 } },
+        title: { display: true, text: 'Número de trabalhadoras', font: { family: 'Inter', size: 11 } }
+      }
+    }
+  }
+});
+
+// =====================================================================
+// PANEL 4: ESTADO DE ORIGEM (Survey B)
+// =====================================================================
+new Chart(document.getElementById('chart-origem'), {
+  type: 'bar',
+  data: {
+    labels: ['São Paulo', 'Bahia', 'Minas Gerais', 'Pernambuco', 'Paraná', 'Piauí', 'Ceará', 'Paraíba', 'Maranhão', 'Outros estados'],
+    datasets: [{
+      label: 'Trabalhadoras',
+      data: [78, 44, 23, 16, 11, 8, 6, 5, 4, 20],
+      backgroundColor: [
+        '#94a3b8',                       // SP — gray (born here)
+        'rgba(190, 30, 45, 0.9)',        // NE in red
+        'rgba(190, 30, 45, 0.6)',        // MG
+        'rgba(190, 30, 45, 0.85)',       // PE
+        'rgba(190, 30, 45, 0.55)',       // PR
+        'rgba(190, 30, 45, 0.8)',        // PI
+        'rgba(190, 30, 45, 0.75)',       // CE
+        'rgba(190, 30, 45, 0.7)',        // PB
+        'rgba(190, 30, 45, 0.65)',       // MA
+        'rgba(180, 180, 180, 0.6)',      // outros
+      ],
+      borderColor: '#1a252f',
+      borderWidth: 0.5,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function(ctx) {
+            const pct = (100 * ctx.parsed.x / 215).toFixed(1);
+            return `${ctx.parsed.x} trabalhadoras (${pct}%)`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: { font: { family: 'Inter', size: 11 } },
+        title: { display: true, text: 'Número de trabalhadoras na pesquisa', font: { family: 'Inter', size: 11 } }
+      },
+      y: { ticks: { font: { family: 'Inter', size: 12 } }, grid: { display: false } }
+    }
+  }
+});
+
+// =====================================================================
+// PANEL 5: CCT KNOWLEDGE (Survey A)
+// =====================================================================
+new Chart(document.getElementById('chart-cct'), {
+  type: 'bar',
+  data: {
+    labels: [
+      'Sabe que a CCT existe',
+      'Sabe o que é uma CCT',
+      'Considera a CCT importante',
+      'Já viu benefícios concretos'
+    ],
+    datasets: [
+      {
+        label: 'Sim',
+        data: [32.8, 24.4, 85.2, 36.0],
+        backgroundColor: 'rgba(190, 30, 45, 0.85)',
+        borderColor: 'rgba(190, 30, 45, 1)',
+        borderWidth: 1,
+      },
+      {
+        label: 'Não',
+        data: [67.2, 75.6, 14.8, 64.0],
+        backgroundColor: 'rgba(180, 180, 180, 0.6)',
+        borderColor: 'rgba(150, 150, 150, 1)',
+        borderWidth: 1,
+      }
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12 } } },
+      tooltip: {
+        callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.x.toFixed(1)}%` }
+      }
+    },
+    scales: {
+      x: {
+        stacked: true, max: 100,
+        ticks: { callback: v => v + '%', font: { family: 'Inter', size: 11 } }
+      },
+      y: { stacked: true, ticks: { font: { family: 'Inter', size: 12 } }, grid: { display: false } }
+    }
+  }
+});
+</script>
+</body>
+</html>

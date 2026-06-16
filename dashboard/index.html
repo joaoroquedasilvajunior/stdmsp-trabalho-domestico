@@ -351,6 +351,73 @@
     .mobile-clamp-toggle { display: none; }
   }
 
+  /* ============ PHASE 2b: themes pill-nav (sticky horizontal) ============ */
+  /* Sticky horizontal scrollable nav for the 8 analytical themes. Appears */
+  /* once the user enters the analytical zone (#paradoxo) and stays sticky */
+  /* until they scroll past #filiacao. Active pill follows the visible     */
+  /* section via IntersectionObserver. */
+  .theme-pill-nav {
+    position: sticky;
+    top: 0;             /* JS sets the actual offset to clear the header */
+    z-index: 40;
+    background: rgba(250, 250, 247, 0.95);
+    backdrop-filter: saturate(140%) blur(8px);
+    -webkit-backdrop-filter: saturate(140%) blur(8px);
+    border-bottom: 1px solid var(--rule);
+    padding: 10px 0;
+    margin-bottom: -1px;          /* tuck under the next section's top rule */
+    transition: opacity 200ms ease, visibility 200ms ease;
+  }
+  .theme-pill-nav[hidden] { display: none; }
+  .theme-pill-nav.dimmed {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .theme-pill-scroller {
+    display: flex;
+    gap: 8px;
+    padding: 0 20px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .theme-pill-scroller::-webkit-scrollbar { display: none; }
+  .theme-pill-scroller a {
+    padding: 6px 14px;
+    font-size: 13px;
+    border-radius: 999px;
+    background: white;
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    white-space: nowrap;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: background 120ms, color 120ms, border-color 120ms;
+  }
+  .theme-pill-scroller a:hover {
+    background: #f3f4f6;
+  }
+  .theme-pill-scroller a.active {
+    background: var(--ink);
+    color: white;
+    border-color: var(--ink);
+  }
+  /* Above the pill-nav: a small eyebrow label */
+  .theme-pill-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0 20px 4px;
+  }
+  /* On desktop with sidebar, shift the pill-nav right to clear the 88px sidebar */
+  @media (min-width: 900px) {
+    .theme-pill-nav { /* parent body has padding-left:88px so this naturally clears */ }
+  }
+
   /* Sparkline SVGs inside hero KPI tiles */
   .kpi-spark {
     display: block;
@@ -622,6 +689,23 @@
 <!-- ============ O PARADOXO DO SUSTENTO ============ -->
 <!-- Theme 1: chefe-de-família × wage × race. Editorial section with a -->
 <!-- two-column hero (text + chart) framing the breadwinner-paradox finding. -->
+<!-- ============ THEMES PILL-NAV (sticky horizontal) ============ -->
+<!-- Index of the 8 analytical themes that follow. Becomes sticky once user -->
+<!-- scrolls into this zone; auto-hides when scrolling past #filiacao.       -->
+<nav id="theme-pill-nav" class="theme-pill-nav" aria-label="Análises temáticas">
+  <div class="theme-pill-eyebrow" data-i18n="themes-eyebrow">Análises temáticas</div>
+  <div class="theme-pill-scroller">
+    <a href="#paradoxo"       data-theme="paradoxo"       data-i18n="theme-paradoxo">Paradoxo</a>
+    <a href="#cohort"         data-theme="cohort"         data-i18n="theme-cohort">Jovens</a>
+    <a href="#residuo"        data-theme="residuo"        data-i18n="theme-residuo">Residente</a>
+    <a href="#descumprimento" data-theme="descumprimento" data-i18n="theme-descumprimento">Cumprimento</a>
+    <a href="#piso"           data-theme="piso"           data-i18n="theme-piso">Piso</a>
+    <a href="#hourly"         data-theme="hourly"         data-i18n="theme-hourly">Por hora</a>
+    <a href="#reforma"        data-theme="reforma"        data-i18n="theme-reforma">Reforma</a>
+    <a href="#filiacao"       data-theme="filiacao"       data-i18n="theme-filiacao">Filiação</a>
+  </div>
+</nav>
+
 <section id="paradoxo" class="border-t rule" style="background: var(--accent-soft);">
   <div class="max-w-6xl mx-auto px-5 py-8">
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -1164,6 +1248,15 @@ const I18N = {
     "nav-union": "Sindicato",
     "nav-map": "Mapa",
     "nav-surveys": "Pesquisas",
+    "themes-eyebrow": "Análises temáticas",
+    "theme-paradoxo": "Paradoxo",
+    "theme-cohort": "Jovens",
+    "theme-residuo": "Residente",
+    "theme-descumprimento": "Cumprimento",
+    "theme-piso": "Piso",
+    "theme-hourly": "Por hora",
+    "theme-reforma": "Reforma",
+    "theme-filiacao": "Filiação",
     "union-eyebrow": "Organização sindical",
     "union-title": "Quem se filia ao sindicato — e por quê",
     "union-lead": "A categoria doméstica tem sindicato constitucionalmente reconhecido, mas a filiação efetiva é entre as mais baixas do trabalho brasileiro. A trajetória 2012–2024 da PNADC Anual (variável V4097) revela três achados que desafiam o senso comum sobre formalidade e sindicalização: (i) o gradiente formalidade-filiação se inverte — trabalhadoras sem carteira filiam-se em taxas mais altas que as com carteira; (ii) o subgrupo mais isolado da estrutura sindical é o de mulheres negras com carteira; (iii) o entorno da STDMSP filia em 31,2% (Pesquisa B Q32, n=231) — cerca de 24× o piso absoluto da categoria.",
@@ -1383,6 +1476,15 @@ const I18N = {
     "nav-union": "Union",
     "nav-map": "Map",
     "nav-surveys": "Surveys",
+    "themes-eyebrow": "Themed analyses",
+    "theme-paradoxo": "Breadwinner",
+    "theme-cohort": "Youth",
+    "theme-residuo": "Live-in",
+    "theme-descumprimento": "Compliance",
+    "theme-piso": "Wage floor",
+    "theme-hourly": "Hourly gap",
+    "theme-reforma": "2017 Reform",
+    "theme-filiacao": "Union",
     "union-eyebrow": "Union organizing",
     "union-title": "Who joins the union — and why",
     "union-lead": "Brazil's domestic-worker sindicato has full constitutional recognition, but actual membership ranks among the lowest in the formal labor force. The 2012–2024 trajectory from PNADC Anual (variable V4097) reveals three findings that overturn the conventional wisdom on formality and unionization: (i) the formality-membership gradient inverts — workers without a signed card join at higher rates than those with one; (ii) the most isolated subgroup is Black women with a signed card; (iii) STDMSP's organizing radius reaches 31.2% membership (Survey B Q32, n=231) — about 24× the absolute national floor.",
@@ -5613,6 +5715,87 @@ loadAll().catch(err => {
       }, 100);
     }
   });
+
+  // === Themes pill-nav (sticky horizontal) ===
+  // Shows the 8 analytical themes as a sticky scrollable index, but only
+  // when the user is inside the analytical zone. Active pill follows the
+  // currently visible section via IntersectionObserver.
+  (function() {
+    const themeNav = document.getElementById('theme-pill-nav');
+    if (!themeNav) return;
+    const THEME_IDS = ['paradoxo', 'cohort', 'residuo', 'descumprimento',
+                       'piso', 'hourly', 'reforma', 'filiacao'];
+    const sections = THEME_IDS
+      .map(id => ({ id, el: document.getElementById(id) }))
+      .filter(s => s.el);
+    if (!sections.length) return;
+    const firstSec = sections[0].el;
+    const lastSec  = sections[sections.length - 1].el;
+    const pills    = themeNav.querySelectorAll('a[href^="#"]');
+
+    // Dynamically clear the main header height so the sticky top: 0 sits below it
+    function syncTopOffset() {
+      const header = document.querySelector('header.border-b.rule');
+      if (header) {
+        const h = header.getBoundingClientRect().height || 56;
+        themeNav.style.top = h + 'px';
+      }
+    }
+    syncTopOffset();
+    window.addEventListener('resize', syncTopOffset);
+
+    // Visibility: dim out when outside the analytical zone
+    function checkVisibility() {
+      const top = firstSec.getBoundingClientRect().top;
+      const bottom = lastSec.getBoundingClientRect().bottom;
+      const viewportH = window.innerHeight;
+      // In zone: first section's top is above viewport bottom + last section
+      // hasn't fully scrolled off above the header
+      const inZone = top < (viewportH * 0.8) && bottom > 60;
+      themeNav.classList.toggle('dimmed', !inZone);
+    }
+    window.addEventListener('scroll', checkVisibility, { passive: true });
+    checkVisibility();
+
+    // Smooth scroll + center the clicked pill in the scroller
+    pills.forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = a.getAttribute('href').slice(1);
+        const target = document.getElementById(id);
+        if (!target) return;
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setActivePill(id);
+        a.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      });
+    });
+
+    function setActivePill(id) {
+      pills.forEach(p => p.classList.toggle('active',
+        p.getAttribute('href') === '#' + id));
+    }
+
+    // IntersectionObserver — active pill follows visible section
+    if ('IntersectionObserver' in window) {
+      const obs = new IntersectionObserver((entries) => {
+        let best = null;
+        for (const en of entries) {
+          if (!en.isIntersecting) continue;
+          if (!best || en.intersectionRatio > best.intersectionRatio) best = en;
+        }
+        if (best) {
+          setActivePill(best.target.id);
+          // Keep active pill visible within the scroller
+          const activePill = themeNav.querySelector('a.active');
+          if (activePill) activePill.scrollIntoView({ block: 'nearest', inline: 'center' });
+        }
+      }, {
+        rootMargin: '-30% 0px -55% 0px',
+        threshold: [0.1, 0.3, 0.6],
+      });
+      sections.forEach(s => obs.observe(s.el));
+    }
+  })();
 
   // === Bottom-nav scroll-spy ===
   // Watches which section is visible and highlights the matching nav item.

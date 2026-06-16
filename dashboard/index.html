@@ -215,6 +215,107 @@
       margin-top: 4px;
     }
     .event-source a { color: var(--accent); text-decoration: underline; }
+  /* ============ MOBILE-FIRST OVERLAY (2026-06) ============ */
+  /* Bottom tab navigation, hero KPI treatment, card unification, */
+  /* sticky compact header. Layered on top of existing styles so the */
+  /* chart rendering JS, filter logic, i18n and story mode stay intact. */
+
+  /* Make room for fixed bottom nav on mobile */
+  body { padding-bottom: 76px; }
+  @media (min-width: 900px) { body { padding-bottom: 0; padding-left: 88px; } }
+
+  /* Sticky top header with frosted glass effect */
+  header.border-b.rule {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(250, 250, 247, 0.92);
+    backdrop-filter: saturate(140%) blur(8px);
+    -webkit-backdrop-filter: saturate(140%) blur(8px);
+  }
+  @media (max-width: 639px) {
+    header.border-b.rule .max-w-6xl > div:first-child { display: none; }
+    /* On mobile, hide the long subtitle to compact the header */
+    header.border-b.rule p[data-i18n="subtitle"] { display: none; }
+    header.border-b.rule h1[data-i18n="title"] { font-size: 1.05rem; line-height: 1.25; margin-top: 0; }
+    /* Compact the CTA: hide "Como você se compara?" arrow text on tiny screens, keep clickable */
+    header.border-b.rule a[data-i18n="cta-calculator"] {
+      font-size: 0; padding: 8px 10px;
+    }
+    header.border-b.rule a[data-i18n="cta-calculator"]::after {
+      content: "≡"; font-size: 18px;
+    }
+    /* Hide story toggle on very small screens — accessible via the menu later */
+    header.border-b.rule .story-toggle { display: none; }
+  }
+
+  /* Bottom tab navigation (mobile) → left sidebar (desktop ≥900px) */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: white;
+    border-top: 1px solid var(--rule);
+    padding: 6px 4px max(8px, env(safe-area-inset-bottom)) 4px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    z-index: 60;
+  }
+  .bottom-nav a {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 6px 2px;
+    font-size: 10.5px; color: #6b7280;
+    text-decoration: none; line-height: 1.1;
+    border-radius: 10px;
+    text-align: center;
+    transition: background 120ms, color 120ms;
+  }
+  .bottom-nav a.active {
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .bottom-nav a.active svg { stroke: var(--accent); }
+  .bottom-nav svg {
+    width: 22px; height: 22px;
+    stroke: #6b7280; stroke-width: 1.8; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+    transition: stroke 120ms;
+  }
+  @media (min-width: 900px) {
+    .bottom-nav {
+      top: 0; bottom: 0; right: auto; width: 88px;
+      flex-direction: column; display: flex;
+      border-top: 0; border-right: 1px solid var(--rule);
+      padding: 80px 8px 16px;
+      justify-content: flex-start; gap: 4px;
+    }
+    .bottom-nav a { padding: 12px 6px; font-size: 11px; }
+    .bottom-nav svg { width: 24px; height: 24px; }
+  }
+
+  /* Card unification — softer corners, lighter borders, generous padding */
+  @media (max-width: 639px) {
+    article.border.rule.rounded-lg,
+    .border.rule.rounded-lg {
+      border-radius: 16px;
+      border-color: transparent;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+    }
+    /* Compact KPI cards on small screens */
+    .kpi-formal-value, #kpi-total-value, #kpi-women-value, #kpi-black-value, #kpi-formal-value {
+      font-size: 1.75rem;
+    }
+    /* Long lead paragraphs collapse a bit on very small */
+    section .max-w-3xl p { font-size: 0.875rem; }
+    /* Reduce chart heights on mobile so scroll isn't endless */
+    .chart-box { height: 240px; }
+  }
+
+  /* "Read more" collapsible — used in Phase 2 to hide long editorial intros */
+  .reveal-toggle {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.8125rem; color: var(--accent); font-weight: 500;
+    background: transparent; border: 0; cursor: pointer;
+    padding: 6px 0; margin-top: 4px;
+  }
+  .reveal-toggle:hover { text-decoration: underline; }
+  .reveal-body[data-collapsed="true"] { display: none; }
   </style>
 </head>
 <body>
@@ -279,7 +380,7 @@
 </section>
 
 <!-- ============ KPI ROW ============ -->
-<section class="max-w-6xl mx-auto px-5 pt-6">
+<section id="inicio" class="max-w-6xl mx-auto px-5 pt-6 scroll-mt-20">
   <div class="story-card" data-beat="1">
     <div class="headline" data-i18n="story-1-headline">5,5 milhões · 92% mulheres · 7 em cada 10 negras</div>
     <div class="body" data-i18n="story-1-body">Quem somos. Somos <strong>5,5 milhões de trabalhadoras domésticas</strong> no Brasil. <strong>92 em cada 100 somos mulheres</strong>, e <strong>7 em cada 10 somos negras</strong> (pretas + pardas). Sustentamos uma em cada dez mulheres trabalhadoras do país.</div>
@@ -354,7 +455,7 @@
   </article>
 
   <article class="border rule rounded-lg p-4 bg-white">
-    <h2 class="text-base font-medium" data-i18n="chart-wage-gap">Hiato salarial racial</h2>
+    <h2 id="salarios" class="text-base font-medium scroll-mt-20" data-i18n="chart-wage-gap">Hiato salarial racial</h2>
     <p class="text-xs text-gray-500 mb-3" data-i18n="chart-wage-gap-meta">trabalhadoras domésticas negras vs. não-negras · fonte: DIEESE</p>
     <div class="chart-box" id="box-wage-gap"><canvas id="chart-wage-gap"></canvas><div class="chart-overlay" data-i18n="empty">Sem dados ainda.</div></div>
     <p class="text-xs text-gray-700 mt-2 leading-snug" id="wage-gap-narrative" data-i18n="wage-gap-narrative">Para cada R$ 100 recebidos por uma trabalhadora doméstica não-negra, uma trabalhadora doméstica negra recebe R$ 76.</p>
@@ -373,7 +474,7 @@
   </article>
 
   <article class="border rule rounded-lg p-4 bg-white md:col-span-2">
-    <h2 class="text-base font-medium" data-i18n="chart-map">Mapa: composição racial por UF</h2>
+    <h2 id="mapa" class="text-base font-medium scroll-mt-20" data-i18n="chart-map">Mapa: composição racial por UF</h2>
     <p class="text-xs text-gray-500 mb-3" data-i18n="chart-map-meta">% pretas + pardas entre trabalhadoras(es) domésticas(os), por estado · PNADC microdados · computado</p>
 
     <div class="story-card" data-beat="2">
@@ -997,6 +1098,11 @@ const I18N = {
     "reform-wage-cat-diarista":   "Diarismo",
     "reform-wage-x-title": "% paridade salarial por hora",
     "reform-wage-parity-label": "Paridade (100%)",
+    "nav-home": "Início",
+    "nav-wages": "Salários",
+    "nav-union": "Sindicato",
+    "nav-map": "Mapa",
+    "nav-surveys": "Pesquisas",
     "union-eyebrow": "Organização sindical",
     "union-title": "Quem se filia ao sindicato — e por quê",
     "union-lead": "A categoria doméstica tem sindicato constitucionalmente reconhecido, mas a filiação efetiva é entre as mais baixas do trabalho brasileiro. A trajetória 2012–2024 da PNADC Anual (variável V4097) revela três achados que desafiam o senso comum sobre formalidade e sindicalização: (i) o gradiente formalidade-filiação se inverte — trabalhadoras sem carteira filiam-se em taxas mais altas que as com carteira; (ii) o subgrupo mais isolado da estrutura sindical é o de mulheres negras com carteira; (iii) o entorno da STDMSP filia em 31,2% (Pesquisa B Q32, n=231) — cerca de 24× o piso absoluto da categoria.",
@@ -1211,6 +1317,11 @@ const I18N = {
     "reform-wage-cat-diarista":   "Day-rate contract",
     "reform-wage-x-title": "% hourly pay parity",
     "reform-wage-parity-label": "Parity (100%)",
+    "nav-home": "Home",
+    "nav-wages": "Wages",
+    "nav-union": "Union",
+    "nav-map": "Map",
+    "nav-surveys": "Surveys",
     "union-eyebrow": "Union organizing",
     "union-title": "Who joins the union — and why",
     "union-lead": "Brazil's domestic-worker sindicato has full constitutional recognition, but actual membership ranks among the lowest in the formal labor force. The 2012–2024 trajectory from PNADC Anual (variable V4097) reveals three findings that overturn the conventional wisdom on formality and unionization: (i) the formality-membership gradient inverts — workers without a signed card join at higher rates than those with one; (ii) the most isolated subgroup is Black women with a signed card; (iii) STDMSP's organizing radius reaches 31.2% membership (Survey B Q32, n=231) — about 24× the absolute national floor.",
@@ -5264,6 +5375,86 @@ loadAll().catch(err => {
   try { seedSampleData(); populateFilters(); render(); }
   catch (e) { console.error("Sample-data fallback also failed:", e); showError("Render failed: " + e.message); }
 });
+</script>
+
+<!-- ============ MOBILE-FIRST BOTTOM NAV ============ -->
+<!-- Becomes a left sidebar on screens ≥900px via CSS. Section targets:
+     #inicio (KPI row), #salarios (wage-gap article), #filiacao (union),
+     #mapa (UF choropleth), pesquisas.html (separate page). -->
+<nav class="bottom-nav" aria-label="Navegação principal">
+  <a href="#inicio" data-nav="inicio" class="active">
+    <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2V11z"/></svg>
+    <span data-i18n="nav-home">Início</span>
+  </a>
+  <a href="#salarios" data-nav="salarios">
+    <svg viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    <span data-i18n="nav-wages">Salários</span>
+  </a>
+  <a href="#filiacao" data-nav="filiacao">
+    <svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0-3-3.87"/></svg>
+    <span data-i18n="nav-union">Sindicato</span>
+  </a>
+  <a href="#mapa" data-nav="mapa">
+    <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <span data-i18n="nav-map">Mapa</span>
+  </a>
+  <a href="./pesquisas.html" data-nav="pesquisas">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+    <span data-i18n="nav-surveys">Pesquisas</span>
+  </a>
+</nav>
+
+<script>
+  // === Bottom-nav scroll-spy ===
+  // Watches which section is visible and highlights the matching nav item.
+  // Sections are anchored by ID; "pesquisas" is an external link (no spy).
+  (function() {
+    const navLinks = document.querySelectorAll('.bottom-nav a[href^="#"]');
+    if (!navLinks.length) return;
+    const sectionMap = {};
+    navLinks.forEach(a => {
+      const id = a.getAttribute('href').slice(1);
+      const sec = document.getElementById(id);
+      if (sec) sectionMap[id] = { el: sec, nav: a };
+    });
+
+    function setActive(id) {
+      navLinks.forEach(a => a.classList.toggle('active',
+        a.getAttribute('href') === '#' + id));
+    }
+
+    // Click → smooth scroll (CSS scroll-mt-20 already handles the offset)
+    navLinks.forEach(a => {
+      a.addEventListener('click', (e) => {
+        const id = a.getAttribute('href').slice(1);
+        if (!sectionMap[id]) return;
+        e.preventDefault();
+        sectionMap[id].el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setActive(id);
+      });
+    });
+
+    // IntersectionObserver: when a section crosses the viewport center,
+    // mark its nav tab active. Best-of-fit on multiple visible sections.
+    if ('IntersectionObserver' in window) {
+      const obs = new IntersectionObserver((entries) => {
+        // Pick the most visible section by intersection ratio
+        let best = null;
+        for (const en of entries) {
+          if (!en.isIntersecting) continue;
+          if (!best || en.intersectionRatio > best.intersectionRatio) best = en;
+        }
+        if (best) {
+          const id = best.target.id;
+          if (sectionMap[id]) setActive(id);
+        }
+      }, {
+        rootMargin: '-30% 0px -50% 0px',
+        threshold: [0.1, 0.3, 0.6],
+      });
+      Object.values(sectionMap).forEach(s => obs.observe(s.el));
+    }
+  })();
 </script>
 
 </body>

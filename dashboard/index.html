@@ -220,6 +220,11 @@
   /* sticky compact header. Layered on top of existing styles so the */
   /* chart rendering JS, filter logic, i18n and story mode stay intact. */
 
+  /* Defensive: never let the page scroll horizontally — critical when
+     the dashboard is embedded via iframe on a narrower parent page
+     (e.g., Mayer's Weebly site). Vertical scroll is preserved. */
+  html, body { overflow-x: hidden; max-width: 100%; }
+
   /* Make room for fixed bottom nav on mobile */
   body { padding-bottom: 76px; }
   @media (min-width: 900px) { body { padding-bottom: 0; padding-left: 88px; } }
@@ -231,21 +236,37 @@
     backdrop-filter: saturate(140%) blur(8px);
     -webkit-backdrop-filter: saturate(140%) blur(8px);
   }
+  /* Compact header on mobile (below 640px) */
   @media (max-width: 639px) {
     header.border-b.rule .max-w-6xl > div:first-child { display: none; }
-    /* On mobile, hide the long subtitle to compact the header */
     header.border-b.rule p[data-i18n="subtitle"] { display: none; }
     header.border-b.rule h1[data-i18n="title"] { font-size: 1.05rem; line-height: 1.25; margin-top: 0; }
-    /* Compact the CTA: hide "Como você se compara?" arrow text on tiny screens, keep clickable */
     header.border-b.rule a[data-i18n="cta-calculator"] {
       font-size: 0; padding: 8px 10px;
     }
     header.border-b.rule a[data-i18n="cta-calculator"]::after {
       content: "≡"; font-size: 18px;
     }
-    /* Hide story toggle on very small screens — accessible via the menu later */
     header.border-b.rule .story-toggle { display: none; }
   }
+  /* Intermediate header on tablet / narrow iframe (640-899px) — hide
+     the longest items so the header line stays single-row and doesn't
+     force horizontal overflow. */
+  @media (min-width: 640px) and (max-width: 899px) {
+    header.border-b.rule p[data-i18n="subtitle"] { display: none; }
+    header.border-b.rule a[data-i18n="cta-calculator"] {
+      font-size: 0; padding: 8px 12px;
+    }
+    header.border-b.rule a[data-i18n="cta-calculator"]::after {
+      content: "≡"; font-size: 18px;
+    }
+    header.border-b.rule .story-toggle span:not(.dot) {
+      display: none;            /* keep only the dot indicator */
+    }
+    header.border-b.rule .story-toggle { padding: 6px 8px; }
+  }
+  /* Always allow the header rows to wrap as ultimate safety */
+  header.border-b.rule .max-w-6xl { flex-wrap: wrap; gap: 8px; }
 
   /* Bottom tab navigation (mobile) → left sidebar (desktop ≥900px) */
   .bottom-nav {

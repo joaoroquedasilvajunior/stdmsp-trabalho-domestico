@@ -316,6 +316,63 @@
   }
   .reveal-toggle:hover { text-decoration: underline; }
   .reveal-body[data-collapsed="true"] { display: none; }
+
+  /* ============ PHASE 2: line-clamp on long leads + sparklines ============ */
+
+  /* Auto-collapse long lead paragraphs on mobile (added via JS) */
+  @media (max-width: 639px) {
+    .mobile-clamp {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      position: relative;
+    }
+    .mobile-clamp.expanded {
+      -webkit-line-clamp: unset;
+      display: block;
+      overflow: visible;
+    }
+    .mobile-clamp-toggle {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 0.8125rem;
+      color: var(--accent);
+      font-weight: 500;
+      background: transparent;
+      border: 0;
+      padding: 4px 0;
+      cursor: pointer;
+    }
+    .mobile-clamp-toggle:hover { text-decoration: underline; }
+  }
+  /* On desktop, the toggle button is hidden — full text always shown */
+  @media (min-width: 640px) {
+    .mobile-clamp-toggle { display: none; }
+  }
+
+  /* Sparkline SVGs inside hero KPI tiles */
+  .kpi-spark {
+    display: block;
+    width: 100%;
+    height: 26px;
+    margin-top: 6px;
+    overflow: visible;
+  }
+  .kpi-spark polyline {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .kpi-spark.accent polyline { stroke: var(--accent); }
+  .kpi-spark .dot {
+    fill: var(--ink);
+    stroke: white;
+    stroke-width: 1.5;
+  }
+  .kpi-spark.accent .dot { fill: var(--accent); }
   </style>
 </head>
 <body>
@@ -390,21 +447,25 @@
       <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="kpi-total">Trabalhadoras(es) domésticas(os)</div>
       <div class="text-3xl font-medium num mt-1" id="kpi-total-value">—</div>
       <div class="text-xs text-gray-500 mt-1" id="kpi-total-meta" data-i18n="kpi-total-meta">milhares de pessoas, total Brasil</div>
+      <svg class="kpi-spark" id="kpi-total-spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"></svg>
     </div>
     <div class="border rule rounded-lg p-4 bg-white" id="kpi-women-card">
       <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="kpi-women">Mulheres</div>
       <div class="text-3xl font-medium num mt-1" id="kpi-women-value">—</div>
       <div class="text-xs text-gray-500 mt-1" id="kpi-women-meta" data-i18n="kpi-women-meta">% do total</div>
+      <svg class="kpi-spark" id="kpi-women-spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"></svg>
     </div>
     <div class="border rule rounded-lg p-4 bg-white" id="kpi-black-card">
       <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="kpi-black">Negras (pretas + pardas)</div>
       <div class="text-3xl font-medium num mt-1" id="kpi-black-value">—</div>
       <div class="text-xs text-gray-500 mt-1" id="kpi-black-meta" data-i18n="kpi-black-meta">% do total</div>
+      <svg class="kpi-spark accent" id="kpi-black-spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"></svg>
     </div>
     <div class="border rule rounded-lg p-4 bg-white">
       <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="kpi-formal">Com carteira assinada</div>
       <div class="text-3xl font-medium num mt-1" id="kpi-formal-value">—</div>
       <div class="text-xs text-gray-500 mt-1" data-i18n="kpi-formal-meta">% do total</div>
+      <svg class="kpi-spark accent" id="kpi-formal-spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"></svg>
     </div>
   </div>
 </section>
@@ -5405,6 +5466,154 @@ loadAll().catch(err => {
 </nav>
 
 <script>
+  // === Phase 2: KPI sparklines + collapsible leads on mobile ===
+  // Sparklines feed off STATE.workers (the same data the KPIs use).
+  // Collapsible leads run only on small screens.
+
+  function _renderSpark(svgId, points, accent) {
+    const svg = document.getElementById(svgId);
+    if (!svg) return;
+    svg.innerHTML = '';
+    if (!Array.isArray(points) || points.length < 2) return;
+    const vmin = Math.min(...points);
+    const vmax = Math.max(...points);
+    const span = vmax - vmin || 1;
+    const W = 100, H = 26, padY = 3;
+    const coords = points.map((v, i) => {
+      const x = (i / (points.length - 1)) * W;
+      const y = H - padY - ((v - vmin) / span) * (H - 2 * padY);
+      return `${x.toFixed(2)},${y.toFixed(2)}`;
+    });
+    const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    poly.setAttribute('points', coords.join(' '));
+    svg.appendChild(poly);
+    // Endpoint dot
+    const [lx, ly] = coords[coords.length - 1].split(',').map(Number);
+    const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dot.setAttribute('cx', lx);
+    dot.setAttribute('cy', ly);
+    dot.setAttribute('r', 2.2);
+    dot.setAttribute('class', 'dot');
+    svg.appendChild(dot);
+  }
+
+  function renderKpiSparklines() {
+    if (!window.STATE || !STATE.workers || !STATE.workers.length) return;
+
+    // Total workers — sum across formality=total, race=total, sex=T, BR
+    const trendRows = STATE.workers
+      .filter(r =>
+        r.geo_code === 'BR' && r.sex_code === 'T' &&
+        r.race_code === 'total' && r.formality_code === 'total' &&
+        r.source_table === 'PNADC-6320'
+      )
+      .sort((a, b) => String(a.period_code).localeCompare(String(b.period_code)));
+    const totalSeries = trendRows.map(r => Number(r.workers_thousands || 0)).filter(v => v > 0);
+    _renderSpark('kpi-total-spark', totalSeries);
+
+    // % Women — STATE.workers race='total' but sex='F' vs sex='T'
+    const womenF = {};
+    const womenT = {};
+    for (const r of STATE.workers) {
+      if (r.geo_code !== 'BR' || r.race_code !== 'total' || r.formality_code !== 'total') continue;
+      if (r.source_table !== 'PNADC-6320') continue;
+      const p = String(r.period_code);
+      const w = Number(r.workers_thousands || 0);
+      if (r.sex_code === 'F') womenF[p] = w;
+      if (r.sex_code === 'T') womenT[p] = w;
+    }
+    const periodsW = Object.keys(womenT).filter(p => womenF[p]).sort();
+    const womenSeries = periodsW.map(p => 100 * womenF[p] / womenT[p]);
+    _renderSpark('kpi-women-spark', womenSeries);
+
+    // % Black (preta+parda) — sum preta+parda divided by total
+    const blackPP = {};
+    const totalAll = {};
+    for (const r of STATE.workers) {
+      if (r.geo_code !== 'BR' || r.sex_code !== 'T' || r.formality_code !== 'total') continue;
+      if (r.source_table !== 'PNADC-6320') continue;
+      const p = String(r.period_code);
+      const w = Number(r.workers_thousands || 0);
+      if (r.race_code === 'preta' || r.race_code === 'parda' || r.race_code === 'preta_parda')
+        blackPP[p] = (blackPP[p] || 0) + w;
+      if (r.race_code === 'total') totalAll[p] = w;
+    }
+    const periodsB = Object.keys(totalAll).filter(p => blackPP[p]).sort();
+    const blackSeries = periodsB.map(p => 100 * blackPP[p] / totalAll[p]);
+    _renderSpark('kpi-black-spark', blackSeries, true);
+
+    // % Formal (com_carteira) — formality=com_carteira / total
+    const formal = {};
+    for (const r of STATE.workers) {
+      if (r.geo_code !== 'BR' || r.sex_code !== 'T' || r.race_code !== 'total') continue;
+      if (r.source_table !== 'PNADC-6320') continue;
+      const p = String(r.period_code);
+      const w = Number(r.workers_thousands || 0);
+      if (!formal[p]) formal[p] = {};
+      if (r.formality_code === 'com_carteira') formal[p].formal = w;
+      if (r.formality_code === 'total') formal[p].total = w;
+    }
+    const periodsF = Object.keys(formal).filter(p => formal[p].formal && formal[p].total).sort();
+    const formalSeries = periodsF.map(p => 100 * formal[p].formal / formal[p].total);
+    _renderSpark('kpi-formal-spark', formalSeries, true);
+  }
+
+  // === Auto-collapse long lead paragraphs on mobile ===
+  function applyMobileCollapse() {
+    if (window.innerWidth >= 640) return;  // desktop: no-op
+    // Target the editorial leads — typically inside .max-w-3xl wrappers
+    const candidates = document.querySelectorAll(
+      '.max-w-3xl p, section .text-sm.text-gray-800.leading-relaxed, section .text-sm.text-gray-700.leading-relaxed'
+    );
+    const seen = new Set();
+    candidates.forEach(p => {
+      if (seen.has(p)) return;
+      if (p.dataset.mobileClampApplied) return;
+      const text = p.textContent.trim();
+      if (text.length < 280) return;  // short paragraph — leave alone
+      seen.add(p);
+      p.dataset.mobileClampApplied = '1';
+      p.classList.add('mobile-clamp');
+      const btn = document.createElement('button');
+      btn.className = 'mobile-clamp-toggle';
+      btn.type = 'button';
+      btn.textContent = (typeof LANG !== 'undefined' && LANG === 'en')
+        ? '+ Read more'
+        : '+ Ler mais';
+      btn.addEventListener('click', () => {
+        const expanded = p.classList.toggle('expanded');
+        btn.textContent = (typeof LANG !== 'undefined' && LANG === 'en')
+          ? (expanded ? '− Show less' : '+ Read more')
+          : (expanded ? '− Recolher' : '+ Ler mais');
+      });
+      p.insertAdjacentElement('afterend', btn);
+    });
+  }
+
+  // Run sparklines + collapse after data loads (data.js runs the render pipeline).
+  // We piggyback on the same DOMContentLoaded that fires after STATE is populated.
+  document.addEventListener('DOMContentLoaded', () => {
+    // Try immediately and again after a short delay (in case STATE is async)
+    setTimeout(renderKpiSparklines, 500);
+    setTimeout(renderKpiSparklines, 1500);
+    setTimeout(applyMobileCollapse, 200);
+  });
+
+  // Re-apply on language change (collapse button text needs to update)
+  document.addEventListener('click', (e) => {
+    if (e.target.matches && e.target.matches('.lang-btn')) {
+      setTimeout(() => {
+        // Remove old buttons + re-apply
+        document.querySelectorAll('.mobile-clamp-toggle').forEach(b => b.remove());
+        document.querySelectorAll('.mobile-clamp').forEach(p => {
+          p.classList.remove('mobile-clamp', 'expanded');
+          delete p.dataset.mobileClampApplied;
+        });
+        applyMobileCollapse();
+      }, 100);
+    }
+  });
+
   // === Bottom-nav scroll-spy ===
   // Watches which section is visible and highlights the matching nav item.
   // Sections are anchored by ID; "pesquisas" is an external link (no spy).

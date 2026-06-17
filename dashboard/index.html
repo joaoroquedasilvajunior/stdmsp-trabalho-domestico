@@ -5778,7 +5778,24 @@ loadAll().catch(err => {
     window.addEventListener('scroll', checkVisibility, { passive: true });
     checkVisibility();
 
-    // Smooth scroll + center the clicked pill in the scroller
+    // Center the active pill HORIZONTALLY in its scroller without touching
+    // the page's vertical scroll. Using scrollIntoView with block:'nearest'
+    // was causing a feedback loop: scrollIntoView would nudge the page,
+    // which triggered IntersectionObserver, which called centerActivePill
+    // again — endless scroll on the Jovens section especially.
+    function centerActivePill() {
+      const scroller = themeNav.querySelector('.theme-pill-scroller');
+      const activePill = themeNav.querySelector('a.active');
+      if (!scroller || !activePill) return;
+      const scrollerRect = scroller.getBoundingClientRect();
+      const pillRect = activePill.getBoundingClientRect();
+      // Position of pill's left edge within scroller's content
+      const pillOffsetInScroller = pillRect.left - scrollerRect.left + scroller.scrollLeft;
+      const target = pillOffsetInScroller - (scroller.clientWidth / 2) + (pillRect.width / 2);
+      scroller.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+    }
+
+    // Smooth scroll to section on click; horizontally center the pill
     pills.forEach(a => {
       a.addEventListener('click', (e) => {
         e.preventDefault();
@@ -5787,7 +5804,8 @@ loadAll().catch(err => {
         if (!target) return;
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         setActivePill(id);
-        a.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        // Defer the horizontal centering one tick so the DOM updates first
+        requestAnimationFrame(centerActivePill);
       });
     });
 
@@ -5796,7 +5814,9 @@ loadAll().catch(err => {
         p.getAttribute('href') === '#' + id));
     }
 
-    // IntersectionObserver — active pill follows visible section
+    // IntersectionObserver — active pill follows visible section.
+    // Debounce/guard against rapid retoggle near section boundaries.
+    let lastActiveId = null;
     if ('IntersectionObserver' in window) {
       const obs = new IntersectionObserver((entries) => {
         let best = null;
@@ -5804,15 +5824,17 @@ loadAll().catch(err => {
           if (!en.isIntersecting) continue;
           if (!best || en.intersectionRatio > best.intersectionRatio) best = en;
         }
-        if (best) {
+        if (best && best.target.id !== lastActiveId) {
+          lastActiveId = best.target.id;
           setActivePill(best.target.id);
-          // Keep active pill visible within the scroller
-          const activePill = themeNav.querySelector('a.active');
-          if (activePill) activePill.scrollIntoView({ block: 'nearest', inline: 'center' });
+          // Defer the horizontal centering so it never blocks the natural
+          // page scroll flow that triggered this callback in the first place.
+          requestAnimationFrame(centerActivePill);
         }
       }, {
-        rootMargin: '-30% 0px -55% 0px',
-        threshold: [0.1, 0.3, 0.6],
+        // Slightly wider detection band reduces flapping between sections
+        rootMargin: '-25% 0px -45% 0px',
+        threshold: [0.1, 0.5],
       });
       sections.forEach(s => obs.observe(s.el));
     }

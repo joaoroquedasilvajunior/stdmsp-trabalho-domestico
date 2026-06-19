@@ -724,6 +724,7 @@
     <a href="#hourly"         data-theme="hourly"         data-i18n="theme-hourly">Por hora</a>
     <a href="#reforma"        data-theme="reforma"        data-i18n="theme-reforma">Reforma</a>
     <a href="#filiacao"       data-theme="filiacao"       data-i18n="theme-filiacao">Filiação</a>
+    <a href="#mei-proxy"      data-theme="mei-proxy"      data-i18n="theme-mei">CNPJ</a>
   </div>
 </nav>
 
@@ -986,6 +987,49 @@
     </article>
 
     <p class="text-xs text-gray-500 mt-4 max-w-3xl leading-relaxed" data-i18n="union-source">Fonte: PNADC Anual Visita 1, variável V4097 ("Na semana de referência era associado a algum sindicato?"). Anos 2020 e 2021 indisponíveis na PNADC-A V1 por interrupção de campo COVID. Cifra do entorno STDMSP a partir da Pesquisa B (2021–23, entrevistas presenciais, n=241; Q32 com 95,9% de cobertura). Processamento: <code>etl/union_annual_timeseries.py</code> e <code>etl/probe_survey_b_union.py</code>.</p>
+  </div>
+</section>
+
+<!-- ============ MEI PROXY · Conta-própria × CNPJ ============ -->
+<!-- Step 1 of the MEI-as-proxy panel (mei_proxy_path.md).         -->
+<!-- Headline KPI from SIDRA Tabela 6320 (PNADC trimestral móvel)  -->
+<!-- categories 96171/45936/45937. Renders 4 tiles + sparkline of  -->
+<!-- the %formalização trajectory. Race × CBO × CNPJ depth comes   -->
+<!-- in Step 5 (full microdata panel).                              -->
+<section id="mei-proxy" class="border-t rule">
+  <div class="max-w-6xl mx-auto px-5 py-8">
+    <div class="max-w-3xl mb-6">
+      <p class="text-xs uppercase tracking-wide font-semibold mb-2" style="color: var(--accent);" data-i18n="mei-eyebrow">Fronteira em formação</p>
+      <h2 class="text-xl md:text-2xl font-medium mb-3" data-i18n="mei-title">Conta-própria e CNPJ — quem é formalizado</h2>
+      <p class="text-sm text-gray-800 mb-3 leading-relaxed" data-i18n="mei-lead">Cerca de <strong>26 milhões de brasileiras(os)</strong> trabalham por conta própria — quase 1 em cada 4 pessoas ocupadas no país. Mas apenas <strong>28%</strong> dessa categoria tem CNPJ ativo (proxy MEI). Para o trabalho doméstico, esse número importa especialmente: <strong>diaristas e cuidadoras autônomas</strong> são classificadas pela PNADC dentro deste guarda-chuva, e a janela MEI é hoje o principal caminho jurídico de formalização disponível pra elas.</p>
+    </div>
+
+    <!-- KPI row: 4 tiles -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+      <div class="border rule rounded-lg p-4 bg-white">
+        <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="mei-kpi-total">Conta-própria (total)</div>
+        <div class="text-3xl font-medium num mt-1" id="mei-kpi-total">—</div>
+        <div class="text-xs text-gray-500 mt-1" data-i18n="mei-kpi-total-meta">milhares · Brasil · trim. mais recente</div>
+      </div>
+      <div class="border rule rounded-lg p-4 bg-white">
+        <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="mei-kpi-cnpj">Com CNPJ</div>
+        <div class="text-3xl font-medium num mt-1" id="mei-kpi-cnpj">—</div>
+        <div class="text-xs text-gray-500 mt-1" data-i18n="mei-kpi-cnpj-meta">milhares · MEI-proxy</div>
+      </div>
+      <div class="border rule rounded-lg p-4 bg-white">
+        <div class="text-xs uppercase tracking-wide text-gray-500" data-i18n="mei-kpi-nocnpj">Sem CNPJ</div>
+        <div class="text-3xl font-medium num mt-1" id="mei-kpi-nocnpj">—</div>
+        <div class="text-xs text-gray-500 mt-1" data-i18n="mei-kpi-nocnpj-meta">milhares · sem registro formal</div>
+      </div>
+      <div class="border rule rounded-lg p-4" style="background: var(--accent-soft);">
+        <div class="text-xs uppercase tracking-wide" style="color: var(--accent);" data-i18n="mei-kpi-pct">% formalizada</div>
+        <div class="text-3xl font-medium num mt-1 accent" id="mei-kpi-pct">—</div>
+        <div class="text-xs mt-1" style="color: var(--accent);" data-i18n="mei-kpi-pct-meta">com CNPJ / total · evolução abaixo</div>
+        <svg class="kpi-spark accent" id="mei-kpi-spark" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"></svg>
+      </div>
+    </div>
+
+    <p class="text-xs text-gray-500 mt-4 max-w-3xl leading-relaxed" data-i18n="mei-source">Fonte: PNADC trimestral móvel (IBGE), Tabela SIDRA 6320, classificação c11913 (Posição na ocupação e categoria do emprego no trabalho principal) — categorias 96171 (Conta própria total), 45936 (Conta própria com CNPJ), 45937 (Conta própria sem CNPJ). A divisão CNPJ foi introduzida em 2015; séries anteriores têm só o agregado. <strong>Próxima fase:</strong> recorte por raça, sexo e categoria ocupacional via microdados PNADC (V4019), com foco em CBO 5121 (doméstico em geral), 5141 (limpeza), 5162 (cuidadora). Ver <code>etl/mei_proxy_path.md</code>.</p>
   </div>
 </section>
 
@@ -1278,6 +1322,7 @@ const I18N = {
     "theme-hourly": "Por hora",
     "theme-reforma": "Reforma",
     "theme-filiacao": "Filiação",
+    "theme-mei": "CNPJ",
     "union-eyebrow": "Organização sindical",
     "union-title": "Quem se filia ao sindicato — e por quê",
     "union-lead": "A categoria doméstica tem sindicato constitucionalmente reconhecido, mas a filiação efetiva é entre as mais baixas do trabalho brasileiro. A trajetória 2012–2024 da PNADC Anual (variável V4097) revela três achados que desafiam o senso comum sobre formalidade e sindicalização: (i) o gradiente formalidade-filiação se inverte — trabalhadoras sem carteira filiam-se em taxas mais altas que as com carteira; (ii) o subgrupo mais isolado da estrutura sindical é o de mulheres negras com carteira; (iii) o entorno da STDMSP filia em 31,2% (Pesquisa B Q32, n=231) — cerca de 24× o piso absoluto da categoria.",
@@ -1293,6 +1338,18 @@ const I18N = {
     "union-chart-meta": "% filiadas a sindicato · PNADC Anual Visita 1 · variável V4097 · ponderado por V1032",
     "union-chart-note": "Marcas verticais: PEC 72 (2013), LC 150 (2015), Reforma Trabalhista (2017). Banda cinza 2020–2021: PNADC Anual interrompida durante a pandemia. Pico em 2016 (3,56%) coincide com o ápice da formalização constitucional; piso histórico em 2023 (2,00%) seguido de recuperação parcial em 2024 (2,60%). Note que <strong>negras × sem carteira</strong> (linha contínua escura) está consistentemente acima de <strong>negras × com carteira</strong> (linha tracejada escura): para mulheres negras, formalidade não converte em filiação, ela <em>reduz</em> a probabilidade. Para não-negras o efeito da formalidade é o esperado (positivo) apenas nos anos mais recentes.",
     "union-source": "Fonte: PNADC Anual Visita 1, variável V4097 (\"Na semana de referência era associado a algum sindicato?\"). Anos 2020 e 2021 indisponíveis na PNADC-A V1 por interrupção de campo COVID. Cifra do entorno STDMSP a partir da Pesquisa B (2021–23, entrevistas presenciais, n=241; Q32 com 95,9% de cobertura). Processamento: <code>etl/union_annual_timeseries.py</code> e <code>etl/probe_survey_b_union.py</code>.",
+    "mei-eyebrow": "Fronteira em formação",
+    "mei-title": "Conta-própria e CNPJ — quem é formalizado",
+    "mei-lead": "Cerca de <strong>26 milhões de brasileiras(os)</strong> trabalham por conta própria — quase 1 em cada 4 pessoas ocupadas no país. Mas apenas <strong>28%</strong> dessa categoria tem CNPJ ativo (proxy MEI). Para o trabalho doméstico, esse número importa especialmente: <strong>diaristas e cuidadoras autônomas</strong> são classificadas pela PNADC dentro deste guarda-chuva, e a janela MEI é hoje o principal caminho jurídico de formalização disponível pra elas.",
+    "mei-kpi-total": "Conta-própria (total)",
+    "mei-kpi-total-meta": "milhares · Brasil · trim. mais recente",
+    "mei-kpi-cnpj": "Com CNPJ",
+    "mei-kpi-cnpj-meta": "milhares · MEI-proxy",
+    "mei-kpi-nocnpj": "Sem CNPJ",
+    "mei-kpi-nocnpj-meta": "milhares · sem registro formal",
+    "mei-kpi-pct": "% formalizada",
+    "mei-kpi-pct-meta": "com CNPJ / total · evolução abaixo",
+    "mei-source": "Fonte: PNADC trimestral móvel (IBGE), Tabela SIDRA 6320, classificação c11913 (Posição na ocupação e categoria do emprego no trabalho principal) — categorias 96171 (Conta própria total), 45936 (Conta própria com CNPJ), 45937 (Conta própria sem CNPJ). A divisão CNPJ foi introduzida em 2015; séries anteriores têm só o agregado. <strong>Próxima fase:</strong> recorte por raça, sexo e categoria ocupacional via microdados PNADC (V4019), com foco em CBO 5121 (doméstico em geral), 5141 (limpeza), 5162 (cuidadora). Ver <code>etl/mei_proxy_path.md</code>.",
     "focus-sp-title": "Foco no estado de São Paulo",
     "focus-sp-subtitle": "Recorte específico do estado onde a STDMSP atua. Todos os números desta seção são agregados a partir dos microdados da PNAD Contínua, restritos à UF=SP. Itens fora deste recorte (cumprimento da LC 150 em SP, hiato salarial estadual, jornada e contribuição previdenciária) exigirão extensão da pipeline e ficam sinalizados ao final.",
     "focus-sp-kpi-total": "Trabalhadoras em SP",
@@ -1506,6 +1563,7 @@ const I18N = {
     "theme-hourly": "Hourly gap",
     "theme-reforma": "2017 Reform",
     "theme-filiacao": "Union",
+    "theme-mei": "CNPJ",
     "union-eyebrow": "Union organizing",
     "union-title": "Who joins the union — and why",
     "union-lead": "Brazil's domestic-worker sindicato has full constitutional recognition, but actual membership ranks among the lowest in the formal labor force. The 2012–2024 trajectory from PNADC Anual (variable V4097) reveals three findings that overturn the conventional wisdom on formality and unionization: (i) the formality-membership gradient inverts — workers without a signed card join at higher rates than those with one; (ii) the most isolated subgroup is Black women with a signed card; (iii) STDMSP's organizing radius reaches 31.2% membership (Survey B Q32, n=231) — about 24× the absolute national floor.",
@@ -1521,6 +1579,18 @@ const I18N = {
     "union-chart-meta": "% union members · PNADC Annual Visit 1 · variable V4097 · weighted by V1032",
     "union-chart-note": "Vertical markers: EC 72 (2013), LC 150 (2015), 2017 Labor Reform. Grey band 2020–2021: PNADC Annual interrupted during the pandemic. The 2016 peak (3.56%) coincides with the constitutional formalization apex; the 2023 historic low (2.00%) is followed by partial recovery in 2024 (2.60%). Note that <strong>Black × no signed card</strong> (solid dark line) sits consistently above <strong>Black × signed card</strong> (dashed dark line): for Black women, formality does not convert into membership, it actually <em>reduces</em> the probability. For non-Black workers the formality effect is the expected (positive) direction only in the most recent years.",
     "union-source": "Source: PNADC Annual Visit 1, variable V4097 (\"In the reference week, were you affiliated with a union?\"). Years 2020 and 2021 unavailable in PNADC-A V1 due to COVID field interruption. STDMSP outreach figure from Survey B (2021–23, in-person interviews, n=241; Q32 with 95.9% coverage). Processing: <code>etl/union_annual_timeseries.py</code> and <code>etl/probe_survey_b_union.py</code>.",
+    "mei-eyebrow": "Emerging frontier",
+    "mei-title": "Self-employed and CNPJ — who is formalized",
+    "mei-lead": "About <strong>26 million Brazilians</strong> work as self-employed — almost 1 in 4 of the employed population. But only <strong>28%</strong> of this category has an active CNPJ (MEI proxy). For domestic work, this number matters especially: <strong>diaristas (day-rate workers) and autonomous caregivers</strong> are classified by PNADC inside this umbrella, and the MEI window is today the main legal path to formalization available to them.",
+    "mei-kpi-total": "Self-employed (total)",
+    "mei-kpi-total-meta": "thousands · Brazil · latest quarter",
+    "mei-kpi-cnpj": "With CNPJ",
+    "mei-kpi-cnpj-meta": "thousands · MEI proxy",
+    "mei-kpi-nocnpj": "Without CNPJ",
+    "mei-kpi-nocnpj-meta": "thousands · no formal registration",
+    "mei-kpi-pct": "% formalized",
+    "mei-kpi-pct-meta": "with CNPJ / total · trajectory below",
+    "mei-source": "Source: PNADC quarterly rolling window (IBGE), SIDRA Table 6320, classification c11913 (Position in occupation and category of employment) — categories 96171 (Self-employed total), 45936 (Self-employed with CNPJ), 45937 (Self-employed without CNPJ). The CNPJ split was introduced in 2015; earlier series only have the aggregate. <strong>Next phase:</strong> race, sex, and occupational category cuts via PNADC microdata (V4019), focused on CBO 5121 (domestic in general), 5141 (cleaning), 5162 (caregiver). See <code>etl/mei_proxy_path.md</code>.",
     "focus-sp-title": "Focus on São Paulo state",
     "focus-sp-subtitle": "Specific cut for the state where STDMSP operates. All numbers in this section are aggregated from PNAD Contínua microdata, restricted to UF=SP. Items outside this cut (LC 150 enforcement in SP, state-level wage gap, hours, retirement contributions) require pipeline extensions and are flagged at the end.",
     "focus-sp-kpi-total": "Domestic workers in SP",
@@ -2013,6 +2083,7 @@ function render() {
   renderReformGeo();
   renderReformWage();
   renderUnion();
+  renderMEI();
   renderFocusSP();
   renderSources();
   // "Data updated on" reflects the static-export timestamp (when the JSON was
@@ -5044,6 +5115,75 @@ function renderUnion() {
   }
 }
 
+// ============ MEI PROXY · Conta-própria × CNPJ ============
+// Step 1 of mei_proxy_path.md. Reads STATE.workers filtered to
+// source_table='PNADC-6320-CP' (3 formality codes: conta_propria_total,
+// conta_propria_cnpj, conta_propria_sem_cnpj). Renders 4 KPI tiles +
+// a sparkline of the % formalization trajectory. Race × CBO × CNPJ
+// depth is reserved for Step 5 (microdata panel).
+
+function renderMEI() {
+  const tileTotal  = document.getElementById('mei-kpi-total');
+  const tileCnpj   = document.getElementById('mei-kpi-cnpj');
+  const tileNoCnpj = document.getElementById('mei-kpi-nocnpj');
+  const tilePct    = document.getElementById('mei-kpi-pct');
+  if (!tileTotal || !STATE.workers || !STATE.workers.length) return;
+
+  const cp = STATE.workers.filter(r =>
+    r.source_table === 'PNADC-6320-CP' &&
+    r.geo_level === 'country' && r.geo_code === 'BR' &&
+    r.sex_code === 'T' && r.race_code === 'total'
+  );
+  if (!cp.length) {
+    console.warn('[renderMEI] No PNADC-6320-CP rows in STATE.workers');
+    return;
+  }
+
+  const latest = cp.map(r => String(r.period_code)).sort().at(-1);
+  const latestRows = cp.filter(r => String(r.period_code) === latest);
+  const byForm = Object.fromEntries(
+    latestRows.map(r => [r.formality_code, Number(r.workers_thousands)])
+  );
+  const total = byForm.conta_propria_total
+    ?? ((byForm.conta_propria_cnpj || 0) + (byForm.conta_propria_sem_cnpj || 0));
+  const cnpj   = byForm.conta_propria_cnpj;
+  const nocnpj = byForm.conta_propria_sem_cnpj;
+  const pct    = (cnpj != null && (cnpj + nocnpj) > 0)
+    ? (100 * cnpj / (cnpj + nocnpj)) : null;
+
+  const fmtK = v => (v == null) ? '—' :
+    (v >= 1000 ? `${(v/1000).toFixed(1).replace('.', LANG==='pt'?',':'.')}M` :
+                 `${Math.round(v).toLocaleString(LANG==='pt'?'pt-BR':'en-CA')}k`);
+  const fmtPct = v => (v == null) ? '—' :
+    `${v.toFixed(1).replace('.', LANG==='pt'?',':'.')}%`;
+
+  tileTotal.textContent  = fmtK(total);
+  tileCnpj.textContent   = fmtK(cnpj);
+  tileNoCnpj.textContent = fmtK(nocnpj);
+  tilePct.textContent    = fmtPct(pct);
+
+  // Sparkline — % formalization over time (only periods with both
+  // cnpj + sem_cnpj non-null, i.e. 2015+ when the split was introduced)
+  const byPeriod = {};
+  for (const r of cp) {
+    const p = String(r.period_code);
+    if (!byPeriod[p]) byPeriod[p] = {};
+    byPeriod[p][r.formality_code] = Number(r.workers_thousands);
+  }
+  const series = Object.keys(byPeriod)
+    .sort()
+    .map(p => {
+      const c = byPeriod[p].conta_propria_cnpj;
+      const s = byPeriod[p].conta_propria_sem_cnpj;
+      return (c != null && s != null && (c + s) > 0) ? 100 * c / (c + s) : null;
+    })
+    .filter(v => v != null);
+  // Reuse the existing _renderSpark helper (defined earlier for KPI sparklines)
+  if (typeof _renderSpark === 'function') {
+    _renderSpark('mei-kpi-spark', series, true);
+  }
+}
+
 function renderFocusSP() {
   // ---- KPI tiles ----
   const spTotalRows = spRowsForUf(SP_CODE, "total")
@@ -5745,7 +5885,7 @@ loadAll().catch(err => {
     const themeNav = document.getElementById('theme-pill-nav');
     if (!themeNav) return;
     const THEME_IDS = ['paradoxo', 'cohort', 'residuo', 'descumprimento',
-                       'piso', 'hourly', 'reforma', 'filiacao'];
+                       'piso', 'hourly', 'reforma', 'filiacao', 'mei-proxy'];
     const sections = THEME_IDS
       .map(id => ({ id, el: document.getElementById(id) }))
       .filter(s => s.el);

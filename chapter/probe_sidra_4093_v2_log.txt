@@ -1,0 +1,190 @@
+18:00:46  INFO     ============================================================
+18:00:46  INFO     Probing 7 SIDRA candidate tables for CNPJ classification
+18:00:46  INFO     ============================================================
+18:00:46  INFO     GET https://servicodados.ibge.gov.br/api/v3/agregados/6320/metadados
+18:00:47  INFO     GET https://servicodados.ibge.gov.br/api/v3/agregados/7714/metadados
+18:00:48  INFO     GET https://servicodados.ibge.gov.br/api/v3/agregados/7716/metadados
+18:00:49  INFO     GET https://servicodados.ibge.gov.br/api/v3/agregados/6403/metadados
+18:00:49  INFO     GET https://servicodados.ibge.gov.br/api/v3/agregados/6463/metadados
+18:00:50  INFO     GET https://servicodados.ibge.gov.br/api/v3/agregados/6471/metadados
+18:00:51  INFO     GET https://servicodados.ibge.gov.br/api/v3/agregados/6477/metadados
+18:00:52  INFO     GET https://servicodados.ibge.gov.br/api/v3/agregados/6320/periodos
+18:00:53  INFO     latest period for table 6320: 202604
+18:00:53  INFO     GET https://apisidra.ibge.gov.br/values/t/6320/n1/all/v/4090/p/202604/c11913/45936,45937
+18:00:54  INFO     GET https://apisidra.ibge.gov.br/values/t/6320/n3/35/v/4090/p/202604/c11913/45936,45937
+18:00:54  INFO     GET https://servicodados.ibge.gov.br/api/v3/agregados/6471/periodos
+18:00:55  INFO     latest period for table 6471: 202601
+18:00:55  INFO     GET https://apisidra.ibge.gov.br/values/t/6471/n1/all/v/5932/p/202601/c11913/45936,45937
+18:00:56  INFO     GET https://apisidra.ibge.gov.br/values/t/6471/n3/35/v/5932/p/202601/c11913/45936,45937
+
+======================================================================
+## Table 6320
+======================================================================
+  nome: Pessoas de 14 anos ou mais de idade, ocupadas na semana de referência - Total, coeficiente de variação, variações percentuais e absolutas em relação aos três trimestres móveis anteriores e ao mesmo trimestre móvel do ano anterior - por posição na ocupação e categoria do emprego no trabalho principal
+  pesquisa: Pesquisa Nacional por Amostra de Domicílios Contínua mensal
+  periodicidade: freq=trimestral móvel inicio=201203 fim=202604
+
+  Classifications (1):
+    [c11913] Posição na ocupação e categoria do emprego no trabalho principal — 19 categorias
+
+  ✓ Found conta-própria categories:
+
+    Classification c11913 — Posição na ocupação e categoria do emprego no trabalho principal ★ CNPJ-AWARE
+            id  label
+         96165  [ ] Total
+         96166  [ ] Empregado
+         31721  [ ] Empregado no setor privado, exclusive trabalhador doméstico
+         31722  [ ] Empregado no setor privado, exclusive trabalhador doméstico - com carteira de trabalho assinada
+         31723  [ ] Empregado no setor privado, exclusive trabalhador doméstico - sem carteira de trabalho assinada
+         31724  [ ] Trabalhador doméstico
+         31725  [ ] Trabalhador doméstico - com carteira de trabalho assinada
+         31726  [ ] Trabalhador doméstico - sem carteira de trabalho assinada
+         31727  [ ] Empregado no setor público
+         31728  [ ] Empregado no setor público, exclusive militar e funcionário público estatutário - com carteira de trabalho assinada
+         31729  [ ] Empregado no setor público, exclusive militar e funcionário público estatutário - sem carteira de trabalho assinada
+         31730  [ ] Empregado no setor público - militar e funcionário público estatutário
+         96170  [ ] Empregador
+         45934  [ ] Empregador com CNPJ  [CNPJ]
+         45935  [ ] Empregador sem CNPJ  [CNPJ]
+         96171  [★] Conta própria
+         45936  [★] Conta própria com CNPJ  [CNPJ]
+         45937  [★] Conta própria sem CNPJ  [CNPJ]
+         31731  [ ] Trabalhador familiar auxiliar
+
+======================================================================
+## Table 7714
+======================================================================
+  nome: Pessoas de 18 anos ou mais que referiram consumir cinco ou mais grupos de alimentos ultraprocessados no dia anterior à entrevista, por condição em relação à força de trabalho na semana de referência e situação do domicílio
+  pesquisa: Pesquisa Nacional de Saúde
+  periodicidade: freq=anual inicio=2019 fim=2019
+
+  Classifications (2):
+    [c653] Condição em relação à força de trabalho na semana de referência — 4 categorias
+    [c1] Situação do domicílio — 3 categorias
+  ⚠ No 'conta-própria' categories in any classification of this table.
+
+======================================================================
+## Table 7716
+======================================================================
+  nome: Indicador 10.5.1 - Índice de Patrimônio de Referência Nível I sobre Ativos Totais Ajustados (B1B2)
+  pesquisa: Objetivos de Desenvolvimento Sustentável
+  periodicidade: freq=anual inicio=2000 fim=2023
+
+  Classifications (1):
+    [c1020] Meses do ano — 12 categorias
+  ⚠ No 'conta-própria' categories in any classification of this table.
+
+======================================================================
+## Table 6403
+======================================================================
+  nome: População, por cor ou raça
+  pesquisa: Pesquisa Nacional por Amostra de Domicílios Contínua trimestral
+  periodicidade: freq=trimestral inicio=201201 fim=202601
+
+  Classifications (1):
+    [c86] Cor ou raça — 4 categorias
+  ⚠ No 'conta-própria' categories in any classification of this table.
+
+======================================================================
+## Table 6463
+======================================================================
+  nome: Pessoas de 14 anos ou mais de idade - Total, coeficiente de variação, variações percentuais e absolutas em relação ao trimestre anterior e ao mesmo trimestre do ano anterior, por condição em relação à força de trabalho e condição de ocupação
+  pesquisa: Pesquisa Nacional por Amostra de Domicílios Contínua trimestral
+  periodicidade: freq=trimestral inicio=201201 fim=202601
+
+  Classifications (1):
+    [c629] Condição em relação à força de trabalho e condição de ocupação — 5 categorias
+  ⚠ No 'conta-própria' categories in any classification of this table.
+
+======================================================================
+## Table 6471
+======================================================================
+  nome: Rendimento médio mensal real das pessoas de 14 anos ou mais de idade ocupadas na semana de referência com rendimento de trabalho, habitualmente recebido no trabalho principal - Total, coeficiente de variação, variações em relação ao trimestre anterior e ao mesmo trimestre do ano anterior - por posição na ocupação e categoria do emprego no trabalho principal
+  pesquisa: Pesquisa Nacional por Amostra de Domicílios Contínua trimestral
+  periodicidade: freq=trimestral inicio=201201 fim=202601
+
+  Classifications (1):
+    [c11913] Posição na ocupação e categoria do emprego no trabalho principal — 18 categorias
+
+  ✓ Found conta-própria categories:
+
+    Classification c11913 — Posição na ocupação e categoria do emprego no trabalho principal ★ CNPJ-AWARE
+            id  label
+         96165  [ ] Total
+         96166  [ ] Empregado
+         31721  [ ] Empregado no setor privado, exclusive trabalhador doméstico
+         31722  [ ] Empregado no setor privado, exclusive trabalhador doméstico - com carteira de trabalho assinada
+         31723  [ ] Empregado no setor privado, exclusive trabalhador doméstico - sem carteira de trabalho assinada
+         31724  [ ] Trabalhador doméstico
+         31725  [ ] Trabalhador doméstico - com carteira de trabalho assinada
+         31726  [ ] Trabalhador doméstico - sem carteira de trabalho assinada
+         31727  [ ] Empregado no setor público
+         31728  [ ] Empregado no setor público, exclusive militar e funcionário público estatutário - com carteira de trabalho assinada
+         31729  [ ] Empregado no setor público, exclusive militar e funcionário público estatutário - sem carteira de trabalho assinada
+         31730  [ ] Empregado no setor público - militar e funcionário público estatutário
+         96170  [ ] Empregador
+         45934  [ ] Empregador com CNPJ  [CNPJ]
+         45935  [ ] Empregador sem CNPJ  [CNPJ]
+         96171  [★] Conta própria
+         45936  [★] Conta própria com CNPJ  [CNPJ]
+         45937  [★] Conta própria sem CNPJ  [CNPJ]
+
+======================================================================
+## Table 6477
+======================================================================
+  nome: Municípios, total e com mídias e tipos de mídias, com canais de TV aberta e com equipamentos culturais, por classe de tamanho da população
+  pesquisa: Pesquisa de Informações Básicas Municipais
+  periodicidade: freq=anual inicio=2021 fim=2021
+
+  Classifications (4):
+    [c12446] Classe de tamanho da população do município — 8 categorias
+    [c1543] Tipos de mídias — 10 categorias
+    [c1545] Número de canais de TV aberta captados no município — 8 categorias
+    [c1546] Equipamentos culturais — 21 categorias
+  ⚠ No 'conta-própria' categories in any classification of this table.
+
+======================================================================
+## Summary
+
+  ✓ 2 CNPJ-aware table(s) found:
+    - Table 6320
+    - Table 6471
+
+  Sample fetches for each winner:
+
+
+  --------------------------------------------------
+  Table 6320 sample:
+
+  ### Sample (n1 · period=202604 · var=4090)
+
+  | Nível Territorial (Código) | Unidade de Medida (Código) | Unidade de Medida | Valor | Brasil (Código) | Brasil | Variável (Código) | Trimestre Móvel (Código) | Trimestre Móvel | Posição na ocupação e categoria do emprego no trabalho principal (Código) | Posição na ocupação e categoria do emprego no trabalho principal |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+  | 1 | 1572 | Mil pessoas | 7281 | 1 | Brasil | 4090 | 202604 | fev-mar-abr 2026 | 45936 | Conta própria com CNPJ |
+  | 1 | 1572 | Mil pessoas | 18745 | 1 | Brasil | 4090 | 202604 | fev-mar-abr 2026 | 45937 | Conta própria sem CNPJ |
+
+  ⚠ Sample fetch failed for n3: 400 Client Error: Bad Request for url: https://apisidra.ibge.gov.br/values/t/6320/n3/35/v/4090/p/202604/c11913/45936,45937
+
+  --------------------------------------------------
+  Table 6471 sample:
+
+  ### Sample (n1 · period=202601 · var=5932)
+
+  | Nível Territorial (Código) | Unidade de Medida (Código) | Unidade de Medida | Valor | Brasil (Código) | Brasil | Variável (Código) | Trimestre (Código) | Trimestre | Posição na ocupação e categoria do emprego no trabalho principal (Código) | Posição na ocupação e categoria do emprego no trabalho principal |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+  | 1 | 38 | Reais | 5184 | 1 | Brasil | 5932 | 202601 | 1º trimestre 2026 | 45936 | Conta própria com CNPJ |
+  | 1 | 38 | Reais | 2250 | 1 | Brasil | 5932 | 202601 | 1º trimestre 2026 | 45937 | Conta própria sem CNPJ |
+
+  ### Sample (n3 · period=202601 · var=5932)
+
+  | Nível Territorial (Código) | Unidade de Medida (Código) | Unidade de Medida | Valor | Unidade da Federação (Código) | Unidade da Federação | Variável (Código) | Trimestre (Código) | Trimestre | Posição na ocupação e categoria do emprego no trabalho principal (Código) | Posição na ocupação e categoria do emprego no trabalho principal |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+  | 3 | 38 | Reais | 5802 | 35 | São Paulo | 5932 | 202601 | 1º trimestre 2026 | 45936 | Conta própria com CNPJ |
+  | 3 | 38 | Reais | 2797 | 35 | São Paulo | 5932 | 202601 | 1º trimestre 2026 | 45937 | Conta própria sem CNPJ |
+
+## Next steps after picking the winner
+
+  1. Note the table_id + the c<id> classification + the CNPJ category IDs.
+  2. Add a new entry to etl/manifest.yaml using those exact IDs.
+  3. Update dim_formality with 'conta_propria_cnpj' + 'conta_propria_sem_cnpj'.
+  4. Run: python etl/fetch_sidra.py <new_manifest_key>

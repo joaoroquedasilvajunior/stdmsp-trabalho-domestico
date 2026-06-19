@@ -92,6 +92,57 @@ datasets:
       40277 (single domicile) ≈ mensalistas; 40278 (multiple domiciles) ≈ diaristas.
       LC 150/2015 gives weaker protections to those working ≤2 days/week per home.
 
+  # ---------- MEI PROXY · headcount of conta-própria × CNPJ (Tabela 6320 BR) ----------
+  # Variable 4090 = "Pessoas ocupadas na semana de referência" (mil pessoas)
+  # Classification c11913 categories:
+  #   96171 = Conta própria (total)
+  #   45936 = Conta própria com CNPJ        ← MEI-proxy positive
+  #   45937 = Conta própria sem CNPJ        ← informal self-employed
+  # Headline KPI: % conta-própria com CNPJ ≈ 7,281 / 26,026 = 28% (2026Q4 BR)
+  # Table 6320 is BR-only (n1) — UF cuts go through Table 6471 (wages) or
+  # the microdata pipeline (Step 2 of mei_proxy_path.md).
+  pnadc_conta_propria_cnpj_brazil:
+    target_table: fact_workers_simple
+    source_code: PNADC-6320-CP
+    sidra_table: 6320
+    levels: [n1]
+    variables: [4090]
+    classifications:
+      "11913": [96171, 45936, 45937]
+    classification_code_map:
+      "96171": conta_propria_total
+      "45936": conta_propria_cnpj
+      "45937": conta_propria_sem_cnpj
+    period: "all"
+    notes: |
+      MEI-as-proxy headline KPI feed. Lands in fact_workers with the three
+      new formality_codes (see schema/003_mei_proxy.sql for the dim_formality
+      INSERTs). source_code='PNADC-6320-CP' is distinct from 'PNADC-6320'
+      (which is the trabalhador doméstico feed) so the two populations
+      never get accidentally aggregated together.
+
+  # ---------- MEI PROXY · wages of conta-própria × CNPJ (Tabela 6471 BR + SP) ----------
+  # Variable 5932 = "Rendimento médio mensal real" (R$)
+  # Same c11913 classification, but Table 6471 supports n3 (UF) — so we
+  # get the wage gap by CNPJ status both nationally and for São Paulo.
+  pnadc_conta_propria_cnpj_wages:
+    target_table: fact_wages
+    source_code: PNADC-6471-CP
+    sidra_table: 6471
+    levels: [n1, n3]
+    variables: [5932]
+    classifications:
+      "11913": [45936, 45937]
+    classification_code_map:
+      "45936": conta_propria_cnpj
+      "45937": conta_propria_sem_cnpj
+    period: "all"
+    notes: |
+      Wage cross-tab for conta-própria × CNPJ. 2026Q1 sample showed:
+      SP com CNPJ R$5,802 vs sem CNPJ R$2,797 (2.07× premium for
+      formalization). The premium is the financial incentive narrative
+      that justifies MEI registration policy.
+
 # Tables to probe in a follow-up round (wage-by-domestic-worker tables).
 # Once Joao runs ETL successfully on the above, run probe_metadata.py with
 # these IDs and we'll pick the right wage source.

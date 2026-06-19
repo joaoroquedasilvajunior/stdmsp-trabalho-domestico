@@ -1,0 +1,16 @@
+18:16:50  INFO     === pnadc_conta_propria_cnpj_brazil ===
+18:16:50  INFO     fetch: https://apisidra.ibge.gov.br/values/t/6320/n1/all/v/4090/p/all/c11913/96171,45936,45937
+18:16:52  INFO     [pnadc_conta_propria_cnpj_brazil] n1: 510 rows from SIDRA
+18:16:52  INFO     normalize_workers_simple cols → value='Valor' period='Trimestre Móvel (Código)' geo='Brasil (Código)' classif='Posição na ocupação e categoria do emprego no trabalho principal (Código)'
+18:16:52  INFO     normalize_workers_simple sample row: {'Nível Territorial (Código)': '1', 'Nível Territorial': 'Brasil', 'Unidade de Medida (Código)': '1572', 'Unidade de Medida': 'Mil pessoas', 'Valor': '20096', 'Brasil (Código)': '1', 'Brasil': 'Brasil', 'Variável (Código)': '4090', 'Variável': 'Pessoas de 14 anos ou mais de idade ocupadas na semana de referência', 'Trimestre Móvel (Código)': '201203', 'Trimestre Móvel': 'jan-fev-mar 2012', 'Posição na ocupação e categoria do emprego no trabalho principal (Código)': '96171', 'Posição na ocupação e categoria do emprego no trabalho principal': 'Conta própria'}
+18:16:52  INFO     [pnadc_conta_propria_cnpj_brazil] 420 normalized rows · range [3931.0, 26188.0] mil pessoas
+18:16:52  INFO     HTTP Request: POST https://vqwhzzaqddqeurrspcdz.supabase.co/rest/v1/dim_time?on_conflict=period_code&columns=%22period_code%22%2C%22quarter%22%2C%22year%22 "HTTP/2 200 OK"
+18:16:52  INFO     HTTP Request: GET https://vqwhzzaqddqeurrspcdz.supabase.co/rest/v1/dim_time?select=period_code%2Ctime_id "HTTP/2 200 OK"
+18:16:52  INFO     HTTP Request: GET https://vqwhzzaqddqeurrspcdz.supabase.co/rest/v1/dim_geo?select=level%2Ccode%2Cgeo_id "HTTP/2 200 OK"
+18:16:52  INFO     HTTP Request: GET https://vqwhzzaqddqeurrspcdz.supabase.co/rest/v1/dim_sex?select=code%2Csex_id "HTTP/2 200 OK"
+18:16:53  INFO     HTTP Request: GET https://vqwhzzaqddqeurrspcdz.supabase.co/rest/v1/dim_race?select=code%2Crace_id "HTTP/2 200 OK"
+18:16:53  INFO     HTTP Request: GET https://vqwhzzaqddqeurrspcdz.supabase.co/rest/v1/dim_formality?select=code%2Cformality_id "HTTP/2 200 OK"
+18:16:53  INFO     HTTP Request: GET https://vqwhzzaqddqeurrspcdz.supabase.co/rest/v1/dim_age_group?select=code%2Cage_id "HTTP/2 200 OK"
+18:16:53  INFO     HTTP Request: POST https://vqwhzzaqddqeurrspcdz.supabase.co/rest/v1/fact_workers?on_conflict=time_id%2Cgeo_id%2Csex_id%2Crace_id%2Cformality_id%2Cage_id%2Csource_table&columns=%22formality_id%22%2C%22time_id%22%2C%22age_id%22%2C%22geo_id%22%2C%22sex_id%22%2C%22source_table%22%2C%22workers_thousands%22%2C%22race_id%22 "HTTP/2 201 Created"
+18:16:53  INFO     HTTP Request: POST https://vqwhzzaqddqeurrspcdz.supabase.co/rest/v1/fact_workers?on_conflict=time_id%2Cgeo_id%2Csex_id%2Crace_id%2Cformality_id%2Cage_id%2Csource_table&columns=%22formality_id%22%2C%22time_id%22%2C%22age_id%22%2C%22geo_id%22%2C%22sex_id%22%2C%22source_table%22%2C%22workers_thousands%22%2C%22race_id%22 "HTTP/2 201 Created"
+18:16:53  INFO     [pnadc_conta_propria_cnpj_brazil] upserted 420 rows into fact_workers

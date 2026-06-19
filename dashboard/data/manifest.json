@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-06-15T20:32:37.090852+00:00",
+  "generated_at": "2026-06-19T22:16:53.866766+00:00",
   "views": {
-    "dw_workers": 22593,
+    "dw_workers": 23013,
     "dw_wages": 1366,
     "dw_hours": 13642,
     "dw_prev": 12487,
@@ -12,7 +12,6 @@
     "dw_contract": 4065,
     "dw_intl": 94,
     "dw_sources": 5,
-    "dw_static_facts": 3,
-    "dw_union": 99
+    "dw_static_facts": 3
   }
 }

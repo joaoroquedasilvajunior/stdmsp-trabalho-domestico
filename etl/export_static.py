@@ -61,6 +61,7 @@ VIEWS = [
     "dw_housing",
     "dw_age",
     "dw_contract",
+    "dw_autonomous",      # MEI proxy Step 2 — conta-própria × CNPJ × CBO × race
     "dw_intl",
     "dw_sources",
     "dw_static_facts",

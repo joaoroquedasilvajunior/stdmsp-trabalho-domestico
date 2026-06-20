@@ -192,6 +192,9 @@ NEEDED_VARS = [
     "V2007",   # sex
     "V2009",   # idade na data de referência (Theme 2 — age cohorts)
     "V2010",   # cor/raça
+    "V4010",   # CBO-Domiciliar 4-digit — MEI proxy CBO bucketing
+    "V4012",   # posição raw (before VD4009 derivation) — sanity for autonomous subset
+    "V4019",   # CNPJ? 1=Sim 2=Não — MEI proxy variable (asked only to VD4009 ∈ 08,09)
     "V4024",   # serviço doméstico em mais de 1 domicílio — mensalista (2) / diarista (1)
     "V4032",   # previdência contributor (1/2)
     "V4039",   # weekly hours (main job)
@@ -1020,6 +1023,144 @@ def build_prev_rows(df: pd.DataFrame, period: str) -> list[dict]:
     return rows
 
 
+# =============================================================================
+# build_autonomous_rows — Step 2 of MEI proxy pipeline (mei_proxy_path.md)
+# =============================================================================
+# Conta-própria / empregador × CNPJ cross-tab from PNADC microdata, with
+# CBO-Domiciliar bucketing for domestic-adjacent occupations.
+#
+# This sits OUTSIDE the regular trabalhador-doméstico filter (VD4009 ∈ 03,04)
+# because V4019 (CNPJ?) is only asked of VD4009 ∈ {08 empregador, 09 conta-própria}.
+# Diaristas legally registered as MEI still appear in VD4009='04' here in the
+# IBGE classification — for them V4019 is blank. The MEI proxy must be computed
+# off the conta-própria population.
+#
+# Sample-size note: per probe_mei_vars.py (012026), CBO 5162 (cuidadora) is
+# very thin (~4 rows/quarter). Cells with n_unweighted < 30 emit nulls for
+# pct_with_prev and mean_wage_brl; the dashboard layer decides whether to
+# render or aggregate to annual pools.
+
+CBO_DOMESTIC_ADJACENT = {
+    "5121": "domestic_5121",       # empregada doméstica (legally NOT MEI-eligible)
+    "5141": "cleaning_5141",       # limpeza/conservação
+    "5143": "cleaning_5141",       # collapse 5143 into the 5141 bucket
+    "5162": "caregiver_5162",      # cuidadora — cleanest MEI-eligible bucket
+}
+
+# VD4009 → autonomy root (the two positions where V4019 is asked)
+AUTONOMY_VD4009 = {"08": "empregador", "09": "conta_propria"}
+
+
+def build_autonomous_rows(df: pd.DataFrame, period: str) -> list[dict]:
+    """Cross-tab conta-própria/empregador × CNPJ × CBO × race × sex,
+    restricted to domestic-adjacent CBO-Domiciliar codes (plus 'other'
+    catch-all for sample-size sanity). Output mirrors the row shape of
+    other builders so upsert_autonomous_to_supabase() can resolve dim FKs."""
+    df = df.copy()
+    df["weight"] = pd.to_numeric(df["V1028"], errors="coerce")
+    if df["weight"].max() > 1e9:
+        df["weight"] = df["weight"] / 1e9
+
+    # Restrict to the population where V4019 is asked
+    auto = df[df["VD4009"].isin(AUTONOMY_VD4009.keys())].copy()
+    auto["position_root"] = auto["VD4009"].map(AUTONOMY_VD4009)
+
+    # CNPJ flag — and exclude rows where V4019 is missing/invalid
+    auto["V4019_str"] = auto["V4019"].astype(str).str.strip()
+    auto = auto[auto["V4019_str"].isin(["1", "2"])]
+    auto["has_cnpj"] = auto["V4019_str"] == "1"
+    auto["autonomy_code"] = (
+        auto["position_root"]
+        + auto["has_cnpj"].map({True: "_cnpj", False: "_sem_cnpj"})
+    )
+
+    # CBO bucketing — first 4 chars of V4010
+    auto["cbo_group"] = (
+        auto["V4010"].astype(str).str.strip().str[:4]
+        .map(lambda c: CBO_DOMESTIC_ADJACENT.get(c, "other"))
+    )
+
+    auto["race_code"] = auto["V2010"].map(RACE_MAP)
+    auto["sex_code"]  = auto["V2007"].map(SEX_MAP)
+    auto = auto[auto["race_code"].notna() & auto["sex_code"].notna()].copy()
+    auto["uf_code"] = auto["UF"].astype(str).str.zfill(2)
+
+    db_period = microdata_period_to_db_code(period)
+
+    def _agg(group: pd.DataFrame) -> dict | None:
+        if len(group) == 0:
+            return None
+        w = group["weight"]
+        if w.sum() == 0:
+            return None
+        prev_known = group["V4032"].astype(str).str.strip().isin(["1", "2"])
+        prev_g = group[prev_known]
+        # VD4019: rendimento mensal habitual em R$ (whole reais — NOT centavos,
+        # despite the "implicit decimals" comment in the IBGE dictionary; the
+        # quarterly PNADC microdata pre-divides). Confirmed by triangulation
+        # against the existing build_family_rows wage calc (cleaning_5141 cp_cnpj
+        # raw came out to R$35.06 with /100, vs ~R$3500 expected — bug fixed).
+        vd4019 = pd.to_numeric(group["VD4019"], errors="coerce")
+        wage_g = group[vd4019 > 0].copy()
+        wage_g["wage_brl"] = pd.to_numeric(wage_g["VD4019"], errors="coerce")
+        return {
+            "workers_thousands": round(float(w.sum()) / 1000.0, 2),
+            "pct_with_prev": (
+                round(100.0 * float((
+                    (prev_g["V4032"].astype(str).str.strip() == "1").astype(int)
+                    * prev_g["weight"]
+                ).sum()) / float(prev_g["weight"].sum()), 2)
+                if prev_g["weight"].sum() > 0 else None
+            ),
+            "mean_wage_brl": (
+                round(float((wage_g["wage_brl"] * wage_g["weight"]).sum())
+                      / float(wage_g["weight"].sum()), 2)
+                if len(wage_g) >= 30 and wage_g["weight"].sum() > 0 else None
+            ),
+            "n_unweighted": int(len(group)),
+        }
+
+    rows: list[dict] = []
+
+    def _emit(geo_code, geo_level, sex, race, cbo, aut, agg):
+        if agg is None:
+            return
+        rows.append({
+            "_period_code": db_period,
+            "_geo_code": geo_code, "_geo_level": geo_level,
+            "_sex": sex, "_race": race,
+            "cbo_group": cbo, "autonomy_code": aut,
+            **agg,
+        })
+
+    # ---- BR × race × cbo × autonomy (sex='T') ----
+    for (race, cbo, aut), g in auto.groupby(["race_code", "cbo_group", "autonomy_code"]):
+        _emit("BR", "country", "T", race, cbo, aut, _agg(g))
+
+    # ---- BR × preta_parda aggregate × cbo × autonomy ----
+    is_negra = auto["race_code"].isin(["preta", "parda"])
+    for (cbo, aut), g in auto[is_negra].groupby(["cbo_group", "autonomy_code"]):
+        _emit("BR", "country", "T", "preta_parda", cbo, aut, _agg(g))
+
+    # ---- BR × nao_negras aggregate × cbo × autonomy ----
+    is_nao_negra = auto["race_code"].isin(["branca", "amarela", "indigena"])
+    for (cbo, aut), g in auto[is_nao_negra].groupby(["cbo_group", "autonomy_code"]):
+        _emit("BR", "country", "T", "nao_negras", cbo, aut, _agg(g))
+
+    # ---- BR × race='total' × cbo × autonomy (the headline cell) ----
+    for (cbo, aut), g in auto.groupby(["cbo_group", "autonomy_code"]):
+        _emit("BR", "country", "T", "total", cbo, aut, _agg(g))
+
+    # ---- SP × race='total' × cbo × autonomy (only when n_unweighted >= 30) ----
+    sp = auto[auto["uf_code"] == "35"]
+    for (cbo, aut), g in sp.groupby(["cbo_group", "autonomy_code"]):
+        agg = _agg(g)
+        if agg and agg["n_unweighted"] >= 30:
+            _emit("35", "uf", "T", "total", cbo, aut, agg)
+
+    return rows
+
+
 def build_education_rows(df: pd.DataFrame, period: str) -> list[dict]:
     """Aggregate education levels (VD3004) for trabalhadoras(es) domésticas(os).
 
@@ -1685,6 +1826,50 @@ def upsert_prev_to_supabase(rows: list[dict]) -> int:
     return inserted
 
 
+def upsert_autonomous_to_supabase(rows: list[dict]) -> int:
+    """Push autonomous-worker rows (conta-própria × CNPJ × CBO × race × sex)
+    into domestic_work.fact_autonomous. Schema applied via
+    schema/004_fact_autonomous.sql. cbo_group and autonomy_code are stored
+    as plain text (CHECK-constrained), not dim FKs."""
+    sb = get_supabase_client()
+    if sb is None or not rows:
+        return 0
+    schema = sb.schema("domestic_work")
+    time_lookup = {r["period_code"]: r["time_id"] for r in schema.table("dim_time").select("period_code,time_id").execute().data}
+    geo_lookup  = {(r["level"], r["code"]): r["geo_id"] for r in schema.table("dim_geo").select("level,code,geo_id").execute().data}
+    race_lookup = {r["code"]: r["race_id"] for r in schema.table("dim_race").select("code,race_id").execute().data}
+    sex_lookup  = {r["code"]: r["sex_id"]  for r in schema.table("dim_sex").select("code,sex_id").execute().data}
+
+    payload = []
+    for r in rows:
+        try:
+            payload.append({
+                "time_id":           time_lookup[r["_period_code"]],
+                "geo_id":            geo_lookup[(r["_geo_level"], r["_geo_code"])],
+                "sex_id":            sex_lookup[r["_sex"]],
+                "race_id":           race_lookup[r["_race"]],
+                "cbo_group":         r["cbo_group"],
+                "autonomy_code":     r["autonomy_code"],
+                "workers_thousands": r.get("workers_thousands"),
+                "pct_with_prev":     r.get("pct_with_prev"),
+                "mean_wage_brl":     r.get("mean_wage_brl"),
+                "n_unweighted":      r["n_unweighted"],
+                "source_table":      SOURCE_TABLE_TAG,
+            })
+        except KeyError as e:
+            log.warning("missing dim lookup for autonomous row %s: %s", r, e)
+
+    inserted = 0
+    for i in range(0, len(payload), 250):
+        chunk = payload[i:i + 250]
+        res = schema.table("fact_autonomous").upsert(
+            chunk,
+            on_conflict="time_id,geo_id,sex_id,race_id,cbo_group,autonomy_code,source_table",
+        ).execute()
+        inserted += len(res.data or [])
+    return inserted
+
+
 def upsert_education_to_supabase(rows: list[dict]) -> int:
     """Push education rows into domestic_work.fact_education."""
     sb = get_supabase_client()
@@ -2020,6 +2205,26 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
                         and r["_sex"] == "T" and r["_formality"] == "total"), None)
     mean_hours = hours_total["mean_hours_per_week"] if hours_total else None
 
+    # ---- autonomous workers (fact_autonomous) — MEI proxy Step 2 ----
+    # NOTE: filters df INTERNALLY to VD4009 ∈ {08,09} (autonomous subset);
+    # does NOT compete with the trabalhador-doméstico filter used by the
+    # other builders. Run unconditionally — the dashboard layer decides
+    # whether to render cells based on n_unweighted.
+    autonomous_rows = build_autonomous_rows(df, period)
+    # Diagnostic: % conta-própria com CNPJ at the BR/total cell, all CBOs
+    cp_cnpj = next((r for r in autonomous_rows
+                    if r["_geo_code"] == "BR" and r["_race"] == "total"
+                    and r["cbo_group"] == "other"
+                    and r["autonomy_code"] == "conta_propria_cnpj"), None)
+    cp_sem = next((r for r in autonomous_rows
+                   if r["_geo_code"] == "BR" and r["_race"] == "total"
+                   and r["cbo_group"] == "other"
+                   and r["autonomy_code"] == "conta_propria_sem_cnpj"), None)
+    pct_cp_cnpj = None
+    if cp_cnpj and cp_sem and (cp_cnpj["workers_thousands"] + cp_sem["workers_thousands"]) > 0:
+        pct_cp_cnpj = round(100 * cp_cnpj["workers_thousands"]
+                            / (cp_cnpj["workers_thousands"] + cp_sem["workers_thousands"]), 1)
+
     # ---- education (fact_education) ----
     edu_rows = build_education_rows(df, period)
     # Diagnostic: % fund_inc among negras (the DIEESE-comparable cut).
@@ -2099,37 +2304,42 @@ def process_period(period: str, specs: dict, upsert: bool = True) -> dict:
         inserted_fam = upsert_family_to_supabase(fam_rows)
         inserted_age = upsert_age_to_supabase(age_rows)
         inserted_ct = upsert_contract_to_supabase(contract_rows)
-        log.info("[%s] upserted %d work + %d wage + %d hour + %d prev + %d edu + %d fam + %d age + %d ct · "
+        inserted_aut = upsert_autonomous_to_supabase(autonomous_rows)
+        log.info("[%s] upserted %d work + %d wage + %d hour + %d prev + %d edu + %d fam + %d age + %d ct + %d aut · "
                  "total %.0fk · pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · "
                  "wage gap %s%% · horas méd %s · %% previdência %s%% · "
                  "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%% · "
                  "wage chefes negras R$%s vs n.negras R$%s (gap %s%%) · "
                  "%% under_29 (total/negras) %s%%/%s%% · "
-                 "%% diarista (total/negras) %s%%/%s%%",
+                 "%% diarista (total/negras) %s%%/%s%% · "
+                 "%% conta-própria com CNPJ %s%%",
                  period, inserted_workers, inserted_wages, inserted_hours, inserted_prev,
-                 inserted_edu, inserted_fam, inserted_age, inserted_ct,
+                 inserted_edu, inserted_fam, inserted_age, inserted_ct, inserted_aut,
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
                  mean_hours, pct_prev_total, pct_fund_inc_negras,
                  pct_chefe_total, pct_chefe_negras,
                  wage_chefe_negras, wage_chefe_nao_negras, chefe_wage_gap_pct,
                  pct_under29_total, pct_under29_negras,
-                 pct_diarista_total, pct_diarista_negras)
+                 pct_diarista_total, pct_diarista_negras,
+                 pct_cp_cnpj)
     else:
-        log.info("[%s] (dry run) %d work + %d wage + %d hour + %d prev + %d edu + %d fam + %d age + %d ct · "
+        log.info("[%s] (dry run) %d work + %d wage + %d hour + %d prev + %d edu + %d fam + %d age + %d ct + %d aut · "
                  "total %.0fk · pretas+pardas %s%% (BR) %s%% (SP) · mulheres %s%% · "
                  "wage gap %s%% · horas méd %s · %% previdência %s%% · "
                  "%% fund_inc (negras) %s%% · %% chefe (total/negras) %s%%/%s%% · "
                  "wage chefes negras R$%s vs n.negras R$%s (gap %s%%) · "
                  "%% under_29 (total/negras) %s%%/%s%% · "
-                 "%% diarista (total/negras) %s%%/%s%%",
+                 "%% diarista (total/negras) %s%%/%s%% · "
+                 "%% conta-própria com CNPJ %s%%",
                  period, len(rows), len(wage_rows), len(hours_rows), len(prev_rows),
-                 len(edu_rows), len(fam_rows), len(age_rows), len(contract_rows),
+                 len(edu_rows), len(fam_rows), len(age_rows), len(contract_rows), len(autonomous_rows),
                  n_dom, pct_negras, pct_negras_sp, pct_mulheres, wage_gap_pct,
                  mean_hours, pct_prev_total, pct_fund_inc_negras,
                  pct_chefe_total, pct_chefe_negras,
                  wage_chefe_negras, wage_chefe_nao_negras, chefe_wage_gap_pct,
                  pct_under29_total, pct_under29_negras,
-                 pct_diarista_total, pct_diarista_negras)
+                 pct_diarista_total, pct_diarista_negras,
+                 pct_cp_cnpj)
 
     return {"period": period, "total_workers_k": n_dom, "pct_negras": pct_negras,
             "pct_negras_sp": pct_negras_sp, "pct_mulheres": pct_mulheres,

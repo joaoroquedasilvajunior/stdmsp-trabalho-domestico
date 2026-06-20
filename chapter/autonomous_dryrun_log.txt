@@ -1,0 +1,32 @@
+08:58:45  INFO     column specs cache missing ['V4010', 'V4012', 'V4019']; re-parsing dictionary
+08:58:45  INFO     listing documentation: https://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Trimestral/Microdados/Documentacao/
+08:58:45  INFO     parsing dictionary /Users/joaoroque/Documents/Claude/Domestic Work/etl/raw/pnadc/Dicionario_e_input_20221031.zip
+08:58:45  INFO     using SAS input file: input_PNADC_trimestral.txt
+08:58:45  INFO     parsed 420 variables from dictionary
+08:58:45  INFO       Ano        → cols 1-4
+08:58:45  INFO       Trimestre  → cols 5-5
+08:58:45  INFO       UF         → cols 6-7
+08:58:45  INFO       V1028      → cols 50-64
+08:58:45  INFO       V2003      → cols 91-92
+08:58:45  INFO       V2007      → cols 95-95
+08:58:45  INFO       V2009      → cols 104-106
+08:58:45  INFO       V2010      → cols 107-107
+08:58:45  INFO       V4010      → cols 152-155
+08:58:45  INFO       V4012      → cols 156-156
+08:58:45  INFO       V4019      → cols 186-186
+08:58:45  INFO       V4024      → cols 190-190
+08:58:45  INFO       V4032      → cols 196-196
+08:58:45  INFO       V4039      → cols 241-243
+08:58:45  INFO       VD3004     → cols 405-405
+08:58:45  INFO       VD4009     → cols 417-418
+08:58:45  INFO       VD4019     → cols 444-451
+08:58:45  INFO     --- processing 012026 ---
+08:58:45  INFO     [012026] listing https://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Trimestral/Microdados/2026/
+08:58:46  INFO     [012026] cache hit: /Users/joaoroque/Documents/Claude/Domestic Work/etl/raw/pnadc/PNADC_012026.zip (218 MB)
+08:58:53  INFO     [012026] (dry run) 387 work + 21 wage + 243 hour + 224 prev + 48 edu + 39 fam + 40 age + 71 ct + 73 aut · total 5437k · pretas+pardas 67.5% (BR) 56.4% (SP) · mulheres 91.7% · wage gap 87.3% · horas méd 31.83 · % previdência 14.03% · % fund_inc (negras) 39.73% · % chefe (total/negras) 58.06%/59.46% · wage chefes negras R$1315.44 vs n.negras R$1522.23 (gap 86.4%) · % under_29 (total/negras) 12.26%/13.31% · % diarista (total/negras) 33.51%/32.24% · % conta-própria com CNPJ 27.9%
+08:58:53  INFO     backfill complete: 1 ok, 0 failed
+
+========== BACKFILL SUMMARY ==========
+  012026  total  5437k  · pretas+pardas BR 67.5% / SP 56.4%  · mulheres 91.7%  · wage gap 87.3%  · jornada 31.8h  · prev 14.0%
+======================================
+

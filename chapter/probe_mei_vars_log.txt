@@ -1,0 +1,94 @@
+08:52:51  INFO     PROBE for period 012026
+08:52:51  INFO     dictionary cache hit: /Users/joaoroque/Documents/Claude/Domestic Work/etl/raw/pnadc/Dicionario_e_input_20221031.zip
+08:52:51  INFO     loaded specs for 12 variables
+08:52:51  INFO       V4010 position: start=152, end=155  (width=4)
+08:52:51  INFO       V4012 position: start=156, end=156  (width=1)
+08:52:51  INFO       V4019 position: start=186, end=186  (width=1)
+08:52:51  INFO     microdata zip: /Users/joaoroque/Documents/Claude/Domestic Work/etl/raw/pnadc/PNADC_012026.zip (218 MB)
+08:52:51  INFO     extracting PNADC_012026.txt → /Users/joaoroque/Documents/Claude/Domestic Work/etl/raw/pnadc/PNADC_012026.txt
+08:52:54  INFO     streaming PNADC_012026.txt in chunks…
+08:52:57  INFO     loaded 511149 total rows
+08:52:57  INFO     dictionary cache hit: /Users/joaoroque/Documents/Claude/Domestic Work/etl/raw/pnadc/Dicionario_e_input_20221031.zip
+
+## Gate 1 — Variable positions for 012026
+
+| Var | start | end | width |
+|---|---:|---:|---:|
+| V4010 | 152 | 155 | 4 |
+| V4012 | 156 | 156 | 1 |
+| V4019 | 186 | 186 | 1 |
+
+## Gate 2 — V4019 distribution conditional on VD4009 ∈ {08,09}
+
+  N autonomous rows (empregador + conta-própria): 72,323
+  N total rows: 511,149
+  Autonomous share: 14.1%
+
+| V4019 value | n | % |
+|---|---:|---:|
+| `'2'` | 49,993 | 69.1%  ← Não (sem CNPJ) |
+| `'1'` | 22,330 | 30.9%  ← Sim (CNPJ) |
+
+  V4019 ∈ {1,2}: 72,323 of 72,323 (100.0%)
+  V4019 blank:    0 of 72,323 (0.0%)
+
+  **GATE 2: ✓ PASS** (need ≥85% valid V4019 in the autonomous subset)
+
+## Gate 3 — V4010 top codes among conta-própria (VD4009='09')
+
+  N conta-própria rows: 62,215
+
+| V4010 (4-digit) | n | % | CBO-adjacent? |
+|---|---:|---:|---|
+| `6111` | 6,454 | 10.37% |
+| `5221` | 4,857 | 7.81% |
+| `7112` | 4,181 | 6.72% |
+| `6121` | 3,800 | 6.11% |
+| `8322` | 2,717 | 4.37% |
+| `5142` | 2,534 | 4.07% |
+| `5141` | 1,852 | 2.98%  ★ `cleaning_5141` |
+| `5243` | 1,813 | 2.91% |
+| `8321` | 1,495 | 2.40% |
+| `2611` | 1,224 | 1.97% |
+| `5249` | 1,194 | 1.92% |
+| `9313` | 1,108 | 1.78% |
+| `6112` | 1,103 | 1.77% |
+| `7231` | 995 | 1.60% |
+| `7131` | 994 | 1.60% |
+| `7512` | 949 | 1.53% |
+| `6225` | 939 | 1.51% |
+| `8332` | 936 | 1.50% |
+| `5120` | 835 | 1.34% |
+| `7531` | 774 | 1.24% |
+
+  Domestic-adjacent CBO total: 1,856 (3.0% of conta-própria)
+
+  **GATE 3: ✓ PASS** (at least one CBO-adjacent code in top 20)
+
+## Gate 4 — Spec sanity: CBO 5162 (caregiver) cells
+
+  N CBO 5162 conta-própria rows: 4
+  With valid V4019: 4
+  With CNPJ (unweighted): 1 (25.0%)
+  With CNPJ (weighted):   18.7%
+  Weighted total: ~2k workers
+
+  **GATE 4: ✓ PASS** (weighted %CNPJ inside CBO 5162 should be 10-35%; got 18.7%)
+Traceback (most recent call last):
+  File "/Users/joaoroque/Documents/Claude/Domestic Work/etl/probe_mei_vars.py", line 294, in <module>
+    main()
+    ~~~~^^
+  File "/Users/joaoroque/Documents/Claude/Domestic Work/etl/probe_mei_vars.py", line 280, in main
+    out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2),
+                        ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.13/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ~~~~~~^^^^^
+  File "/opt/anaconda3/lib/python3.13/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/opt/anaconda3/lib/python3.13/json/encoder.py", line 261, in iterencode
+    return _iterencode(o, 0)
+  File "/opt/anaconda3/lib/python3.13/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+                    f'is not JSON serializable')
+TypeError: Object of type bool is not JSON serializable

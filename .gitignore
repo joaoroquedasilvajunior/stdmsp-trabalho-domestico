@@ -37,3 +37,7 @@ Thumbs.db
 # ~10 GB across full backfill). Always re-fetchable from IBGE FTP; never commit.
 etl/raw/
 metadata_probe.json
+
+.dev.vars*
+!.dev.vars.example
+!.env.example

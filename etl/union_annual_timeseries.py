@@ -76,11 +76,22 @@ DATA_INDEX = FTP_BASE + "/Dados/"
 HTTP_HEADERS = {"User-Agent": "stdmsp-etl/1.0"}
 
 YEARS = [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2022, 2023, 2024]
-TARGET_VARS = ["V4097", "V2010", "V1032", "VD4009"]
+# UF added 2026-06-22 for the SP × BR comparative panel in the Mayer chapter.
+# Cache will auto-invalidate because the var set grew.
+TARGET_VARS = ["V4097", "V2010", "V1032", "VD4009", "UF"]
 DOMESTIC_CODES = ["03", "04"]
 
 RACE_MAP = {"1": "branca", "2": "preta", "3": "amarela", "4": "parda", "5": "indigena"}
 FORMALITY_MAP = {"03": "com_carteira", "04": "sem_carteira"}
+
+# IBGE UF codes (2-char, zero-padded)
+UF_CODES = {
+    "11": "RO", "12": "AC", "13": "AM", "14": "RR", "15": "PA", "16": "AP",
+    "17": "TO", "21": "MA", "22": "PI", "23": "CE", "24": "RN", "25": "PB",
+    "26": "PE", "27": "AL", "28": "SE", "29": "BA", "31": "MG", "32": "ES",
+    "33": "RJ", "35": "SP", "41": "PR", "42": "SC", "43": "RS", "50": "MS",
+    "51": "MT", "52": "GO", "53": "DF",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -410,28 +421,64 @@ def process_year(year: int) -> list[dict]:
         "branca": "nao_negras", "amarela": "nao_negras", "indigena": "nao_negras",
     })
     df["formality"] = df["VD4009"].map(FORMALITY_MAP)
+    df["uf_code"] = df["UF"].astype(str).str.strip().str.zfill(2)
+    df["uf_sigla"] = df["uf_code"].map(UF_CODES)
 
     rows = []
-    # Overall
+    # BR-WIDE cuts (unchanged from v1)
     s = compute_cell(df); s.update({"year": year, "cut": "overall", "group": "all"})
     rows.append(s)
-    # By race group
     for grp in ["negras", "nao_negras"]:
         s = compute_cell(df[df["race_group"] == grp])
         s.update({"year": year, "cut": "race", "group": grp})
         rows.append(s)
-    # By formality
     for form in ["com_carteira", "sem_carteira"]:
         s = compute_cell(df[df["formality"] == form])
         s.update({"year": year, "cut": "formality", "group": form})
         rows.append(s)
-    # Race × formality (4 cells)
     for grp in ["negras", "nao_negras"]:
         for form in ["com_carteira", "sem_carteira"]:
             sub = df[(df["race_group"] == grp) & (df["formality"] == form)]
             s = compute_cell(sub)
             s.update({"year": year, "cut": "race_x_formality", "group": f"{grp}_{form}"})
             rows.append(s)
+
+    # NEW: UF × overall (all 27 UFs)
+    for uf_code, uf_sigla in UF_CODES.items():
+        sub = df[df["uf_code"] == uf_code]
+        if len(sub) < 30:    # too thin even for total
+            continue
+        s = compute_cell(sub)
+        s.update({"year": year, "cut": "uf_overall", "group": uf_sigla})
+        rows.append(s)
+
+    # NEW: SP-specific cross-tabs (sample is large enough for SP)
+    sp = df[df["uf_code"] == "35"]
+    if len(sp) >= 30:
+        # SP overall is redundant with uf_overall above but useful to flag
+        # SP × race
+        for grp in ["negras", "nao_negras"]:
+            sub = sp[sp["race_group"] == grp]
+            if len(sub) >= 30:
+                s = compute_cell(sub)
+                s.update({"year": year, "cut": "sp_race", "group": grp})
+                rows.append(s)
+        # SP × formality
+        for form in ["com_carteira", "sem_carteira"]:
+            sub = sp[sp["formality"] == form]
+            if len(sub) >= 30:
+                s = compute_cell(sub)
+                s.update({"year": year, "cut": "sp_formality", "group": form})
+                rows.append(s)
+        # SP × race × formality (likely thin but emit anyway with n<30 nulled)
+        for grp in ["negras", "nao_negras"]:
+            for form in ["com_carteira", "sem_carteira"]:
+                sub = sp[(sp["race_group"] == grp) & (sp["formality"] == form)]
+                if len(sub) >= 15:   # lower threshold for this 4-way cut
+                    s = compute_cell(sub)
+                    s.update({"year": year, "cut": "sp_race_x_formality",
+                              "group": f"{grp}_{form}"})
+                    rows.append(s)
     return rows
 
 

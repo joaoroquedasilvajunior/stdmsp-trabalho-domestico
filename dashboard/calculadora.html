@@ -167,7 +167,7 @@
     <!-- Big headline card: where you stand on wages -->
     <article id="card-wage" class="stat-card">
       <h2 class="text-base font-medium mb-1" data-i18n="card-wage-title">Seu salário comparado</h2>
-      <p class="text-xs text-gray-500 mb-3" data-i18n="card-wage-meta">PNAD Contínua · setor "Serviços domésticos" · em reais constantes</p>
+      <p class="text-xs text-gray-500 mb-3" data-i18n="card-wage-meta">PNAD Contínua · ocupação "Trabalhador(a) doméstico(a)" · em reais constantes</p>
       <div id="card-wage-body" class="space-y-4"></div>
     </article>
 
@@ -254,7 +254,7 @@ const I18N = {
     "race-amarela": "Amarela", "race-indigena": "Indígena", "prefer-not": "Prefiro não dizer",
     submit: "Ver resultado",
     "card-wage-title": "Seu salário comparado",
-    "card-wage-meta": 'PNAD Contínua · setor "Serviços domésticos" · em reais constantes',
+    "card-wage-meta": 'PNAD Contínua · ocupação "Trabalhador(a) doméstico(a)" · em reais constantes',
     "card-formality-title": "Sua situação de formalização",
     "card-rights-title": "Direitos previstos pela LC 150/2015",
     "card-rights-disclaimer": "Esta lista é informativa, não substitui orientação jurídica. Em dúvida, fale com o seu sindicato.",
@@ -288,7 +288,7 @@ const I18N = {
     "race-amarela": "Yellow (East Asian)", "race-indigena": "Indigenous", "prefer-not": "Prefer not to say",
     submit: "See result",
     "card-wage-title": "Your wage compared",
-    "card-wage-meta": 'PNADC quarterly · "Domestic services" sector · constant reais',
+    "card-wage-meta": 'PNADC quarterly · "Domestic worker" occupation · constant reais',
     "card-formality-title": "Your formality status",
     "card-rights-title": "Rights guaranteed by LC 150/2015",
     "card-rights-disclaimer": "This list is informational and does not replace legal advice. When in doubt, talk to your union.",
@@ -329,6 +329,11 @@ try {
 const MIN_WAGE_BRL_2026 = 1518;             // R$ — Brazilian national minimum wage, 2026
 const LEGAL_WEEKLY_HOURS_MAX = 44;          // CLT + LC 150/2015
 
+// Fallback race-wage values if static_facts doesn't load (DIEESE abr/2026)
+const FALLBACK_NEGRAS_WAGE = 1274;
+const FALLBACK_NAO_NEGRAS_WAGE = 1463;
+const FALLBACK_CC_SP_FLOOR = 1640;          // R$ — Piso Faixa 1 CC SP estimado 2026
+
 // Reference data populated from Supabase on load
 const REF = {
   national_mean_wage: null,                  // R$ from PNADC-6391 latest period
@@ -336,6 +341,7 @@ const REF = {
   national_total_workers_thousands: null,    // PNADC-6320 latest BR total
   national_pct_formal: null,                 // % com carteira
   uf_list: [],                               // [{code, name_pt, name_en, latest_workers_k}]
+  uf_mean_wage: {},                          // {geo_code: {value, period}} — UF-level mean wage
   static: {},                                // {fact_code: row}
 };
 
@@ -346,8 +352,10 @@ async function loadReference() {
   const status = document.getElementById("status");
   status.textContent = LANG === "pt" ? "Carregando dados de referência…" : "Loading reference data…";
 
-  const [wagesRes, workersRes, ufRes, sfRes] = await Promise.allSettled([
+  const [wagesRes, ufWagesRes, workersRes, ufRes, sfRes] = await Promise.allSettled([
     sbClient.from("dw_wages").select("*").eq("geo_code", "BR").order("period_code", { ascending: false }).limit(1),
+    // UF-level wage means (totals across sex/race/formality): 27 UFs × last 8 periods approx.
+    sbClient.from("dw_wages").select("*").eq("geo_level", "uf").order("period_code", { ascending: false }).limit(500),
     sbClient.from("dw_workers").select("*").eq("source_table", "PNADC-6320").eq("geo_code", "BR").order("period_code", { ascending: false }).limit(50),
     sbClient.from("dw_workers").select("*").eq("source_table", "PNADC-6383").eq("geo_level", "uf"),
     sbClient.from("dw_static_facts").select("*"),
@@ -356,6 +364,23 @@ async function loadReference() {
   if (wagesRes.value?.data?.[0]) {
     REF.national_mean_wage = Number(wagesRes.value.data[0].mean_wage_brl_real);
     REF.national_mean_wage_period = String(wagesRes.value.data[0].period_code);
+  }
+  if (ufWagesRes.value?.data?.length) {
+    // For each UF, keep the row with the latest period_code AND aggregated (sex_code=total, race_code=total, formality_code=total)
+    const preferTotals = r =>
+      (r.sex_code === "total" || r.sex_code == null) &&
+      (r.race_code === "total" || r.race_code == null) &&
+      (r.formality_code === "total" || r.formality_code == null);
+    for (const r of ufWagesRes.value.data) {
+      if (!preferTotals(r)) continue;
+      const cur = REF.uf_mean_wage[r.geo_code];
+      if (!cur || String(r.period_code) > String(cur.period)) {
+        REF.uf_mean_wage[r.geo_code] = {
+          value: Number(r.mean_wage_brl_real),
+          period: String(r.period_code),
+        };
+      }
+    }
   }
   if (workersRes.value?.data?.length) {
     const rows = workersRes.value.data;
@@ -450,9 +475,22 @@ const fmt = (n, digits = 0) => {
 const reais = n => "R$ " + fmt(n, 0);
 
 function periodLabelPT(code) {
+  // Fix (2026-07-17): PNADC trimestral usa formato YYYY0Q (ex: 202601 = 1T 2026).
+  // Antes tratávamos como YYYYMM e mostrávamos "jan/26" — incorreto para dados
+  // trimestrais. Agora detectamos o padrão trimestral primeiro.
   const s = String(code || "");
   const months = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
-  if (s.length === 6 && /^\d+$/.test(s)) return months[+s.slice(4) - 1] + "/" + s.slice(2, 4);
+  // Trimestral YYYY0Q where Q is 1-4
+  if (s.length === 6 && /^\d{4}0[1-4]$/.test(s)) {
+    return s.slice(5, 6) + "T " + s.slice(0, 4);
+  }
+  // Anual YYYY
+  if (s.length === 4 && /^\d{4}$/.test(s)) return s;
+  // Mensal YYYYMM
+  if (s.length === 6 && /^\d{6}$/.test(s)) {
+    const mm = +s.slice(4);
+    if (mm >= 1 && mm <= 12) return months[mm - 1] + "/" + s.slice(2, 4);
+  }
   return s;
 }
 
@@ -477,34 +515,76 @@ function renderResults(d) {
 
 function renderWageCard(d) {
   const wage = d.wage;
-  const mean = REF.national_mean_wage;
   const min  = MIN_WAGE_BRL_2026;
-  const ratio = REF.static["wage_ratio_black_to_nonblack"];
 
-  // Determine status colour for the headline
+  // ---- Pick the most relevant comparator ----
+  // Prefer UF-specific mean if we have it, else national mean.
+  const ufWage = REF.uf_mean_wage[d.uf];
+  const meanValue = ufWage?.value ?? REF.national_mean_wage;
+  const meanPeriod = ufWage?.period ?? REF.national_mean_wage_period;
+  const meanIsUf = !!ufWage;
+  const ufName = REF.uf_list.find(u => u.geo_code === d.uf);
+  const ufLabel = ufName ? (LANG === "pt" ? ufName.geo_name_pt : ufName.geo_name_en) : d.uf;
+
+  // ---- CC-SP floor (only for São Paulo respondents) ----
+  const ccSpFact = REF.static["cc_sp_floor_domestica_current"];
+  const ccSpFloor = ccSpFact ? Number(ccSpFact.value_num) : FALLBACK_CC_SP_FLOOR;
+  const isSP = d.uf === "35";
+
+  // ---- Race means from static_facts (fallback if not loaded) ----
+  const negrasFact = REF.static["dieese_negras_wage_current"];
+  const naoNegrasFact = REF.static["dieese_nao_negras_wage_current"];
+  const ratioFact = REF.static["wage_ratio_black_to_nonblack"];
+  const negras_mean = negrasFact ? Number(negrasFact.value_num) : FALLBACK_NEGRAS_WAGE;
+  const nao_negras_mean = naoNegrasFact ? Number(naoNegrasFact.value_num) : FALLBACK_NAO_NEGRAS_WAGE;
+
+  // ---- Determine status colour for the headline (prefers CC-SP if SP; else mean; else min) ----
+  const primaryBenchmark = isSP ? ccSpFloor : (meanValue || min);
   const card = document.getElementById("card-wage");
   card.classList.remove("good","warn","danger");
-  if (mean && wage >= mean)        card.classList.add("good");
-  else if (wage >= min)            card.classList.add("warn");
-  else                              card.classList.add("danger");
+  if (wage >= primaryBenchmark)      card.classList.add("good");
+  else if (wage >= min)              card.classList.add("warn");
+  else                                card.classList.add("danger");
 
-  const meanLine = mean
-    ? `<div class="flex items-center justify-between text-sm">
-         <span>${LANG === "pt" ? "Média nacional do setor" : "National sector mean"} <span class="text-gray-500 text-xs">(${periodLabelPT(REF.national_mean_wage_period)})</span></span>
-         <span class="num font-medium">${reais(mean)}</span>
-       </div>
-       ${barRow(wage, mean, true)}
-       <p class="text-xs text-gray-600">${
-         wage >= mean
-           ? (LANG === "pt"
-               ? `Você recebe <strong>${reais(wage - mean)} a mais</strong> que a média nacional do setor.`
-               : `You earn <strong>${reais(wage - mean)} more</strong> than the national sector mean.`)
-           : (LANG === "pt"
-               ? `Você recebe <strong>${reais(mean - wage)} a menos</strong> que a média nacional do setor.`
-               : `You earn <strong>${reais(mean - wage)} less</strong> than the national sector mean.`)
-       }</p>`
-    : "";
+  // ---- CC-SP floor line (only for SP) — displayed FIRST because most relevant for STDMSP audience ----
+  const ccSpLine = isSP ? `
+    <div class="flex items-center justify-between text-sm mt-3">
+      <span>${LANG === "pt" ? "Piso da CC Doméstica SP (vigente)" : "Domestic CC floor — São Paulo (current)"}</span>
+      <span class="num font-medium">${reais(ccSpFloor)}</span>
+    </div>
+    ${barRow(wage, ccSpFloor, false)}
+    <p class="text-xs text-gray-600">${
+      wage >= ccSpFloor
+        ? (LANG === "pt"
+            ? `Seu salário <strong>respeita o piso da Convenção Coletiva</strong> da categoria em SP.`
+            : `Your wage <strong>meets the São Paulo Collective Agreement floor</strong> for the category.`)
+        : (LANG === "pt"
+            ? `Seu salário está <strong>${reais(ccSpFloor - wage)} abaixo do piso da CC doméstica SP</strong> (Faixa 1). Mensalistas com carteira em SP têm direito a receber pelo menos este valor. Fale com o STDMSP.`
+            : `Your wage is <strong>${reais(ccSpFloor - wage)} below the São Paulo domestic CC floor</strong> (Tier 1). Registered mensalistas in SP are entitled to at least this amount. Contact STDMSP.`)
+    }</p>` : "";
 
+  // ---- UF-specific or national mean line ----
+  const meanLine = meanValue ? `
+    <div class="flex items-center justify-between text-sm mt-3">
+      <span>${
+        meanIsUf
+          ? (LANG === "pt" ? `Média do setor em ${ufLabel}` : `Sector mean in ${ufLabel}`)
+          : (LANG === "pt" ? "Média nacional do setor" : "National sector mean")
+      } <span class="text-gray-500 text-xs">(${periodLabelPT(meanPeriod)})</span></span>
+      <span class="num font-medium">${reais(meanValue)}</span>
+    </div>
+    ${barRow(wage, meanValue, true)}
+    <p class="text-xs text-gray-600">${
+      wage >= meanValue
+        ? (LANG === "pt"
+            ? `Você recebe <strong>${reais(wage - meanValue)} a mais</strong> que a média ${meanIsUf ? "estadual" : "nacional"} do setor.`
+            : `You earn <strong>${reais(wage - meanValue)} more</strong> than the ${meanIsUf ? "state" : "national"} sector mean.`)
+        : (LANG === "pt"
+            ? `Você recebe <strong>${reais(meanValue - wage)} a menos</strong> que a média ${meanIsUf ? "estadual" : "nacional"} do setor.`
+            : `You earn <strong>${reais(meanValue - wage)} less</strong> than the ${meanIsUf ? "state" : "national"} sector mean.`)
+    }</p>` : "";
+
+  // ---- National minimum wage line ----
   const minLine = `
     <div class="flex items-center justify-between text-sm mt-3">
       <span>${LANG === "pt" ? "Salário mínimo nacional (2026)" : "National minimum wage (2026)"}</span>
@@ -521,19 +601,18 @@ function renderWageCard(d) {
             : `Your wage <strong>is ${reais(min - wage)} below</strong> the national minimum. Monthly workers with a signed card have the right to at least the minimum wage.`)
     }</p>`;
 
-  // Race-aware wage line if the worker self-identified
+  // ---- Race-aware wage line if the worker self-identified as preta/parda ----
   let raceLine = "";
-  if (ratio && d.race && d.race !== "skip") {
+  if (ratioFact && d.race && d.race !== "skip") {
     const isBlack = d.race === "preta" || d.race === "parda";
-    if (isBlack && mean) {
-      const negras_mean = 1156;          // DIEESE 2025 boletim Tabela 5
-      const nao_negras_mean = 1376;
+    if (isBlack) {
+      const ratioText = ratioFact.value_num ? `${ratioFact.value_num}%` : "≈87%";
       raceLine = `
         <div class="mt-4 pt-3 border-t rule">
           <p class="text-sm font-medium mb-1">${LANG === "pt" ? "Comparação por cor/raça" : "Race comparison"}</p>
           <p class="text-xs text-gray-600 mb-2">${LANG === "pt"
-            ? `Em média, mulheres negras no trabalho doméstico recebem <strong>${reais(negras_mean)}</strong> contra <strong>${reais(nao_negras_mean)}</strong> de não-negras (DIEESE, 4T 2024). É uma diferença de ${ratio.value_num}% — você está incluída nessa estatística.`
-            : `On average, Black women in domestic work earn <strong>${reais(negras_mean)}</strong> versus <strong>${reais(nao_negras_mean)}</strong> for non-Black women (DIEESE, Q4 2024). That's a ${ratio.value_num}% gap — you're part of this statistic.`}</p>
+            ? `Em média, mulheres negras no trabalho doméstico recebem <strong>${reais(negras_mean)}</strong> contra <strong>${reais(nao_negras_mean)}</strong> de não-negras (DIEESE, base 4T 2025). A razão é ${ratioText} — se você é preta ou parda, faz parte dessa estatística.`
+            : `On average, Black women in domestic work earn <strong>${reais(negras_mean)}</strong> versus <strong>${reais(nao_negras_mean)}</strong> for non-Black women (DIEESE, based on Q4 2025). The ratio is ${ratioText} — if you are preta or parda, you're part of this statistic.`}</p>
           ${barRow(wage, negras_mean, false, "muted")}
         </div>`;
     }
@@ -544,6 +623,7 @@ function renderWageCard(d) {
       <span class="text-xs uppercase tracking-wide text-gray-600">${LANG === "pt" ? "Seu salário" : "Your wage"}</span>
       <span class="num text-2xl font-medium">${reais(wage)}</span>
     </div>
+    ${ccSpLine}
     ${meanLine}
     ${minLine}
     ${raceLine}

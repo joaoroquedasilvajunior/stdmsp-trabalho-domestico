@@ -332,7 +332,7 @@ const LEGAL_WEEKLY_HOURS_MAX = 44;          // CLT + LC 150/2015
 // Fallback race-wage values if static_facts doesn't load (DIEESE abr/2026)
 const FALLBACK_NEGRAS_WAGE = 1274;
 const FALLBACK_NAO_NEGRAS_WAGE = 1463;
-const FALLBACK_CC_SP_FLOOR = 1640;          // R$ — Piso Faixa 1 CC SP estimado 2026
+const FALLBACK_CC_SP_FLOOR = 1874.36;       // R$ — Piso estadual paulista jun/2026 (> CCT R$ 1.804)
 
 // Reference data populated from Supabase on load
 const REF = {
@@ -473,6 +473,8 @@ const fmt = (n, digits = 0) => {
   return n.toLocaleString(LANG === "pt" ? "pt-BR" : "en-CA", { maximumFractionDigits: digits, minimumFractionDigits: digits });
 };
 const reais = n => "R$ " + fmt(n, 0);
+// reaisCents — mantém os centavos, usado para valores legais precisos (pisos).
+const reaisCents = n => (n == null || isNaN(n)) ? "—" : "R$ " + fmt(n, 2);
 
 function periodLabelPT(code) {
   // Fix (2026-07-17): PNADC trimestral usa formato YYYY0Q (ex: 202601 = 1T 2026).
@@ -549,18 +551,18 @@ function renderWageCard(d) {
   // ---- CC-SP floor line (only for SP) — displayed FIRST because most relevant for STDMSP audience ----
   const ccSpLine = isSP ? `
     <div class="flex items-center justify-between text-sm mt-3">
-      <span>${LANG === "pt" ? "Piso da CC Doméstica SP (vigente)" : "Domestic CC floor — São Paulo (current)"}</span>
-      <span class="num font-medium">${reais(ccSpFloor)}</span>
+      <span>${LANG === "pt" ? "Piso vigente para doméstica em SP" : "Current floor — domestic workers in São Paulo"}</span>
+      <span class="num font-medium">${reaisCents(ccSpFloor)}</span>
     </div>
     ${barRow(wage, ccSpFloor, false)}
     <p class="text-xs text-gray-600">${
       wage >= ccSpFloor
         ? (LANG === "pt"
-            ? `Seu salário <strong>respeita o piso da Convenção Coletiva</strong> da categoria em SP.`
-            : `Your wage <strong>meets the São Paulo Collective Agreement floor</strong> for the category.`)
+            ? `Seu salário <strong>respeita o piso vigente</strong> da categoria em SP (piso estadual paulista, superior ao da CCT).`
+            : `Your wage <strong>meets the current floor</strong> for the category in São Paulo (state minimum, higher than the CCT floor).`)
         : (LANG === "pt"
-            ? `Seu salário está <strong>${reais(ccSpFloor - wage)} abaixo do piso da CC doméstica SP</strong> (Faixa 1). Mensalistas com carteira em SP têm direito a receber pelo menos este valor. Fale com o STDMSP.`
-            : `Your wage is <strong>${reais(ccSpFloor - wage)} below the São Paulo domestic CC floor</strong> (Tier 1). Registered mensalistas in SP are entitled to at least this amount. Contact STDMSP.`)
+            ? `Seu salário está <strong>${reaisCents(ccSpFloor - wage)} abaixo do piso vigente</strong> para doméstica em SP. O piso estadual paulista (${reaisCents(ccSpFloor)}, jun/2026) prevalece sobre o da CCT (R$ 1.804,00) por ser maior. Mensalistas com carteira em SP têm direito a receber pelo menos este valor. Fale com o STDMSP.`
+            : `Your wage is <strong>${reaisCents(ccSpFloor - wage)} below the current floor</strong> for domestic workers in São Paulo. The state minimum (${reaisCents(ccSpFloor)}, Jun 2026) prevails over the CCT floor (R$ 1,804.00) because it's higher. Registered mensalistas in SP are entitled to at least this amount. Contact STDMSP.`)
     }</p>` : "";
 
   // ---- UF-specific or national mean line ----

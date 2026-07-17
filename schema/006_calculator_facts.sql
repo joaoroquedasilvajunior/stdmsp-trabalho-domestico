@@ -40,14 +40,14 @@ values
    'Rendimento médio (R$) das trabalhadoras domésticas não-negras, DIEESE 4T 2025. Atualizar quando novo Infográfico DIEESE for publicado.',
    'Mean earnings (R$) of non-Black women domestic workers, DIEESE Q4 2025. Update when new DIEESE infográfico is published.'),
 
-  ('cc_sp_floor_domestica_current', 1640, 'BRL',
-   'Piso da Convenção Coletiva Doméstica SP — Faixa 1 (vigente)',
-   'CC floor — Domestic workers in São Paulo (Tier 1, current)',
-   'STDMSP — Convenção Coletiva Doméstica São Paulo, vigência atual',
+  ('cc_sp_floor_domestica_current', 1874.36, 'BRL',
+   'Piso salarial vigente para doméstica em SP (estadual)',
+   'Current wage floor for domestic workers in São Paulo (state)',
+   'Piso Salarial Estadual SP (Salário Mínimo Paulista), vigência 1º/06/2026',
    'https://www.sindomesticastdmsp.com.br/',
-   '2025-10-01',
-   'Valor de referência do piso salarial da Faixa 1 da CC Doméstica SP vigente em 2026 (estimativa; confirmar com a CC atual pactuada pelo STDMSP). Piso 2024 foi R$ 1.540,59.',
-   'Reference floor of Tier 1 in São Paulo Domestic Workers Collective Agreement, valid in 2026 (estimate; confirm with current CC signed by STDMSP). 2024 floor was R$ 1,540.59.')
+   '2026-06-01',
+   'Piso efetivamente exigível: R$ 1.874,36 (piso salarial estadual paulista, vigência 1º/06/2026, jornada 44h/semana). A CCT da categoria fixou piso base de R$ 1.804,00, mas pela regra de prevalência do maior valor o empregador deve pagar o piso estadual, que é superior. Piso 2024 foi R$ 1.540,59.',
+   'Effective wage floor: R$ 1,874.36 (São Paulo state minimum wage, effective 2026-06-01, 44h/week). The category''s collective agreement (CCT) set a base floor of R$ 1,804.00, but under the higher-value rule employers must pay the state floor, which is higher. 2024 floor was R$ 1,540.59.')
 
 on conflict (fact_code) do update set
   value_num    = excluded.value_num,
@@ -58,8 +58,10 @@ on conflict (fact_code) do update set
   source_url   = excluded.source_url,
   source_date  = excluded.source_date,
   note_pt      = excluded.note_pt,
-  note_en      = excluded.note_en,
-  updated_at   = now();
+  note_en      = excluded.note_en;
+-- NB: a tabela live static_fact NÃO tem coluna updated_at (só fact_id, fact_code
+-- único, value_num, value_unit, label_*, source_*, note_*). Aplicado via MCP
+-- em 2026-07-17.
 
 -- Sanity check
 do $$

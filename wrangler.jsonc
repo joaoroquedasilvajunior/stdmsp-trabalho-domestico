@@ -6,7 +6,7 @@
     "enabled": true
   },
   "assets": {
-    "directory": "dashboard"
+    "directory": "casa-justa"
   },
   "compatibility_flags": [
     "nodejs_compat"

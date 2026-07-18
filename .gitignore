@@ -37,3 +37,8 @@ Thumbs.db
 # ~10 GB across full backfill). Always re-fetchable from IBGE FTP; never commit.
 etl/raw/
 metadata_probe.json
+
+# Planilhas brutas das pesquisas — contêm CPF, nunca versionar
+Condições de Trabalho para as Trabalhadoras Domésticas (Responses).xlsx
+Final version May_2023.xlsx
+*.xlsx

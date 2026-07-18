@@ -338,6 +338,7 @@ const FALLBACK_CC_SP_FLOOR = 1874.36;       // R$ — Piso estadual paulista jun
 const REF = {
   national_mean_wage: null,                  // R$ from PNADC-6391 latest period
   national_mean_wage_period: null,
+  national_mean_wage_source: null,           // needed to interpret period_code
   national_total_workers_thousands: null,    // PNADC-6320 latest BR total
   national_pct_formal: null,                 // % com carteira
   uf_list: [],                               // [{code, name_pt, name_en, latest_workers_k}]
@@ -362,22 +363,30 @@ async function loadReference() {
   ]);
 
   if (wagesRes.value?.data?.[0]) {
-    REF.national_mean_wage = Number(wagesRes.value.data[0].mean_wage_brl_real);
-    REF.national_mean_wage_period = String(wagesRes.value.data[0].period_code);
+    const row = wagesRes.value.data[0];
+    REF.national_mean_wage = Number(row.mean_wage_brl_real);
+    REF.national_mean_wage_period = String(row.period_code);
+    REF.national_mean_wage_source = String(row.source_table || "");
   }
+  // NB (2026-07-18): dw_wages hoje só tem geo_level='country' — não há dados
+  // por UF. Este bloco fica dormente e a calculadora cai no comparador
+  // nacional. Quando o pipeline fact_wages ganhar granularidade de UF
+  // (tarefas #68/#70), passa a funcionar sem mudanças aqui.
+  // Atenção aos códigos reais: sex_code = 'T' (não 'total'); race_code e
+  // formality_code = 'total'.
   if (ufWagesRes.value?.data?.length) {
-    // For each UF, keep the row with the latest period_code AND aggregated (sex_code=total, race_code=total, formality_code=total)
-    const preferTotals = r =>
-      (r.sex_code === "total" || r.sex_code == null) &&
+    const isAggregate = r =>
+      (r.sex_code === "T" || r.sex_code === "total" || r.sex_code == null) &&
       (r.race_code === "total" || r.race_code == null) &&
       (r.formality_code === "total" || r.formality_code == null);
     for (const r of ufWagesRes.value.data) {
-      if (!preferTotals(r)) continue;
+      if (!isAggregate(r)) continue;
       const cur = REF.uf_mean_wage[r.geo_code];
       if (!cur || String(r.period_code) > String(cur.period)) {
         REF.uf_mean_wage[r.geo_code] = {
           value: Number(r.mean_wage_brl_real),
           period: String(r.period_code),
+          source: String(r.source_table || ""),
         };
       }
     }
@@ -476,22 +485,48 @@ const reais = n => "R$ " + fmt(n, 0);
 // reaisCents — mantém os centavos, usado para valores legais precisos (pisos).
 const reaisCents = n => (n == null || isNaN(n)) ? "—" : "R$ " + fmt(n, 2);
 
-function periodLabelPT(code) {
-  // Fix (2026-07-17): PNADC trimestral usa formato YYYY0Q (ex: 202601 = 1T 2026).
-  // Antes tratávamos como YYYYMM e mostrávamos "jan/26" — incorreto para dados
-  // trimestrais. Agora detectamos o padrão trimestral primeiro.
+// periodLabel — CUIDADO: period_code tem DOIS significados dependendo da fonte.
+//
+//   PNADC-6391 (SIDRA)   period_code = YYYYMM  → MM é o mês FINAL do
+//                        trimestre móvel. Ex: 202604 = trimestre
+//                        fev–abr/2026 (year=2026, quarter=2).
+//
+//   PNADC-MICRODATA      period_code = YYYY0Q  → Q é o trimestre
+//                        CALENDÁRIO. Ex: 202601 = 1T 2026.
+//
+// Os dois formatos colidem para MM/Q entre 01 e 04, então NÃO dá para
+// desambiguar só pelo period_code — é preciso o source_table.
+//
+// Histórico: em 2026-07-17 uma "correção" tratou tudo como trimestre
+// calendário e passou a exibir "4T 2026" para dados de abr/2026 (um
+// trimestre que sequer havia ocorrido). Revertido aqui.
+function periodLabel(code, sourceTable) {
   const s = String(code || "");
-  const months = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
-  // Trimestral YYYY0Q where Q is 1-4
-  if (s.length === 6 && /^\d{4}0[1-4]$/.test(s)) {
-    return s.slice(5, 6) + "T " + s.slice(0, 4);
-  }
+  const monthsPt = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+  const monthsEn = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const months = LANG === "pt" ? monthsPt : monthsEn;
+  const src = String(sourceTable || "");
+
   // Anual YYYY
   if (s.length === 4 && /^\d{4}$/.test(s)) return s;
-  // Mensal YYYYMM
+
   if (s.length === 6 && /^\d{6}$/.test(s)) {
-    const mm = +s.slice(4);
-    if (mm >= 1 && mm <= 12) return months[mm - 1] + "/" + s.slice(2, 4);
+    const yyyy = s.slice(0, 4);
+    const last2 = +s.slice(4);
+
+    // Microdados → trimestre calendário
+    if (src.includes("MICRODATA")) {
+      if (last2 >= 1 && last2 <= 4) {
+        return LANG === "pt" ? `${last2}T ${yyyy}` : `Q${last2} ${yyyy}`;
+      }
+    }
+
+    // Demais fontes (SIDRA 6391 etc.) → trimestre móvel indexado pelo mês final
+    if (last2 >= 1 && last2 <= 12) {
+      return LANG === "pt"
+        ? `trim. até ${months[last2 - 1]}/${yyyy}`
+        : `quarter ending ${months[last2 - 1]}/${yyyy}`;
+    }
   }
   return s;
 }
@@ -524,6 +559,7 @@ function renderWageCard(d) {
   const ufWage = REF.uf_mean_wage[d.uf];
   const meanValue = ufWage?.value ?? REF.national_mean_wage;
   const meanPeriod = ufWage?.period ?? REF.national_mean_wage_period;
+  const meanSource = ufWage?.source ?? REF.national_mean_wage_source;
   const meanIsUf = !!ufWage;
   const ufName = REF.uf_list.find(u => u.geo_code === d.uf);
   const ufLabel = ufName ? (LANG === "pt" ? ufName.geo_name_pt : ufName.geo_name_en) : d.uf;
@@ -572,7 +608,7 @@ function renderWageCard(d) {
         meanIsUf
           ? (LANG === "pt" ? `Média do setor em ${ufLabel}` : `Sector mean in ${ufLabel}`)
           : (LANG === "pt" ? "Média nacional do setor" : "National sector mean")
-      } <span class="text-gray-500 text-xs">(${periodLabelPT(meanPeriod)})</span></span>
+      } <span class="text-gray-500 text-xs">(${periodLabel(meanPeriod, meanSource)})</span></span>
       <span class="num font-medium">${reais(meanValue)}</span>
     </div>
     ${barRow(wage, meanValue, true)}
@@ -608,7 +644,8 @@ function renderWageCard(d) {
   if (ratioFact && d.race && d.race !== "skip") {
     const isBlack = d.race === "preta" || d.race === "parda";
     if (isBlack) {
-      const ratioText = ratioFact.value_num ? `${ratioFact.value_num}%` : "≈87%";
+      // fmt() aplica locale pt-BR → "87,1%" em vez de "87.1%"
+      const ratioText = ratioFact.value_num ? `${fmt(Number(ratioFact.value_num), 1)}%` : "≈87%";
       raceLine = `
         <div class="mt-4 pt-3 border-t rule">
           <p class="text-sm font-medium mb-1">${LANG === "pt" ? "Comparação por cor/raça" : "Race comparison"}</p>
@@ -669,7 +706,10 @@ function renderFormalityCard(d) {
 }
 
 // LC 150/2015 entitlements. Keys = stable codes; rendering is bilingual.
+// O item "piso" é dinâmico: o rótulo muda conforme a UF (piso paulista x
+// mínimo nacional) e o status vira "!" quando o salário informado está abaixo.
 const RIGHTS = [
+  { code: "piso",           pt: "Salário igual ou acima do piso da categoria",  en: "Wage at or above the category floor" },
   { code: "carteira",       pt: "Carteira de trabalho assinada",                en: "Signed work card" },
   { code: "fgts",           pt: "FGTS (8% sobre seu salário, depositado todo mês)", en: "FGTS — 8% of your wage deposited monthly" },
   { code: "inss",           pt: "INSS (contribuição para a previdência)",       en: "INSS — social security contribution" },
@@ -693,12 +733,38 @@ function renderRightsCard(d) {
   const intro = document.getElementById("card-rights-intro");
   const list  = document.getElementById("card-rights-list");
 
+  // ---- Piso aplicável: em SP vale o piso estadual; nas demais UFs, o mínimo nacional ----
+  const isSP = d.uf === "35";
+  const ccSpFact = REF.static["cc_sp_floor_domestica_current"];
+  const ccSpFloor = ccSpFact ? Number(ccSpFact.value_num) : FALLBACK_CC_SP_FLOOR;
+  const pisoAplicavel = isSP ? ccSpFloor : MIN_WAGE_BRL_2026;
+  // O piso é exigível de quem é mensalista (contrato mensal). Para diarista o
+  // piso mensal não se aplica diretamente — a remuneração é por diária.
+  const pisoSeAplica = isMensalista;
+  const abaixoDoPiso = pisoSeAplica && d.wage > 0 && d.wage < pisoAplicavel;
+  const pisoLabelPt = isSP
+    ? `Salário igual ou acima do piso paulista (${reaisCents(pisoAplicavel)})`
+    : `Salário igual ou acima do mínimo nacional (${reaisCents(pisoAplicavel)})`;
+  const pisoLabelEn = isSP
+    ? `Wage at or above the São Paulo floor (${reaisCents(pisoAplicavel)})`
+    : `Wage at or above the national minimum (${reaisCents(pisoAplicavel)})`;
+
+  // Cor do card: alerta quando há descumprimento de piso ou falta de carteira.
+  const rightsCard = document.getElementById("card-rights");
+  rightsCard.classList.remove("good", "warn", "danger");
+  if (isMensalista && !hasCarteira)      rightsCard.classList.add("danger");
+  else if (abaixoDoPiso)                 rightsCard.classList.add("warn");
+
   let status;            // function (right) → 'ok' | 'miss' | 'na'
   if (isMensalista && hasCarteira) {
-    intro.innerHTML = LANG === "pt"
-      ? "Como mensalista com carteira assinada, todos esses direitos devem estar sendo cumpridos. Confira:"
-      : "As a mensalista with a signed work card, all of these rights should be honored. Check them:";
-    status = () => "ok";
+    intro.innerHTML = abaixoDoPiso
+      ? (LANG === "pt"
+          ? `Como mensalista com carteira assinada, você tem direito a tudo isso. <strong>Mas seu salário está abaixo do piso da categoria</strong> — isso já é um descumprimento, mesmo com a carteira assinada. Confira ponto a ponto:`
+          : `As a mensalista with a signed work card, you are entitled to all of this. <strong>But your wage is below the category floor</strong> — that is already a violation, even with a signed card. Check item by item:`)
+      : (LANG === "pt"
+          ? "Como mensalista com carteira assinada, todos esses direitos devem estar sendo cumpridos. Confira:"
+          : "As a mensalista with a signed work card, all of these rights should be honored. Check them:");
+    status = (right) => (right.code === "piso" && abaixoDoPiso) ? "miss" : "ok";
   } else if (isMensalista && !hasCarteira) {
     intro.innerHTML = LANG === "pt"
       ? "Como mensalista, você tem direito a tudo isso pela LC 150/2015 — mas a falta da carteira assinada faz com que esses direitos não estejam sendo cumpridos:"
@@ -712,9 +778,12 @@ function renderRightsCard(d) {
   }
 
   list.innerHTML = RIGHTS.map(r => {
+    // O item do piso só entra quando faz sentido (mensalista).
+    if (r.code === "piso" && !pisoSeAplica) return "";
     const s = status(r);
     const icon = s === "ok" ? "✓" : (s === "miss" ? "!" : "—");
-    const text = LANG === "pt" ? r.pt : r.en;
+    let text = LANG === "pt" ? r.pt : r.en;
+    if (r.code === "piso") text = LANG === "pt" ? pisoLabelPt : pisoLabelEn;
     return `<div class="right-row">
       <span class="right-icon ${s}">${icon}</span>
       <span class="text-sm leading-snug ${s === "miss" ? "" : "text-gray-700"}">${text}</span>

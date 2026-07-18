@@ -42,3 +42,7 @@ metadata_probe.json
 Condições de Trabalho para as Trabalhadoras Domésticas (Responses).xlsx
 Final version May_2023.xlsx
 *.xlsx
+
+.dev.vars*
+!.dev.vars.example
+!.env.example

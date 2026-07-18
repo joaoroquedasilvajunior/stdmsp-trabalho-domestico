@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Casa Justa — Seus direitos no trabalho doméstico</title>
+<meta name="theme-color" content="#FFC531">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EFE6D6;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;color:#33222B}
+a{color:#B93A28}a:hover{color:#8F2B1D}
+input,select,button{font-family:inherit}
+input:focus,button:focus{outline:3px solid #FFC531;outline-offset:1px}
+#app.big{zoom:1.12}
+@media print{[data-noprint]{display:none!important}body{background:#fff}#app{box-shadow:none!important}}
+</style>
+</head>
+<body>
+<div id="app" style="max-width:430px;margin:0 auto;min-height:100vh;background:#FBF5E9;box-shadow:0 0 40px rgba(51,34,43,.12);padding-bottom:96px;position:relative">
+
+  <header data-noprint style="background:#FFC531;background-image:radial-gradient(circle at 14px 14px, rgba(217,72,47,.85) 4px, transparent 5px),radial-gradient(circle at 42px 34px, rgba(14,138,102,.8) 3px, transparent 4px);background-size:56px 44px;padding:22px 20px 18px">
+    <div style="display:flex;align-items:center;gap:12px;background:#FBF5E9;border-radius:16px;padding:12px 16px;box-shadow:0 2px 0 rgba(51,34,43,.25)">
+      <div style="width:38px;height:38px;border-radius:12px;background:#D9482F;display:grid;place-items:center;flex:none">
+        <div style="width:16px;height:16px;background:#FFC531;border-radius:50%"></div>
+      </div>
+      <div style="flex:1">
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:24px;line-height:1;color:#33222B">Casa Justa</div>
+        <div style="font-size:12.5px;color:#7A5F55;margin-top:2px">Seus direitos no trabalho doméstico · São Paulo</div>
+      </div>
+      <button data-act="fonte" aria-pressed="false" title="Letras grandes" style="flex:none;width:44px;height:44px;border-radius:12px;border:2px solid #33222B;background:transparent;color:#33222B;font-weight:700;font-size:17px;cursor:pointer">A<span style="font-size:12px">A</span></button>
+    </div>
+  </header>
+
+  <main id="main"></main>
+
+  <nav data-noprint style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#33222B;display:flex;border-radius:20px 20px 0 0;padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(51,34,43,.25);z-index:50">
+    <button data-act="go" data-tab="inicio" style="flex:1;min-height:56px;border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+      <div class="ndot" style="width:8px;height:8px;border-radius:50%"></div>
+      <div class="nlab" style="font-size:12px;font-weight:700">Início</div>
+    </button>
+    <button data-act="go" data-tab="comparar" style="flex:1;min-height:56px;border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+      <div class="ndot" style="width:8px;height:8px;border-radius:50%"></div>
+      <div class="nlab" style="font-size:12px;font-weight:700">Salário</div>
+    </button>
+    <button data-act="go" data-tab="direitos" style="flex:1;min-height:56px;border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+      <div class="ndot" style="width:8px;height:8px;border-radius:50%"></div>
+      <div class="nlab" style="font-size:12px;font-weight:700">Direitos</div>
+    </button>
+    <button data-act="go" data-tab="contas" style="flex:1;min-height:56px;border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+      <div class="ndot" style="width:8px;height:8px;border-radius:50%"></div>
+      <div class="nlab" style="font-size:12px;font-weight:700">Contas</div>
+    </button>
+    <button data-act="go" data-tab="ajuda" style="flex:1;min-height:56px;border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+      <div class="ndot" style="width:8px;height:8px;border-radius:50%"></div>
+      <div class="nlab" style="font-size:12px;font-weight:700">Ajuda</div>
+    </button>
+  </nav>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var PISO = 1874.36, MIN = 1621, MEDIA = 1422;
+  var LINK_SINDICATO = 'https://www.sindomesticastdmsp.com.br/';
+
+  var state = {
+    tab: 'inicio', nome: '', salario: '', carteira: null, casas: null, horas: '',
+    submitted: false, erro: false, abertos: {}, calc: 'decimo',
+    dtSal: '', dtMeses: '12', feSal: '', heSal: '', heQtd: '',
+    reSal: '', reAnos: '', reMeses: '', letrasGrandes: false
+  };
+
+  function p(s) { return parseFloat(String(s).replace(/\./g, '').replace(',', '.')) || 0; }
+  function brl(v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  var GUIA = [
+    { titulo: 'Carteira assinada desde o 1º dia', cor: '#D9482F', texto: 'Se você trabalha 3 dias ou mais por semana para a mesma família, o registro na carteira é obrigatório — não é favor, é lei. Sem carteira, você perde FGTS, INSS, seguro-desemprego e aposentadoria.', lei: 'LC 150/2015 (define empregada doméstica como quem trabalha mais de 2 dias por semana) + CLT.' },
+    { titulo: 'Salário nunca abaixo do piso', cor: '#D9482F', texto: 'Em todo o estado de São Paulo, quem trabalha em jornada completa (44h) não pode receber menos que R$ 1.874,36 por mês (valor desde junho de 2026). No resto do país, vale o mínimo nacional de R$ 1.621.', lei: 'Lei estadual 18.471/2026 (piso paulista) e Constituição, art. 7º.' },
+    { titulo: 'Jornada de no máximo 44h por semana', cor: '#0E8A66', texto: 'São até 8 horas por dia e 44 por semana. O que passar disso é hora extra e precisa ser paga com 50% a mais — ou compensada com folga, se houver acordo escrito de banco de horas.', lei: 'LC 150/2015, art. 2º.' },
+    { titulo: 'Hora extra com 50% a mais', cor: '#0E8A66', texto: 'Cada hora além da jornada vale sua hora normal mais metade. Exemplo: se sua hora vale R$ 8,52 (piso ÷ 220), a hora extra vale R$ 12,78. Domingos e feriados trabalhados valem em dobro.', lei: 'LC 150/2015, art. 2º, §1º.' },
+    { titulo: 'FGTS todo mês', cor: '#C99417', texto: 'O patrão deposita 8% do seu salário numa conta em seu nome, todo mês, pelo eSocial. É seu dinheiro — você saca na demissão sem justa causa, na aposentadoria e em outras situações. Confira o saldo no app FGTS.', lei: 'LC 150/2015, arts. 21 e 22 (obrigatório desde out/2015).' },
+    { titulo: 'INSS: previdência e aposentadoria', cor: '#C99417', texto: 'Uma parte é descontada do seu salário e o patrão paga outra parte. É isso que garante auxílio-doença, licença-maternidade paga e aposentadoria. O desconto aparece no recibo.', lei: 'LC 150/2015, art. 34 (recolhimento unificado no DAE).' },
+    { titulo: '13º salário', cor: '#D9482F', texto: 'Um salário a mais por ano: metade até 30 de novembro, metade até 20 de dezembro. Quem trabalhou só parte do ano recebe proporcional aos meses.', lei: 'Constituição, art. 7º, parágrafo único; Lei 4.090/1962.' },
+    { titulo: 'Férias de 30 dias + 1/3', cor: '#0E8A66', texto: 'A cada 12 meses trabalhados: 30 dias de descanso recebendo salário mais um terço. As férias precisam ser avisadas com 30 dias de antecedência e não podem ser trocadas totalmente por dinheiro.', lei: 'LC 150/2015, art. 17.' },
+    { titulo: 'Descanso semanal pago', cor: '#C99417', texto: 'Pelo menos um dia de folga paga por semana, de preferência aos domingos, e folga também nos feriados — ou pagamento em dobro se trabalhar.', lei: 'LC 150/2015, art. 2º, §8º e Lei 605/1949.' },
+    { titulo: 'Adicional noturno', cor: '#D9482F', texto: 'Trabalhou entre 22h e 5h? Cada hora nesse período vale pelo menos 20% a mais, e a hora noturna é contada como mais curta (52min30s).', lei: 'LC 150/2015, art. 14.' },
+    { titulo: 'Licença-maternidade de 120 dias', cor: '#0E8A66', texto: 'Quatro meses de licença recebendo pelo INSS, e estabilidade no emprego desde a confirmação da gravidez até 5 meses depois do parto — não podem te demitir nesse período.', lei: 'LC 150/2015, art. 25 e Lei 8.213/1991.' },
+    { titulo: 'Vale-transporte', cor: '#C99417', texto: 'Se você usa transporte público para chegar ao trabalho, o patrão deve fornecer o vale (pode descontar até 6% do seu salário). Pode ser pago em dinheiro, se acordado.', lei: 'LC 150/2015, art. 19 e Lei 7.418/1985.' },
+    { titulo: 'Demissão sem justa causa: pacote completo', cor: '#D9482F', texto: 'Aviso prévio (30 dias + 3 por ano trabalhado), 13º e férias proporcionais + 1/3, multa de 40% sobre o FGTS (paga pelo depósito mensal de 3,2%), saque do FGTS e seguro-desemprego.', lei: 'LC 150/2015, arts. 22, 23 e 26.' },
+    { titulo: 'Proibido descontar moradia e comida', cor: '#0E8A66', texto: 'Se você dorme no emprego ou faz refeições lá, o patrão não pode descontar isso do salário. Também é proibido pagar "por fora" abaixo do piso alegando que "a comida compensa".', lei: 'LC 150/2015, art. 18.' }
+  ];
+
+  /* ---------- shared style snippets ---------- */
+  var INPUT = 'width:100%;box-sizing:border-box;border:2px solid #D8C8B2;border-radius:14px;padding:14px;font-size:17px;background:#fff';
+  var INPUT_C = 'width:100%;box-sizing:border-box;border:2px solid #D8C8B2;border-radius:14px;padding:13px;font-size:17px';
+
+  function pillStyle(on) {
+    return 'flex:1;min-height:52px;border-radius:26px;border:2px solid #33222B;font-size:16.5px;font-weight:700;cursor:pointer;background:' +
+      (on ? '#33222B' : 'transparent') + ';color:' + (on ? '#FFC531' : '#33222B');
+  }
+  function calcTabStyle(on) {
+    return 'min-height:48px;border-radius:14px;border:2px solid #33222B;font-weight:700;font-size:15px;cursor:pointer;background:' +
+      (on ? '#33222B' : 'transparent') + ';color:' + (on ? '#FFC531' : '#33222B');
+  }
+
+  /* ---------- tabs ---------- */
+
+  function renderInicio() {
+    return '<main style="padding:20px">' +
+      '<h1 style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:30px;line-height:1.12;margin:6px 0 10px;text-wrap:pretty">Trabalho de casa também tem lei.</h1>' +
+      '<p style="font-size:16.5px;line-height:1.5;margin:0 0 18px;color:#5C4650">Desde 2015, a <strong>Lei das Domésticas (LC&nbsp;150)</strong> garante carteira, férias, 13º e muito mais. Aqui você confere o que é seu — em linguagem simples. Nada do que você digitar sai do seu celular.</p>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px">' +
+        '<div style="background:#33222B;color:#FBF5E9;border-radius:16px;padding:14px">' +
+          '<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:24px;color:#FFC531">R$ 1.874</div>' +
+          '<div style="font-size:12.5px;line-height:1.35;opacity:.85">piso da doméstica em SP (jun/2026)</div>' +
+        '</div>' +
+        '<div style="background:#33222B;color:#FBF5E9;border-radius:16px;padding:14px">' +
+          '<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:24px;color:#FFC531">44h</div>' +
+          '<div style="font-size:12.5px;line-height:1.35;opacity:.85">jornada máxima por semana, por lei</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:12px">' +
+        homeBtn('comparar', '#D9482F', '#fff', '0 3px 0 #8F2B1D', 'Meu salário está certo?', 'Compare com o piso de SP e a média do Brasil', '.9', '') +
+        homeBtn('direitos', '#0E8A66', '#fff', '0 3px 0 #095C44', 'Quais são meus direitos?', 'Guia da Lei das Domésticas, ponto por ponto', '.9', '') +
+        homeBtn('contas', '#FFC531', '#33222B', '0 3px 0 #C99417', 'Quanto devo receber?', '13º, férias, hora extra e rescisão na calculadora', '.85', '') +
+        '<button data-act="go" data-tab="ajuda" style="text-align:left;cursor:pointer;background:#FBF5E9;color:#33222B;border:2px solid #33222B;border-radius:18px;padding:18px;display:flex;align-items:center;gap:14px;min-height:76px">' +
+          '<div style="flex:1"><div style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:19px">Preciso de ajuda</div>' +
+          '<div style="font-size:13.5px;color:#5C4650;margin-top:2px">Fale com o sindicato (STDMSP) — é gratuito</div></div>' +
+          '<div style="font-size:22px;flex:none">→</div>' +
+        '</button>' +
+      '</div>' +
+      '<p style="font-size:12.5px;color:#8A7060;line-height:1.5;margin:20px 0 0">Fontes: LC 150/2015 · Lei estadual 18.471/2026 · PNAD Contínua (IBGE) · DIEESE. Este app informa, mas não substitui orientação jurídica.</p>' +
+    '</main>';
+  }
+
+  function homeBtn(tab, bg, fg, shadow, titulo, sub, subOpacity) {
+    return '<button data-act="go" data-tab="' + tab + '" style="text-align:left;border:none;cursor:pointer;background:' + bg + ';color:' + fg + ';border-radius:18px;padding:18px;display:flex;align-items:center;gap:14px;min-height:76px;box-shadow:' + shadow + '">' +
+      '<div style="flex:1"><div style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:19px">' + titulo + '</div>' +
+      '<div style="font-size:13.5px;opacity:' + subOpacity + ';margin-top:2px">' + sub + '</div></div>' +
+      '<div style="font-size:22px;flex:none">→</div>' +
+    '</button>';
+  }
+
+  function renderComparar() {
+    var s = state;
+    var html = '<main style="padding:20px">' +
+      '<div data-noprint>' +
+        '<h1 style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:26px;line-height:1.15;margin:6px 0 6px">Meu salário está certo?</h1>' +
+        '<p style="font-size:15px;line-height:1.5;margin:0 0 18px;color:#5C4650">Responda 4 perguntas. Suas respostas ficam só no seu celular.</p>' +
+        '<label for="f-nome" style="display:block;font-weight:700;font-size:15.5px;margin-bottom:6px">Seu nome <span style="font-weight:400;color:#8A7060">(opcional, para o resumo)</span></label>' +
+        '<input id="f-nome" data-field="nome" value="' + esc(s.nome) + '" placeholder="Ex.: Maria" style="' + INPUT + ';margin-bottom:16px" />' +
+        '<label for="f-salario" style="display:block;font-weight:700;font-size:15.5px;margin-bottom:6px">Quanto você recebe por mês?</label>' +
+        '<input id="f-salario" data-field="salario" inputmode="numeric" value="' + esc(s.salario) + '" placeholder="Ex.: 1600" style="' + INPUT + '" />' +
+        '<p style="font-size:12.5px;color:#8A7060;margin:6px 0 16px">Some o que recebe de todas as casas, antes de descontos.</p>' +
+        '<label style="display:block;font-weight:700;font-size:15.5px;margin-bottom:8px">Você tem carteira assinada?</label>' +
+        '<div style="display:flex;gap:10px;margin-bottom:16px">' +
+          '<button data-act="cart" data-val="sim" style="' + pillStyle(s.carteira === 'sim') + '">Sim</button>' +
+          '<button data-act="cart" data-val="nao" style="' + pillStyle(s.carteira === 'nao') + '">Não</button>' +
+        '</div>' +
+        '<label style="display:block;font-weight:700;font-size:15.5px;margin-bottom:8px">Em quantas casas você trabalha?</label>' +
+        '<div style="display:flex;gap:10px;margin-bottom:16px">' +
+          '<button data-act="casa" data-val="uma" style="' + pillStyle(s.casas === 'uma') + '">Em uma só</button>' +
+          '<button data-act="casa" data-val="mais" style="' + pillStyle(s.casas === 'mais') + '">Em mais de uma</button>' +
+        '</div>' +
+        '<label for="f-horas" style="display:block;font-weight:700;font-size:15.5px;margin-bottom:6px">Quantas horas você trabalha por semana?</label>' +
+        '<input id="f-horas" data-field="horas" inputmode="numeric" value="' + esc(s.horas) + '" placeholder="Ex.: 44" style="' + INPUT + '" />' +
+        '<p style="font-size:12.5px;color:#8A7060;margin:6px 0 18px">O máximo permitido por lei é 44h por semana.</p>' +
+        '<button data-act="ver" style="width:100%;min-height:58px;border:none;border-radius:18px;background:#D9482F;color:#fff;font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:20px;cursor:pointer;box-shadow:0 3px 0 #8F2B1D">Ver meu resultado</button>' +
+        '<p id="erroForm" style="background:#FDE4DF;border-radius:12px;padding:12px;font-size:14.5px;color:#8F2B1D;margin:12px 0 0;display:' + (s.erro && !s.submitted ? 'block' : 'none') + '">Preencha o salário e responda as duas perguntas para ver o resultado.</p>' +
+      '</div>';
+    if (s.submitted) html += renderResultado();
+    return html + '</main>';
+  }
+
+  function renderResultado() {
+    var s = state;
+    var sal = p(s.salario), horas = p(s.horas);
+    var max = Math.max(sal, PISO, 1) * 1.05;
+    var pct = function (v) { return Math.min(100, Math.round(v / max * 100)) + '%'; };
+    var abaixo = sal < PISO;
+    var diff = Math.abs(PISO - sal);
+    var diarista = s.casas === 'mais';
+    var okD = { bg: '#DDF2E4', fg: '#0E8A66', mark: '✓' };
+    var atD = { bg: '#FDE4DF', fg: '#B93A28', mark: '!' };
+    function item(d, label) { return Object.assign({}, d, { label: label }); }
+
+    var lista, tituloLista, introLista;
+    if (diarista) {
+      tituloLista = 'Você trabalha em mais de uma casa';
+      introLista = 'Se em nenhuma casa você trabalha 3 dias ou mais por semana, a lei te considera diarista — sem vínculo pela LC 150. Mesmo assim:';
+      lista = [
+        item(okD, 'Você pode contribuir para o INSS por conta própria e garantir aposentadoria, auxílio-doença e licença-maternidade'),
+        item(okD, 'Combine tudo por escrito (dias, valor, tarefas) — mensagem de WhatsApp vale como prova'),
+        item(atD, 'Se em alguma casa você vai 3+ dias por semana, ali a carteira é obrigatória — mesmo sendo "diarista" nas outras'),
+        item(okD, 'O sindicato orienta diaristas gratuitamente')
+      ];
+    } else if (s.carteira === 'sim') {
+      tituloLista = 'Com carteira assinada, é tudo seu';
+      introLista = abaixo && sal > 0 ? 'Você tem direito a tudo isso. Mas atenção: seu salário está abaixo do piso — isso já é um descumprimento, mesmo com carteira.' : 'Confira ponto por ponto o que o patrão deve cumprir:';
+      lista = [
+        item(sal > 0 && abaixo ? atD : okD, 'Salário igual ou acima do piso paulista (R$ 1.874,36)'),
+        item(okD, 'FGTS: 8% depositado todo mês em conta no seu nome'),
+        item(okD, 'INSS: previdência descontada e recolhida'),
+        item(okD, '13º salário no fim do ano'),
+        item(okD, 'Férias de 30 dias + 1/3'),
+        item(okD, 'Folga semanal paga + feriados'),
+        item(okD, 'Hora extra com 50% a mais'),
+        item(okD, 'Adicional noturno (20% após as 22h)'),
+        item(okD, 'Licença-maternidade de 120 dias + estabilidade'),
+        item(okD, 'Vale-transporte'),
+        item(okD, 'Na demissão sem justa causa: aviso prévio, multa de 40% do FGTS e seguro-desemprego')
+      ];
+    } else {
+      tituloLista = 'Sem carteira, você está perdendo tudo isso';
+      introLista = 'Trabalhando 3 dias ou mais por semana na mesma casa, a carteira é obrigatória. Hoje você está sem:';
+      lista = [
+        item(atD, 'FGTS — ninguém está depositando os 8% que seriam seus'),
+        item(atD, 'INSS — sem contribuição, sem aposentadoria nem auxílio-doença'),
+        item(atD, 'Seguro-desemprego se for demitida'),
+        item(atD, '13º, férias + 1/3 e folga paga garantidos por lei'),
+        item(atD, 'Licença-maternidade paga e estabilidade na gravidez'),
+        item(okD, 'A boa notícia: dá para regularizar — e cobrar o período passado (até 5 anos). O sindicato ajuda de graça.')
+      ];
+    }
+
+    var msgPiso;
+    if (sal <= 0) msgPiso = 'Digite seu salário para comparar.';
+    else if (abaixo) msgPiso = 'Seu salário está R$ ' + diff.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) + ' abaixo do piso da doméstica em SP. Para jornada completa (44h), isso descumpre a lei — você pode cobrar a diferença.';
+    else msgPiso = 'Seu salário está ' + brl(diff) + ' acima do piso paulista — e acima da média nacional do setor. Confira se os demais direitos estão sendo cumpridos.';
+
+    var msgCarteira = diarista
+      ? 'Trabalhando em mais de uma casa, você provavelmente é diarista. No Brasil, só 24 em cada 100 trabalhadoras domésticas têm carteira — e as diaristas são as menos protegidas. Veja abaixo como se proteger.'
+      : (s.carteira === 'sim'
+        ? 'Você faz parte da minoria: só 24 em cada 100 trabalhadoras domésticas no Brasil têm carteira assinada. Isso te garante todos os direitos da lista abaixo.'
+        : 'Você está como 3 em cada 4 trabalhadoras domésticas no Brasil: sem carteira. Mas trabalhando 3+ dias por semana na mesma casa, assinar é obrigação do patrão — e dá para regularizar.');
+
+    var nome = s.nome.trim();
+    var linhas = [
+      nome ? 'Resumo de ' + nome + ' — app Casa Justa' : 'Meu resumo — app Casa Justa',
+      'Salário: ' + (sal > 0 ? brl(sal) : 'não informado'),
+      'Piso da doméstica em SP: R$ 1.874,36 (jun/2026)',
+      sal > 0 ? (abaixo ? 'Estou R$ ' + diff.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) + ' ABAIXO do piso' : 'Estou acima do piso') : '',
+      'Carteira assinada: ' + (s.carteira === 'sim' ? 'sim' : 'não'),
+      diarista ? 'Trabalho em mais de uma casa (diarista)' : 'Trabalho em uma casa só',
+      horas > 44 ? 'Jornada de ' + horas + 'h/semana — acima do limite legal de 44h' : '',
+      'Sindicato STDMSP: ' + LINK_SINDICATO
+    ].filter(Boolean);
+    var waHref = 'https://wa.me/?text=' + encodeURIComponent(linhas.join('\n'));
+
+    var corCartCard = (s.carteira === 'sim' && !diarista) ? '#E2F4E8' : '#FDE4DF';
+    var tituloResumo = (nome ? nome + ' · ' : '') + 'resumo de ' + new Date().toLocaleDateString('pt-BR');
+
+    function bar(labelHtml, valorHtml, cor, w) {
+      return '<div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:14.5px">' + labelHtml + valorHtml + '</div>' +
+        '<div style="height:14px;background:rgba(51,34,43,.12);border-radius:7px;margin-top:4px"><div style="height:14px;border-radius:7px;background:' + cor + ';width:' + w + '"></div></div>' +
+      '</div>';
+    }
+
+    var html = '<div id="resultado" style="margin-top:26px">' +
+      '<div style="font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:15px;color:#8A7060;margin-bottom:8px">' + esc(tituloResumo) + '</div>' +
+      '<section style="background:#FFF3D0;border-radius:18px;padding:18px;margin-bottom:14px">' +
+        '<h2 style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:20px;margin:0 0 4px">Seu salário comparado</h2>' +
+        '<p style="font-size:12.5px;color:#8A7060;margin:0 0 14px">Valores vigentes em julho de 2026</p>' +
+        '<div style="display:flex;flex-direction:column;gap:12px">' +
+          bar('<span style="font-weight:700">Seu salário</span>', '<span style="font-weight:700">' + brl(sal) + '</span>', '#D9482F', pct(sal)) +
+          bar('<span>Piso da doméstica em SP</span>', '<span style="font-weight:700">R$ 1.874,36</span>', '#33222B', pct(PISO)) +
+          bar('<span>Média do setor no Brasil</span>', '<span style="font-weight:700">R$ 1.422</span>', '#0E8A66', pct(MEDIA)) +
+          bar('<span>Mínimo nacional (2026)</span>', '<span style="font-weight:700">R$ 1.621</span>', '#C99417', pct(MIN)) +
+        '</div>' +
+        '<p style="font-size:15px;line-height:1.5;margin:14px 0 0">' + msgPiso + '</p>' +
+      '</section>' +
+      '<section style="background:' + corCartCard + ';border-radius:18px;padding:18px;margin-bottom:14px">' +
+        '<h2 style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:20px;margin:0 0 8px">Sua situação</h2>' +
+        '<p style="font-size:15px;line-height:1.5;margin:0">' + msgCarteira + '</p>' +
+      '</section>';
+
+    if (horas > 44) {
+      html += '<section style="background:#FDE4DF;border:2px solid #D9482F;border-radius:18px;padding:18px;margin-bottom:14px">' +
+        '<h2 style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:20px;margin:0 0 8px;color:#8F2B1D">Atenção: jornada acima da lei</h2>' +
+        '<p style="font-size:15px;line-height:1.5;margin:0">Você informou ' + horas + 'h por semana — ' + (horas - 44).toLocaleString('pt-BR') + 'h acima do limite legal de 44h. Essas horas devem ser pagas como extra (+50%) ou compensadas com folga. Anote seus horários todos os dias.</p>' +
+      '</section>';
+    }
+
+    html += '<section style="background:#fff;border:2px solid #E7DAC5;border-radius:18px;padding:18px;margin-bottom:14px">' +
+      '<h2 style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:20px;margin:0 0 6px">' + tituloLista + '</h2>' +
+      '<p style="font-size:14px;line-height:1.5;color:#5C4650;margin:0 0 12px">' + introLista + '</p>' +
+      '<div style="display:flex;flex-direction:column">' +
+      lista.map(function (d) {
+        return '<div style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px dashed #E7DAC5">' +
+          '<div style="width:22px;height:22px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:700;background:' + d.bg + ';color:' + d.fg + '">' + d.mark + '</div>' +
+          '<div style="font-size:15px;line-height:1.45">' + d.label + '</div>' +
+        '</div>';
+      }).join('') +
+      '</div>' +
+      '<p style="font-size:12.5px;color:#8A7060;line-height:1.5;margin:12px 0 0">Lista informativa — não substitui orientação jurídica. Em dúvida, fale com o sindicato.</p>' +
+    '</section>' +
+    '<div data-noprint style="display:flex;flex-direction:column;gap:10px">' +
+      '<a href="' + waHref + '" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;min-height:56px;border-radius:18px;background:#1DA851;color:#fff;text-decoration:none;font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:18px;box-shadow:0 3px 0 #127035">Enviar resumo pelo WhatsApp</a>' +
+      '<div style="display:flex;gap:10px">' +
+        '<button data-act="imprimir" style="flex:1;min-height:52px;border-radius:16px;border:2px solid #33222B;background:#33222B;color:#FBF5E9;font-weight:700;font-size:16px;cursor:pointer">Imprimir / salvar PDF</button>' +
+        '<button data-act="recomecar" style="flex:1;min-height:52px;border-radius:16px;border:2px solid #33222B;background:transparent;color:#33222B;font-weight:700;font-size:16px;cursor:pointer">Recomeçar</button>' +
+      '</div>' +
+    '</div>' +
+    '</div>';
+    return html;
+  }
+
+  function renderDireitos() {
+    var html = '<main style="padding:20px">' +
+      '<h1 style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:26px;line-height:1.15;margin:6px 0 6px">Seus direitos, um por um</h1>' +
+      '<p style="font-size:15px;line-height:1.5;margin:0 0 16px;color:#5C4650">Tudo o que a <strong>LC 150/2015</strong> (a Lei das Domésticas) garante para quem trabalha 3 dias ou mais por semana na mesma casa, com carteira assinada. Toque para abrir.</p>' +
+      '<div style="display:flex;flex-direction:column;gap:10px">' +
+      GUIA.map(function (g, i) {
+        var aberto = !!state.abertos[i];
+        return '<div style="background:#fff;border:2px solid #E7DAC5;border-radius:16px;overflow:hidden">' +
+          '<button data-act="toggle" data-i="' + i + '" aria-expanded="' + aberto + '" style="width:100%;text-align:left;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 16px;min-height:56px">' +
+            '<div style="width:10px;height:10px;border-radius:50%;flex:none;background:' + g.cor + '"></div>' +
+            '<div style="flex:1;font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:16.5px;line-height:1.25">' + g.titulo + '</div>' +
+            '<div style="font-size:18px;color:#8A7060;flex:none">' + (aberto ? '−' : '+') + '</div>' +
+          '</button>' +
+          (aberto
+            ? '<div style="padding:0 16px 16px">' +
+                '<p style="font-size:15px;line-height:1.55;margin:0 0 10px">' + g.texto + '</p>' +
+                '<div style="background:#FFF3D0;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5"><strong>Na lei:</strong> ' + g.lei + '</div>' +
+              '</div>'
+            : '') +
+        '</div>';
+      }).join('') +
+      '</div>' +
+      '<div style="background:#E2F4E8;border-radius:16px;padding:16px;margin-top:16px">' +
+        '<p style="font-size:14.5px;line-height:1.55;margin:0"><strong>Trabalha como diarista?</strong> Quem trabalha até 2 dias por semana na mesma casa não tem vínculo pela LC 150 — mas pode contribuir para o INSS por conta própria e negociar por escrito. O sindicato orienta gratuitamente.</p>' +
+      '</div>' +
+    '</main>';
+    return html;
+  }
+
+  function renderContas() {
+    var s = state;
+    var html = '<main style="padding:20px">' +
+      '<h1 style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:26px;line-height:1.15;margin:6px 0 6px">Quanto devo receber?</h1>' +
+      '<p style="font-size:15px;line-height:1.5;margin:0 0 14px;color:#5C4650">Contas rápidas, sem mistério. Os valores são estimativas.</p>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px">' +
+        '<button data-act="calc" data-val="decimo" style="' + calcTabStyle(s.calc === 'decimo') + '">13º salário</button>' +
+        '<button data-act="calc" data-val="ferias" style="' + calcTabStyle(s.calc === 'ferias') + '">Férias</button>' +
+        '<button data-act="calc" data-val="hora" style="' + calcTabStyle(s.calc === 'hora') + '">Hora extra</button>' +
+        '<button data-act="calc" data-val="resc" style="' + calcTabStyle(s.calc === 'resc') + '">Rescisão</button>' +
+      '</div>';
+
+    if (s.calc === 'decimo') {
+      html += '<section style="background:#fff;border:2px solid #E7DAC5;border-radius:18px;padding:18px">' +
+        '<h2 style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:19px;margin:0 0 4px">13º salário</h2>' +
+        '<p style="font-size:14px;color:#5C4650;line-height:1.5;margin:0 0 14px">Um salário a mais por ano, pago em duas parcelas (até 30/nov e até 20/dez). Se trabalhou só parte do ano, recebe proporcional.</p>' +
+        '<label for="f-dtSal" style="display:block;font-weight:700;font-size:15px;margin-bottom:6px">Seu salário mensal</label>' +
+        '<input id="f-dtSal" data-field="dtSal" inputmode="numeric" value="' + esc(s.dtSal) + '" placeholder="Ex.: 1875" style="' + INPUT_C + ';margin-bottom:12px" />' +
+        '<label for="f-dtMeses" style="display:block;font-weight:700;font-size:15px;margin-bottom:6px">Meses trabalhados no ano</label>' +
+        '<input id="f-dtMeses" data-field="dtMeses" inputmode="numeric" value="' + esc(s.dtMeses) + '" placeholder="Ex.: 12" style="' + INPUT_C + '" />' +
+        '<div style="background:#FFF3D0;border-radius:14px;padding:14px;margin-top:14px">' +
+          '<div style="font-size:13.5px;color:#8A7060">Seu 13º deste ano</div>' +
+          '<div id="dtVal" style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:28px"></div>' +
+        '</div>' +
+      '</section>';
+    } else if (s.calc === 'ferias') {
+      html += '<section style="background:#fff;border:2px solid #E7DAC5;border-radius:18px;padding:18px">' +
+        '<h2 style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:19px;margin:0 0 4px">Férias</h2>' +
+        '<p style="font-size:14px;color:#5C4650;line-height:1.5;margin:0 0 14px">A cada 12 meses de trabalho: 30 dias de descanso recebendo o salário <strong>+ 1/3 a mais</strong> (o "terço de férias").</p>' +
+        '<label for="f-feSal" style="display:block;font-weight:700;font-size:15px;margin-bottom:6px">Seu salário mensal</label>' +
+        '<input id="f-feSal" data-field="feSal" inputmode="numeric" value="' + esc(s.feSal) + '" placeholder="Ex.: 1875" style="' + INPUT_C + '" />' +
+        '<div style="background:#FFF3D0;border-radius:14px;padding:14px;margin-top:14px">' +
+          '<div style="font-size:13.5px;color:#8A7060">Você recebe nas férias (salário + 1/3)</div>' +
+          '<div id="feVal" style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:28px"></div>' +
+        '</div>' +
+      '</section>';
+    } else if (s.calc === 'hora') {
+      html += '<section style="background:#fff;border:2px solid #E7DAC5;border-radius:18px;padding:18px">' +
+        '<h2 style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:19px;margin:0 0 4px">Hora extra</h2>' +
+        '<p style="font-size:14px;color:#5C4650;line-height:1.5;margin:0 0 14px">Passou das 8h no dia ou das 44h na semana? Cada hora a mais vale sua hora normal <strong>+ 50%</strong>. Aos domingos e feriados, +100%.</p>' +
+        '<label for="f-heSal" style="display:block;font-weight:700;font-size:15px;margin-bottom:6px">Seu salário mensal</label>' +
+        '<input id="f-heSal" data-field="heSal" inputmode="numeric" value="' + esc(s.heSal) + '" placeholder="Ex.: 1875" style="' + INPUT_C + ';margin-bottom:12px" />' +
+        '<label for="f-heQtd" style="display:block;font-weight:700;font-size:15px;margin-bottom:6px">Horas extras no mês</label>' +
+        '<input id="f-heQtd" data-field="heQtd" inputmode="numeric" value="' + esc(s.heQtd) + '" placeholder="Ex.: 10" style="' + INPUT_C + '" />' +
+        '<div style="background:#FFF3D0;border-radius:14px;padding:14px;margin-top:14px;display:flex;flex-direction:column;gap:6px">' +
+          '<div style="display:flex;justify-content:space-between;font-size:14.5px"><span>Sua hora normal vale</span><strong id="heHora"></strong></div>' +
+          '<div style="display:flex;justify-content:space-between;font-size:14.5px"><span>Cada hora extra vale</span><strong id="heExtra"></strong></div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed #C99417;padding-top:8px;margin-top:4px"><span style="font-size:14.5px">A receber no mês</span><span id="heVal" style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:24px"></span></div>' +
+        '</div>' +
+      '</section>';
+    } else {
+      html += '<section style="background:#fff;border:2px solid #E7DAC5;border-radius:18px;padding:18px">' +
+        '<h2 style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:19px;margin:0 0 4px">Rescisão (demissão sem justa causa)</h2>' +
+        '<p style="font-size:14px;color:#5C4650;line-height:1.5;margin:0 0 14px">Se o patrão te demitir sem justa causa, você tem direito a um conjunto de verbas. Estimativa simplificada:</p>' +
+        '<label for="f-reSal" style="display:block;font-weight:700;font-size:15px;margin-bottom:6px">Seu salário mensal</label>' +
+        '<input id="f-reSal" data-field="reSal" inputmode="numeric" value="' + esc(s.reSal) + '" placeholder="Ex.: 1875" style="' + INPUT_C + ';margin-bottom:12px" />' +
+        '<label for="f-reAnos" style="display:block;font-weight:700;font-size:15px;margin-bottom:6px">Anos completos no emprego</label>' +
+        '<input id="f-reAnos" data-field="reAnos" inputmode="numeric" value="' + esc(s.reAnos) + '" placeholder="Ex.: 3" style="' + INPUT_C + ';margin-bottom:12px" />' +
+        '<label for="f-reMeses" style="display:block;font-weight:700;font-size:15px;margin-bottom:6px">Meses trabalhados neste ano</label>' +
+        '<input id="f-reMeses" data-field="reMeses" inputmode="numeric" value="' + esc(s.reMeses) + '" placeholder="Ex.: 6" style="' + INPUT_C + '" />' +
+        '<div style="background:#FFF3D0;border-radius:14px;padding:14px;margin-top:14px;display:flex;flex-direction:column;gap:6px">' +
+          '<div style="display:flex;justify-content:space-between;font-size:14.5px"><span>Aviso prévio (<span id="reDias"></span> dias)</span><strong id="reAviso"></strong></div>' +
+          '<div style="display:flex;justify-content:space-between;font-size:14.5px"><span>13º proporcional</span><strong id="reDecimo"></strong></div>' +
+          '<div style="display:flex;justify-content:space-between;font-size:14.5px"><span>Férias proporcionais + 1/3</span><strong id="reFerias"></strong></div>' +
+          '<div style="display:flex;justify-content:space-between;font-size:14.5px"><span>Multa FGTS (estimada)</span><strong id="reMulta"></strong></div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed #C99417;padding-top:8px;margin-top:4px"><span style="font-size:14.5px">Estimativa total</span><span id="reTotal" style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:24px"></span></div>' +
+        '</div>' +
+        '<p style="font-size:12.5px;color:#8A7060;line-height:1.5;margin:12px 0 0">Além disso: saque do FGTS depositado e seguro-desemprego. Férias vencidas não pagas entram por fora. Antes de assinar qualquer rescisão, confira com o sindicato.</p>' +
+      '</section>';
+    }
+    return html + '</main>';
+  }
+
+  function renderAjuda() {
+    return '<main style="padding:20px">' +
+      '<h1 style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:26px;line-height:1.15;margin:6px 0 6px">Você não está sozinha</h1>' +
+      '<p style="font-size:15px;line-height:1.55;margin:0 0 16px;color:#5C4650">Se algo aqui não bateu com a sua realidade — salário abaixo do piso, carteira sem assinar, horas demais — o sindicato existe para isso. A orientação é <strong>gratuita</strong> e ninguém avisa o seu patrão.</p>' +
+      '<section style="background:#33222B;color:#FBF5E9;border-radius:18px;padding:20px;margin-bottom:14px">' +
+        '<div style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:20px;color:#FFC531">STDMSP</div>' +
+        '<p style="font-size:14.5px;line-height:1.55;margin:6px 0 14px;opacity:.9">Sindicato das Trabalhadoras Domésticas do Município de São Paulo. Atende quem trabalha na capital.</p>' +
+        '<a href="' + LINK_SINDICATO + '" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:14px;background:#FFC531;color:#33222B;text-decoration:none;font-weight:700;font-size:16.5px">Abrir o site do sindicato</a>' +
+      '</section>' +
+      '<section style="background:#fff;border:2px solid #E7DAC5;border-radius:18px;padding:18px;margin-bottom:14px">' +
+        '<h2 style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:19px;margin:0 0 10px">O que levar quando procurar ajuda</h2>' +
+        '<div style="display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:1.5">' +
+          ajudaItem('Carteira de trabalho (física ou o app Carteira Digital)') +
+          ajudaItem('Comprovantes de pagamento (recibos, Pix, extratos)') +
+          ajudaItem('Anotações de horários e dias trabalhados — vale caderno e mensagem de WhatsApp') +
+          ajudaItem('O resumo deste app (imprima ou envie por WhatsApp)') +
+        '</div>' +
+      '</section>' +
+      '<section style="background:#E2F4E8;border-radius:18px;padding:18px">' +
+        '<h2 style="font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:19px;margin:0 0 8px">Fora da capital?</h2>' +
+        '<p style="font-size:15px;line-height:1.55;margin:0">Procure o sindicato da sua cidade pela <strong>FENATRAD</strong> (Federação Nacional das Trabalhadoras Domésticas). Todo o estado tem direito ao piso paulista de R$ 1.874,36.</p>' +
+      '</section>' +
+    '</main>';
+  }
+
+  function ajudaItem(texto) {
+    return '<div style="display:flex;gap:10px"><div style="width:8px;height:8px;border-radius:50%;background:#D9482F;flex:none;margin-top:7px"></div><div>' + texto + '</div></div>';
+  }
+
+  /* ---------- render + live calculator outputs ---------- */
+
+  var main = document.getElementById('main');
+  var app = document.getElementById('app');
+
+  function render() {
+    if (state.tab === 'inicio') main.innerHTML = renderInicio();
+    else if (state.tab === 'comparar') main.innerHTML = renderComparar();
+    else if (state.tab === 'direitos') main.innerHTML = renderDireitos();
+    else if (state.tab === 'contas') { main.innerHTML = renderContas(); updateCalcOutputs(); }
+    else main.innerHTML = renderAjuda();
+    updateNav();
+  }
+
+  function updateNav() {
+    document.querySelectorAll('nav [data-act="go"]').forEach(function (btn) {
+      var on = btn.dataset.tab === state.tab;
+      var cor = on ? '#FFC531' : 'rgba(251,245,233,.6)';
+      btn.querySelector('.ndot').style.background = cor;
+      btn.querySelector('.nlab').style.color = cor;
+      btn.setAttribute('aria-current', on ? 'page' : 'false');
+    });
+  }
+
+  function setText(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
+
+  function updateCalcOutputs() {
+    var s = state;
+    if (s.calc === 'decimo') {
+      setText('dtVal', brl(p(s.dtSal) * Math.min(12, Math.max(0, p(s.dtMeses))) / 12));
+    } else if (s.calc === 'ferias') {
+      setText('feVal', brl(p(s.feSal) * 4 / 3));
+    } else if (s.calc === 'hora') {
+      var heH = p(s.heSal) / 220, heE = heH * 1.5;
+      setText('heHora', brl(heH)); setText('heExtra', brl(heE)); setText('heVal', brl(heE * p(s.heQtd)));
+    } else {
+      var reS = p(s.reSal), anos = Math.max(0, p(s.reAnos)), meses = Math.min(12, Math.max(0, p(s.reMeses)));
+      var reDias = Math.min(90, 30 + 3 * anos);
+      var reAviso = reS / 30 * reDias;
+      var reDecimo = reS * meses / 12;
+      var reFerias = reS * meses / 12 * 4 / 3;
+      var reMulta = reS * 0.08 * (anos * 12 + meses) * 0.4;
+      setText('reDias', String(reDias)); setText('reAviso', brl(reAviso)); setText('reDecimo', brl(reDecimo));
+      setText('reFerias', brl(reFerias)); setText('reMulta', brl(reMulta));
+      setText('reTotal', brl(reAviso + reDecimo + reFerias + reMulta));
+    }
+  }
+
+  function go(tab) { state.tab = tab; render(); window.scrollTo(0, 0); }
+
+  /* ---------- events ---------- */
+
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-act]');
+    if (!t) return;
+    var act = t.dataset.act;
+    if (act === 'go') go(t.dataset.tab);
+    else if (act === 'cart') { state.carteira = t.dataset.val; state.submitted = false; render(); }
+    else if (act === 'casa') { state.casas = t.dataset.val; state.submitted = false; render(); }
+    else if (act === 'ver') {
+      var ok = p(state.salario) > 0 && state.carteira && state.casas;
+      state.submitted = ok; state.erro = !ok;
+      render();
+      if (ok) { var r = document.getElementById('resultado'); if (r) r.scrollIntoView({ behavior: 'smooth' }); }
+    }
+    else if (act === 'imprimir') window.print();
+    else if (act === 'recomecar') {
+      state.nome = ''; state.salario = ''; state.carteira = null; state.casas = null;
+      state.horas = ''; state.submitted = false; state.erro = false;
+      render(); window.scrollTo(0, 0);
+    }
+    else if (act === 'toggle') { var i = t.dataset.i; state.abertos[i] = !state.abertos[i]; render(); }
+    else if (act === 'calc') { state.calc = t.dataset.val; render(); }
+    else if (act === 'fonte') {
+      state.letrasGrandes = !state.letrasGrandes;
+      app.classList.toggle('big', state.letrasGrandes);
+      t.setAttribute('aria-pressed', String(state.letrasGrandes));
+    }
+  });
+
+  // Inputs update state without re-rendering, so typing never loses focus.
+  document.addEventListener('input', function (e) {
+    var f = e.target.dataset && e.target.dataset.field;
+    if (!f) return;
+    state[f] = e.target.value;
+    if (f === 'salario' || f === 'horas') {
+      state.submitted = false; state.erro = false;
+      var r = document.getElementById('resultado'); if (r) r.remove();
+      var err = document.getElementById('erroForm'); if (err) err.style.display = 'none';
+    }
+    updateCalcOutputs();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

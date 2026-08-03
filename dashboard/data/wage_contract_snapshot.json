@@ -1,0 +1,27 @@
+{
+  "period_code": "202601",
+  "period_label_pt": "1T 2026",
+  "period_label_en": "2026Q1",
+  "generated_by": "etl/probe_wage_contract.py 012026",
+  "source": "PNADC-MICRODATA",
+  "notes": "Single-quarter snapshot. Re-run the probe and overwrite this file when a new PNADC quarter is ingested. Full time series queued as task #70.",
+  "cells": [
+    {"race": "negras",     "contract": "mensalista", "formality": "com_carteira", "workers_thousands": 607.9,  "mean_wage_brl": 1924.19, "mean_hourly_brl": 10.91, "n": 1386},
+    {"race": "negras",     "contract": "mensalista", "formality": "sem_carteira", "workers_thousands": 1520.5, "mean_wage_brl": 1035.49, "mean_hourly_brl": 10.09, "n": 3868},
+    {"race": "negras",     "contract": "diarista",   "formality": "com_carteira", "workers_thousands": 85.9,   "mean_wage_brl": 2103.82, "mean_hourly_brl": 12.06, "n": 196},
+    {"race": "negras",     "contract": "diarista",   "formality": "sem_carteira", "workers_thousands": 909.3,  "mean_wage_brl": 1297.07, "mean_hourly_brl": 11.89, "n": 1962},
+    {"race": "nao_negras", "contract": "mensalista", "formality": "com_carteira", "workers_thousands": 270.3,  "mean_wage_brl": 1981.12, "mean_hourly_brl": 11.52, "n": 565},
+    {"race": "nao_negras", "contract": "mensalista", "formality": "sem_carteira", "workers_thousands": 622.8,  "mean_wage_brl": 1178.27, "mean_hourly_brl": 10.31, "n": 1352},
+    {"race": "nao_negras", "contract": "diarista",   "formality": "com_carteira", "workers_thousands": 57.1,   "mean_wage_brl": 2114.04, "mean_hourly_brl": 14.22, "n": 93},
+    {"race": "nao_negras", "contract": "diarista",   "formality": "sem_carteira", "workers_thousands": 440.0,  "mean_wage_brl": 1605.16, "mean_hourly_brl": 14.11, "n": 861}
+  ],
+  "by_contract": {
+    "mensalista": {"hourly_gap_pct": 96.6, "n_negras": 5254, "n_nao_negras": 1917, "hourly_negras": 10.32, "hourly_nao_negras": 10.68},
+    "diarista":   {"hourly_gap_pct": 84.3, "n_negras": 2158, "n_nao_negras":  954, "hourly_negras": 11.90, "hourly_nao_negras": 14.12}
+  },
+  "by_formality": {
+    "com_carteira": {"hourly_gap_pct": 92.2},
+    "sem_carteira": {"hourly_gap_pct": 90.7},
+    "total":        {"hourly_gap_pct": 90.9}
+  }
+}

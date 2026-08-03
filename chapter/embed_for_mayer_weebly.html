@@ -1,0 +1,137 @@
+<!-- =============================================================
+     PAINEL STDMSP — Trabalho Doméstico no Brasil
+     HTML para o widget "Embed Code" do Weebly de Jean-François Mayer
+
+     VERSÃO 2 (2026-06-16): removido o breakout 100vw que causava
+     scroll horizontal na página inteira do Weebly. Agora o iframe
+     ocupa 100% da largura natural da coluna de conteúdo do Weebly.
+     O dashboard internamente detecta esta largura e renderiza
+     automaticamente em modo mobile/tablet (com bottom nav) ou
+     desktop (com sidebar) conforme apropriado.
+
+     Cole este bloco inteiro num elemento "Embed Code" do Weebly.
+     Acima/abaixo, use os elementos NATIVOS do Weebly (Title, Text)
+     para o texto introdutório.
+
+     Princípios:
+       1. iframe ocupa 100% da coluna do Weebly (não estoura).
+       2. Altura travada em 85vh → scroll INTERNO no iframe → o
+          bottom-nav, sticky header e theme pill-nav do dashboard
+          ficam funcionando corretamente (relativos ao viewport
+          interno do iframe).
+       3. Fallback de link bilíngue sempre visível embaixo.
+       4. Tudo namespaced .stdmsp-embed-* pra não conflitar.
+     ============================================================= -->
+
+<style>
+  .stdmsp-embed-wrapper {
+    margin: 24px 0;
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;          /* defesa: nunca deixa o iframe estourar */
+  }
+  .stdmsp-embed-iframe {
+    display: block;
+    width: 100%;
+    height: 85vh;
+    min-height: 560px;
+    max-height: 1100px;
+    border: 0;
+    background: #fafaf7;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07),
+                0 1px 3px rgba(0, 0, 0, 0.04);
+    border-radius: 4px;
+  }
+  @media (min-width: 1024px) {
+    .stdmsp-embed-iframe { height: 80vh; }
+  }
+  @media (max-width: 480px) {
+    .stdmsp-embed-iframe {
+      height: 90vh;
+      min-height: 500px;
+      box-shadow: none;
+      border-radius: 0;
+    }
+    .stdmsp-embed-wrapper { margin: 16px 0 12px; }
+  }
+  .stdmsp-embed-fallback {
+    text-align: center;
+    margin: 14px auto 0;
+    max-width: 640px;
+    padding: 0 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #6b7280;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 "Helvetica Neue", system-ui, sans-serif;
+  }
+  .stdmsp-embed-fallback a {
+    color: #b91c1c;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px dotted #b91c1c;
+  }
+  .stdmsp-embed-fallback a:hover {
+    border-bottom-style: solid;
+  }
+  .stdmsp-embed-fallback .lang-sep {
+    margin: 0 8px;
+    color: #d1d5db;
+  }
+</style>
+
+<div class="stdmsp-embed-wrapper">
+  <iframe
+    class="stdmsp-embed-iframe"
+    src="https://stdmsp-trabalho-domestico.joaoroquer.workers.dev/"
+    title="Painel STDMSP — Trabalho Doméstico no Brasil"
+    loading="lazy"
+    allow="fullscreen"
+    referrerpolicy="no-referrer-when-downgrade">
+  </iframe>
+
+  <p class="stdmsp-embed-fallback">
+    <strong>Não está vendo o painel ou prefere uma nova aba?</strong><br>
+    <a href="https://stdmsp-trabalho-domestico.joaoroquer.workers.dev/"
+       target="_blank" rel="noopener noreferrer">
+      Abrir o painel completo (PT)
+    </a>
+    <span class="lang-sep">·</span>
+    <a href="https://stdmsp-trabalho-domestico.joaoroquer.workers.dev/?lang=en"
+       target="_blank" rel="noopener noreferrer">
+      Open dashboard (EN)
+    </a>
+  </p>
+</div>
+
+<!--
+  SUGESTÃO DE TEXTO INTRODUTÓRIO
+  (Mayer deve adicionar isto ACIMA deste embed, usando os elementos
+   nativos Title + Text do Weebly — assim ele pode editar sem mexer
+   no HTML do embed.)
+
+  TÍTULO:
+  Trabalho doméstico no Brasil — painel interativo
+
+  PARÁGRAFO INTRODUTÓRIO (PT):
+  Em parceria com o Sindicato das Trabalhadoras Domésticas do
+  Município de São Paulo (STDMSP), este painel apresenta uma análise
+  empírica detalhada da categoria — composição racial, salários,
+  contratos, filiação sindical, geografia do descumprimento da
+  Lei Complementar 150 — entre 2012 e 2026. Construído sobre
+  microdados PNADC, DIEESE, IPEA e duas pesquisas de campo do
+  próprio sindicato. Disponível em português e inglês.
+
+  EN VERSION:
+  Domestic Work in Brazil — Interactive Dashboard
+
+  In partnership with the Domestic Workers' Union of São Paulo
+  (STDMSP), this dashboard presents a detailed empirical analysis
+  of the category — racial composition, wages, contract types,
+  union membership, geography of LC 150 enforcement — from 2012
+  to 2026. Built on PNADC microdata, DIEESE, IPEA, and two field
+  surveys conducted by the union itself. Available in Portuguese
+  and English.
+-->

@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mockup — Painel Trabalho Doméstico (mobile-first)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --paper: #fafaf7;
+      --accent: #b91c1c;
+      --accent-soft: #fee2e2;
+      --rule: #e5e5e0;
+      --card-bg: #ffffff;
+      --card-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+      --muted: #6b7280;
+    }
+    * { -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+      color: var(--ink);
+      background: #f3f3ee;
+      margin: 0;
+      padding: 0;
+      padding-bottom: 76px; /* leave room for bottom nav on mobile */
+    }
+    .num { font-variant-numeric: tabular-nums; }
+    .accent { color: var(--accent); }
+    .accent-bg { background: var(--accent); color: white; }
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: var(--card-shadow);
+      padding: 16px;
+    }
+    .card.tight { padding: 14px; }
+    .card.hero {
+      border-radius: 18px;
+      padding: 18px 16px 14px;
+    }
+    /* Sticky top header */
+    .top-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(243,243,238,0.92);
+      backdrop-filter: saturate(140%) blur(8px);
+      -webkit-backdrop-filter: saturate(140%) blur(8px);
+      border-bottom: 1px solid var(--rule);
+    }
+    /* Bottom nav (mobile) */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: white;
+      border-top: 1px solid var(--rule);
+      padding: 8px 4px max(8px, env(safe-area-inset-bottom)) 4px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      z-index: 60;
+    }
+    .bottom-nav a {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      padding: 6px 2px;
+      font-size: 10.5px; color: var(--muted);
+      text-decoration: none; line-height: 1.1;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .bottom-nav a.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .bottom-nav a.active svg { stroke: var(--accent); }
+    .bottom-nav svg { width: 22px; height: 22px; stroke: var(--muted); stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    /* Filter pills */
+    .pill-row {
+      display: flex; gap: 8px; padding: 4px 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .pill-row::-webkit-scrollbar { display: none; }
+    .pill {
+      padding: 6px 14px; font-size: 13px;
+      border-radius: 999px;
+      background: white; color: var(--ink);
+      border: 1px solid var(--rule);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 120ms;
+    }
+    .pill.active {
+      background: var(--ink); color: white; border-color: var(--ink);
+    }
+    .pill.danger.active { background: var(--accent); border-color: var(--accent); }
+    /* KPI cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .kpi-card .label {
+      font-size: 11px; font-weight: 500; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.04em;
+      line-height: 1.3;
+    }
+    .kpi-card .number {
+      font-size: 30px; font-weight: 600; line-height: 1.1;
+      margin: 6px 0 4px;
+      color: var(--ink);
+    }
+    .kpi-card .delta {
+      font-size: 11px; color: var(--muted);
+      line-height: 1.3;
+    }
+    .kpi-card .delta.up    { color: #16a34a; }
+    .kpi-card .delta.down  { color: var(--accent); }
+    .kpi-card .spark { margin-top: 6px; height: 26px; }
+    /* Section header */
+    .section-eyebrow {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--accent);
+    }
+    .section-title {
+      font-size: 20px; font-weight: 600; line-height: 1.25;
+      margin: 4px 0 8px;
+    }
+    .section-lead {
+      font-size: 14px; color: #4b5563; line-height: 1.55;
+    }
+    /* Lang toggle */
+    .lang-toggle { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; padding: 2px; background: white; }
+    .lang-toggle button {
+      padding: 4px 10px; font-size: 11px; font-weight: 500;
+      border: 0; background: transparent; border-radius: 999px;
+      cursor: pointer; color: var(--muted);
+    }
+    .lang-toggle button.active { background: var(--ink); color: white; }
+    /* Tap to expand chart */
+    .chart-wrap {
+      position: relative;
+      height: 220px;
+    }
+    /* Bigger chart on tablet+ */
+    @media (min-width: 480px) {
+      .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+      .chart-wrap { height: 260px; }
+    }
+    /* Desktop: sidebar nav, hide bottom */
+    @media (min-width: 900px) {
+      body { padding-bottom: 0; padding-left: 88px; }
+      .bottom-nav {
+        top: 0; bottom: 0; right: auto; width: 88px;
+        flex-direction: column; display: flex;
+        border-top: 0; border-right: 1px solid var(--rule);
+        padding: 16px 8px;
+        justify-content: flex-start; gap: 6px;
+      }
+      .bottom-nav a { padding: 12px 6px; font-size: 11px; }
+      .bottom-nav svg { width: 24px; height: 24px; }
+      .chart-wrap { height: 320px; }
+    }
+    /* Spotlight section bg */
+    .spotlight {
+      background: linear-gradient(180deg, var(--accent-soft) 0%, transparent 100%);
+      padding: 20px 16px 12px;
+      margin: 0 -16px;
+      border-radius: 0;
+    }
+    /* Reveal class for "more" sections */
+    .more-content[hidden] { display: none; }
+    .reveal-toggle {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 13px; color: var(--accent); font-weight: 500;
+      background: transparent; border: 0; cursor: pointer;
+      padding: 6px 0;
+    }
+    /* Comparison bar */
+    .compare-row { display: grid; grid-template-columns: 1fr 80px; gap: 10px; align-items: center; margin: 6px 0; }
+    .compare-label { font-size: 13px; }
+    .compare-bar { height: 14px; background: var(--rule); border-radius: 7px; overflow: hidden; position: relative; }
+    .compare-bar > span { display: block; height: 100%; border-radius: 7px; }
+    .compare-num { text-align: right; font-size: 13px; font-weight: 600; color: var(--ink); }
+  </style>
+</head>
+<body>
+
+<!-- ===== MOCKUP NOTE BANNER ===== -->
+<div style="background: #fde68a; color: #78350f; padding: 8px 16px; font-size: 12px; text-align: center;">
+  <strong>MOCKUP</strong> — modelo proposto para o painel mobile-first. Toque nos ícones inferiores para navegar. Conteúdo real, layout em revisão.
+</div>
+
+<!-- ===== STICKY HEADER ===== -->
+<header class="top-header">
+  <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+    <div class="min-w-0">
+      <div class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">STDMSP · PNADC</div>
+      <h1 class="text-base font-semibold truncate" id="page-title">Trabalho doméstico no Brasil</h1>
+    </div>
+    <div class="lang-toggle" role="tablist" aria-label="Idioma">
+      <button class="active" data-lang="pt">PT</button>
+      <button data-lang="en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-4 pt-3">
+
+  <!-- ===== INÍCIO ===== -->
+  <section id="inicio" class="py-2">
+    <div class="mb-3">
+      <p class="section-eyebrow">Panorama 1T 2026</p>
+      <p class="section-lead">Quatro indicadores que resumem a situação da categoria no Brasil hoje.</p>
+    </div>
+
+    <!-- KPI grid (4 cards) -->
+    <div class="kpi-grid">
+      <div class="card kpi-card hero">
+        <div class="label">Trabalhadoras(es)</div>
+        <div class="number num">5,5M</div>
+        <div class="delta">no Brasil · PNADC</div>
+        <svg class="spark" viewBox="0 0 80 26" preserveAspectRatio="none">
+          <polyline fill="none" stroke="#1a1a1a" stroke-width="1.5"
+                    points="0,18 10,15 20,17 30,12 40,14 50,9 60,11 70,7 80,8"/>
+        </svg>
+      </div>
+      <div class="card kpi-card hero">
+        <div class="label">Mulheres</div>
+        <div class="number num">91%</div>
+        <div class="delta">categoria altamente feminizada</div>
+        <svg class="spark" viewBox="0 0 80 26" preserveAspectRatio="none">
+          <polyline fill="none" stroke="#1a1a1a" stroke-width="1.5"
+                    points="0,8 10,8 20,7 30,7 40,7 50,6 60,6 70,6 80,6"/>
+        </svg>
+      </div>
+      <div class="card kpi-card hero">
+        <div class="label">Negras (pretas+pardas)</div>
+        <div class="number num accent">69%</div>
+        <div class="delta">vs 59% da população geral</div>
+        <svg class="spark" viewBox="0 0 80 26" preserveAspectRatio="none">
+          <polyline fill="none" stroke="#b91c1c" stroke-width="1.5"
+                    points="0,12 10,10 20,10 30,9 40,8 50,8 60,7 70,7 80,7"/>
+        </svg>
+      </div>
+      <div class="card kpi-card hero">
+        <div class="label">Com carteira</div>
+        <div class="number num">24%</div>
+        <div class="delta down">11 anos após a LC 150</div>
+        <svg class="spark" viewBox="0 0 80 26" preserveAspectRatio="none">
+          <polyline fill="none" stroke="#b91c1c" stroke-width="1.5"
+                    points="0,4 10,5 20,8 30,10 40,12 50,14 60,16 70,17 80,17"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Quick comparison: race composition -->
+    <div class="card mt-4">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold text-sm">Composição racial — domésticas vs. trabalho geral</h3>
+        <span class="text-[11px] text-gray-500">1T 2026</span>
+      </div>
+      <div class="compare-row">
+        <div>
+          <div class="compare-label">Negras entre domésticas</div>
+          <div class="compare-bar"><span style="width: 69%; background: var(--accent);"></span></div>
+        </div>
+        <div class="compare-num accent">69%</div>
+      </div>
+      <div class="compare-row">
+        <div>
+          <div class="compare-label">Negras na população geral</div>
+          <div class="compare-bar"><span style="width: 59%; background: #94a3b8;"></span></div>
+        </div>
+        <div class="compare-num">59%</div>
+      </div>
+      <p class="text-[12px] text-gray-500 mt-2 leading-snug">
+        A categoria concentra mais mulheres negras do que a média do Brasil. O excesso é
+        <strong>10 pontos percentuais</strong>.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== FILIAÇÃO — destacada na entrada ===== -->
+  <section id="filiacao" class="spotlight">
+    <p class="section-eyebrow">Organização sindical</p>
+    <h2 class="section-title">Quem se filia ao sindicato</h2>
+    <p class="section-lead mb-3">
+      Apenas <strong>2,6%</strong> das domésticas no Brasil são filiadas — uma das taxas mais baixas do trabalho formal.
+      No entorno da STDMSP, porém, esse número sobe para <strong>31%</strong>.
+    </p>
+
+    <!-- Pill filter -->
+    <div class="pill-row mb-3">
+      <span class="pill danger active">Brasil</span>
+      <span class="pill">Por raça</span>
+      <span class="pill">Por carteira</span>
+      <span class="pill">STDMSP</span>
+    </div>
+
+    <div class="card">
+      <div class="chart-wrap">
+        <canvas id="chart-filiacao"></canvas>
+      </div>
+      <p class="text-[12px] text-gray-500 mt-2 leading-snug">
+        % filiadas a sindicato · PNADC Anual · 2012–2024. Pico em 2016 (3,56%) após PEC 72 e LC 150;
+        piso histórico em 2023 (2,00%).
+      </p>
+    </div>
+
+    <!-- Three scales card -->
+    <div class="card mt-3">
+      <h3 class="font-semibold text-sm mb-2">Três escalas da filiação</h3>
+      <div class="compare-row">
+        <div>
+          <div class="compare-label">Negras com carteira (piso)</div>
+          <div class="compare-bar"><span style="width: 4%; background: #1a1a1a;"></span></div>
+        </div>
+        <div class="compare-num">1,3%</div>
+      </div>
+      <div class="compare-row">
+        <div>
+          <div class="compare-label">Brasil — todas domésticas</div>
+          <div class="compare-bar"><span style="width: 8%; background: #475569;"></span></div>
+        </div>
+        <div class="compare-num">2,6%</div>
+      </div>
+      <div class="compare-row">
+        <div>
+          <div class="compare-label">Entorno STDMSP (n=231)</div>
+          <div class="compare-bar"><span style="width: 100%; background: var(--accent);"></span></div>
+        </div>
+        <div class="compare-num accent">31%</div>
+      </div>
+      <p class="text-[12px] text-gray-500 mt-2 leading-snug">
+        Proximidade física ao sindicato vale <strong>24× mais</strong> que a estrutura de mercado sozinha.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== SALÁRIOS ===== -->
+  <section class="py-4 mt-2">
+    <div class="mb-3">
+      <p class="section-eyebrow">Salário e raça</p>
+      <h2 class="section-title">Onde o preço da hora racializa</h2>
+      <p class="section-lead">
+        DIEESE 2026: razão salarial subiu de 84% (2025) para 87% (2026) — o menor hiato em 14 anos.
+        Mas o hiato esconde uma dualidade entre contratos.
+      </p>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="card kpi-card">
+        <div class="label">Mensalismo</div>
+        <div class="number num">96,6%</div>
+        <div class="delta up">hiato praticamente fechado</div>
+      </div>
+      <div class="card kpi-card">
+        <div class="label">Diarismo</div>
+        <div class="number num accent">84,3%</div>
+        <div class="delta down">desconto racial de 16%/hora</div>
+      </div>
+    </div>
+
+    <button class="reveal-toggle" onclick="this.nextElementSibling.hidden=!this.nextElementSibling.hidden; this.textContent = this.nextElementSibling.hidden ? '+ Ler análise completa' : '− Recolher';">
+      + Ler análise completa
+    </button>
+    <div class="more-content card text-[13px] leading-relaxed text-gray-700" hidden>
+      A discriminação racial não está em <em>quem</em> se torna diarista — as taxas são similares entre raças —
+      mas em <em>quanto</em> se paga a cada uma pela mesma hora. Trabalhadoras negras diaristas recebem
+      R$ 11,90 por hora, enquanto não-negras diaristas recebem R$ 14,12. No mensalismo, ambas recebem
+      cerca de R$ 10,30–R$ 10,68 — o piso.
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== BOTTOM NAV ===== -->
+<nav class="bottom-nav" aria-label="Navegação principal">
+  <a href="#inicio" class="active" data-nav="inicio">
+    <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2V11z"/></svg>
+    <span>Início</span>
+  </a>
+  <a href="#salarios" data-nav="salarios">
+    <svg viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    <span>Salários</span>
+  </a>
+  <a href="#filiacao" data-nav="filiacao">
+    <svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0-3-3.87"/></svg>
+    <span>Sindicato</span>
+  </a>
+  <a href="#mapa" data-nav="mapa">
+    <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <span>Mapa</span>
+  </a>
+  <a href="#pesquisas" data-nav="pesquisas">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+    <span>Pesquisas</span>
+  </a>
+</nav>
+
+<script>
+  // === Lang toggle (mockup) ===
+  document.querySelectorAll('.lang-toggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // === Nav active state ===
+  document.querySelectorAll('.bottom-nav a').forEach(a => {
+    a.addEventListener('click', () => {
+      document.querySelectorAll('.bottom-nav a').forEach(x => x.classList.remove('active'));
+      a.classList.add('active');
+    });
+  });
+
+  // === Filiação chart (4 race × formality series 2012-2024) ===
+  const ctx = document.getElementById('chart-filiacao').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['2012','2013','2014','2015','2016','2017','2018','2019','2022','2023','2024'],
+      datasets: [
+        {
+          label: 'Negras × sem carteira',
+          data: [3.18, 3.05, 3.47, 3.41, 3.79, 3.56, 3.31, 3.20, 3.47, 2.52, 2.92],
+          borderColor: '#1a1a1a', borderWidth: 2, pointRadius: 2.5, tension: 0.25, borderDash: []
+        },
+        {
+          label: 'Negras × com carteira',
+          data: [2.08, 2.51, 3.32, 2.30, 4.13, 3.60, 2.81, 2.96, 2.04, 1.25, 1.32],
+          borderColor: '#1a1a1a', borderWidth: 2, pointRadius: 2.5, tension: 0.25, borderDash: [5,4]
+        },
+        {
+          label: 'Não-negras × sem carteira',
+          data: [2.17, 2.55, 2.63, 2.52, 2.58, 2.27, 2.37, 2.27, 2.53, 1.76, 2.30],
+          borderColor: '#94a3b8', borderWidth: 2, pointRadius: 2.5, tension: 0.25, borderDash: []
+        },
+        {
+          label: 'Não-negras × com carteira',
+          data: [2.69, 2.77, 3.63, 3.55, 3.67, 2.25, 1.62, 2.10, 1.21, 0.98, 3.98],
+          borderColor: '#94a3b8', borderWidth: 2, pointRadius: 2.5, tension: 0.25, borderDash: [5,4]
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 22, boxHeight: 2, padding: 8, font: { size: 10 } } },
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1).replace('.', ',')}%` } }
+      },
+      scales: {
+        x: { ticks: { font: { size: 10 }, maxTicksLimit: 6 }, grid: { display: false } },
+        y: { min: 0, max: 5, ticks: { callback: v => v + '%', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.06)' } }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

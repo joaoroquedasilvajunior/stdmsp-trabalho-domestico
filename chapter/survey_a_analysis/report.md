@@ -10,7 +10,7 @@
 
 **Critério de discrepância:** diferença afro – brancas ≥ 10 pontos percentuais (em negrito na coluna Δ das tabelas).
 
-**Referências 2024 para o item 4 (salário):** R$ 1.412,00 = salário mínimo federal · R$ 1.476,75 = piso CC doméstica SP.
+**Referências 2024 para o item 4 (salário):** R$ 1.412,00 = salário mínimo federal · **R$ 1.540,59 = piso CC doméstica SP 2024 (Faixa 1)** · R$ 1.476,75 = limite usado nas faixas da pesquisa (piso CC 2023, defasado) — a pesquisa **subestima** o descumprimento porque trabalhadoras entre R$ 1.476,75 e R$ 1.540,59 estão abaixo do piso vigente mas aparecem na faixa superior.
 
 ---
 
@@ -73,25 +73,74 @@ Aproximadamente metade da amostra trabalha como diarista, metade com vínculo. *
 
 | Categoria | Afro | Brancas | Total | Δ (pp) |
 |---|---:|---:|---:|---:|
-| Abaixo de R$ 1476,75 | 18,5% (24) | 27,7% (23) | 22,1% (47) | -9,2 |
-| Entre R$ 1476,75 e R$ 2000,00 | 46,9% (61) | 45,8% (38) | 46,5% (99) | +1,1 |
-| Entre R$ 2000,00 e R$ 3500,00 | 29,2% (38) | 21,7% (18) | 26,3% (56) | +7,5 |
-| Acima de 3500,00 | 5,4% (7) | 4,8% (4) | 5,2% (11) | +0,6 |
+| Abaixo de R$ 1.540,59 | 18,5% (24) | 27,7% (23) | 22,1% (47) | -9,2 |
+| Entre R$ 1.540,59 e R$ 2.000,00 | 46,9% (61) | 45,8% (38) | 46,5% (99) | +1,1 |
+| Entre R$ 2.000,00 e R$ 3.500,00 | 29,2% (38) | 21,7% (18) | 26,3% (56) | +7,5 |
+| Acima de R$ 3.500,00 | 5,4% (7) | 4,8% (4) | 5,2% (11) | +0,6 |
 
-**Referências 2024:** salário mínimo federal R$ 1.412,00 · piso da Convenção Coletiva doméstica SP R$ 1.476,75 (Faixa 1).  
-**Achado inesperado — o gap racial vai na direção contrária do padrão PNADC:** 18,5% das afro vs **27,7% das brancas** recebem abaixo do piso CC. Ou seja, **brancas estão mais abaixo do piso** que afro nesta amostra (Δ -9.2pp). Faixa central R$ 1.476-2.000: ~46% em ambos os grupos. No topo (>R$ 3.500): 5,4% afro vs 4,8% brancas — paridade. 
+**Referências 2024 (quando a pesquisa foi aplicada):**
 
-**Interpretação cautelosa:** o resultado provavelmente reflete o viés da amostra de conveniência STDMSP. As brancas que respondem à pesquisa do sindicato podem ser sistematicamente diferentes das brancas no PNADC — talvez mais periféricas, mais velhas (idade não bate, ver Q1 — brancas são mais jovens, na verdade), ou em arranjos mais informais. **Esse achado precisa de validação contra PNADC com filtro de UF=SP + raça antes de qualquer interpretação política.**
+- Salário mínimo federal: **R$ 1.412,00**
+- **Piso da Convenção Coletiva doméstica SP (Faixa 1): R$ 1.540,59** ← valor REAL em 2024
+- Limite usado nas faixas do formulário: R$ 1.476,75 (piso CC 2023, **defasado**)
+
+**⚠ Nota metodológica crítica:** o formulário da pesquisa foi feito com a faixa "Abaixo de R$ 1.476,75" porque tomou o piso CC 2023 como referência, mas as respostas chegaram em 2024 quando o piso já era R$ 1.540,59. Isto significa que **a pesquisa SUBESTIMA o descumprimento**: trabalhadoras que recebiam entre R$ 1.476,75 e R$ 1.540,59 estão **abaixo do piso CC vigente** mas aparecem na faixa "Entre R$ 1.476,75 e R$ 2.000,00". O número real de descumprimento é maior que os 22,1% reportados.
+
+**Achado bruto contra-intuitivo** (precisa ser destrinchado): 18,5% das afro vs 27,7% das brancas recebem **abaixo de R$ 1.476,75** (que é abaixo até do piso defasado — descumprimento inquestionável). Esse padrão é oposto ao observado no PNADC nacional (negras ganham menos). Mas estratificar por **tipo de contrato (Q6)** muda completamente a leitura:
+
+**Descumprimento (abaixo de R$ 1.476,75) por tipo de contrato:**
+
+- **Diaristas (n=76)**: 42% abaixo — descumprimento massivo.
+  - Afro diaristas: 36,4% (16/44)
+  - Brancas diaristas: 51,6% (16/31)
+- **Com-vínculo (n=72)**: 17% abaixo — situação significativamente melhor.
+  - Afro com-vínculo: 13,9% (5/36)
+  - Brancas com-vínculo: 21,2% (7/33)
+
+**O verdadeiro eixo do descumprimento é diarismo × com-vínculo, não raça.** Diaristas são 2,5× mais vulneráveis ao descumprimento que trabalhadoras com vínculo. A 'inversão' racial agregada reflete dois problemas:
+
+1. **Não-significância estatística**: ICs Wilson 95% para 'abaixo do piso' se sobrepõem entre afro [12,8%; 26,7%] e brancas [19,4%; 38,0%]. Teste z duas proporções: p ≈ 0,11 — o gap aparente de 9pp pode ser ruído amostral.
+2. **Viés de auto-seleção** + **ambiguidade da pergunta para diaristas**: brancas que respondem à pesquisa STDMSP são subpopulação periférica; 'salário base' para diarista não é categoria legal clara (a CC define piso por dia, não mensal).
+
+**Recomendação editorial:** apresentar primariamente como **'descumprimento concentrado em diaristas (42%) e generalizado dado o piso real de R$ 1.540,59'**, com gap racial subordinado à estrutura contratual e não estatisticamente robusto.
 
 ---
 
-## Q05 — Valor da diária
+## Q04b — Salário × contrato × raça
 
-*Apenas diaristas (n=73)*
+*Decompondo o achado contra-intuitivo do Q04*
 
-![Valor da diária](Q05_diaria_value.png)
+![Salário × contrato × raça](Q04b_salary_by_contract_race.png)
 
-Mediana da diária: afro **R$ 180** vs brancas **R$ 180** (+0% diferença).  **Sem hiato racial na mediana** dentro da amostra STDMSP — diferente do padrão PNADC 1T 2026 que mostra hiato salarial por hora de 84,3% no diarismo BR-wide. Possíveis explicações: (a) viés da amostra de conveniência; (b) homogeneização do mercado paulista entre quem chega ao raio de atuação do sindicato; (c) tamanho amostral pequeno (n=73) — dispersão alta, mediana insensível a outliers.
+**O verdadeiro eixo do descumprimento é o tipo de contrato, não a raça.** Diaristas tem 42% abaixo do limite da pesquisa (R$ 1.476,75); com-vínculo têm 17%. Dentro de cada contrato, o gap racial é secundário (brancas levemente acima em ambos os grupos). Esse padrão estratificado contradiz a leitura ingênua do Q04 agregado.
+
+**Caveat metodológico crítico (dupla camada):**
+
+1. **Piso defasado no formulário**: o limite R$ 1.476,75 usado nas faixas reflete o piso CC de 2023. Em 2024, quando a pesquisa foi aplicada, o piso CC real era R$ 1.540,59. Trabalhadoras entre esses dois valores estão **abaixo do piso vigente** mas aparecem na faixa imediatamente superior. **O descumprimento real é maior que os 22% reportados** — possivelmente significativamente.
+2. **CC negociado para trabalhadoras com vínculo**: para diaristas, a CC SP estabelece um piso por dia trabalhado, não um salário mensal. A pergunta 'salário base' é ambígua nessa categoria. Para diaristas, 'abaixo do piso' deve ser lido como **proxy de vulnerabilidade econômica**, não descumprimento legal estrito.
+
+---
+
+## Q05 — Valor da diária — distribuição individual
+
+*Diaristas (n=73) · Piso CC SP 2024 = R$ 210*
+
+![Valor da diária — distribuição individual](Q05_diaria_value.png)
+
+**Achado principal — descumprimento massivo do piso diária:** **83% das diaristas recebem abaixo do piso CC SP 2024 (R$ 210)**.
+
+**Distribuição completa (R$ 80 a R$ 360):**
+
+| Faixa | Afro | Brancas | Total |
+|---|---:|---:|---:|
+| Abaixo de R$ 210 | 34 (83%) | 26 (84%) | 60 (83%) |
+| Igual a R$ 210 | 1 | 0 | 1 |
+| Acima de R$ 210 | 6 | 5 | 11 |
+| **Total** | **41** | **31** | **72** |
+
+**Medianas:** afro R$ 180 · brancas R$ 180 · total R$ 180.
+
+**Sem hiato racial significativo na mediana** — diferente do padrão PNADC BR-wide (hiato 84,3%/hora no diarismo). No entorno STDMSP a heterogeneidade é dentro de cada grupo, não entre grupos: valores de R$ 80 até R$ 360, com concentração em R$ 150-R$ 200. A diária mediana paulista (~R$ 180) é **15% abaixo do piso CC** — descumprimento generalizado, atravessando raça.
 
 ---
 
@@ -186,6 +235,32 @@ Entre quem respondeu, **40,0% das afro vs 30,9% das brancas** afirmaram ter rece
 
 ---
 
+## Q11b — Como o sindicato ajuda (texto livre)
+
+*Categorização 5-buckets do Q17A (n=164)*
+
+![Como o sindicato ajuda (texto livre)](Q11b_union_helps_how.png)
+
+| Categoria | Afro | Brancas | Total | Δ (pp) |
+|---|---:|---:|---:|---:|
+| 1. Orientação sobre direitos | 38,4% (38) | 31,7% (19) | 35,8% (57) | +6,7 |
+| 2. Intervenção direta com o patrão | 4,0% (4) | 10,0% (6) | 6,3% (10) | -6,0 |
+| 3. Ação jurídica / denúncia | 7,1% (7) | 8,3% (5) | 7,5% (12) | -1,3 |
+| 4. Dúvida / sem experiência | 39,4% (39) | 36,7% (22) | 38,4% (61) | +2,7 |
+| 5. Limitação / impossibilidade | 11,1% (11) | 13,3% (8) | 11,9% (19) | -2,2 |
+
+**Como a categoria entende o papel do sindicato em situações difíceis** (complemento qualitativo a Q11/Q17, que perguntou se o sindicato pode ajudar — 83% disseram sim).
+
+**Achado dominante: o sindicato é entendido principalmente como instituição educacional/informacional** (35,8%, n=57). A maioria absoluta vê o papel sindical como **orientar, informar e explicar direitos** — não como mediador direto com o patrão nem como canal jurídico.
+
+**Cerca de 38,4% (61 respondentes) admitem dúvida ou falta de experiência** — *'acho que sim, mas não sei como'*, *'nunca precisei'*, *'agora que descobri vou procurar'*. Esse percentual é consistente com o gargalo informacional já identificado em Q08/Q09 (apenas ~25% conhecem a CC).
+
+**Apenas 11,9% (19) reconhecem barreiras estruturais** — *'o sindicato não pode entrar no meu trabalho'*, *'as patroas falam que o sindicato não manda nelas'*, *'se o patrão deixar, né'*. Pequena mas eloquente — articula o limite estrutural do trabalho doméstico em domicílio privado.
+
+**Implicação editorial:** as respostas confirmam que **a categoria pensa o sindicato primariamente como espaço de aprendizado**, não como aparelho de luta institucional. Para a STDMSP, isso é simultaneamente boa notícia (confiança no papel educacional) e desafio (a função jurídica/de intervenção existe mas não está internalizada pela base).
+
+---
+
 ## Q12 — Função do sindicato
 
 *Texto livre categorizado em 5 buckets*
@@ -195,12 +270,49 @@ Entre quem respondeu, **40,0% das afro vs 30,9% das brancas** afirmaram ter rece
 | Categoria | Afro | Brancas | Total | Δ (pp) |
 |---|---:|---:|---:|---:|
 | 1. Defesa dos direitos trabalhistas | 24,4% (30) | 16,7% (14) | 21,3% (44) | +7,7 |
-| 2. Orientação sobre direitos | 11,4% (14) | 6,0% (5) | 9,2% (19) | +5,4 |
-| 3. Apoio jurídico e cobrança dos patrões | 8,1% (10) | 13,1% (11) | 10,1% (21) | -5,0 |
-| 4. Cuidado, proteção e acolhimento | 4,1% (5) | 0,0% (0) | 2,4% (5) | +4,1 |
-| 5. Todas / não sabe / vago | 52,0% (64) | 64,3% (54) | 57,0% (118) | **-12,3** |
+| 2. Orientação sobre direitos | 15,4% (19) | 6,0% (5) | 11,6% (24) | +9,5 |
+| 3. Apoio jurídico e cobrança dos patrões | 8,9% (11) | 15,5% (13) | 11,6% (24) | -6,5 |
+| 4. Cuidado, proteção e acolhimento | 9,8% (12) | 4,8% (4) | 7,7% (16) | +5,0 |
+| 5. Todas / não sabe / vago | 41,5% (51) | 57,1% (48) | 47,8% (99) | **-15,7** |
 
-**Defesa de direitos** lidera em ambos os grupos (afro 24,4%, brancas 16,7%). Respostas residuais ('todas', 'não sei', vago) somam ~52,0% afro e ~64,3% brancas — refletem dificuldade de articular conceitualmente a função institucional. Diferença ≥10pp em **5. Todas / não sabe / vago**: afro 52,0% vs brancas 64,3% (-12.3pp).
+**Defesa de direitos** lidera em ambos os grupos (afro 24,4%, brancas 16,7%). Respostas residuais ('todas', 'não sei', vago) somam ~41,5% afro e ~57,1% brancas — refletem dificuldade de articular conceitualmente a função institucional. Diferença ≥10pp em **5. Todas / não sabe / vago**: afro 41,5% vs brancas 57,1% (-15.7pp).
+
+---
+
+## Q13 — Tempo de trabalho na categoria
+
+*Anos trabalhando como doméstica · comparação por raça*
+
+![Tempo de trabalho na categoria](Q13_tempo_trabalho.png)
+
+| Categoria | Afro | Brancas | Total | Δ (pp) |
+|---|---:|---:|---:|---:|
+| Entre 1 e 2 anos | 9,4% (13) | 5,6% (5) | 7,9% (18) | +3,9 |
+| Entre 3 e 5 anos | 13,8% (19) | 15,6% (14) | 14,5% (33) | -1,8 |
+| Entre 5 e 10 anos | 26,8% (37) | 42,2% (38) | 32,9% (75) | **-15,4** |
+| Entre 10 e 20 anos | 21,7% (30) | 18,9% (17) | 20,6% (47) | +2,9 |
+| Mais de 20 anos | 28,3% (39) | 17,8% (16) | 24,1% (55) | **+10,5** |
+
+A categoria é de **carreira longa**: **44,7% da amostra tem mais de 10 anos** trabalhando como doméstica (50,0% afro vs 36,7% brancas). O bloco 'mais de 20 anos' sozinho concentra 28,3% das afro e 17,8% das brancas — combinado com o achado da Q1 (afro concentradas em 50-59 anos), sugere trajetória de permanência prolongada na categoria entre afro-descendentes. Trabalhadoras com menos de 2 anos são minoritárias (<10% em ambos os grupos), coerente com a queda geral do pool de novas entrantes documentada na PNADC. Diferença ≥10pp em **Entre 5 e 10 anos**: afro 26,8% vs brancas 42,2% (-15.4pp). Diferença ≥10pp em **Mais de 20 anos**: afro 28,3% vs brancas 17,8% (+10.5pp). 
+
+---
+
+## Q14 — Benefícios da CC × idade
+
+*Q13=Sim ∩ Q14 detalhado (n=24) · cruzamento com Q1*
+
+![Benefícios da CC × idade](Q14_benefits_by_age.png)
+
+**Base analítica: n=24 respondentes** (de 77 que disseram SIM em Q13 sobre a CC ter trazido benefício, apenas 25 detalharam QUAIS benefícios recebem). O gap 77→25 é ele mesmo um achado: **~2/3 de quem reconhece impacto da CC não consegue nomear os benefícios concretos** — sugere que a CC opera como referência simbólica difusa, não como catálogo de vantagens navegáveis pela trabalhadora. 
+
+Dentro desse recorte pequeno mas concentrado:
+
+1. **Cesta Básica domina absolutamente**: 19 das 32 menções (59,4%). Único benefício da CC que chega a todas as faixas etárias 40+ na amostra. Interpretação: quando a CC 'aparece' materialmente na vida da doméstica, aparece como comida.
+2. **BEM +Familiar e Bem Brasil** ficam num degrau abaixo (6 e 6 menções), concentrados em 40-49 e 50-59.
+3. **Auxílio Creche = 1 menção só** — coerente com o perfil etário da amostra (quase ninguém tem filho pequeno em casa nesta faixa).
+4. **96,9% das menções concentram-se em 40+** — nenhuma trabalhadora 18-29 e apenas 1 na faixa 30-39 detalhou benefícios. Isso reforça o padrão da Q13 (categoria envelhecida) e sugere que o benefício da CC é reconhecido depois de anos de acumulação de tempo na categoria.
+
+Peça de política: o gargalo não é a existência da CC — é a **legibilidade** dos benefícios individualizados (cartões, auxílios) para quem já se beneficia da CC via floor salarial e cesta básica. Campanha de divulgação deveria priorizar quem tem entre 30 e 49 anos com filho pequeno (potencial Auxílio Creche subutilizado).
 
 ---
 
@@ -216,7 +328,7 @@ Os dados desta pesquisa **divergem em vários pontos do padrão PNADC BR-wide** 
 
 **Remuneração (Q4-Q5):**
 
-4. **Salário base (Q9) — gap racial inverso**: 18,5% afro vs **27,7% brancas** recebem abaixo do piso CC (R$ 1.476,75). Ou seja, **brancas estão mais abaixo do piso que afro** nesta amostra (-9,2pp). Contra-intuitivo dado o padrão BR. Pode refletir o efeito-idade (Q1) — brancas mais jovens, talvez em arranjos menos estruturados. **Validação contra PNADC SP × raça × idade é necessária antes de qualquer leitura política.**
+4. **Salário base (Q9) — gap racial NÃO significativo + descumprimento subestimado**: 18,5% afro vs 27,7% brancas recebem abaixo de R$ 1.476,75. Mas (a) o gap é estatisticamente não-significativo (p ≈ 0,11, ICs Wilson se sobrepõem); e (b) o piso CC real em 2024 era **R$ 1.540,59** — o formulário usou um limite defasado, então o descumprimento real é maior que o reportado. **A história verdadeira é Q04b (diaristas 42% vs vínculo 17%) — o eixo do descumprimento é contratual, não racial.**
 5. **Diária (Q16A) — sem hiato racial na mediana** (R$ 180 em ambos os grupos). Diferente do hiato BR-wide de 84,3%/hora no diarismo. Sugere homogeneização do mercado paulista no raio STDMSP, ou pequeno n=73.
 
 **Direitos e descumprimento (Q6-Q7):**

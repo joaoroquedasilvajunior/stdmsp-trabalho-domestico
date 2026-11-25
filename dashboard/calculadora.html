@@ -326,7 +326,13 @@ try {
 } catch (e) { console.error("supabase init failed:", e); }
 
 // Constants (jurisdiction-specific, stable)
-const MIN_WAGE_BRL_2026 = 1518;             // R$ — Brazilian national minimum wage, 2026
+// R$ 1.621,00 — salário mínimo nacional vigente desde 01/01/2026
+// (Decreto 12.797/2025, DOU 24/12/2025; reajuste de 6,79% sobre os R$ 1.518 de 2025).
+// CUIDADO: estava 1518 (valor de 2025) até nov/2026, o que fazia a checagem de piso
+// aprovar salários entre 1518 e 1621 que na verdade estão ABAIXO do mínimo legal.
+// Ao atualizar em jan/2027, conferir também o app Casa Justa (var MIN) — os dois
+// precisam bater.
+const MIN_WAGE_BRL_2026 = 1621;
 const LEGAL_WEEKLY_HOURS_MAX = 44;          // CLT + LC 150/2015
 
 // Fallback race-wage values if static_facts doesn't load (DIEESE abr/2026)
